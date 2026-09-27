@@ -2,8 +2,8 @@
   --background: #fafafa;
   --foreground: #fff;
 
-  --text-primary: #000;
-  --text-secondary: #666;
+  --text-primary: #831843;
+  --text-secondary: #9d174d;
 
   --button-primary-hover: #383838;
   --button-secondary-hover: #f2f2f2;
@@ -125,19 +125,19 @@ a.secondary {
 
 @media (prefers-color-scheme: dark) {
   .logo {
-    filter: invert();
+    filter: none;
   }
 
   .page {
-    --background: #000;
-    --foreground: #000;
+    --background: #fff0f5;
+    --foreground: #ffffff;
 
-    --text-primary: #ededed;
-    --text-secondary: #999;
+    --text-primary: #831843;
+    --text-secondary: #9d174d;
 
-    --button-primary-hover: #ccc;
-    --button-secondary-hover: #1a1a1a;
-    --button-secondary-border: #1a1a1a;
+    --button-primary-hover: #db2777;
+    --button-secondary-hover: #fdf2f8;
+    --button-secondary-border: #fce7f3;
   }
 }
 

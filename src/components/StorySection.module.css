@@ -1,0 +1,233 @@
+.storyWrapper {
+  width: 100%;
+  max-width: 1360px;
+  margin: 50px auto 40px;
+  padding: 0 32px;
+}
+
+.storyCard {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 996 / 333;
+  min-height: 380px;
+  border-radius: 36px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px -15px rgba(210, 140, 160, 0.16),
+              0 0 0 1px rgba(245, 215, 224, 0.7);
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1),
+              box-shadow 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.storyCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 26px 60px -15px rgba(195, 115, 140, 0.22),
+              0 0 0 1px rgba(235, 155, 180, 0.85);
+}
+
+/* Authentic High-Definition Background Asset */
+.bgImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 36px;
+  pointer-events: none;
+  user-select: none;
+  z-index: 1;
+}
+
+/* Left-Side Content Container - Crisp Vector Typography */
+.contentArea {
+  position: relative;
+  z-index: 3;
+  width: 46%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 0 0 5.2%;
+}
+
+/* Headings */
+.headingGroup {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.headingTop {
+  font-family: var(--font-serif);
+  font-size: clamp(1.4rem, 2.45vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: 0.05em;
+  color: #241D20;
+  text-transform: uppercase;
+}
+
+.headingBottomRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 3px;
+}
+
+.headingBottom {
+  font-family: var(--font-serif);
+  font-size: clamp(1.4rem, 2.45vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: 0.05em;
+  color: #C05E78;
+  text-transform: uppercase;
+}
+
+.heartIcon {
+  display: inline-flex;
+  width: clamp(18px, 1.8vw, 26px);
+  height: clamp(18px, 1.8vw, 26px);
+  color: #C05E78;
+  transform: translateY(-2px);
+  flex-shrink: 0;
+  animation: pulseHeart 3s ease-in-out infinite;
+}
+
+@keyframes pulseHeart {
+  0%, 100% {
+    transform: translateY(-2px) scale(1);
+  }
+  50% {
+    transform: translateY(-4px) scale(1.12);
+  }
+}
+
+/* Description */
+.description {
+  font-family: var(--font-sans);
+  font-size: clamp(0.72rem, 1.0vw, 0.92rem);
+  line-height: 1.6;
+  color: #5C4F52;
+  max-width: 88%;
+  margin-bottom: 20px;
+  font-weight: 400;
+}
+
+/* Pill Button */
+.storyBtn {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 28px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #CF6B85 0%, #B84F6C 100%);
+  color: #ffffff;
+  font-family: var(--font-sans);
+  font-size: clamp(0.68rem, 0.88vw, 0.82rem);
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 6px 20px -3px rgba(184, 79, 108, 0.42);
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.storyBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -3px rgba(184, 79, 108, 0.55);
+  background: linear-gradient(135deg, #D6748E 0%, #BE5573 100%);
+}
+
+.arrow {
+  display: inline-block;
+  font-size: 1.15em;
+  transition: transform 0.3s ease;
+}
+
+.storyBtn:hover .arrow {
+  transform: translateX(4px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1080px) {
+  .storyCard {
+    min-height: 330px;
+  }
+  .contentArea {
+    width: 48%;
+  }
+}
+
+@media (max-width: 860px) {
+  .storyWrapper {
+    margin: 35px auto 25px;
+    padding: 0 20px;
+  }
+
+  .storyCard {
+    aspect-ratio: auto;
+    min-height: auto;
+    flex-direction: column-reverse;
+    border-radius: 26px;
+  }
+
+  .bgImage {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    border-radius: 0 0 26px 26px;
+    object-position: right center;
+  }
+
+  .contentArea {
+    width: 100%;
+    padding: 32px 24px 28px;
+    background: linear-gradient(135deg, #FFF9FA 0%, #FFF3F6 100%);
+  }
+
+  .headingTop,
+  .headingBottom {
+    font-size: 24px;
+  }
+
+  .description {
+    font-size: 13.5px;
+    max-width: 100%;
+    margin-bottom: 18px;
+  }
+
+  .storyBtn {
+    padding: 10px 24px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 580px) {
+  .storyWrapper {
+    padding: 0 16px;
+  }
+
+  .storyCard {
+    border-radius: 20px;
+  }
+
+  .bgImage {
+    height: 240px;
+    border-radius: 0 0 20px 20px;
+  }
+
+  .contentArea {
+    padding: 24px 18px 22px;
+  }
+
+  .headingTop,
+  .headingBottom {
+    font-size: 21px;
+  }
+}

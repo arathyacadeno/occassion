@@ -1,0 +1,748 @@
+/* =========================================================
+   OUR HIGHLIGHTS SECTION WITH BLOSSOM TEMPLATE ANIMATIONS
+   Matches User's Screen Recording Video 100%:
+   - Card Hover Animation:
+     * Image zooms smoothly (scale 1.0 -> 1.1)
+     * Romantic translucent gradient overlay deepens smoothly
+     * Centered text micro-lifts up (translateY)
+     * "Inquire Now →" pill button slides up gracefully
+   - Text & Watermark Animation:
+     * Gentle ambient floating animation on the botanical watermark
+     * Staggered smooth fade-in reveal when scrolling into view
+     * Micro-elevation and glow on "SHOP NOW" button
+   - Exact Bento Layout:
+     * Left Column: Editorial text block (Watermark, "OUR HIGHLIGHTS", "From Our Farm to Your Table", description, SHOP NOW)
+     * Right Bento Grid: 1 Tall left, 1 Wide top-right, 2 Square bottom-right
+   ========================================================= */
+
+.sectionWrapper {
+  width: 100%;
+  background-color: #fff0f5;
+  background: linear-gradient(180deg, #fff5f8 0%, #fff0f5 50%, #fdf2f8 100%);
+  padding: 75px 0 95px 0;
+  position: relative;
+  overflow-x: clip;
+  overflow-y: visible;
+  color: #111111;
+}
+
+/* Subtle soft blush ambient glow at bottom */
+.sectionWrapper::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(180deg, rgba(255, 240, 245, 0) 0%, rgba(252, 231, 243, 0.6) 100%);
+  pointer-events: none;
+}
+
+/* ================= ROSE FLORAL ACCENT (LEFT SIDE ONLY) ================= */
+.floralBgWrapper {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.floralBgLeft {
+  position: absolute;
+  left: -55px;
+  bottom: 25px;
+  width: 500px;
+  max-width: 44vw;
+  height: auto;
+  object-fit: contain;
+  opacity: 0.92;
+  filter: drop-shadow(0 14px 32px rgba(180, 20, 70, 0.14));
+  transform: scaleX(-1) rotate(14deg);
+  pointer-events: none;
+  user-select: none;
+}
+
+.container {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 0 32px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Section Header - Exactly matching ShopByCategory */
+.sectionHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  margin-bottom: 36px;
+  position: relative;
+  opacity: 0;
+  transform: translate3d(0, 30px, 0);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.sectionInView .sectionHeader {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.sectionMainTitle {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 3.2vw, 3rem);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: #1a1a1a;
+  line-height: 1.2;
+  margin: 0 0 6px 0;
+  text-transform: none; /* Exactly matching "Shop By Category" */
+}
+
+.categoryTagline {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ec4899;
+  margin: 0;
+}
+
+/* ================= CENTERED 4-CARD BENTO GRID (LARGER & CENTERED) ================= */
+.mosaicGrid {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr 1fr;
+  grid-template-rows: 340px 340px;
+  gap: 22px;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* Generic Photo Card */
+.mosaicCard {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* Card 1: Table Arrangement (Left Tall) - Upward Staggered Entrance (from Blossom video) */
+.cardTallLeft {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  height: 100%;
+  opacity: 0;
+  transform: translate3d(0, 48px, 0);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.1s,
+    transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.1s,
+    box-shadow 0.35s ease;
+  will-change: opacity, transform;
+}
+
+/* Card 2: Car Decoration (Top-Right Wide) - Upward Staggered Entrance */
+.cardWideTop {
+  grid-column: 2 / span 2;
+  grid-row: 1;
+  height: 100%;
+  opacity: 0;
+  transform: translate3d(0, 48px, 0);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.22s,
+    transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.22s,
+    box-shadow 0.35s ease;
+  will-change: opacity, transform;
+}
+
+/* Card 3: Church Arrangement (Bottom-Middle) - Upward Staggered Entrance */
+.cardBottomMid {
+  grid-column: 2;
+  grid-row: 2;
+  height: 100%;
+  opacity: 0;
+  transform: translate3d(0, 48px, 0);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.34s,
+    transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.34s,
+    box-shadow 0.35s ease;
+  will-change: opacity, transform;
+}
+
+/* Card 4: Garlands & Baskets (Bottom-Right) - Upward Staggered Entrance */
+.cardBottomRight {
+  grid-column: 3;
+  grid-row: 2;
+  height: 100%;
+  opacity: 0;
+  transform: translate3d(0, 48px, 0);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.46s,
+    transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.46s,
+    box-shadow 0.35s ease;
+  will-change: opacity, transform;
+}
+
+/* In View Active State: Cards slide smoothly into position */
+.sectionInView .cardTallLeft,
+.sectionInView .cardWideTop,
+.sectionInView .cardBottomMid,
+.sectionInView .cardBottomRight {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Smooth Interactive Micro-Lift Hover State */
+.sectionInView .mosaicCard:hover {
+  transform: translate3d(0, -7px, 0) !important;
+  box-shadow: 0 22px 48px rgba(75, 42, 70, 0.28);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Image Wrap */
+.cardImgWrap {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background Image with Smooth Scale Zoom on Hover (from user video) */
+.cardImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1);
+  transition: transform 0.75s cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+.mosaicCard:hover .cardImg {
+  transform: scale(1.08);
+}
+
+/* Atmospheric Translucent Gradient Overlay (Blossom Template Animation) */
+.cardOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,
+      rgba(60, 30, 58, 0.38) 0%,
+      rgba(45, 18, 48, 0.62) 100%);
+  transition: background 0.5s cubic-bezier(0.2, 1, 0.3, 1);
+  z-index: 1;
+}
+
+.mosaicCard:hover .cardOverlay {
+  background: linear-gradient(180deg,
+      rgba(78, 36, 75, 0.52) 0%,
+      rgba(56, 22, 60, 0.76) 100%);
+}
+
+/* Centered Typography Content directly over card (from user video) */
+.cardContentInner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  text-align: center;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: transform 0.4s cubic-bezier(0.2, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+/* Text micro-lifts smoothly when card is hovered */
+.mosaicCard:hover .cardContentInner {
+  transform: translate(-50%, -55%);
+}
+
+/* Category Tag: "Decoration", "Presents", "Wedding", "Bouquet" */
+.cardTag {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: capitalize;
+  color: #fdf2f8;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+/* Main Collection Title: Large Serif (from user video) */
+.cardTitle {
+  font-family: var(--font-serif);
+  font-size: clamp(22px, 2.5vw, 32px);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #ffffff;
+  line-height: 1.2;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
+  margin: 0;
+  transition: letter-spacing 0.4s ease, color 0.3s ease;
+}
+
+.mosaicCard:hover .cardTitle {
+  color: #ffffff;
+  letter-spacing: 0.14em;
+}
+
+/* Hover Action Button (Smooth Slide-Up) */
+.cardHoverBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: rgba(236, 72, 153, 0.88);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 6px 16px;
+  border-radius: 9999px;
+  margin-top: 8px;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.mosaicCard:hover .cardHoverBtn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ================= FULL LIGHTBOX MODAL (VERY BIG IMAGE + INQUIRY) ================= */
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(17, 17, 17, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.modalContent {
+  background: #ffffff;
+  border-radius: 14px;
+  max-width: 960px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+  border: 1px solid #fce7f3;
+  animation: modalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modalCloseBtn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #fff0f5;
+  border: 1px solid #fce7f3;
+  color: #111111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+}
+
+.modalCloseBtn:hover {
+  background: #ec4899;
+  color: #ffffff;
+  transform: rotate(90deg);
+}
+
+.modalImageCol {
+  background: #fff5f8;
+  position: relative;
+  min-height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.modalBigImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  max-height: 560px;
+}
+
+.modalDetailsCol {
+  padding: 40px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #ffffff;
+}
+
+.modalTag {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #ec4899;
+  margin-bottom: 8px;
+}
+
+.modalTitle {
+  font-family: var(--font-serif);
+  font-size: clamp(26px, 2.6vw, 32px);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #111111;
+  margin: 0 0 10px 0;
+  line-height: 1.3;
+}
+
+.modalDesc {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.7;
+  color: #4b5563;
+  margin: 0 0 20px 0;
+}
+
+.modalFeaturesList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 28px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modalFeatureItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: #111111;
+}
+
+.modalFeatureDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ec4899;
+  flex-shrink: 0;
+}
+
+.modalActions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modalWhatsAppBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #25d366;
+  color: #ffffff;
+  padding: 13px 24px;
+  border-radius: 6px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.25);
+}
+
+.modalWhatsAppBtn:hover {
+  background: #20bd5a;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(37, 211, 102, 0.35);
+}
+
+.modalCallBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #fff0f5;
+  color: #111111;
+  padding: 11px 24px;
+  border-radius: 6px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid #fce7f3;
+  transition: all 0.25s ease;
+}
+
+.modalCallBtn:hover {
+  background: #fce7f3;
+  color: #ec4899;
+}
+
+/* ================= REALISTIC NATURE ANIMATIONS (HERO -> HIGHLIGHTS) ================= */
+
+/* 1. Realistic Falling Flowers & Petals Container */
+.petalsContainer {
+  position: absolute;
+  top: -50px;
+  left: 0;
+  right: 0;
+  height: calc(100% + 50px);
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 3;
+}
+
+/* Individual Petal Vertical Descent Track - Continuous Non-Stop Fall */
+.petalFallWrapper {
+  position: absolute;
+  top: 0;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform, opacity;
+  animation-name: petalDescend;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* Petal Horizontal Sine-Wave Sway Track */
+.petalSwayWrapper {
+  will-change: transform;
+  animation-name: petalSway;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+/* Petal 3D Tumbling Image */
+.petalImg {
+  display: block;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.08));
+  will-change: transform;
+  animation-name: petalTumble3D;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+/* ================= KEYFRAME ANIMATIONS ================= */
+
+/* Petal Vertical Fall (Steady, Continuous Non-Stop Descent) */
+@keyframes petalDescend {
+  0% {
+    transform: translateY(-40px);
+    opacity: 0;
+  }
+
+  6% {
+    opacity: 0.95;
+  }
+
+  90% {
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translateY(980px);
+    opacity: 0;
+  }
+}
+
+/* Petal Horizontal Sway */
+@keyframes petalSway {
+  0% {
+    transform: translateX(0px) rotate(0deg);
+  }
+
+  50% {
+    transform: translateX(32px) rotate(20deg);
+  }
+
+  100% {
+    transform: translateX(-28px) rotate(-16deg);
+  }
+}
+
+/* Petal 3D Tumble */
+@keyframes petalTumble3D {
+  0% {
+    transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+  }
+
+  50% {
+    transform: rotateX(160deg) rotateY(110deg) rotateZ(140deg);
+  }
+
+  100% {
+    transform: rotateX(320deg) rotateY(220deg) rotateZ(280deg);
+  }
+}
+
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes watermarkBreathe {
+  0% {
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    opacity: 0.14;
+  }
+
+  50% {
+    transform: translate(-50%, -52%) scale(1.05) rotate(2deg);
+    opacity: 0.2;
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    opacity: 0.14;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalPop {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ================= RESPONSIVE STYLING ================= */
+@media (max-width: 1080px) {
+  .floralBgLeft {
+    width: 390px;
+    left: -40px;
+    bottom: 20px;
+    opacity: 0.85;
+  }
+
+  .mosaicGrid {
+    grid-template-columns: 1.15fr 1fr 1fr;
+    grid-template-rows: 290px 290px;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .floralBgLeft {
+    width: 270px;
+    left: -35px;
+    bottom: 15px;
+    opacity: 0.75;
+  }
+
+  .mosaicGrid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+  }
+
+  .cardTallLeft {
+    grid-column: 1 / span 2;
+    grid-row: auto;
+    min-height: 280px;
+  }
+
+  .cardWideTop {
+    grid-column: 1 / span 2;
+    grid-row: auto;
+    min-height: 220px;
+  }
+
+  .cardBottomMid,
+  .cardBottomRight {
+    grid-column: auto;
+    grid-row: auto;
+    min-height: 200px;
+  }
+
+  .modalContent {
+    grid-template-columns: 1fr;
+  }
+
+  .modalImageCol {
+    min-height: 260px;
+  }
+}
+
+@media (max-width: 520px) {
+  .floralBgLeft {
+    width: 200px;
+    left: -25px;
+    bottom: 10px;
+    opacity: 0.65;
+  }
+
+  .sectionWrapper {
+    padding: 50px 0 60px 0;
+  }
+
+  .mosaicGrid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .cardTallLeft,
+  .cardWideTop,
+  .cardBottomMid,
+  .cardBottomRight {
+    grid-column: 1;
+    min-height: 200px;
+  }
+}
