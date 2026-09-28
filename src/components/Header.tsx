@@ -4,7 +4,28 @@ import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./Header.module.css";
-import { Search, ShoppingCart, User, Heart, Menu, X, Phone, Check } from "lucide-react";
+import {
+  Search,
+  ShoppingCart,
+  User,
+  Heart,
+  Menu,
+  X,
+  Phone,
+  Check,
+  ChevronDown,
+  ArrowRight,
+  Sparkles,
+  Flower2,
+  Flower,
+  Sun,
+  Feather,
+  Cake,
+  Gem,
+  Gift,
+  PartyPopper,
+  Circle,
+} from "lucide-react";
 import OccassionsLogo from "./OccassionsLogo";
 import { useCart } from "@/context/CartContext";
 
@@ -27,6 +48,34 @@ export default function Header({
   const [searchQuery, setSearchQuery] = useState("");
   const [activeModal, setActiveModal] = useState<"cart" | "signin" | null>(null);
   const [activeCategory, setActiveCategory] = useState("Home");
+
+  const [flowersHovered, setFlowersHovered] = useState(false);
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleMouseEnter = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+    setFlowersHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    hoverTimeoutRef.current = setTimeout(() => {
+      setFlowersHovered(false);
+    }, 180);
+  };
+
+  // Close mega menu on page change
+  useEffect(() => {
+    setFlowersHovered(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    };
+  }, []);
 
   // Flowers is active with soft light-pink pill & pink text
   const isFlowersActive =
@@ -145,12 +194,217 @@ export default function Header({
 
           {/* Navigation items in the center */}
           <nav className={styles.centerNav} aria-label="Main Navigation">
-            <Link
-              href="/table-arrangements"
-              className={`${styles.centerNavLink} ${isFlowersActive ? styles.activeNavLink : ""}`}
+            <div
+              className={styles.flowersNavWrapper}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
             >
-              Flowers
-            </Link>
+              <Link
+                href="/table-arrangements"
+                className={`${styles.centerNavLink} ${isFlowersActive || flowersHovered ? styles.activeNavLink : ""}`}
+                aria-expanded={flowersHovered}
+                aria-haspopup="true"
+              >
+                <span>Flowers</span>
+              </Link>
+
+              {/* SHOP FLOWERS 3-Column Mega Dropdown (Clean, Luxury Boutique) */}
+              {flowersHovered && (
+                <div
+                  className={styles.shopFlowersDropdown}
+                  role="region"
+                  aria-label="Shop Flowers Dropdown"
+                >
+                  <div className={styles.shopFlowersGrid}>
+                    {/* Column 1: By Type */}
+                    <div className={styles.shopFlowersCol}>
+                      <h4 className={styles.shopFlowersColTitle}>BY TYPE</h4>
+                      <div className={styles.shopFlowersDivider} />
+                      <ul className={styles.shopFlowersList}>
+                        <li>
+                          <Link
+                            href="/table-arrangements"
+                            className={styles.shopFlowersItem}
+                            onClick={() => setFlowersHovered(false)}
+                          >
+                            <Flower2 size={16} strokeWidth={1.75} className={styles.itemIcon} />
+                            <span>Roses</span>
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            href="/table-arrangements"
+                            className={styles.shopFlowersItem}
+                            onClick={() => setFlowersHovered(false)}
+                          >
+                            <Sparkles size={16} strokeWidth={1.75} className={styles.itemIcon} />
+                            <span>Bouquets</span>
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            href="/table-arrangements"
+                            className={styles.shopFlowersItem}
+                            onClick={() => setFlowersHovered(false)}
+                          >
+                            <Flower size={16} strokeWidth={1.75} className={styles.itemIcon} />
+                            <span>Tulips</span>
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            href="/table-arrangements"
+                            className={styles.shopFlowersItem}
+                            onClick={() => setFlowersHovered(false)}
+                          >
+                            <Sun size={16} strokeWidth={1.75} className={styles.itemIcon} />
+                            <span>Sunflowers</span>
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            href="/table-arrangements"
+                            className={styles.shopFlowersItem}
+                            onClick={() => setFlowersHovered(false)}
+                          >
+                            <Feather size={16} strokeWidth={1.75} className={styles.itemIcon} />
+                            <span>Lilies</span>
+                          </Link>
+                        </li>
+                      </ul>
+                    </div>
+
+                    {/* Column 2: By Occasion */}
+                    <div className={styles.shopFlowersCol}>
+                      <h4 className={styles.shopFlowersColTitle}>BY OCCASION</h4>
+                      <div className={styles.shopFlowersDivider} />
+                      <ul className={styles.shopFlowersList}>
+                        <li>
+                          <Link
+                            href="/table-arrangements"
+                            className={styles.shopFlowersItem}
+                            onClick={() => setFlowersHovered(false)}
+                          >
+                            <Heart size={16} strokeWidth={1.75} className={styles.itemIcon} />
+                            <span>Anniversary</span>
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            href="/table-arrangements"
+                            className={styles.shopFlowersItem}
+                            onClick={() => setFlowersHovered(false)}
+                          >
+                            <Cake size={16} strokeWidth={1.75} className={styles.itemIcon} />
+                            <span>Birthday</span>
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            href="/church-arrangements"
+                            className={styles.shopFlowersItem}
+                            onClick={() => setFlowersHovered(false)}
+                          >
+                            <Gem size={16} strokeWidth={1.75} className={styles.itemIcon} />
+                            <span>Wedding</span>
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            href="/table-arrangements"
+                            className={styles.shopFlowersItem}
+                            onClick={() => setFlowersHovered(false)}
+                          >
+                            <Gift size={16} strokeWidth={1.75} className={styles.itemIcon} />
+                            <span>Mother's Day</span>
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            href="/church-arrangements"
+                            className={styles.shopFlowersItem}
+                            onClick={() => setFlowersHovered(false)}
+                          >
+                            <PartyPopper size={16} strokeWidth={1.75} className={styles.itemIcon} />
+                            <span>Congratulations</span>
+                          </Link>
+                        </li>
+                      </ul>
+                    </div>
+
+                    {/* Column 3: By Color */}
+                    <div className={styles.shopFlowersCol}>
+                      <h4 className={styles.shopFlowersColTitle}>BY COLOR</h4>
+                      <div className={styles.shopFlowersDivider} />
+                      <ul className={styles.shopFlowersList}>
+                        <li>
+                          <Link
+                            href="/table-arrangements"
+                            className={styles.shopFlowersItem}
+                            onClick={() => setFlowersHovered(false)}
+                          >
+                            <Circle size={15} strokeWidth={2} className={`${styles.itemIcon} ${styles.colorIconPink}`} />
+                            <span>Pink Flowers</span>
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            href="/table-arrangements"
+                            className={styles.shopFlowersItem}
+                            onClick={() => setFlowersHovered(false)}
+                          >
+                            <Circle size={15} strokeWidth={2} className={`${styles.itemIcon} ${styles.colorIconWhite}`} />
+                            <span>White Flowers</span>
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            href="/table-arrangements"
+                            className={styles.shopFlowersItem}
+                            onClick={() => setFlowersHovered(false)}
+                          >
+                            <Circle size={15} strokeWidth={2} className={`${styles.itemIcon} ${styles.colorIconRed}`} />
+                            <span>Red Flowers</span>
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            href="/table-arrangements"
+                            className={styles.shopFlowersItem}
+                            onClick={() => setFlowersHovered(false)}
+                          >
+                            <Circle size={15} strokeWidth={2} className={`${styles.itemIcon} ${styles.colorIconPurple}`} />
+                            <span>Purple Flowers</span>
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            href="/table-arrangements"
+                            className={styles.shopFlowersItem}
+                            onClick={() => setFlowersHovered(false)}
+                          >
+                            <Circle size={15} strokeWidth={2} className={`${styles.itemIcon} ${styles.colorIconYellow}`} />
+                            <span>Yellow Flowers</span>
+                          </Link>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  {/* View All Flowers Button */}
+                  <div className={styles.shopFlowersFooter}>
+                    <Link
+                      href="/table-arrangements"
+                      className={styles.shopFlowersViewAllBtn}
+                      onClick={() => setFlowersHovered(false)}
+                    >
+                      <span>View All Flowers</span>
+                      <ArrowRight size={14} strokeWidth={2} />
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
             <a
               href="https://wa.me/918606464700?text=Hello%20Occassions,%20I%20would%20like%20to%20order%20a%20fresh%20celebration%20cake."
               target="_blank"
@@ -186,6 +440,7 @@ export default function Header({
                 }
               }}
               role="search"
+              suppressHydrationWarning
             >
               <Search size={18} strokeWidth={1.8} className={styles.searchIcon} />
               <input
@@ -195,6 +450,10 @@ export default function Header({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 aria-label="Search for flowers, cakes and gifts"
+                autoComplete="off"
+                autoCorrect="off"
+                spellCheck={false}
+                suppressHydrationWarning
               />
               {searchQuery && (
                 <button
@@ -400,6 +659,8 @@ export default function Header({
                   className={styles.inputField}
                   placeholder="Enter 10-digit mobile number or email"
                   required
+                  autoComplete="off"
+                  suppressHydrationWarning
                 />
               </div>
 
