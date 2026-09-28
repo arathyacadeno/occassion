@@ -1,0 +1,101 @@
+.wrapper {
+  width: 100%;
+}
+
+.controlBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.itemCountText {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.itemCountText strong {
+  color: #0f172a;
+}
+
+.sortGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.sortIcon {
+  color: #64748b;
+}
+
+.sortLabel {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #475569;
+}
+
+.sortSelect {
+  border: none;
+  background: transparent;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #0f172a;
+  outline: none;
+  cursor: pointer;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+}
+
+.emptyContainer {
+  text-align: center;
+  padding: 64px 24px;
+  background-color: #fdf2f8;
+  border-radius: 24px;
+  border: 1px dashed #fbcfe8;
+  max-width: 600px;
+  margin: 32px auto;
+}
+
+.emptyIcon {
+  color: #db2777;
+  margin-bottom: 16px;
+}
+
+.emptyTitle {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 10px 0;
+}
+
+.emptySubtitle {
+  font-size: 0.95rem;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0;
+}

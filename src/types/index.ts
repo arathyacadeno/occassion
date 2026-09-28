@@ -16,6 +16,26 @@ export interface Bouquet {
   dimensions: string;
 }
 
+export interface FlowerProduct extends Bouquet {
+  slug: string;
+  category: string;
+  images?: string[];
+  colors?: string[];
+  colorTag?: 'pink' | 'white' | 'red' | 'purple' | 'yellow';
+  occasionsList?: string[];
+  details?: string[];
+}
+
+export interface CategoryInfo {
+  slug: string;
+  name: string;
+  type: 'type' | 'occasion' | 'color';
+  title: string;
+  headline: string;
+  description: string;
+  heroImage?: string;
+}
+
 export interface CartItem {
   bouquet: Bouquet;
   quantity: number;

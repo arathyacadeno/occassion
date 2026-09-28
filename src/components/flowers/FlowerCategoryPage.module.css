@@ -1,0 +1,22 @@
+.pageContainer {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+}
+
+.mainContent {
+  flex: 1;
+  padding: 0 32px 80px;
+}
+
+.contentInner {
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+@media (max-width: 640px) {
+  .mainContent {
+    padding: 0 16px 60px;
+  }
+}

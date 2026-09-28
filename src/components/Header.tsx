@@ -81,6 +81,7 @@ export default function Header({
   const isFlowersActive =
     !pathname ||
     pathname === "/" ||
+    pathname.startsWith("/flowers") ||
     pathname.startsWith("/table-arrangements") ||
     (!pathname.startsWith("/church-arrangements") && !pathname.startsWith("/cart"));
 
@@ -143,7 +144,17 @@ export default function Header({
     const q = term.toLowerCase().trim();
     if (!q) return;
 
-    if (q.includes("car")) {
+    if (q.includes("rose")) {
+      window.location.href = "/flowers/roses";
+    } else if (q.includes("tulip")) {
+      window.location.href = "/flowers/tulips";
+    } else if (q.includes("sunflower")) {
+      window.location.href = "/flowers/sunflowers";
+    } else if (q.includes("lilies") || q.includes("lily")) {
+      window.location.href = "/flowers/lilies";
+    } else if (q.includes("bouquet") || q.includes("flower")) {
+      window.location.href = "/flowers/bouquets";
+    } else if (q.includes("car")) {
       handleNavCategory("Car decorations", 1);
     } else if (q.includes("church") || q.includes("altar")) {
       handleNavCategory("Church arrangements", 1);
@@ -151,17 +162,12 @@ export default function Header({
       handleNavCategory("Table arrangements", 1);
     } else if (q.includes("garland") || q.includes("basket") || q.includes("varmala")) {
       handleNavCategory("Flower baskets & garlands", 1);
-    } else if (q.includes("bouquet") || q.includes("flower") || q.includes("rose")) {
-      handleNavCategory("Bouquet", 0);
     } else if (q.includes("cake")) {
       handleNavCategory("Cakes", 0);
     } else if (q.includes("contact") || q.includes("phone") || q.includes("location") || q.includes("address")) {
       setDrawerOpen(true);
     } else {
-      const highlightEl = document.getElementById("highlights");
-      if (highlightEl) {
-        highlightEl.scrollIntoView({ behavior: "smooth" });
-      }
+      window.location.href = "/flowers/all";
     }
   };
 
@@ -200,7 +206,7 @@ export default function Header({
               onMouseLeave={handleMouseLeave}
             >
               <Link
-                href="/table-arrangements"
+                href="/flowers/roses"
                 className={`${styles.centerNavLink} ${isFlowersActive || flowersHovered ? styles.activeNavLink : ""}`}
                 aria-expanded={flowersHovered}
                 aria-haspopup="true"
@@ -223,7 +229,7 @@ export default function Header({
                       <ul className={styles.shopFlowersList}>
                         <li>
                           <Link
-                            href="/table-arrangements"
+                            href="/flowers/roses"
                             className={styles.shopFlowersItem}
                             onClick={() => setFlowersHovered(false)}
                           >
@@ -233,7 +239,7 @@ export default function Header({
                         </li>
                         <li>
                           <Link
-                            href="/table-arrangements"
+                            href="/flowers/bouquets"
                             className={styles.shopFlowersItem}
                             onClick={() => setFlowersHovered(false)}
                           >
@@ -243,7 +249,7 @@ export default function Header({
                         </li>
                         <li>
                           <Link
-                            href="/table-arrangements"
+                            href="/flowers/tulips"
                             className={styles.shopFlowersItem}
                             onClick={() => setFlowersHovered(false)}
                           >
@@ -253,7 +259,7 @@ export default function Header({
                         </li>
                         <li>
                           <Link
-                            href="/table-arrangements"
+                            href="/flowers/sunflowers"
                             className={styles.shopFlowersItem}
                             onClick={() => setFlowersHovered(false)}
                           >
@@ -263,7 +269,7 @@ export default function Header({
                         </li>
                         <li>
                           <Link
-                            href="/table-arrangements"
+                            href="/flowers/lilies"
                             className={styles.shopFlowersItem}
                             onClick={() => setFlowersHovered(false)}
                           >
@@ -281,7 +287,7 @@ export default function Header({
                       <ul className={styles.shopFlowersList}>
                         <li>
                           <Link
-                            href="/table-arrangements"
+                            href="/flowers/anniversary"
                             className={styles.shopFlowersItem}
                             onClick={() => setFlowersHovered(false)}
                           >
@@ -291,7 +297,7 @@ export default function Header({
                         </li>
                         <li>
                           <Link
-                            href="/table-arrangements"
+                            href="/flowers/birthday"
                             className={styles.shopFlowersItem}
                             onClick={() => setFlowersHovered(false)}
                           >
@@ -301,7 +307,7 @@ export default function Header({
                         </li>
                         <li>
                           <Link
-                            href="/church-arrangements"
+                            href="/flowers/wedding"
                             className={styles.shopFlowersItem}
                             onClick={() => setFlowersHovered(false)}
                           >
@@ -311,7 +317,7 @@ export default function Header({
                         </li>
                         <li>
                           <Link
-                            href="/table-arrangements"
+                            href="/flowers/mothers-day"
                             className={styles.shopFlowersItem}
                             onClick={() => setFlowersHovered(false)}
                           >
@@ -321,7 +327,7 @@ export default function Header({
                         </li>
                         <li>
                           <Link
-                            href="/church-arrangements"
+                            href="/flowers/congratulations"
                             className={styles.shopFlowersItem}
                             onClick={() => setFlowersHovered(false)}
                           >
@@ -339,7 +345,7 @@ export default function Header({
                       <ul className={styles.shopFlowersList}>
                         <li>
                           <Link
-                            href="/table-arrangements"
+                            href="/flowers/pink-flowers"
                             className={styles.shopFlowersItem}
                             onClick={() => setFlowersHovered(false)}
                           >
@@ -349,7 +355,7 @@ export default function Header({
                         </li>
                         <li>
                           <Link
-                            href="/table-arrangements"
+                            href="/flowers/white-flowers"
                             className={styles.shopFlowersItem}
                             onClick={() => setFlowersHovered(false)}
                           >
@@ -359,7 +365,7 @@ export default function Header({
                         </li>
                         <li>
                           <Link
-                            href="/table-arrangements"
+                            href="/flowers/red-flowers"
                             className={styles.shopFlowersItem}
                             onClick={() => setFlowersHovered(false)}
                           >
@@ -369,7 +375,7 @@ export default function Header({
                         </li>
                         <li>
                           <Link
-                            href="/table-arrangements"
+                            href="/flowers/purple-flowers"
                             className={styles.shopFlowersItem}
                             onClick={() => setFlowersHovered(false)}
                           >
@@ -379,7 +385,7 @@ export default function Header({
                         </li>
                         <li>
                           <Link
-                            href="/table-arrangements"
+                            href="/flowers/yellow-flowers"
                             className={styles.shopFlowersItem}
                             onClick={() => setFlowersHovered(false)}
                           >
@@ -394,7 +400,7 @@ export default function Header({
                   {/* View All Flowers Button */}
                   <div className={styles.shopFlowersFooter}>
                     <Link
-                      href="/table-arrangements"
+                      href="/flowers/all"
                       className={styles.shopFlowersViewAllBtn}
                       onClick={() => setFlowersHovered(false)}
                     >

@@ -1,0 +1,91 @@
+.header {
+  margin-bottom: 36px;
+  text-align: left;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.025em;
+  margin: 0 0 10px 0;
+  line-height: 1.15;
+}
+
+.headline {
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: #475569;
+  margin: 0 0 8px 0;
+  max-width: 800px;
+  line-height: 1.5;
+}
+
+.description {
+  font-size: 0.95rem;
+  color: #64748b;
+  margin: 0 0 28px 0;
+  max-width: 850px;
+  line-height: 1.6;
+}
+
+.tabsWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-top: 20px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.tabsList {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tabItem {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #475569;
+  background-color: #f8fafc;
+  padding: 7px 16px;
+  border-radius: 9999px;
+  text-decoration: none;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.tabItem:hover {
+  background-color: #fdf2f8;
+  color: #db2777;
+  border-color: #fce7f3;
+}
+
+.tabActive {
+  background-color: #db2777;
+  color: #ffffff !important;
+  border-color: #db2777 !important;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(219, 39, 119, 0.25);
+}
+
+.countInfo {
+  font-size: 0.88rem;
+  color: #64748b;
+}
+
+.countInfo strong {
+  color: #0f172a;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 1.95rem;
+  }
+  .headline {
+    font-size: 1rem;
+  }
+}
