@@ -91,14 +91,14 @@
 }
 
 .sectionMainTitle {
-  font-family: var(--font-serif);
+  font-family: var(--font-heading, 'Manrope', sans-serif);
   font-size: clamp(2rem, 3.2vw, 3rem);
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: -0.01em;
   color: #1a1a1a;
   line-height: 1.2;
   margin: 0 0 6px 0;
-  text-transform: none; /* Exactly matching "Shop By Category" */
+  text-transform: none;
 }
 
 .categoryTagline {
@@ -315,6 +315,8 @@
   transform: translateY(12px);
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .mosaicCard:hover .cardHoverBtn {

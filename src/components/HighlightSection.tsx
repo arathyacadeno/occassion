@@ -1,5 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import styles from "./HighlightSection.module.css";
 import { MessageCircle, Phone, X, ArrowUpRight } from "lucide-react";
 
@@ -13,6 +15,7 @@ export interface HighlightCard {
   desc: string;
   features: string[];
   whatsAppText: string;
+  href?: string;
 }
 
 const highlightCards: HighlightCard[] = [
@@ -32,6 +35,7 @@ const highlightCards: HighlightCard[] = [
     ],
     whatsAppText:
       "Hello Occassions, I would like to inquire about wedding Table Arrangements.",
+    href: "/table-arrangements",
   },
   {
     id: "car-decoration",
@@ -49,6 +53,7 @@ const highlightCards: HighlightCard[] = [
     ],
     whatsAppText:
       "Hello Occassions, I would like to inquire about wedding Car Decoration.",
+    href: "/car-decorations",
   },
   {
     id: "church-arrangement",
@@ -66,6 +71,7 @@ const highlightCards: HighlightCard[] = [
     ],
     whatsAppText:
       "Hello Occassions, I would like to inquire about Church Arrangements and wedding altar florals.",
+    href: "/church-arrangements",
   },
   {
     id: "garlands",
@@ -83,6 +89,7 @@ const highlightCards: HighlightCard[] = [
     ],
     whatsAppText:
       "Hello Occassions, I would like to inquire about fresh floral Garlands and wedding varmalas.",
+    href: "/garlands-and-baskets",
   },
 ];
 
@@ -114,6 +121,7 @@ const fallingPetalsData: FallingPetal[] = [
 ];
 
 export default function HighlightSection() {
+  const router = useRouter();
   const [modalItem, setModalItem] = useState<HighlightCard | null>(null);
   const [isInView, setIsInView] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
@@ -150,6 +158,10 @@ export default function HighlightSection() {
   };
 
   const handleCardClick = (card: HighlightCard) => {
+    if (card.href) {
+      router.push(card.href);
+      return;
+    }
     setModalItem(card);
   };
 
@@ -237,10 +249,23 @@ export default function HighlightSection() {
                 <div className={styles.cardContentInner}>
                   <span className={styles.cardTag}>{card.tag}</span>
                   <h3 className={styles.cardTitle}>{card.title}</h3>
-                  <span className={styles.cardHoverBtn}>
-                    <span>Inquire Now</span>
-                    <ArrowUpRight size={13} />
-                  </span>
+                  {card.href ? (
+                    <Link
+                      href={card.href}
+                      className={styles.cardHoverBtn}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
+                      <span>Explore</span>
+                      <ArrowUpRight size={13} />
+                    </Link>
+                  ) : (
+                    <span className={styles.cardHoverBtn}>
+                      <span>Explore</span>
+                      <ArrowUpRight size={13} />
+                    </span>
+                  )}
                 </div>
               </div>
             </div>

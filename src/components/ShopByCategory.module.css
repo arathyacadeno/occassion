@@ -31,21 +31,21 @@
 }
 
 .mainTitle {
-  font-family: var(--font-serif);
-  font-size: clamp(2rem, 3.2vw, 3rem);
-  font-weight: 500;
+  font-family: var(--font-heading, 'Manrope', sans-serif);
+  font-size: clamp(2.2rem, 3.4vw, 3.2rem);
+  font-weight: 700;
   letter-spacing: -0.01em;
   color: #1a1a1a;
   line-height: 1.2;
   margin: 0 0 6px 0;
-  text-transform: none; /* Exactly matching "Shop By Category" */
+  text-transform: none;
 }
 
 .subtitle {
   font-family: var(--font-sans);
   font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #ec4899;
   margin: 0;
@@ -187,12 +187,13 @@
 }
 
 .categoryTitle {
-  font-family: var(--font-serif);
-  font-size: clamp(24px, 2.6vw, 36px);
-  font-weight: 500;
+  font-family: var(--font-heading, 'Manrope', sans-serif);
+  font-size: clamp(22px, 2.4vw, 32px);
+  font-weight: 700;
   color: #1a1a1a;
   line-height: 1.2;
   margin: 0;
+  letter-spacing: 0.03em;
   text-shadow: 0 1px 12px rgba(255, 255, 255, 0.85);
 }
 

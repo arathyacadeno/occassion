@@ -101,12 +101,12 @@ export default function AtelierVideoSection() {
           <h2
             className={`${styles.title || ""} atelier-title`}
             style={{
-              fontFamily: "var(--font-serif, 'Cormorant Garamond', Georgia, serif)",
+              fontFamily: "var(--font-heading, 'Manrope', sans-serif)",
               fontSize: "clamp(1.9rem, 2.9vw, 2.8rem)",
-              fontWeight: 600,
+              fontWeight: 700,
               color: "#111827",
               textTransform: "uppercase",
-              letterSpacing: "0.1em",
+              letterSpacing: "0.06em",
               margin: "0 0 14px",
               textAlign: "left",
             }}
@@ -116,7 +116,7 @@ export default function AtelierVideoSection() {
           <p
             className={`${styles.subtitle || ""} atelier-subtitle`}
             style={{
-              fontFamily: "var(--font-sans, 'Montserrat', sans-serif)",
+              fontFamily: "var(--font-sans, 'Poppins', sans-serif)",
               fontSize: "0.96rem",
               color: "#4b5563",
               lineHeight: 1.6,

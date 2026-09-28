@@ -17,41 +17,41 @@ export interface CategoryItem {
 const CATEGORIES_DATA: CategoryItem[] = [
   {
     id: "seasonal-flowers",
-    title: "Seasonal flowers",
+    title: "SEASONAL FLOWERS",
     subtitle: "Choose From",
     pillLabel: "Seasonal",
     image: "/images/cat-seasonal-flowers.jpg",
-    count: "24 Arrangements",
+    count: "24 ARRANGEMENTS",
     whatsAppText:
       "Hello Occassions, I would like to inquire about fresh Seasonal Flowers arrangements.",
   },
   {
     id: "birthday",
-    title: "Birthday",
+    title: "BIRTHDAY",
     subtitle: "Choose From",
     pillLabel: "Birthday",
     image: "/images/cat-birthday.jpg",
-    count: "36 Bouquets",
+    count: "36 BOUQUETS",
     whatsAppText:
       "Hello Occassions, I would like to inquire about Birthday floral bouquets.",
   },
   {
     id: "friendship",
-    title: "Friendship",
+    title: "FRIENDSHIP",
     subtitle: "Choose From",
     pillLabel: "Friendship",
     image: "/images/cat-friendship.jpg",
-    count: "18 Selections",
+    count: "18 SELECTIONS",
     whatsAppText:
       "Hello Occassions, I would like to inquire about Friendship floral gifts.",
   },
   {
     id: "congratulations",
-    title: "Congratulations",
+    title: "CONGRATULATIONS",
     subtitle: "Choose From",
     pillLabel: "Congratulations",
     image: "/images/cat-congratulations.jpg",
-    count: "28 Creations",
+    count: "28 CREATIONS",
     whatsAppText:
       "Hello Occassions, I would like to inquire about Congratulations flower baskets.",
   },
@@ -73,7 +73,7 @@ export default function ShopByCategory() {
         {/* Section Header */}
         <div className={styles.sectionHeader}>
           <h2 className={styles.mainTitle}>Shop By Category</h2>
-          <span className={styles.subtitle}>Curated Celebrations</span>
+          <span className={styles.subtitle}>CURATED CELEBRATIONS</span>
         </div>
 
         {/* ================= ACCORDION CARDS TRACK =================

@@ -5,27 +5,28 @@
   width: 100%;
   z-index: 800;
   background: #ffffff;
-  box-shadow: 0 4px 20px rgba(236, 72, 153, 0.07);
-  border-bottom: 1.5px solid #fce7f3;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border-bottom: 1px solid #f3f4f6;
   font-family: var(--font-sans);
 }
 
-/* Tier 1: Main Header Bar */
+/* Single-Row Main Header Bar matching User Screenshot */
 .topTier {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 32px;
-  gap: 20px;
-  max-width: 1600px;
+  padding: 0 40px;
+  gap: 28px;
+  max-width: 1560px;
   margin: 0 auto;
   box-sizing: border-box;
-  min-height: 72px;
+  height: 72px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .topTier {
-    padding: 10px 16px;
+    padding: 0 16px;
+    height: 64px;
     gap: 12px;
   }
 }
@@ -44,61 +45,52 @@
 }
 
 .brandMasterLogo {
-  height: 54px;
+  height: 44px;
   width: auto;
-  max-width: 220px;
+  max-width: 190px;
   object-fit: contain;
   display: block;
 }
 
-.brandLogoIcon {
-  width: 36px;
-  height: 36px;
+/* Center Navigation Links matching user reference screenshot */
+.centerNav {
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: #ec4899;
-  flex-shrink: 0;
+  gap: 36px;
 }
 
-.brandTextContainer {
-  display: flex;
-  flex-direction: column;
-}
-
-.brandTitle {
+.centerNavLink {
   font-family: var(--font-sans);
-  font-size: 1.25rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #111111;
-  line-height: 1.1;
-  display: flex;
-  align-items: center;
-  gap: 4px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #1f2937;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  transition: color 0.2s ease, transform 0.2s ease;
+  white-space: nowrap;
 }
 
-.brandTagline {
-  font-family: var(--font-script);
-  font-size: 1rem;
-  color: #db2777;
-  line-height: 1;
+.centerNavLink:hover {
+  color: #dc2626;
 }
 
+@media (max-width: 960px) {
+  .centerNav {
+    display: none;
+  }
+}
 
-
-/* Actions Group matching Image 2 (Search, Cart, User, Menu) */
+/* Actions Group on Right: Search, Profile, Cart, Wishlist */
 .actionsGroup {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
   flex-shrink: 0;
 }
 
 @media (max-width: 768px) {
   .actionsGroup {
-    gap: 10px;
+    gap: 12px;
   }
 }
 
@@ -106,8 +98,8 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  color: #111111;
-  padding: 8px;
+  color: #111827;
+  padding: 6px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -118,14 +110,37 @@
 }
 
 .iconActionBtn:hover {
-  color: #ec4899;
-  background-color: #fff0f5;
+  color: #dc2626;
+  background-color: #fef2f2;
   transform: translateY(-1px);
 }
 
-.iconActionActive {
-  color: #ec4899;
-  background-color: #fce7f3;
+.wishlistRedIcon {
+  color: #ef4444;
+  fill: #ef4444;
+  transition: transform 0.2s ease;
+}
+
+.iconActionBtn:hover .wishlistRedIcon {
+  transform: scale(1.15);
+}
+
+.mobileMenuBtn {
+  display: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #111827;
+  padding: 6px;
+  border-radius: 50%;
+}
+
+@media (max-width: 960px) {
+  .mobileMenuBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 .cartIconWrap {
@@ -135,7 +150,6 @@
   justify-content: center;
 }
 
-/* Orange-red circular Cart Badge matching Image 2 */
 .cartBadge {
   position: absolute;
   top: -6px;
@@ -239,78 +253,7 @@
   }
 }
 
-/* Tier 2: Horizontal Category Navbar in Light Pink & White */
-.categoryNavbar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 32px;
-  padding: 10px 24px;
-  background: #ffffff;
-  border-top: 1px solid #fce7f3;
-  overflow-x: auto;
-  white-space: nowrap;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
 
-.categoryNavbar::-webkit-scrollbar {
-  display: none;
-}
-
-@media (max-width: 1024px) {
-  .categoryNavbar {
-    justify-content: flex-start;
-    gap: 20px;
-    padding: 8px 16px;
-  }
-}
-
-.navCategoryLink {
-  font-family: var(--font-serif);
-  font-size: 0.95rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #111111;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px 0;
-  position: relative;
-  transition: color 0.2s ease;
-  white-space: nowrap;
-  outline: none;
-}
-
-.navCategoryLink::after {
-  content: '';
-  position: absolute;
-  bottom: -3px;
-  left: 0;
-  width: 0;
-  height: 2.5px;
-  background-color: #ec4899;
-  border-radius: 2px;
-  transition: width 0.25s ease;
-}
-
-.navCategoryLink:hover {
-  color: #ec4899;
-}
-
-.navCategoryLink:hover::after {
-  width: 100%;
-}
-
-.navCategoryActive {
-  color: #ec4899;
-  font-weight: 700;
-}
-
-.navCategoryActive::after {
-  width: 100%;
-}
 
 /* Modals */
 .modalBackdrop {

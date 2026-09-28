@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import styles from "./Header.module.css";
-import { Search, ShoppingCart, User, Menu, X, Phone, Check } from "lucide-react";
+import { Search, ShoppingCart, User, Heart, Menu, X, Phone, Check } from "lucide-react";
 import OccassionsLogo from "./OccassionsLogo";
 import { useCart } from "@/context/CartContext";
 
@@ -69,16 +69,38 @@ export default function Header({
       onSelectSlide(slideIndex);
     }
     if (categoryName === "Home") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } else if (
-      categoryName === "Flower baskets & garlands" ||
-      categoryName === "Church arrangements" ||
-      categoryName === "Table arrangements" ||
-      categoryName === "Car decorations"
-    ) {
+      if (typeof window !== "undefined" && window.location.pathname !== "/") {
+        window.location.href = "/";
+      } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    } else if (categoryName === "Table arrangements") {
       const highlightEl = document.getElementById("highlights");
       if (highlightEl) {
         highlightEl.scrollIntoView({ behavior: "smooth" });
+      } else if (typeof window !== "undefined") {
+        window.location.href = "/table-arrangements";
+      }
+    } else if (categoryName === "Car decorations") {
+      const highlightEl = document.getElementById("highlights");
+      if (highlightEl) {
+        highlightEl.scrollIntoView({ behavior: "smooth" });
+      } else if (typeof window !== "undefined") {
+        window.location.href = "/car-decorations";
+      }
+    } else if (categoryName === "Church arrangements") {
+      const highlightEl = document.getElementById("highlights");
+      if (highlightEl) {
+        highlightEl.scrollIntoView({ behavior: "smooth" });
+      } else if (typeof window !== "undefined") {
+        window.location.href = "/church-arrangements";
+      }
+    } else if (categoryName === "Flower baskets & garlands") {
+      const highlightEl = document.getElementById("highlights");
+      if (highlightEl) {
+        highlightEl.scrollIntoView({ behavior: "smooth" });
+      } else if (typeof window !== "undefined") {
+        window.location.href = "/garlands-and-baskets";
       }
     } else if (categoryName === "Contact & Location") {
       setDrawerOpen(true);
@@ -115,12 +137,11 @@ export default function Header({
   return (
     <>
       <header className={styles.headerWrapper} role="banner">
-        {/* Tier 1: Main Header Bar (Logo, Inline Search, Action Icons in SAME navbar) */}
         <div className={styles.topTier}>
           {/* Brand Logo - Official Occassions Master Logo */}
-          <div
+          <Link
+            href="/"
             className={styles.brandArea}
-            onClick={() => handleNavCategory("Home", 0)}
             aria-label="Occassions - Do it with flowers"
           >
             <img
@@ -128,7 +149,30 @@ export default function Header({
               alt="Occassions - Do it with flowers"
               className={styles.brandMasterLogo}
             />
-          </div>
+          </Link>
+
+          {/* Center Category Navigation Links (Matching Reference Screenshot) */}
+          {!isSearchOpen && (
+            <nav className={styles.centerNav} aria-label="Main Navigation">
+              <Link href="/table-arrangements" className={styles.centerNavLink}>
+                Bouquet
+              </Link>
+              <a
+                href="https://wa.me/918606464700?text=Hello%20Occassions,%20I%20would%20like%20to%20inquire%20about%20celebration%20cakes."
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.centerNavLink}
+              >
+                Cakes
+              </a>
+              <Link href="/garlands-and-baskets" className={styles.centerNavLink}>
+                Flower Baskets &amp; Garlands
+              </Link>
+              <Link href="/church-arrangements" className={styles.centerNavLink}>
+                Church Arrangements
+              </Link>
+            </nav>
+          )}
 
           {/* Inline Search in the SAME navbar row */}
           {isSearchOpen && (
@@ -162,9 +206,9 @@ export default function Header({
             </div>
           )}
 
-          {/* Actions Group: Search, Shopping Cart (with orange-red '0' badge), User, Menu */}
+          {/* Actions Group: Search, Profile (User), Shopping Cart, Wishlist (Red Heart) */}
           <div className={styles.actionsGroup}>
-            {/* 1. Search Icon Button (visible when search is closed) */}
+            {/* 1. Search Icon Button */}
             {!isSearchOpen && (
               <button
                 className={styles.iconActionBtn}
@@ -177,7 +221,18 @@ export default function Header({
               </button>
             )}
 
-            {/* 2. Shopping Cart (matching Image 2 with orange-red badge) */}
+            {/* 2. User / Profile Icon (Requested: "restyle navbar with profile ucon") */}
+            <button
+              className={styles.iconActionBtn}
+              onClick={() => setActiveModal("signin")}
+              type="button"
+              aria-label="Profile Account"
+              title="Profile / Account"
+            >
+              <User size={22} strokeWidth={1.8} />
+            </button>
+
+            {/* 3. Shopping Cart */}
             <Link
               href="/cart"
               className={styles.iconActionBtn}
@@ -186,127 +241,32 @@ export default function Header({
             >
               <div className={styles.cartIconWrap}>
                 <ShoppingCart size={22} strokeWidth={1.8} />
-                <span className={styles.cartBadge}>{cartCount}</span>
+                {cartCount > 0 && <span className={styles.cartBadge}>{cartCount}</span>}
               </div>
             </Link>
 
-            {/* 3. User / Account (matching Image 2) */}
-            <button
+            {/* 4. Wishlist (Red Heart matching user reference) */}
+            <Link
+              href="/table-arrangements#arrangements"
               className={styles.iconActionBtn}
-              onClick={() => setActiveModal("signin")}
-              type="button"
-              aria-label="Sign In to your account"
-              title="Account"
+              aria-label="View Wishlist"
+              title="Wishlist"
             >
-              <User size={22} strokeWidth={1.8} />
-            </button>
+              <Heart size={22} className={styles.wishlistRedIcon} />
+            </Link>
 
-            {/* 4. Menu / More */}
+            {/* 5. Mobile Menu Hamburger (for smaller screens) */}
             <button
-              className={styles.iconActionBtn}
+              className={styles.mobileMenuBtn}
               onClick={() => setDrawerOpen(true)}
               type="button"
-              aria-label="More options & boutique info"
+              aria-label="Open mobile navigation"
               title="Menu"
             >
               <Menu size={22} strokeWidth={1.8} />
             </button>
           </div>
         </div>
-
-        {/* Tier 2: Horizontal Category Navbar ("then show navbar") */}
-        <nav
-          className={styles.categoryNavbar}
-          aria-label="Category Navigation"
-        >
-          <button
-            className={`${styles.navCategoryLink} ${
-              activeCategory === "Home" && currentSlide === 0
-                ? styles.navCategoryActive
-                : ""
-            }`}
-            onClick={() => handleNavCategory("Home", 0)}
-          >
-            Home
-          </button>
-
-          <button
-            className={`${styles.navCategoryLink} ${
-              activeCategory === "Bouquet"
-                ? styles.navCategoryActive
-                : ""
-            }`}
-            onClick={() => handleNavCategory("Bouquet", 0)}
-          >
-            Bouquet
-          </button>
-
-          <button
-            className={`${styles.navCategoryLink} ${
-              activeCategory === "Cakes"
-                ? styles.navCategoryActive
-                : ""
-            }`}
-            onClick={() => handleNavCategory("Cakes", 0)}
-          >
-            Cakes
-          </button>
-
-          <button
-            className={`${styles.navCategoryLink} ${
-              activeCategory === "Flower baskets & garlands"
-                ? styles.navCategoryActive
-                : ""
-            }`}
-            onClick={() => handleNavCategory("Flower baskets & garlands", 1)}
-          >
-            Flower baskets &amp; garlands
-          </button>
-
-          <button
-            className={`${styles.navCategoryLink} ${
-              activeCategory === "Church arrangements"
-                ? styles.navCategoryActive
-                : ""
-            }`}
-            onClick={() => handleNavCategory("Church arrangements", 1)}
-          >
-            Church arrangements
-          </button>
-
-          <button
-            className={`${styles.navCategoryLink} ${
-              activeCategory === "Table arrangements"
-                ? styles.navCategoryActive
-                : ""
-            }`}
-            onClick={() => handleNavCategory("Table arrangements", 2)}
-          >
-            Table arrangements
-          </button>
-
-          <button
-            className={`${styles.navCategoryLink} ${
-              activeCategory === "Car decorations"
-                ? styles.navCategoryActive
-                : ""
-            }`}
-            onClick={() => handleNavCategory("Car decorations", 2)}
-          >
-            Car decorations
-          </button>
-
-          <button
-            className={`${styles.navCategoryLink} ${
-              activeCategory === "Contact & Location"
-                ? styles.navCategoryActive
-                : ""
-            }`}
-            onClick={() => handleNavCategory("Contact & Location")}
-          >
-            Contact &amp; Location
-          </button>
-        </nav>
       </header>
 
 
