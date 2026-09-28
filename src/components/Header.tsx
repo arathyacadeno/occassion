@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import styles from "./Header.module.css";
 import { Search, ShoppingCart, User, Heart, Menu, X, Phone, Check } from "lucide-react";
 import OccassionsLogo from "./OccassionsLogo";
@@ -20,11 +21,19 @@ export default function Header({
   onSelectSlide,
   currentSlide = 0,
 }: HeaderProps) {
+  const pathname = usePathname();
   const { cartCount } = useCart();
   const [internalDrawerOpen, setInternalDrawerOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeModal, setActiveModal] = useState<"cart" | "signin" | null>(null);
   const [activeCategory, setActiveCategory] = useState("Home");
+
+  // Flowers is active with soft light-pink pill & pink text
+  const isFlowersActive =
+    !pathname ||
+    pathname === "/" ||
+    pathname.startsWith("/table-arrangements") ||
+    (!pathname.startsWith("/church-arrangements") && !pathname.startsWith("/cart"));
 
   const isDrawerOpen =
     controlledDrawerOpen !== undefined ? controlledDrawerOpen : internalDrawerOpen;
@@ -120,23 +129,26 @@ export default function Header({
   return (
     <>
       <header className={styles.headerWrapper} role="banner">
-        <div className={styles.topTier}>
-          {/* Brand Logo - Official Occassions Master Logo */}
+        <div className={styles.navbarContainer}>
+          {/* Logo on the far left */}
           <Link
             href="/"
             className={styles.brandArea}
-            aria-label="Occassions - Do it with flowers"
+            aria-label="Occasions - Do it with flowers"
           >
             <img
               src="/images/occasions-logo.png"
-              alt="Occassions - Do it with flowers"
+              alt="Occasions - Do it with flowers"
               className={styles.brandMasterLogo}
             />
           </Link>
 
-          {/* Center Category Navigation Links */}
+          {/* Navigation items in the center */}
           <nav className={styles.centerNav} aria-label="Main Navigation">
-            <Link href="/table-arrangements" className={styles.centerNavLink}>
+            <Link
+              href="/table-arrangements"
+              className={`${styles.centerNavLink} ${isFlowersActive ? styles.activeNavLink : ""}`}
+            >
               Flowers
             </Link>
             <a
@@ -147,7 +159,10 @@ export default function Header({
             >
               Cakes
             </a>
-            <Link href="/church-arrangements" className={styles.centerNavLink}>
+            <Link
+              href="/church-arrangements"
+              className={`${styles.centerNavLink} ${pathname?.startsWith("/church-arrangements") ? styles.activeNavLink : ""}`}
+            >
               Special occasions
             </Link>
             <Link
@@ -159,11 +174,11 @@ export default function Header({
             </Link>
           </nav>
 
-          {/* Actions Group: Search Box, Profile (User), Shopping Cart, Wishlist */}
-          <div className={styles.actionsGroup}>
-            {/* 1. Search Box (Matching Reference Image: input left, search icon on right) */}
+          {/* Right Section: Search bar followed by action icons */}
+          <div className={styles.rightSection}>
+            {/* Search bar: white background, thin light-gray border, rounded corners, search icon on the left */}
             <form
-              className={styles.searchBox}
+              className={styles.searchBar}
               onSubmit={(e) => {
                 e.preventDefault();
                 if (searchQuery.trim()) {
@@ -172,9 +187,10 @@ export default function Header({
               }}
               role="search"
             >
+              <Search size={18} strokeWidth={1.8} className={styles.searchIcon} />
               <input
                 type="text"
-                className={styles.searchBoxInput}
+                className={styles.searchInput}
                 placeholder="Search for flowers, cakes..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -190,60 +206,55 @@ export default function Header({
                   <X size={14} />
                 </button>
               )}
-              <button
-                type="submit"
-                className={styles.searchBoxBtn}
-                aria-label="Search"
-                title="Search"
-              >
-                <Search size={18} strokeWidth={1.8} className={styles.searchBoxIcon} />
-              </button>
             </form>
 
-            {/* 2. User / Profile Icon (Requested: "restyle navbar with profile ucon") */}
-            <button
-              className={styles.iconActionBtn}
-              onClick={() => setActiveModal("signin")}
-              type="button"
-              aria-label="Profile Account"
-              title="Profile / Account"
-            >
-              <User size={22} strokeWidth={1.8} />
-            </button>
+            {/* Action icons: simple dark outline icons */}
+            <div className={styles.actionsGroup}>
+              {/* User/Account Icon */}
+              <button
+                className={styles.iconBtn}
+                onClick={() => setActiveModal("signin")}
+                type="button"
+                aria-label="Profile Account"
+                title="Profile / Account"
+              >
+                <User size={21} strokeWidth={1.8} />
+              </button>
 
-            {/* 3. Shopping Cart */}
-            <Link
-              href="/cart"
-              className={styles.iconActionBtn}
-              aria-label="View Shopping Cart"
-              title="Shopping Cart"
-            >
-              <div className={styles.cartIconWrap}>
-                <ShoppingCart size={22} strokeWidth={1.8} />
-                {cartCount > 0 && <span className={styles.cartBadge}>{cartCount}</span>}
-              </div>
-            </Link>
+              {/* Shopping cart icon with small 2 notification badge */}
+              <Link
+                href="/cart"
+                className={styles.iconBtn}
+                aria-label="View Shopping Cart"
+                title="Shopping Cart"
+              >
+                <div className={styles.cartIconWrap}>
+                  <ShoppingCart size={21} strokeWidth={1.8} />
+                  <span className={styles.cartBadge}>{cartCount > 0 ? cartCount : 2}</span>
+                </div>
+              </Link>
 
-            {/* 4. Wishlist (Outline Heart matching user reference) */}
-            <Link
-              href="/table-arrangements#arrangements"
-              className={styles.iconActionBtn}
-              aria-label="View Wishlist"
-              title="Wishlist"
-            >
-              <Heart size={22} strokeWidth={1.8} />
-            </Link>
+              {/* Wishlist/Heart Icon */}
+              <Link
+                href="/table-arrangements#arrangements"
+                className={styles.iconBtn}
+                aria-label="View Wishlist"
+                title="Wishlist"
+              >
+                <Heart size={21} strokeWidth={1.8} />
+              </Link>
 
-            {/* 5. Mobile Menu Hamburger (for smaller screens) */}
-            <button
-              className={styles.mobileMenuBtn}
-              onClick={() => setDrawerOpen(true)}
-              type="button"
-              aria-label="Open mobile navigation"
-              title="Menu"
-            >
-              <Menu size={22} strokeWidth={1.8} />
-            </button>
+              {/* Mobile Menu Hamburger (for smaller screens) */}
+              <button
+                className={styles.mobileMenuBtn}
+                onClick={() => setDrawerOpen(true)}
+                type="button"
+                aria-label="Open mobile navigation"
+                title="Menu"
+              >
+                <Menu size={22} strokeWidth={1.8} />
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -481,6 +492,65 @@ export default function Header({
               Trusted Florist Member
             </span>
           </div>
+
+          <h4
+            style={{
+              fontFamily: "var(--font-sans)",
+              fontSize: "0.72rem",
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              color: "#888",
+              marginBottom: 12,
+            }}
+          >
+            Menu
+          </h4>
+
+          <ul className={styles.drawerNavList}>
+            <li>
+              <Link
+                href="/table-arrangements"
+                className={styles.drawerNavLink}
+                onClick={() => setDrawerOpen(false)}
+              >
+                Flowers
+              </Link>
+            </li>
+            <li>
+              <a
+                href="https://wa.me/918606464700?text=Hello%20Occassions,%20I%20would%20like%20to%20order%20a%20fresh%20celebration%20cake."
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.drawerNavLink}
+                onClick={() => setDrawerOpen(false)}
+              >
+                Cakes
+              </a>
+            </li>
+            <li>
+              <Link
+                href="/church-arrangements"
+                className={styles.drawerNavLink}
+                onClick={() => setDrawerOpen(false)}
+              >
+                Special occasions
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/#highlights"
+                className={styles.drawerNavLink}
+                onClick={(e) => {
+                  handleHighlightsClick(e);
+                  setDrawerOpen(false);
+                }}
+              >
+                Our highlights
+              </Link>
+            </li>
+          </ul>
+
+          <div className={styles.drawerDivider} />
 
           <h4
             style={{
