@@ -238,3 +238,170 @@ button {
 ::-webkit-scrollbar-thumb:hover {
   background: #db2777;
 }
+
+/* Atelier Video Showcase Section Global Styles (Failsafe for Next.js CSS chunking) */
+#atelier-film-showcase {
+  width: 100%;
+  max-width: 1360px;
+  margin: 60px auto 40px;
+  padding: 0 32px;
+}
+
+#atelier-film-showcase .atelier-header-area {
+  text-align: left;
+  max-width: 840px;
+  margin: 0 0 32px 0;
+}
+
+#atelier-film-showcase .atelier-tagline {
+  font-family: var(--font-script, 'Great Vibes', cursive);
+  font-size: clamp(2.2rem, 3.4vw, 3.2rem);
+  color: #db2777;
+  margin-bottom: 6px;
+  line-height: 1.1;
+  text-align: left;
+}
+
+#atelier-film-showcase .atelier-title {
+  font-family: var(--font-serif, 'Cormorant Garamond', Georgia, serif);
+  font-size: clamp(1.9rem, 2.9vw, 2.8rem);
+  font-weight: 600;
+  color: #111827;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 0 0 14px;
+  text-align: left;
+}
+
+#atelier-film-showcase .atelier-subtitle {
+  font-family: var(--font-sans, 'Montserrat', sans-serif);
+  font-size: 0.96rem;
+  color: #4b5563;
+  line-height: 1.6;
+  max-width: 760px;
+  margin: 0;
+  text-align: left;
+}
+
+#atelier-film-showcase .atelier-video-card {
+  background: #ffffff;
+  border-radius: 28px;
+  overflow: hidden;
+  border: 1px solid rgba(244, 114, 182, 0.35);
+  box-shadow: 0 20px 50px -15px rgba(219, 39, 119, 0.12),
+              0 0 0 1px rgba(255, 255, 255, 0.8);
+}
+
+#atelier-film-showcase .atelier-video-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000000;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+#atelier-film-showcase .atelier-video-player {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+#atelier-film-showcase .atelier-controls-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.25) 70%, transparent 100%);
+  padding: 24px 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 10;
+}
+
+#atelier-film-showcase .atelier-progress-track {
+  width: 100%;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: height 0.15s ease;
+}
+
+#atelier-film-showcase .atelier-progress-track:hover {
+  height: 7px;
+}
+
+#atelier-film-showcase .atelier-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f472b6, #ec4899, #f43f5e);
+  transition: width 0.1s linear;
+}
+
+#atelier-film-showcase .atelier-buttons-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#atelier-film-showcase .atelier-left-controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+#atelier-film-showcase .atelier-ctrl-btn {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#atelier-film-showcase .atelier-ctrl-btn:hover {
+  background: #db2777;
+  border-color: #db2777;
+  transform: scale(1.08);
+}
+
+#atelier-film-showcase .atelier-live-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  margin-left: 4px;
+}
+
+#atelier-film-showcase .atelier-live-dot {
+  width: 9px;
+  height: 9px;
+  background-color: #22c55e;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #22c55e, 0 0 4px #22c55e;
+  animation: pulseDot 1.8s infinite;
+}
+
+@media (max-width: 768px) {
+  #atelier-film-showcase {
+    margin: 40px auto 25px;
+    padding: 0 18px;
+  }
+  #atelier-film-showcase .atelier-controls-bar {
+    padding: 16px 16px 12px;
+  }
+}

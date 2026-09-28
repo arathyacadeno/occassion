@@ -1,0 +1,214 @@
+.sectionWrapper {
+  width: 100%;
+  max-width: 1360px;
+  margin: 60px auto 40px;
+  padding: 0 32px;
+}
+
+.headerArea {
+  text-align: left;
+  max-width: 840px;
+  margin: 0 0 32px 0;
+}
+
+.tagline {
+  font-family: var(--font-script, "Great Vibes", cursive);
+  font-size: clamp(2rem, 3vw, 2.8rem);
+  color: #db2777;
+  margin-bottom: 6px;
+  line-height: 1.1;
+  text-align: left;
+}
+
+.title {
+  font-family: var(--font-serif, "Cormorant Garamond", serif);
+  font-size: clamp(1.8rem, 2.8vw, 2.6rem);
+  font-weight: 600;
+  color: #111827;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0 0 14px;
+  text-align: left;
+}
+
+.subtitle {
+  font-size: 0.95rem;
+  color: #4b5563;
+  line-height: 1.6;
+  max-width: 760px;
+  margin: 0;
+  text-align: left;
+}
+
+.videoCard {
+  background: #ffffff;
+  border-radius: 28px;
+  overflow: hidden;
+  border: 1px solid rgba(244, 114, 182, 0.35);
+  box-shadow: 0 20px 50px -15px rgba(219, 39, 119, 0.12),
+              0 0 0 1px rgba(255, 255, 255, 0.8);
+}
+
+.videoWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000000;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.videoPlayer {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.vignetteOverlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent 40%, rgba(0, 0, 0, 0.3) 100%);
+  pointer-events: auto;
+}
+
+.centerPlayBtn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: rgba(219, 39, 119, 0.85);
+  backdrop-filter: blur(8px);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 5;
+}
+
+.centerPlayBtn:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+  background: #db2777;
+}
+
+/* Controls Bar - Matches User Screenshot */
+.controlsBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.2) 70%, transparent 100%);
+  padding: 24px 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 10;
+  transition: opacity 0.3s ease;
+}
+
+.progressBarWrapper {
+  width: 100%;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: height 0.15s ease;
+}
+
+.progressBarWrapper:hover {
+  height: 7px;
+}
+
+.progressBar {
+  height: 100%;
+  background: linear-gradient(90deg, #f472b6, #ec4899, #f43f5e);
+  transition: width 0.1s linear;
+}
+
+.buttonsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.leftControls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.rightControls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ctrlBtn {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ctrlBtn:hover {
+  background: #db2777;
+  border-color: #db2777;
+  transform: scale(1.08);
+}
+
+.liveIndicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  margin-left: 4px;
+}
+
+.liveDot {
+  width: 9px;
+  height: 9px;
+  background-color: #22c55e;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #22c55e, 0 0 4px #22c55e;
+  animation: pulseDot 1.8s infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.85);
+  }
+}
+
+@media (max-width: 768px) {
+  .sectionWrapper {
+    margin: 40px auto 25px;
+    padding: 0 18px;
+  }
+  .controlsBar {
+    padding: 16px 16px 12px;
+  }
+}

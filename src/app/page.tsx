@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import SplitHero from "@/components/SplitHero";
 import HighlightSection from "@/components/HighlightSection";
 import ShopByCategory from "@/components/ShopByCategory";
+import AtelierVideoSection from "@/components/AtelierVideoSection";
 import StorySection from "@/components/StorySection";
 import ShopByFlowers from "@/components/ShopByFlowers";
 import Testimonials from "@/components/Testimonials";
@@ -43,6 +44,9 @@ export default function Home() {
 
       {/* Shop By Category: Interactive Accordion Cards with Hover Expansion */}
       <ShopByCategory />
+
+      {/* Atelier Florist Crafting Video Section */}
+      <AtelierVideoSection />
 
       {/* Our Story / Brand Showcase Section */}
       <StorySection />

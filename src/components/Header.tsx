@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import styles from "./Header.module.css";
 import { Search, ShoppingCart, User, Menu, X, Phone, Check } from "lucide-react";
 import OccassionsLogo from "./OccassionsLogo";
+import { useCart } from "@/context/CartContext";
 
 interface HeaderProps {
   isDrawerOpen?: boolean;
@@ -18,6 +20,7 @@ export default function Header({
   onSelectSlide,
   currentSlide = 0,
 }: HeaderProps) {
+  const { cartCount } = useCart();
   const [internalDrawerOpen, setInternalDrawerOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -175,18 +178,17 @@ export default function Header({
             )}
 
             {/* 2. Shopping Cart (matching Image 2 with orange-red badge) */}
-            <button
+            <Link
+              href="/cart"
               className={styles.iconActionBtn}
-              onClick={() => setActiveModal("cart")}
-              type="button"
               aria-label="View Shopping Cart"
               title="Shopping Cart"
             >
               <div className={styles.cartIconWrap}>
                 <ShoppingCart size={22} strokeWidth={1.8} />
-                <span className={styles.cartBadge}>0</span>
+                <span className={styles.cartBadge}>{cartCount}</span>
               </div>
-            </button>
+            </Link>
 
             {/* 3. User / Account (matching Image 2) */}
             <button

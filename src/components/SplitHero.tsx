@@ -35,7 +35,7 @@ export default function SplitHero({
     {
       id: 0,
       left: {
-        type: "text",
+        type: "text" as const,
         tagline: "For flower lovers",
         title: "EVERYTHING YOU NEED",
         description:
@@ -44,20 +44,22 @@ export default function SplitHero({
         bgIllustration: "/images/slide1-art.jpg",
       },
       right: {
-        type: "image",
+        type: "image" as const,
         bgImage: "/images/slide1-flower.jpg",
+        video: "/videos/hero-blooming.mp4",
         cursiveOverlay: "Wonderful gift",
       },
     },
     {
       id: 1,
       left: {
-        type: "image",
+        type: "image" as const,
         bgImage: "/images/slide2-flower.jpg",
+        video: "/videos/hero-florist.mp4",
         cursiveOverlay: "Flower power",
       },
       right: {
-        type: "text",
+        type: "text" as const,
         tagline: "For flower lovers",
         title: "PERFECT CHOICE",
         description:
@@ -69,7 +71,7 @@ export default function SplitHero({
     {
       id: 2,
       left: {
-        type: "text",
+        type: "text" as const,
         tagline: "For flower lovers",
         title: "FOR EVERY OCCASION",
         description:
@@ -78,8 +80,9 @@ export default function SplitHero({
         bgIllustration: "/images/slide3-art.jpg",
       },
       right: {
-        type: "image",
+        type: "image" as const,
         bgImage: "/images/slide3-flower.jpg",
+        video: "/videos/hero-blooming.mp4",
         cursiveOverlay: "Truly magical",
       },
     },
@@ -307,7 +310,25 @@ export default function SplitHero({
                     : undefined
                 }
               >
-                {slide.left.type === "image" ? null : (
+                {slide.left.type === "image" ? (
+                  <>
+                    {slide.left.video && (
+                      <video
+                        className={styles.slideVideo}
+                        src={slide.left.video}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        poster={slide.left.bgImage}
+                      />
+                    )}
+                    <div className={styles.imageOverlayGradient} />
+                    <div className={styles.cursiveOverlay}>
+                      {slide.left.cursiveOverlay}
+                    </div>
+                  </>
+                ) : (
                   <>
                     <div
                       className={styles.bgIllustration}
@@ -363,7 +384,25 @@ export default function SplitHero({
                       : undefined
                   }
                 >
-                  {panel.type === "image" ? null : (
+                  {panel.type === "image" ? (
+                    <>
+                      {panel.video && (
+                        <video
+                          className={styles.slideVideo}
+                          src={panel.video}
+                          autoPlay
+                          muted
+                          loop
+                          playsInline
+                          poster={panel.bgImage}
+                        />
+                      )}
+                      <div className={styles.imageOverlayGradient} />
+                      <div className={styles.cursiveOverlay}>
+                        {panel.cursiveOverlay}
+                      </div>
+                    </>
+                  ) : (
                     <>
                       <div
                         className={styles.bgIllustration}
@@ -395,8 +434,6 @@ export default function SplitHero({
         </div>
       </div>
 
-
-
       {/* Vertical Pagination Dots (Matches Rosebud) */}
       <div className={styles.paginationHolder} aria-label="Slider Pagination">
         {slidesData.map((s, idx) => (
@@ -415,8 +452,6 @@ export default function SplitHero({
           </button>
         ))}
       </div>
-
-
     </section>
   );
 }
