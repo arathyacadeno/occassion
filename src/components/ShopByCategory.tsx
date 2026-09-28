@@ -72,7 +72,7 @@ export default function ShopByCategory() {
       <div className={styles.container}>
         {/* Section Header */}
         <div className={styles.sectionHeader}>
-          <h2 className={styles.mainTitle}>Shop By Category</h2>
+          <h2 className={styles.mainTitle}>Shop By Occasion</h2>
           <span className={styles.subtitle}>CURATED CELEBRATIONS</span>
         </div>
 
