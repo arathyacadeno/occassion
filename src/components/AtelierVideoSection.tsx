@@ -116,7 +116,7 @@ export default function AtelierVideoSection() {
           <p
             className={`${styles.subtitle || ""} atelier-subtitle`}
             style={{
-              fontFamily: "var(--font-sans, 'Poppins', sans-serif)",
+              fontFamily: "var(--font-sans, 'Plus Jakarta Sans', sans-serif)",
               fontSize: "0.96rem",
               color: "#4b5563",
               lineHeight: 1.6,

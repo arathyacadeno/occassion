@@ -23,11 +23,8 @@ export default function Header({
   const { cartCount } = useCart();
   const [internalDrawerOpen, setInternalDrawerOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [activeModal, setActiveModal] = useState<"cart" | "signin" | null>(null);
   const [activeCategory, setActiveCategory] = useState("Home");
-
-  const searchContainerRef = useRef<HTMLDivElement>(null);
 
   const isDrawerOpen =
     controlledDrawerOpen !== undefined ? controlledDrawerOpen : internalDrawerOpen;
@@ -39,29 +36,6 @@ export default function Header({
       setInternalDrawerOpen(open);
     }
   };
-
-  // Close search on click outside or Escape
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (
-        searchContainerRef.current &&
-        !searchContainerRef.current.contains(e.target as Node)
-      ) {
-        setIsSearchOpen(false);
-      }
-    }
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        setIsSearchOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
 
   const handleNavCategory = (categoryName: string, slideIndex?: number) => {
     setActiveCategory(categoryName);
@@ -131,7 +105,16 @@ export default function Header({
         highlightEl.scrollIntoView({ behavior: "smooth" });
       }
     }
-    setIsSearchOpen(false);
+  };
+
+  const handleHighlightsClick = (e: React.MouseEvent) => {
+    if (typeof window !== "undefined" && window.location.pathname === "/") {
+      e.preventDefault();
+      const highlightEl = document.getElementById("highlights");
+      if (highlightEl) {
+        highlightEl.scrollIntoView({ behavior: "smooth" });
+      }
+    }
   };
 
   return (
@@ -151,75 +134,71 @@ export default function Header({
             />
           </Link>
 
-          {/* Center Category Navigation Links (Matching Reference Screenshot) */}
-          {!isSearchOpen && (
-            <nav className={styles.centerNav} aria-label="Main Navigation">
-              <Link href="/table-arrangements" className={styles.centerNavLink}>
-                Bouquet
-              </Link>
-              <a
-                href="https://wa.me/918606464700?text=Hello%20Occassions,%20I%20would%20like%20to%20inquire%20about%20celebration%20cakes."
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.centerNavLink}
-              >
-                Cakes
-              </a>
-              <Link href="/garlands-and-baskets" className={styles.centerNavLink}>
-                Flower Baskets &amp; Garlands
-              </Link>
-              <Link href="/church-arrangements" className={styles.centerNavLink}>
-                Church Arrangements
-              </Link>
-            </nav>
-          )}
+          {/* Center Category Navigation Links */}
+          <nav className={styles.centerNav} aria-label="Main Navigation">
+            <Link href="/table-arrangements" className={styles.centerNavLink}>
+              Flowers
+            </Link>
+            <a
+              href="https://wa.me/918606464700?text=Hello%20Occassions,%20I%20would%20like%20to%20order%20a%20fresh%20celebration%20cake."
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.centerNavLink}
+            >
+              Cakes
+            </a>
+            <Link href="/church-arrangements" className={styles.centerNavLink}>
+              Special occasions
+            </Link>
+            <Link
+              href="/#highlights"
+              onClick={handleHighlightsClick}
+              className={styles.centerNavLink}
+            >
+              Our highlights
+            </Link>
+          </nav>
 
-          {/* Inline Search in the SAME navbar row */}
-          {isSearchOpen && (
-            <div className={styles.inlineSearchContainer} ref={searchContainerRef}>
-              <Search size={18} className={styles.inlineSearchIcon} />
+          {/* Actions Group: Search Box, Profile (User), Shopping Cart, Wishlist */}
+          <div className={styles.actionsGroup}>
+            {/* 1. Search Box (Matching Reference Image: input left, search icon on right) */}
+            <form
+              className={styles.searchBox}
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (searchQuery.trim()) {
+                  handleSearchSubmit(searchQuery.trim());
+                }
+              }}
+              role="search"
+            >
               <input
                 type="text"
-                className={styles.inlineSearchInput}
-                placeholder="Search for flowers, cakes, gifts..."
+                className={styles.searchBoxInput}
+                placeholder="Search for flowers, cakes..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                autoFocus
-                aria-label="Search flowers, bouquets and gifts"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && searchQuery.trim()) {
-                    handleSearchSubmit(searchQuery.trim());
-                  }
-                }}
+                aria-label="Search for flowers, cakes and gifts"
               />
+              {searchQuery && (
+                <button
+                  type="button"
+                  className={styles.searchClearBtn}
+                  onClick={() => setSearchQuery("")}
+                  aria-label="Clear search"
+                >
+                  <X size={14} />
+                </button>
+              )}
               <button
-                type="button"
-                className={styles.inlineSearchCloseBtn}
-                onClick={() => {
-                  setIsSearchOpen(false);
-                  setSearchQuery("");
-                }}
-                aria-label="Close search"
-              >
-                <X size={18} />
-              </button>
-            </div>
-          )}
-
-          {/* Actions Group: Search, Profile (User), Shopping Cart, Wishlist (Red Heart) */}
-          <div className={styles.actionsGroup}>
-            {/* 1. Search Icon Button */}
-            {!isSearchOpen && (
-              <button
-                className={styles.iconActionBtn}
-                onClick={() => setIsSearchOpen(true)}
-                type="button"
+                type="submit"
+                className={styles.searchBoxBtn}
                 aria-label="Search"
                 title="Search"
               >
-                <Search size={22} strokeWidth={1.8} />
+                <Search size={18} strokeWidth={1.8} className={styles.searchBoxIcon} />
               </button>
-            )}
+            </form>
 
             {/* 2. User / Profile Icon (Requested: "restyle navbar with profile ucon") */}
             <button
@@ -245,14 +224,14 @@ export default function Header({
               </div>
             </Link>
 
-            {/* 4. Wishlist (Red Heart matching user reference) */}
+            {/* 4. Wishlist (Outline Heart matching user reference) */}
             <Link
               href="/table-arrangements#arrangements"
               className={styles.iconActionBtn}
               aria-label="View Wishlist"
               title="Wishlist"
             >
-              <Heart size={22} className={styles.wishlistRedIcon} />
+              <Heart size={22} strokeWidth={1.8} />
             </Link>
 
             {/* 5. Mobile Menu Hamburger (for smaller screens) */}

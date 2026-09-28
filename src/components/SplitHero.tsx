@@ -16,6 +16,7 @@ export default function SplitHero({
 }: SplitHeroProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const currentSlideRef = useRef(0);
   const isLockedRef = useRef(false);
   const touchStartY = useRef<number | null>(null);
@@ -30,6 +31,28 @@ export default function SplitHero({
   useEffect(() => {
     isLockedRef.current = isLocked;
   }, [isLocked]);
+
+  // Video element ref to guarantee browser autoplay with muted sound
+  const handleVideoRef = (el: HTMLVideoElement | null) => {
+    if (el) {
+      el.muted = true;
+      el.defaultMuted = true;
+      const playPromise = el.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {});
+      }
+    }
+  };
+
+  // Scroll smoothly to highlights on Explore More
+  const handleExploreClick = () => {
+    const highlightEl = document.getElementById("highlights");
+    if (highlightEl) {
+      highlightEl.scrollIntoView({ behavior: "smooth" });
+    } else if (onOpenMenu) {
+      onOpenMenu();
+    }
+  };
 
   const slidesData = [
     {
@@ -108,6 +131,20 @@ export default function SplitHero({
     }
   }, [targetSlide, goToSlide, totalSlides]);
 
+  // Auto-play slideshow animation every 4.5 seconds (pauses on user hover)
+  useEffect(() => {
+    if (isHovered) return;
+
+    const timer = setInterval(() => {
+      if (!isLockedRef.current && typeof window !== "undefined" && window.scrollY <= 40) {
+        const next = (currentSlideRef.current + 1) % totalSlides;
+        goToSlide(next);
+      }
+    }, 4500);
+
+    return () => clearInterval(timer);
+  }, [isHovered, goToSlide, totalSlides]);
+
   // Handle Wheel Events: Strictly locks scroll in hero until all slides are fully animated
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
@@ -121,7 +158,7 @@ export default function SplitHero({
           // Always prevent default native scroll so the hero cannot be bypassed!
           if (currentSlideRef.current < totalSlides - 1) {
             e.preventDefault();
-            if (!isLockedRef.current && e.deltaY >= 15) {
+            if (!isLockedRef.current && e.deltaY >= 8) {
               goToSlide(currentSlideRef.current + 1);
             }
             return;
@@ -136,7 +173,7 @@ export default function SplitHero({
 
           // Final slide is now FULLY ANIMATED!
           // Only now does scrolling down smoothly transition to the next section
-          if (e.deltaY >= 20) {
+          if (e.deltaY >= 12) {
             const highlightEl = document.getElementById("highlights");
             if (highlightEl) {
               e.preventDefault();
@@ -150,12 +187,11 @@ export default function SplitHero({
         if (e.deltaY < 0) {
           if (currentSlideRef.current > 0) {
             e.preventDefault();
-            if (!isLockedRef.current && e.deltaY <= -15) {
+            if (!isLockedRef.current && e.deltaY <= -8) {
               goToSlide(currentSlideRef.current - 1);
             }
           } else {
-            // Already at slide 0, prevent rubber-banding
-            e.preventDefault();
+            // Already at slide 0, allow natural behavior
           }
           return;
         }
@@ -290,6 +326,8 @@ export default function SplitHero({
       ref={heroRef}
       className={styles.heroWrapper}
       id="hero-slider"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       <div className={styles.splitContainer}>
         {/* Left Half (Slides UP) */}
@@ -314,6 +352,7 @@ export default function SplitHero({
                   <>
                     {slide.left.video && (
                       <video
+                        ref={handleVideoRef}
                         className={styles.slideVideo}
                         src={slide.left.video}
                         autoPlay
@@ -345,7 +384,7 @@ export default function SplitHero({
                       <div className={styles.buttonWrapper}>
                         <button
                           className={styles.readMoreBtn}
-                          onClick={onOpenMenu}
+                          onClick={handleExploreClick}
                         >
                           {slide.left.btnText}
                         </button>
@@ -388,6 +427,7 @@ export default function SplitHero({
                     <>
                       {panel.video && (
                         <video
+                          ref={handleVideoRef}
                           className={styles.slideVideo}
                           src={panel.video}
                           autoPlay
@@ -419,7 +459,7 @@ export default function SplitHero({
                         <div className={styles.buttonWrapper}>
                           <button
                             className={styles.readMoreBtn}
-                            onClick={onOpenMenu}
+                            onClick={handleExploreClick}
                           >
                             {panel.btnText}
                           </button>
