@@ -76,24 +76,41 @@ const ROW_TWO_CARDS: CategoryCardItem[] = [
 export default function ShopByCategory() {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement | null>(null);
+  const gridRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    // Reset if user scrolls all the way back up to hero, so animation can play again when reached
+    const handleScroll = () => {
+      if (window.scrollY < 30) {
+        setIsVisible(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    // Observe the cards grid so animation fires right when the user reaches the cards
+    const target = gridRef.current || sectionRef.current;
+    if (!target) return;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true);
-          observer.disconnect(); // Trigger only once when entering viewport
+        } else if (entry.boundingClientRect.top > 0) {
+          // If the section scrolled below viewport (user scrolled back up)
+          setIsVisible(false);
         }
       },
       {
-        threshold: 0.15,
-        rootMargin: "0px 0px -40px 0px",
+        threshold: 0.08,
+        rootMargin: "0px 0px -30px 0px",
       }
     );
 
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
+    observer.observe(target);
 
     return () => observer.disconnect();
   }, []);
@@ -116,7 +133,7 @@ export default function ShopByCategory() {
         </div>
 
         {/* ================= 2 + 3 BENTO GRID ================= */}
-        <div className={styles.gridContainer}>
+        <div ref={gridRef} className={styles.gridContainer}>
           {/* Row 1: 2 Large Cards */}
           <div className={styles.rowLarge}>
             {ROW_ONE_CARDS.map((cat) => (
