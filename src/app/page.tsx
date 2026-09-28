@@ -39,11 +39,11 @@ export default function Home() {
         onSlideChange={setCurrentSlide}
       />
 
+      {/* Shop By Category: 2 Large + 3 Smaller Bento Grid directly below Hero */}
+      <ShopByCategory />
+
       {/* Highlights Section: Interactive Resizable Grid (Car decorations, Garlands, Church arrangements, Table arrangements) */}
       <HighlightSection />
-
-      {/* Shop By Category: Interactive Accordion Cards with Hover Expansion */}
-      <ShopByCategory />
 
       {/* Atelier Florist Crafting Video Section */}
       <AtelierVideoSection />

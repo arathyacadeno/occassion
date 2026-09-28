@@ -1,148 +1,222 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import styles from "./ShopByCategory.module.css";
-import { ArrowUpRight } from "lucide-react";
 
-export interface CategoryItem {
+interface CategoryCardItem {
   id: string;
-  title: string;
-  subtitle: string;
-  pillLabel: string;
+  name: string;
+  description: string;
   image: string;
-  count: string;
-  whatsAppText: string;
+  link: string;
+  isExternal?: boolean;
+  animDirection: "left" | "right" | "bottom-left" | "bottom" | "bottom-right";
+  delay: string;
 }
 
-const CATEGORIES_DATA: CategoryItem[] = [
+const ROW_ONE_CARDS: CategoryCardItem[] = [
   {
-    id: "seasonal-flowers",
-    title: "SEASONAL FLOWERS",
-    subtitle: "Choose From",
-    pillLabel: "Seasonal",
-    image: "/images/cat-seasonal-flowers.jpg",
-    count: "24 ARRANGEMENTS",
-    whatsAppText:
-      "Hello Occassions, I would like to inquire about fresh Seasonal Flowers arrangements.",
+    id: "flower-basket",
+    name: "Flower Basket",
+    description:
+      "Artisanal hand-woven baskets brimming with fresh roses, peonies, baby's breath & fragrant greenery.",
+    image: "/images/flower-basket-cat.jpg",
+    link: "/garlands-and-baskets",
+    animDirection: "left",
+    delay: "60ms",
   },
   {
-    id: "birthday",
-    title: "BIRTHDAY",
-    subtitle: "Choose From",
-    pillLabel: "Birthday",
-    image: "/images/cat-birthday.jpg",
-    count: "36 BOUQUETS",
-    whatsAppText:
-      "Hello Occassions, I would like to inquire about Birthday floral bouquets.",
+    id: "flower-bouquet",
+    name: "Flower Bouquet",
+    description:
+      "Luxury hand-tied flower bouquets wrapped in signature designer paper with French silk ribbons.",
+    image: "/images/red-rose-bouquet.jpg",
+    link: "/flowers/bouquets",
+    animDirection: "right",
+    delay: "180ms",
+  },
+];
+
+const ROW_TWO_CARDS: CategoryCardItem[] = [
+  {
+    id: "cakes",
+    name: "Cakes",
+    description:
+      "Premium fresh cream celebration & wedding cakes adorned with delicate edible floral decorations.",
+    image: "/images/celebration-cake-cat.jpg",
+    link: "https://wa.me/918606464700?text=Hello%20Occassions,%20I%20would%20like%20to%20order%20a%20fresh%20celebration%20cake.",
+    isExternal: true,
+    animDirection: "bottom-left",
+    delay: "300ms",
   },
   {
-    id: "friendship",
-    title: "FRIENDSHIP",
-    subtitle: "Choose From",
-    pillLabel: "Friendship",
-    image: "/images/cat-friendship.jpg",
-    count: "18 SELECTIONS",
-    whatsAppText:
-      "Hello Occassions, I would like to inquire about Friendship floral gifts.",
+    id: "table-decor",
+    name: "Table Decor",
+    description:
+      "Exquisite floral centerpieces, candelabras & cascading botanical runners for memorable banquets.",
+    image: "/images/highlight-table-arrangements.jpg",
+    link: "/table-arrangements",
+    animDirection: "bottom",
+    delay: "420ms",
   },
   {
-    id: "congratulations",
-    title: "CONGRATULATIONS",
-    subtitle: "Choose From",
-    pillLabel: "Congratulations",
-    image: "/images/cat-congratulations.jpg",
-    count: "28 CREATIONS",
-    whatsAppText:
-      "Hello Occassions, I would like to inquire about Congratulations flower baskets.",
+    id: "wreath",
+    name: "Wreath",
+    description:
+      "Handcrafted fresh flower wreaths & circular botanical rings woven with silver eucalyptus and roses.",
+    image: "/images/floral-wreath-cat.jpg",
+    link: "/church-arrangements",
+    animDirection: "bottom-right",
+    delay: "540ms",
   },
 ];
 
 export default function ShopByCategory() {
-  // 1st card is larger by default (matching screenshot)
-  const [activeIndex, setActiveIndex] = useState<number>(0);
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef<HTMLElement | null>(null);
 
-  const handleCardClick = (cat: CategoryItem) => {
-    // Open WhatsApp inquiry for this category
-    const encoded = encodeURIComponent(cat.whatsAppText);
-    window.open(`https://wa.me/918606464700?text=${encoded}`, "_blank");
-  };
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect(); // Trigger only once when entering viewport
+        }
+      },
+      {
+        threshold: 0.15,
+        rootMargin: "0px 0px -40px 0px",
+      }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <section className={styles.sectionWrapper} id="categories">
+    <section
+      ref={sectionRef}
+      className={styles.sectionWrapper}
+      id="categories"
+      aria-label="Shop by Category"
+    >
       <div className={styles.container}>
         {/* Section Header */}
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.mainTitle}>Shop By Occasion</h2>
-          <span className={styles.subtitle}>CURATED CELEBRATIONS</span>
+        <div className={`${styles.sectionHeader} ${isVisible ? styles.headerInView : ""}`}>
+          <span className={styles.eyebrow}>EXPLORE OUR COLLECTION</span>
+          <h2 className={styles.mainHeading}>Shop by Category</h2>
+          <p className={styles.subHeading}>
+            Discover beautiful flowers, cakes, and handcrafted decorations for every occasion.
+          </p>
         </div>
 
-        {/* ================= ACCORDION CARDS TRACK =================
-            - Mouse hover on any card smoothly expands it to be large like 1st card
-            - Mouse leave resets smoothly to 1st card
-            ========================================================= */}
-        <div
-          className={styles.cardsTrack}
-          onMouseLeave={() => setActiveIndex(0)}
-        >
-          {CATEGORIES_DATA.map((cat, index) => {
-            const isExpanded = activeIndex === index;
-
-            return (
-              <div
+        {/* ================= 2 + 3 BENTO GRID ================= */}
+        <div className={styles.gridContainer}>
+          {/* Row 1: 2 Large Cards */}
+          <div className={styles.rowLarge}>
+            {ROW_ONE_CARDS.map((cat) => (
+              <CategoryCard
                 key={cat.id}
-                className={`${styles.categoryCard} ${
-                  isExpanded ? styles.cardExpanded : styles.cardCollapsed
-                }`}
-                onMouseEnter={() => setActiveIndex(index)}
-                onClick={() => {
-                  setActiveIndex(index);
-                  handleCardClick(cat);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    setActiveIndex(index);
-                    handleCardClick(cat);
-                  }
-                }}
-                role="button"
-                tabIndex={0}
-                aria-expanded={isExpanded}
-                aria-label={`Category: ${cat.title}`}
-              >
-                <div className={styles.cardImgWrap}>
-                  <img
-                    src={cat.image}
-                    alt={cat.title}
-                    className={styles.cardImg}
-                    loading="lazy"
-                  />
+                item={cat}
+                isLarge={true}
+                isVisible={isVisible}
+              />
+            ))}
+          </div>
 
-                  {/* Gradient shadow for text readability */}
-                  <div className={styles.cardOverlay} />
-
-                  {/* Top Count Tag (Visible on expanded card) */}
-                  <span className={styles.itemCountTag}>{cat.count}</span>
-
-                  {/* Vertical Pill Badge (Visible on collapsed card) */}
-                  <div className={styles.verticalPill}>
-                    {cat.pillLabel}
-                  </div>
-
-                  {/* Expanded Content Overlay (Title + Choose From) */}
-                  <div className={styles.expandedContent}>
-                    <h3 className={styles.categoryTitle}>{cat.title}</h3>
-                    <span className={styles.categoryAction}>
-                      <span>{cat.subtitle}</span>
-                      <ArrowUpRight size={14} className={styles.actionIcon} />
-                    </span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+          {/* Row 2: 3 Smaller Cards */}
+          <div className={styles.rowSmall}>
+            {ROW_TWO_CARDS.map((cat) => (
+              <CategoryCard
+                key={cat.id}
+                item={cat}
+                isLarge={false}
+                isVisible={isVisible}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>
+  );
+}
+
+function CategoryCard({
+  item,
+  isLarge,
+  isVisible,
+}: {
+  item: CategoryCardItem;
+  isLarge: boolean;
+  isVisible: boolean;
+}) {
+  const directionClasses: Record<CategoryCardItem["animDirection"], string> = {
+    left: styles.animFromLeft,
+    right: styles.animFromRight,
+    "bottom-left": styles.animFromBottomLeft,
+    bottom: styles.animFromBottom,
+    "bottom-right": styles.animFromBottomRight,
+  };
+
+  const cardContent = (
+    <article
+      className={`${styles.card} ${isLarge ? styles.cardLarge : styles.cardSmall} ${
+        directionClasses[item.animDirection]
+      } ${isVisible ? styles.cardVisible : ""}`}
+      style={{ "--anim-delay": item.delay } as React.CSSProperties}
+    >
+      {/* Top Image Frame with Inset Soft Background */}
+      <div className={`${styles.imageFrame} ${isLarge ? styles.imageFrameLarge : styles.imageFrameSmall}`}>
+        <img
+          src={item.image}
+          alt={item.name}
+          className={styles.cardImage}
+          loading="lazy"
+        />
+        {/* Subtle Pink Hover Overlay */}
+        <div className={styles.hoverOverlay} />
+      </div>
+
+      {/* Bottom Text Content */}
+      <div className={styles.cardContent}>
+        <div className={styles.textWrapper}>
+          <h3 className={`${styles.cardTitle} ${isLarge ? styles.titleLarge : styles.titleSmall}`}>
+            {item.name}
+          </h3>
+          <p className={styles.cardDesc}>{item.description}</p>
+        </div>
+
+        {/* Subtle Arrow CTA */}
+        <div className={styles.ctaRow}>
+          <span className={styles.ctaText}>Explore</span>
+          <ArrowRight size={16} className={styles.ctaArrow} />
+        </div>
+      </div>
+    </article>
+  );
+
+  if (item.isExternal) {
+    return (
+      <a
+        href={item.link}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={styles.cardLink}
+        aria-label={`Explore ${item.name}`}
+      >
+        {cardContent}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={item.link} className={styles.cardLink} aria-label={`Explore ${item.name}`}>
+      {cardContent}
+    </Link>
   );
 }
