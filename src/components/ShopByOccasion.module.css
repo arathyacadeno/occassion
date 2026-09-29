@@ -237,17 +237,17 @@
   justify-content: center;
   padding: 3.5px;
   border-radius: 9999px;
-  border: 1.5px dotted #f472b6;
+  border: 1.5px dotted #ec4899;
   background: #ffffff;
-  box-shadow: 0 4px 18px rgba(219, 39, 119, 0.12), 0 2px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 18px rgba(236, 72, 153, 0.15), 0 2px 6px rgba(0, 0, 0, 0.05);
   transition: all 0.4s ease;
 }
 
-/* Soft Blush Pink Inner Pill (#fff4f7) matching 2nd image */
+/* Visible Soft Pink Inner Pill */
 .pillSolidInner {
   display: inline-block;
-  background: #fff4f7; /* exact color from uploaded image */
-  color: #1a1a1a;
+  background: #fce7f3; /* visible, luxurious soft pink */
+  color: #831843; /* deep rose berry for gorgeous contrast */
   font-family: var(--font-sans);
   font-size: clamp(0.95rem, 1.1vw, 1.05rem);
   font-weight: 600;
@@ -256,7 +256,7 @@
   border-radius: 9999px;
   line-height: 1.25;
   text-align: center;
-  border: 1px solid rgba(244, 114, 182, 0.25);
+  border: 1px solid rgba(236, 72, 153, 0.35);
   transition: all 0.3s ease;
 }
 
@@ -266,14 +266,14 @@
 }
 
 .cardLink:hover .pillDottedOuter {
-  border-color: #ec4899;
-  box-shadow: 0 8px 26px rgba(236, 72, 153, 0.25);
+  border-color: #db2777;
+  box-shadow: 0 8px 26px rgba(236, 72, 153, 0.3);
 }
 
 .cardLink:hover .pillSolidInner {
-  background-color: #fce7f3;
-  color: #be185d;
-  border-color: rgba(236, 72, 153, 0.45);
+  background-color: #ec4899;
+  color: #ffffff;
+  border-color: #ec4899;
 }
 
 /* ================= PAGINATION DOTS ================= */
