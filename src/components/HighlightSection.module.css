@@ -1,697 +1,1420 @@
 /* ==========================================================
-   OUR HIGHLIGHTS — Premium Editorial Layout
-   4 photo cards surrounding a central text composition.
-   ========================================================== */
+   OUR HIGHLIGHTS
+   Premium Floral Editorial Layout
+========================================================== */
 
-/* ── Section shell ── */
 .sectionWrapper {
   width: 100%;
-  background: linear-gradient(180deg, #fff5f8 0%, #fff0f5 55%, #fdf2f8 100%);
-  padding: 80px 0 100px;
   position: relative;
-  overflow-x: clip;
-  overflow-y: visible;
-  color: #111;
-}
-
-.sectionWrapper::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 120px;
-  background: linear-gradient(180deg, rgba(255,240,245,0) 0%, rgba(252,231,243,0.6) 100%);
-  pointer-events: none;
-}
-
-/* ── Floral rose accent (left) ── */
-.floralBgWrapper {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
   overflow: hidden;
-  z-index: 1;
+
+  background:
+    radial-gradient(
+      circle at 50% 45%,
+      rgba(255, 255, 255, 0.9) 0%,
+      rgba(255, 246, 249, 0.75) 35%,
+      transparent 65%
+    ),
+    linear-gradient(
+      180deg,
+      #fff8fa 0%,
+      #fff3f7 52%,
+      #fff7fa 100%
+    );
+
+  padding: 82px 0 110px;
+  color: #111827;
 }
 
-.floralBgLeft {
-  position: absolute;
-  left: -55px;
-  bottom: 25px;
-  width: 500px;
-  max-width: 44vw;
-  height: auto;
-  object-fit: contain;
-  opacity: 0.88;
-  filter: drop-shadow(0 14px 32px rgba(180,20,70,0.14));
-  transform: scaleX(-1) rotate(14deg);
-  pointer-events: none;
-  user-select: none;
-}
 
-/* ── Global container ── */
+/* ==========================================================
+   Container
+========================================================== */
+
 .container {
   width: 100%;
-  max-width: 1320px;
-  margin-inline: auto;
-  padding-inline: 40px;
+  max-width: 1380px;
+  margin: 0 auto;
+
+  padding: 0 42px;
+
   box-sizing: border-box;
+
   position: relative;
-  z-index: 2;
+  z-index: 5;
 }
 
-@media (max-width: 768px) {
-  .container { padding-inline: 20px; }
-}
 
-/* ── Section header ── */
+/* ==========================================================
+   Section Header
+========================================================== */
+
 .sectionHeader {
   display: flex;
   flex-direction: column;
   align-items: center;
+
   text-align: center;
-  margin: 0 auto 52px;
+
+  margin: 0 auto 54px;
+
   opacity: 0;
-  transform: translate3d(0, 30px, 0);
-  transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1),
-              transform 0.8s cubic-bezier(0.16,1,0.3,1);
-  will-change: opacity, transform;
+  transform: translateY(25px);
+
+  transition:
+    opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .headerInView {
   opacity: 1;
-  transform: translate3d(0, 0, 0);
+  transform: translateY(0);
 }
 
 .subtitle {
-  font-family: var(--font-sans, -apple-system, sans-serif);
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: capitalize;
-  color: #db2777;
-  margin-bottom: 8px;
+  font-family:
+    var(--font-sans),
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  letter-spacing: 0.18em;
+
+  text-transform: uppercase;
+
+  color: #d94680;
+
+  margin-bottom: 9px;
 }
 
 .mainTitle {
-  font-family: var(--font-sans);
-  font-size: clamp(2.3rem, 3.4vw, 3.2rem);
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  color: #111827;
-  line-height: 1.15;
   margin: 0 0 16px;
+
+  font-family:
+    var(--font-sans),
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  font-size: clamp(2.1rem, 3.3vw, 3rem);
+
+  line-height: 1.1;
+
+  font-weight: 500;
+
+  letter-spacing: -0.035em;
+
+  color: #182033;
 }
 
+
+/* ==========================================================
+   Floral Divider
+========================================================== */
+
 .floralDivider {
+  width: 230px;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  width: 100%;
-  max-width: 280px;
+
+  gap: 13px;
 }
 
 .dividerLine {
   flex: 1;
+
   height: 1px;
-  background: linear-gradient(90deg, rgba(219,39,119,0.05), rgba(219,39,119,0.35));
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(236, 72, 153, 0.45)
+    );
 }
 
 .dividerLine:last-child {
-  background: linear-gradient(90deg, rgba(219,39,119,0.35), rgba(219,39,119,0.05));
+  background:
+    linear-gradient(
+      90deg,
+      rgba(236, 72, 153, 0.45),
+      transparent
+    );
 }
 
 .dividerIcon {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  color: #db2777;
 }
 
-/* ──────────────────────────────────────────────────────────
-   EDITORIAL GRID: 3×3 with 4 cards at corners + center cell
-   ────────────────────────────────────────────────────────── */
+
+/* ==========================================================
+   EDITORIAL GRID
+========================================================== */
+
 .editorialGrid {
-  display: grid;
-  /* 3 columns: card | gap-col | center | gap-col | card */
-  grid-template-columns: 1fr 28px 240px 28px 1fr;
-  /* 3 rows: card | gap-row | card */
-  grid-template-rows: 320px 28px 320px;
   width: 100%;
-  max-width: 1100px;
+  max-width: 1180px;
+
   margin: 0 auto;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    34px
+    260px
+    34px
+    minmax(0, 1fr);
+
+  grid-template-rows:
+    340px
+    34px
+    340px;
+
+  position: relative;
 }
 
-/* ── Card positions in the 5-column, 3-row grid ── */
-.cardTopLeft    { grid-column: 1; grid-row: 1; }
-.cardTopRight   { grid-column: 5; grid-row: 1; }
-.cardBottomLeft { grid-column: 1; grid-row: 3; }
-.cardBottomRight{ grid-column: 5; grid-row: 3; }
 
-/* Center panel spans col 3, rows 1–3 */
+/* ==========================================================
+   Card positions
+========================================================== */
+
+.cardTopLeft {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.cardTopRight {
+  grid-column: 5;
+  grid-row: 1;
+}
+
+.cardBottomLeft {
+  grid-column: 1;
+  grid-row: 3;
+}
+
+.cardBottomRight {
+  grid-column: 5;
+  grid-row: 3;
+}
+
+
+/* ==========================================================
+   Center Panel
+========================================================== */
+
 .centerPanel {
   grid-column: 3;
   grid-row: 1 / span 3;
+
   display: flex;
   flex-direction: column;
+
   align-items: center;
   justify-content: center;
+
   text-align: center;
-  padding: 24px 12px;
-  gap: 0;
+
+  padding: 20px 8px;
+
   opacity: 0;
-  transform: scale(0.94);
-  transition: opacity 0.85s cubic-bezier(0.16,1,0.3,1) 0.3s,
-              transform 0.85s cubic-bezier(0.16,1,0.3,1) 0.3s;
-  will-change: opacity, transform;
+
+  transform:
+    translateY(18px)
+    scale(0.96);
+
+  transition:
+    opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.25s,
+    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.25s;
 }
 
 .centerPanelInView {
   opacity: 1;
-  transform: scale(1);
+
+  transform:
+    translateY(0)
+    scale(1);
 }
 
-/* ── Center ornament (4-petal SVG) ── */
-.centerOrnament {
-  margin-bottom: 18px;
-  animation: floralBreath 4s ease-in-out infinite;
+
+/* ==========================================================
+   Center Decorations
+========================================================== */
+
+.centerTopDecoration,
+.centerBottomDecoration {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
 }
 
-@keyframes floralBreath {
-  0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.9; }
-  50%       { transform: scale(1.07) rotate(6deg); opacity: 1; }
+.centerTopDecoration {
+  margin-bottom: 22px;
 }
 
-/* ── Center text ── */
-.centerEyebrow {
-  font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #db2777;
-  margin-bottom: 12px;
-  display: block;
+.centerBottomDecoration {
+  margin-top: 18px;
 }
+
+.centerTopDecoration > span:first-child,
+.centerTopDecoration > span:last-child,
+.centerBottomDecoration > span:first-child,
+.centerBottomDecoration > span:last-child {
+  width: 38px;
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(236, 72, 153, 0.55)
+    );
+}
+
+.centerTopDecoration > span:last-child,
+.centerBottomDecoration > span:last-child {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(236, 72, 153, 0.55),
+      transparent
+    );
+}
+
+.centerFlower {
+  color: #ec4899;
+
+  font-size: 21px;
+
+  line-height: 1;
+}
+
+.centerMiniFlower {
+  color: #ec4899;
+
+  font-size: 14px;
+
+  line-height: 1;
+}
+
+
+/* ==========================================================
+   Center Heading
+========================================================== */
 
 .centerHeading {
-  font-family: var(--font-sans);
-  font-size: clamp(1.35rem, 1.9vw, 1.9rem);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: #111827;
-  line-height: 1.22;
-  margin: 0 0 16px;
+  display: flex;
+  flex-direction: column;
+
+  margin: 0;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: clamp(
+    2rem,
+    3.1vw,
+    2.8rem
+  );
+
+  line-height: 1.05;
+
+  font-weight: 600;
+
+  letter-spacing: -0.045em;
 }
+
+.centerHeading span:first-child {
+  color: #182033;
+}
+
+.centerHeading span:last-child {
+  color: #d94680;
+
+  margin-top: 5px;
+}
+
+
+/* ==========================================================
+   Center Rule
+========================================================== */
 
 .centerRule {
   display: block;
-  width: 36px;
+
+  width: 42px;
   height: 1.5px;
-  background: linear-gradient(90deg, #fbcfe8, #db2777, #fbcfe8);
-  border-radius: 2px;
-  margin: 0 auto 14px;
+
+  margin: 19px auto 15px;
+
+  border-radius: 999px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #fbcfe8,
+      #ec4899,
+      #fbcfe8
+    );
 }
+
+
+/* ==========================================================
+   Center Body
+========================================================== */
 
 .centerBody {
-  font-family: var(--font-sans);
+  margin: 0;
+
+  font-family:
+    var(--font-sans),
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
   font-size: 13px;
-  line-height: 1.75;
-  color: #6b7280;
-  margin: 0 0 18px;
+
+  line-height: 1.8;
+
+  color: #737986;
+
+  font-weight: 400;
 }
 
-.centerDots {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  justify-content: center;
-}
 
-.dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #fbcfe8;
-}
+/* ==========================================================
+   Editorial Card
+========================================================== */
 
-.dotLarge {
-  width: 7px;
-  height: 7px;
-  background: #ec4899;
-}
-
-/* ──────────────────────────────────────────────────────────
-   EDITORIAL CARD
-   ────────────────────────────────────────────────────────── */
 .editorialCard {
   position: relative;
-  border-radius: 16px;
-  overflow: hidden;
-  background: #1a1a1a;
-  cursor: pointer;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.10);
 
-  /* Entrance animation */
+  width: 100%;
+  height: 100%;
+
+  overflow: hidden;
+
+  border-radius: 20px;
+
+  background: #fcecf3;
+
+  cursor: pointer;
+
   opacity: 0;
-  transform: translate3d(0, 44px, 0);
+
+  box-shadow:
+    0 12px 35px
+    rgba(128, 45, 76, 0.09);
+
   transition:
-    opacity  0.85s cubic-bezier(0.16,1,0.3,1) var(--card-delay, 0s),
-    transform 0.85s cubic-bezier(0.16,1,0.3,1) var(--card-delay, 0s),
-    box-shadow 0.35s ease;
-  will-change: opacity, transform;
+    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.5s ease;
 }
+
+
+/* ==========================================================
+   Entrance Animations
+========================================================== */
 
 .cardInView {
   opacity: 1;
-  transform: translate3d(0, 0, 0);
 }
+
+
+/* Top-left */
+
+.cardTopLeft.cardInView {
+  animation:
+    cardEnterTopLeft
+    0.9s
+    cubic-bezier(0.16, 1, 0.3, 1)
+    var(--card-delay)
+    both;
+}
+
+
+/* Top-right */
+
+.cardTopRight.cardInView {
+  animation:
+    cardEnterTopRight
+    0.9s
+    cubic-bezier(0.16, 1, 0.3, 1)
+    var(--card-delay)
+    both;
+}
+
+
+/* Bottom-left */
+
+.cardBottomLeft.cardInView {
+  animation:
+    cardEnterBottomLeft
+    0.9s
+    cubic-bezier(0.16, 1, 0.3, 1)
+    var(--card-delay)
+    both;
+}
+
+
+/* Bottom-right */
+
+.cardBottomRight.cardInView {
+  animation:
+    cardEnterBottomRight
+    0.9s
+    cubic-bezier(0.16, 1, 0.3, 1)
+    var(--card-delay)
+    both;
+}
+
+
+@keyframes cardEnterTopLeft {
+  from {
+    opacity: 0;
+    transform:
+      translate3d(-75px, -65px, 0)
+      scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translate3d(0, 0, 0)
+      scale(1);
+  }
+}
+
+
+@keyframes cardEnterTopRight {
+  from {
+    opacity: 0;
+    transform:
+      translate3d(75px, -65px, 0)
+      scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translate3d(0, 0, 0)
+      scale(1);
+  }
+}
+
+
+@keyframes cardEnterBottomLeft {
+  from {
+    opacity: 0;
+    transform:
+      translate3d(-75px, 65px, 0)
+      scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translate3d(0, 0, 0)
+      scale(1);
+  }
+}
+
+
+@keyframes cardEnterBottomRight {
+  from {
+    opacity: 0;
+    transform:
+      translate3d(75px, 65px, 0)
+      scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translate3d(0, 0, 0)
+      scale(1);
+  }
+}
+
+
+/* ==========================================================
+   Card Hover
+========================================================== */
 
 .editorialCard:hover {
-  box-shadow: 0 20px 50px rgba(75,42,70,0.24);
-  transform: translate3d(0, -6px, 0) !important;
-  transition: transform 0.35s cubic-bezier(0.16,1,0.3,1),
-              box-shadow 0.35s cubic-bezier(0.16,1,0.3,1) !important;
+  transform: translateY(-6px);
+
+  box-shadow:
+    0 22px 48px
+    rgba(128, 45, 76, 0.16);
 }
 
-/* ── Image ── */
+
+/* ==========================================================
+   Image
+========================================================== */
+
 .cardImgWrap {
+  position: relative;
+
   width: 100%;
   height: 100%;
-  position: relative;
+
   overflow: hidden;
 }
 
 .cardImg {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+
   display: block;
+
+  object-fit: cover;
+
   transform: scale(1);
-  transition: transform 0.75s cubic-bezier(0.2,1,0.3,1);
+
+  transition:
+    transform 0.9s
+    cubic-bezier(0.2, 1, 0.3, 1);
 }
 
 .editorialCard:hover .cardImg {
-  transform: scale(1.08);
+  transform: scale(1.055);
 }
 
-/* ── Gradient overlay ── */
-.cardOverlay {
+
+/* ==========================================================
+   Image Gradient
+========================================================== */
+
+.cardGradient {
   position: absolute;
+
   inset: 0;
-  background: linear-gradient(
-    175deg,
-    rgba(30,14,30,0.12) 0%,
-    rgba(40,18,42,0.25) 40%,
-    rgba(50,20,52,0.78) 100%
-  );
-  transition: background 0.5s ease;
+
   z-index: 1;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      to top,
+      rgba(20, 12, 16, 0.72) 0%,
+      rgba(20, 12, 16, 0.38) 30%,
+      rgba(20, 12, 16, 0.08) 58%,
+      rgba(20, 12, 16, 0) 76%
+    );
 }
 
-.editorialCard:hover .cardOverlay {
-  background: linear-gradient(
-    175deg,
-    rgba(30,14,30,0.22) 0%,
-    rgba(50,22,52,0.42) 40%,
-    rgba(60,24,64,0.88) 100%
-  );
-}
 
-/* ── Bottom label ── */
+/* ==========================================================
+   Card Text
+========================================================== */
+
 .cardLabel {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-  padding: 20px 18px 18px;
-  background: linear-gradient(0deg, rgba(20,8,22,0.72) 0%, transparent 100%);
-  transition: padding 0.4s ease;
-}
 
-.editorialCard:hover .cardLabel {
-  padding-bottom: 22px;
+  left: 22px;
+  bottom: 21px;
+
+  z-index: 3;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-start;
+
+  gap: 4px;
+
+  pointer-events: none;
 }
 
 .cardTag {
-  font-family: var(--font-sans);
+  font-family:
+    var(--font-sans),
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
   font-size: 10px;
+
   font-weight: 700;
-  letter-spacing: 0.14em;
+
+  line-height: 1;
+
+  letter-spacing: 0.16em;
+
   text-transform: uppercase;
-  color: #fbcfe8;
-  opacity: 0.9;
+
+  color: #ffe4ef;
 }
 
 .cardTitle {
-  font-family: var(--font-sans);
-  font-size: clamp(15px, 1.5vw, 19px);
-  font-weight: 600;
+  font-family:
+    var(--font-sans),
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  font-size: clamp(
+    17px,
+    1.55vw,
+    21px
+  );
+
+  font-weight: 650;
+
+  line-height: 1.15;
+
+  letter-spacing: -0.015em;
+
   color: #ffffff;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.45);
 }
 
-/* Explore pill button — slides up on hover */
+
+/* ==========================================================
+   Circular Arrow
+========================================================== */
+
 .cardBtn {
-  display: inline-flex;
+  position: absolute;
+
+  right: 20px;
+  bottom: 20px;
+
+  z-index: 4;
+
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+
   align-items: center;
-  gap: 5px;
-  font-family: var(--font-sans);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: #ffffff;
-  background: rgba(236,72,153,0.85);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  padding: 5px 14px;
-  border-radius: 9999px;
-  margin-top: 6px;
-  opacity: 0;
-  transform: translateY(8px);
-  transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
-  box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: rgba(
+    255,
+    255,
+    255,
+    0.94
+  );
+
+  color: #df397e;
+
+  border: 1px solid
+    rgba(255, 255, 255, 0.8);
+
+  box-shadow:
+    0 7px 20px
+    rgba(0, 0, 0, 0.13);
+
   text-decoration: none;
-  cursor: pointer;
-  border: none;
+
+  transition:
+    transform 0.35s
+      cubic-bezier(0.16, 1, 0.3, 1),
+    background 0.3s ease,
+    color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .editorialCard:hover .cardBtn {
-  opacity: 1;
-  transform: translateY(0);
+  transform:
+    scale(1.1)
+    rotate(4deg);
+
+  background: #ffffff;
+
+  color: #ec4899;
+
+  box-shadow:
+    0 10px 25px
+    rgba(0, 0, 0, 0.18);
 }
 
-/* ──────────────────────────────────────────────────────────
-   MODAL
-   ────────────────────────────────────────────────────────── */
+
+/* ==========================================================
+   Floating Petals
+========================================================== */
+
+.petalsContainer {
+  position: absolute;
+
+  top: -30px;
+  left: 0;
+  right: 0;
+
+  height: calc(100% + 60px);
+
+  pointer-events: none;
+
+  overflow: hidden;
+
+  z-index: 8;
+}
+
+.petalFallWrapper {
+  position: absolute;
+
+  top: 0;
+
+  pointer-events: none;
+
+  opacity: 0;
+
+  will-change: transform, opacity;
+
+  animation-name: petalDescend;
+
+  animation-timing-function: linear;
+
+  animation-iteration-count: infinite;
+}
+
+.petalSwayWrapper {
+  will-change: transform;
+
+  animation-name: petalSway;
+
+  animation-timing-function:
+    ease-in-out;
+
+  animation-iteration-count: infinite;
+
+  animation-direction: alternate;
+}
+
+.petalImg {
+  display: block;
+
+  object-fit: contain;
+
+  pointer-events: none;
+
+  filter:
+    drop-shadow(
+      0 4px 9px
+      rgba(0, 0, 0, 0.08)
+    );
+
+  will-change: transform;
+
+  animation-name: petalTumble;
+
+  animation-timing-function:
+    ease-in-out;
+
+  animation-iteration-count: infinite;
+
+  animation-direction: alternate;
+}
+
+
+@keyframes petalDescend {
+  0% {
+    transform: translateY(-60px);
+    opacity: 0;
+  }
+
+  8% {
+    opacity: 0.65;
+  }
+
+  86% {
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: translateY(1050px);
+    opacity: 0;
+  }
+}
+
+
+@keyframes petalSway {
+  0% {
+    transform:
+      translateX(0)
+      rotate(-5deg);
+  }
+
+  50% {
+    transform:
+      translateX(24px)
+      rotate(12deg);
+  }
+
+  100% {
+    transform:
+      translateX(-22px)
+      rotate(-10deg);
+  }
+}
+
+
+@keyframes petalTumble {
+  0% {
+    transform:
+      rotate(0deg)
+      scale(1);
+  }
+
+  50% {
+    transform:
+      rotate(100deg)
+      scale(0.95);
+  }
+
+  100% {
+    transform:
+      rotate(210deg)
+      scale(1.03);
+  }
+}
+
+
+/* ==========================================================
+   Modal
+========================================================== */
+
 .modalBackdrop {
   position: fixed;
+
   inset: 0;
-  background: rgba(17,17,17,0.65);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+
   z-index: 10000;
+
   display: flex;
+
   align-items: center;
   justify-content: center;
+
   padding: 20px;
-  animation: fadeIn 0.25s ease-out;
+
+  background:
+    rgba(20, 14, 18, 0.68);
+
+  backdrop-filter: blur(9px);
+
+  -webkit-backdrop-filter: blur(9px);
+
+  animation:
+    fadeIn 0.25s ease-out;
 }
 
+
 .modalContent {
-  background: #fff;
-  border-radius: 14px;
-  max-width: 960px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
   position: relative;
+
+  width: 100%;
+
+  max-width: 960px;
+
+  max-height: 90vh;
+
+  overflow: hidden;
+
   display: grid;
-  grid-template-columns: 1.15fr 1fr;
-  box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+
+  grid-template-columns:
+    1.1fr 1fr;
+
+  background: #ffffff;
+
+  border-radius: 18px;
+
   border: 1px solid #fce7f3;
-  animation: modalPop 0.3s cubic-bezier(0.16,1,0.3,1);
+
+  box-shadow:
+    0 30px 80px
+    rgba(0, 0, 0, 0.28);
+
+  animation:
+    modalPop 0.35s
+    cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 
 .modalCloseBtn {
   position: absolute;
-  top: 16px;
-  right: 16px;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #fff0f5;
-  border: 1px solid #fce7f3;
-  color: #111;
+
+  top: 15px;
+  right: 15px;
+
+  z-index: 10;
+
+  width: 38px;
+  height: 38px;
+
   display: flex;
+
   align-items: center;
   justify-content: center;
+
+  border-radius: 50%;
+
+  border: 1px solid #fce7f3;
+
+  background: #ffffff;
+
+  color: #111827;
+
   cursor: pointer;
-  z-index: 10;
-  transition: all 0.2s ease;
+
+  transition:
+    background 0.25s ease,
+    color 0.25s ease,
+    transform 0.25s ease;
 }
 
 .modalCloseBtn:hover {
   background: #ec4899;
-  color: #fff;
+
+  color: #ffffff;
+
   transform: rotate(90deg);
 }
 
+
+/* ==========================================================
+   Modal Image
+========================================================== */
+
 .modalImageCol {
+  min-height: 450px;
+
   background: #fff5f8;
-  position: relative;
-  min-height: 420px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
   overflow: hidden;
 }
 
 .modalBigImg {
   width: 100%;
   height: 100%;
+
+  display: block;
+
   object-fit: cover;
-  max-height: 560px;
 }
 
+
+/* ==========================================================
+   Modal Details
+========================================================== */
+
 .modalDetailsCol {
-  padding: 40px 32px;
+  padding: 44px 34px;
+
   display: flex;
+
   flex-direction: column;
+
   justify-content: space-between;
-  background: #fff;
+
+  background: #ffffff;
 }
+
 
 .modalTag {
   display: inline-block;
-  font-family: var(--font-sans);
-  font-size: 11px;
+
+  margin-bottom: 9px;
+
+  font-family:
+    var(--font-sans),
+    sans-serif;
+
+  font-size: 10px;
+
   font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: capitalize;
+
+  letter-spacing: 0.15em;
+
+  text-transform: uppercase;
+
   color: #ec4899;
-  margin-bottom: 8px;
 }
+
 
 .modalTitle {
-  font-family: var(--font-sans);
-  font-size: clamp(24px, 2.4vw, 30px);
+  margin: 0 0 13px;
+
+  font-family:
+    var(--font-sans),
+    sans-serif;
+
+  font-size: clamp(
+    25px,
+    2.5vw,
+    32px
+  );
+
   font-weight: 700;
-  letter-spacing: -0.01em;
-  color: #111;
-  margin: 0 0 10px;
-  line-height: 1.3;
+
+  line-height: 1.2;
+
+  letter-spacing: -0.025em;
+
+  color: #111827;
 }
 
+
 .modalDesc {
-  font-family: var(--font-sans);
+  margin: 0 0 22px;
+
+  font-family:
+    var(--font-sans),
+    sans-serif;
+
   font-size: 14px;
-  line-height: 1.7;
-  color: #4b5563;
-  margin: 0 0 20px;
+
+  line-height: 1.75;
+
+  color: #59606d;
 }
+
 
 .modalFeaturesList {
   list-style: none;
-  padding: 0;
+
   margin: 0 0 28px;
+
+  padding: 0;
+
   display: flex;
+
   flex-direction: column;
-  gap: 8px;
+
+  gap: 9px;
 }
+
 
 .modalFeatureItem {
   display: flex;
+
   align-items: center;
+
   gap: 10px;
-  font-family: var(--font-sans);
+
+  font-family:
+    var(--font-sans),
+    sans-serif;
+
   font-size: 13px;
-  color: #111;
+
+  color: #22252b;
 }
+
 
 .modalFeatureDot {
   width: 6px;
   height: 6px;
-  border-radius: 50%;
-  background: #ec4899;
+
   flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: #ec4899;
 }
+
+
+/* ==========================================================
+   Modal Buttons
+========================================================== */
 
 .modalActions {
   display: flex;
+
   flex-direction: column;
+
   gap: 10px;
 }
 
-.modalWhatsAppBtn {
-  display: inline-flex;
+
+.modalWhatsAppBtn,
+.modalCallBtn {
+  display: flex;
+
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  background: #25d366;
-  color: #fff;
-  padding: 13px 24px;
-  border-radius: 6px;
-  font-family: var(--font-sans);
+
+  gap: 9px;
+
+  padding: 13px 22px;
+
+  border-radius: 8px;
+
+  font-family:
+    var(--font-sans),
+    sans-serif;
+
   font-size: 13px;
+
   font-weight: 600;
+
   text-decoration: none;
-  transition: all 0.25s ease;
-  box-shadow: 0 4px 14px rgba(37,211,102,0.25);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+}
+
+
+.modalWhatsAppBtn {
+  background: #25d366;
+
+  color: #ffffff;
+
+  box-shadow:
+    0 5px 16px
+    rgba(37, 211, 102, 0.2);
 }
 
 .modalWhatsAppBtn:hover {
-  background: #20bd5a;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(37,211,102,0.35);
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 8px 22px
+    rgba(37, 211, 102, 0.3);
 }
 
+
 .modalCallBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
   background: #fff0f5;
-  color: #111;
-  padding: 11px 24px;
-  border-radius: 6px;
-  font-family: var(--font-sans);
-  font-size: 13px;
-  font-weight: 600;
-  text-decoration: none;
+
+  color: #222;
+
   border: 1px solid #fce7f3;
-  transition: all 0.25s ease;
 }
 
 .modalCallBtn:hover {
+  transform: translateY(-2px);
+
   background: #fce7f3;
-  color: #ec4899;
 }
 
-/* ──────────────────────────────────────────────────────────
-   FALLING PETALS
-   ────────────────────────────────────────────────────────── */
-.petalsContainer {
-  position: absolute;
-  top: -50px;
-  left: 0;
-  right: 0;
-  height: calc(100% + 50px);
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 3;
-}
 
-.petalFallWrapper {
-  position: absolute;
-  top: 0;
-  pointer-events: none;
-  opacity: 0;
-  will-change: transform, opacity;
-  animation-name: petalDescend;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-}
-
-.petalSwayWrapper {
-  will-change: transform;
-  animation-name: petalSway;
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
-}
-
-.petalImg {
-  display: block;
-  object-fit: contain;
-  pointer-events: none;
-  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.08));
-  will-change: transform;
-  animation-name: petalTumble3D;
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
-}
-
-/* ── Keyframes ── */
-@keyframes petalDescend {
-  0%   { transform: translateY(-40px); opacity: 0; }
-  6%   { opacity: 0.95; }
-  90%  { opacity: 0.9; }
-  100% { transform: translateY(980px); opacity: 0; }
-}
-
-@keyframes petalSway {
-  0%   { transform: translateX(0px) rotate(0deg); }
-  50%  { transform: translateX(32px) rotate(20deg); }
-  100% { transform: translateX(-28px) rotate(-16deg); }
-}
-
-@keyframes petalTumble3D {
-  0%   { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
-  50%  { transform: rotateX(160deg) rotateY(110deg) rotateZ(140deg); }
-  100% { transform: rotateX(320deg) rotateY(220deg) rotateZ(280deg); }
-}
+/* ==========================================================
+   Modal Animations
+========================================================== */
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
+
 
 @keyframes modalPop {
-  from { opacity: 0; transform: scale(0.95) translateY(10px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(15px)
+      scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
 }
 
-/* ──────────────────────────────────────────────────────────
-   RESPONSIVE
-   ────────────────────────────────────────────────────────── */
 
-/* Tablet: 2-column grid, center panel becomes full-width row */
+/* ==========================================================
+   Reduced Motion
+========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .sectionHeader,
+  .centerPanel,
+  .editorialCard {
+    animation: none !important;
+
+    transition: none !important;
+
+    transform: none !important;
+  }
+
+  .petalFallWrapper,
+  .petalSwayWrapper,
+  .petalImg {
+    animation: none !important;
+  }
+}
+
+
+/* ==========================================================
+   TABLET
+========================================================== */
+
+@media (max-width: 1050px) {
+  .container {
+    padding: 0 28px;
+  }
+
+  .editorialGrid {
+    max-width: 900px;
+
+    grid-template-columns:
+      1fr 20px
+      220px
+      20px 1fr;
+
+    grid-template-rows:
+      285px
+      20px
+      285px;
+  }
+
+  .centerHeading {
+    font-size: 2rem;
+  }
+
+  .cardBtn {
+    width: 40px;
+    height: 40px;
+
+    right: 15px;
+    bottom: 15px;
+  }
+
+  .cardLabel {
+    left: 17px;
+    bottom: 17px;
+  }
+}
+
+
+/* ==========================================================
+   TABLET / SMALL LAPTOP
+========================================================== */
+
 @media (max-width: 900px) {
+  .sectionWrapper {
+    padding: 70px 0 90px;
+  }
+
   .editorialGrid {
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 240px auto 240px;
+
+    grid-template-rows:
+      270px
+      auto
+      270px;
+
     gap: 16px;
   }
 
-  /* Center panel spans full width in the middle row */
-  .cardTopLeft    { grid-column: 1; grid-row: 1; }
-  .cardTopRight   { grid-column: 2; grid-row: 1; }
-  .cardBottomLeft { grid-column: 1; grid-row: 3; }
-  .cardBottomRight{ grid-column: 2; grid-row: 3; }
+  .cardTopLeft {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .cardTopRight {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .cardBottomLeft {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  .cardBottomRight {
+    grid-column: 2;
+    grid-row: 3;
+  }
 
   .centerPanel {
     grid-column: 1 / span 2;
     grid-row: 2;
-    padding: 32px 24px;
-    border-radius: 16px;
-    background: rgba(255,255,255,0.7);
-    backdrop-filter: blur(6px);
-    box-shadow: 0 4px 24px rgba(219,39,119,0.07);
-    border: 1px solid #fce7f3;
+
+    min-height: 220px;
+
+    padding: 34px 20px;
+
+    border-radius: 18px;
+
+    background:
+      rgba(255, 255, 255, 0.62);
+
+    backdrop-filter: blur(8px);
+
+    border: 1px solid
+      rgba(236, 72, 153, 0.08);
+
+    box-shadow:
+      0 8px 28px
+      rgba(219, 39, 119, 0.06);
   }
 
   .centerHeading {
-    font-size: 1.45rem;
+    font-size: 2.15rem;
   }
 }
 
-/* Mobile: single column */
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
 @media (max-width: 560px) {
-  .sectionWrapper { padding: 55px 0 70px; }
+  .sectionWrapper {
+    padding: 55px 0 70px;
+  }
+
+  .container {
+    padding: 0 16px;
+  }
+
+  .sectionHeader {
+    margin-bottom: 34px;
+  }
+
+  .mainTitle {
+    font-size: 2rem;
+  }
+
+  .floralDivider {
+    width: 180px;
+  }
 
   .editorialGrid {
     grid-template-columns: 1fr;
+
     grid-template-rows: auto;
+
     gap: 14px;
   }
 
@@ -700,31 +1423,127 @@
   .cardBottomLeft,
   .cardBottomRight {
     grid-column: 1 !important;
+
     grid-row: auto !important;
-    height: 220px;
+
+    height: 225px;
   }
 
   .centerPanel {
     grid-column: 1 !important;
+
     grid-row: auto !important;
-    padding: 28px 20px;
-    border-radius: 14px;
-    background: rgba(255,255,255,0.75);
-    box-shadow: 0 4px 20px rgba(219,39,119,0.08);
-    border: 1px solid #fce7f3;
+
+    order: 3;
+
+    min-height: 230px;
+
+    padding: 30px 18px;
   }
 
-  .floralBgLeft {
-    width: 240px;
-    left: -28px;
+  .cardBottomLeft {
+    order: 4;
+  }
+
+  .cardBottomRight {
+    order: 5;
+  }
+
+  .cardTopLeft {
+    order: 1;
+  }
+
+  .cardTopRight {
+    order: 2;
+  }
+
+  .centerHeading {
+    font-size: 2rem;
+  }
+
+  .centerBody {
+    font-size: 12.5px;
+  }
+
+  .cardTitle {
+    font-size: 18px;
+  }
+
+  .cardTag {
+    font-size: 9px;
+  }
+
+  .cardLabel {
+    left: 17px;
+    bottom: 17px;
+  }
+
+  .cardBtn {
+    right: 15px;
+    bottom: 15px;
+
+    width: 40px;
+    height: 40px;
+  }
+
+  .petalsContainer {
     opacity: 0.65;
+  }
+
+  .modalBackdrop {
+    padding: 12px;
   }
 
   .modalContent {
     grid-template-columns: 1fr;
+
+    max-height: 92vh;
+
+    overflow-y: auto;
   }
 
   .modalImageCol {
-    min-height: 240px;
+    min-height: 230px;
+
+    height: 230px;
+  }
+
+  .modalDetailsCol {
+    padding: 30px 22px;
+  }
+
+  .modalTitle {
+    font-size: 25px;
+  }
+}
+
+
+/* ==========================================================
+   VERY SMALL MOBILE
+========================================================== */
+
+@media (max-width: 380px) {
+  .container {
+    padding: 0 12px;
+  }
+
+  .cardTopLeft,
+  .cardTopRight,
+  .cardBottomLeft,
+  .cardBottomRight {
+    height: 205px;
+  }
+
+  .centerHeading {
+    font-size: 1.75rem;
+  }
+
+  .centerBody {
+    font-size: 12px;
+  }
+
+  .cardBtn {
+    width: 37px;
+    height: 37px;
   }
 }

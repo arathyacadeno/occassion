@@ -342,11 +342,6 @@ export default function SplitHero({
                 className={`${styles.slidePanel} ${
                   currentSlide === idx ? styles.activeSlide : ""
                 } ${slide.left.type === "image" ? styles.imagePanel : styles.textPanel}`}
-                style={
-                  slide.left.type === "image"
-                    ? { backgroundImage: `url(${slide.left.bgImage})` }
-                    : undefined
-                }
               >
                 {slide.left.type === "image" ? (
                   <>
@@ -359,7 +354,6 @@ export default function SplitHero({
                         muted
                         loop
                         playsInline
-                        poster={slide.left.bgImage}
                       />
                     )}
                     <div className={styles.imageOverlayGradient} />
@@ -417,11 +411,6 @@ export default function SplitHero({
                   className={`${styles.slidePanel} ${
                     isActive ? styles.activeSlide : ""
                   } ${panel.type === "image" ? styles.imagePanel : styles.textPanel}`}
-                  style={
-                    panel.type === "image"
-                      ? { backgroundImage: `url(${panel.bgImage})` }
-                      : undefined
-                  }
                 >
                   {panel.type === "image" ? (
                     <>
@@ -434,7 +423,6 @@ export default function SplitHero({
                           muted
                           loop
                           playsInline
-                          poster={panel.bgImage}
                         />
                       )}
                       <div className={styles.imageOverlayGradient} />
