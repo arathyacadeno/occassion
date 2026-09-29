@@ -1,51 +1,136 @@
 .sectionWrapper {
   width: 100%;
-  max-width: 100vw;
-  margin: 50px auto 90px;
-  padding: 0;
+  background-color: #ffffff;
+  padding: 68px 0 84px 0;
   position: relative;
   overflow: hidden;
 }
 
-/* Section Header - Exactly matching ShopByCategory */
-.sectionHeader {
-  max-width: 1360px;
-  margin: 0 auto 36px;
-  padding: 0 32px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+.container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 24px;
+  box-sizing: border-box;
 }
 
-.mainTitle {
-  font-family: var(--font-heading, 'Manrope', sans-serif);
-  font-size: clamp(2rem, 3.2vw, 3rem);
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: #1a1a1a;
-  line-height: 1.2;
-  margin: 0 0 6px 0;
-  text-transform: none;
+/* ================= SECTION HEADER ================= */
+.sectionHeader {
+  text-align: center;
+  margin: 0 auto 46px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .subtitle {
-  font-family: var(--font-sans);
+  font-family: var(--font-sans, -apple-system, sans-serif);
   font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
+  font-weight: 600;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: #ec4899;
-  margin: 0;
+  color: #db2777;
+  margin-bottom: 8px;
 }
 
+.mainTitle {
+  font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(2.3rem, 3.4vw, 3.2rem);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: #111827;
+  line-height: 1.15;
+  margin: 0 0 16px 0;
+  text-transform: none;
+}
 
+/* Floral decorative divider with thin horizontal lines */
+.floralDivider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 280px;
+}
 
-/* Slider Track Viewport with Edge Vignette Mask */
+.dividerLine {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(219, 39, 119, 0.05),
+    rgba(219, 39, 119, 0.35)
+  );
+}
+
+.dividerLine:last-child {
+  background: linear-gradient(
+    90deg,
+    rgba(219, 39, 119, 0.35),
+    rgba(219, 39, 119, 0.05)
+  );
+}
+
+.dividerIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #db2777;
+}
+
+/* ================= CAROUSEL OUTER WRAPPER ================= */
+.carouselOuter {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+/* Circular Navigation Arrows */
+.navBtn {
+  position: absolute;
+  top: 45%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid #fce7f3;
+  background: #ffffff;
+  color: #db2777;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: 0 4px 16px rgba(219, 39, 119, 0.1);
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.prevBtn {
+  left: 4px;
+}
+
+.nextBtn {
+  right: 4px;
+}
+
+.navBtn:hover {
+  background: #fff5f8;
+  border-color: #f472b6;
+  transform: translateY(-50%) scale(1.08);
+  box-shadow: 0 8px 24px rgba(219, 39, 119, 0.18);
+}
+
+.navBtn:active {
+  transform: translateY(-50%) scale(0.96);
+}
+
+/* Slider Viewport with Edge Fade Mask */
 .sliderViewport {
   position: relative;
   width: 100%;
   overflow: hidden;
-  padding: 20px 0 35px;
+  padding: 16px 0 28px 0;
   mask-image: linear-gradient(
     to right,
     transparent 0%,
@@ -65,18 +150,17 @@
 /* Continuous Auto-Slide Track to the RIGHT */
 .sliderTrack {
   display: flex;
-  gap: 24px;
   width: max-content;
   animation: slideToRight 36s linear infinite;
   will-change: transform;
 }
 
-/* Pause sliding on hover so user can easily examine and click any card */
+/* Pause sliding on hover so user can easily examine and click any bouquet */
 .sliderViewport:hover .sliderTrack {
   animation-play-state: paused;
 }
 
-/* Motion to the RIGHT: starts from negative offset and translates rightwards to 0 */
+/* Motion to the RIGHT: starts from negative 50% offset and translates rightwards to 0 */
 @keyframes slideToRight {
   0% {
     transform: translate3d(-50%, 0, 0);
@@ -86,226 +170,209 @@
   }
 }
 
-/* Individual Flower Category Card */
-.flowerCard {
+/* ================= FLOWER CATEGORY ITEM ================= */
+.flowerItem {
   position: relative;
-  flex: 0 0 290px;
-  width: 290px;
+  flex: 0 0 280px;
+  width: 280px;
   display: flex;
   flex-direction: column;
-  background: #ffffff;
-  border-radius: 24px;
-  overflow: hidden;
-  box-shadow: 0 8px 25px -8px rgba(200, 150, 165, 0.12),
-              0 0 0 1px rgba(245, 220, 228, 0.7);
-  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1),
-              box-shadow 0.3s cubic-bezier(0.25, 1, 0.5, 1),
-              border-color 0.3s ease;
-  cursor: pointer;
-  text-decoration: none;
-  user-select: none;
-}
-
-.flowerCard:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 45px -10px rgba(186, 84, 112, 0.24),
-              0 0 0 1px rgba(226, 142, 168, 0.95);
-}
-
-/* Card Image Container */
-.imageContainer {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 4 / 3.4;
-  overflow: hidden;
-  background: #fbf5f7;
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
-}
-
-.flowerImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  display: block;
-  transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-.flowerCard:hover .flowerImage {
-  transform: scale(1.07);
-}
-
-/* Card Content / Details */
-.cardContent {
-  display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 18px 20px 20px;
-  background: #ffffff;
-  flex-grow: 1;
+  box-sizing: border-box;
+  padding: 0 16px;
+  background: transparent;
 }
 
-.textGroup {
+.itemInner {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  width: 100%;
+  text-decoration: none;
+  color: inherit;
 }
 
-.cardTitle {
-  font-family: var(--font-serif);
-  font-size: 21px;
-  font-weight: 600;
-  color: #241D20;
-  letter-spacing: 0.5px;
-  line-height: 1.2;
-  margin: 0;
-  transition: color 0.3s ease;
-}
-
-.flowerCard:hover .cardTitle {
-  color: #B84F6C;
-}
-
-.cardSubtitle {
-  font-family: var(--font-sans);
-  font-size: 13px;
-  font-weight: 400;
-  color: #847579;
-  letter-spacing: 0.2px;
-  margin: 0;
-}
-
-/* Bottom-Right Circular Arrow Button */
-.arrowButton {
+/* ================= BOUQUET IMAGE & CIRCULAR GLOW ================= */
+.backdropWrapper {
+  position: relative;
+  width: 100%;
+  max-width: 230px;
+  height: 255px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Subtle light-pink circular/oval background behind bouquet */
+.pinkOvalGlow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 195px;
+  height: 195px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(252, 231, 243, 0.85) 0%,
+    rgba(253, 242, 248, 0.5) 55%,
+    rgba(255, 255, 255, 0) 72%
+  );
+  pointer-events: none;
+  z-index: 1;
+  transition: transform 0.45s ease, background 0.45s ease;
+}
+
+.itemInner:hover .pinkOvalGlow {
+  transform: translate(-50%, -50%) scale(1.12);
+  background: radial-gradient(
+    circle,
+    rgba(251, 207, 232, 0.95) 0%,
+    rgba(253, 242, 248, 0.6) 60%,
+    rgba(255, 255, 255, 0) 75%
+  );
+}
+
+/* Floating Container */
+.floatContainer {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.itemInner:hover .floatContainer {
+  transform: translateY(-4px) scale(1.05);
+}
+
+.bouquetImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 10px 20px rgba(15, 23, 42, 0.08));
+  transition: filter 0.4s ease;
+}
+
+.itemInner:hover .bouquetImg {
+  filter: drop-shadow(0 16px 28px rgba(219, 39, 119, 0.18));
+}
+
+/* ================= FLOWER INFORMATION ================= */
+.infoArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-top: 14px;
+  width: 100%;
+}
+
+.flowerTitle {
+  font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(1.35rem, 1.6vw, 1.65rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #111827;
+  margin: 0 0 5px 0;
+  line-height: 1.25;
+  transition: color 0.25s ease;
+}
+
+.itemInner:hover .flowerTitle {
+  color: #db2777;
+}
+
+.flowerDesc {
+  font-family: var(--font-sans, -apple-system, sans-serif);
+  font-size: 0.88rem;
+  font-weight: 400;
+  font-style: italic;
+  color: #64748b;
+  margin: 0 0 14px 0;
+  line-height: 1.35;
+}
+
+/* Small circular pink outlined arrow button */
+.arrowButton {
   width: 36px;
   height: 36px;
-  min-width: 36px;
-  min-height: 36px;
   border-radius: 50%;
-  background: #FDF2F5;
-  color: #B84F6C;
-  border: 1px solid rgba(245, 210, 220, 0.8);
-  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1),
-              background 0.3s ease,
-              color 0.3s ease;
+  border: 1.5px solid #f472b6;
+  background: transparent;
+  color: #db2777;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.arrowIcon {
-  width: 16px;
-  height: 16px;
-  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-.flowerCard:hover .arrowButton {
-  background: #B84F6C;
+.itemInner:hover .arrowButton,
+.arrowButton:hover {
+  background: #db2777;
+  border-color: #db2777;
   color: #ffffff;
-  transform: translateX(4px);
-  border-color: #B84F6C;
+  transform: translateX(3px);
+  box-shadow: 0 4px 12px rgba(219, 39, 119, 0.25);
 }
 
-.flowerCard:hover .arrowIcon {
-  transform: translateX(2px);
+/* ================= THIN VERTICAL DOTTED SEPARATORS ================= */
+.dottedSeparator {
+  position: absolute;
+  top: 12%;
+  bottom: 12%;
+  right: 0;
+  width: 1px;
+  border-right: 1.5px dotted #e2e8f0;
+  pointer-events: none;
 }
 
-/* Responsive adjustments */
-@media (max-width: 1080px) {
-  .title {
-    font-size: 34px;
-  }
-
-  .flowerCard {
-    flex: 0 0 270px;
-    width: 270px;
-  }
-
-  .cardContent {
-    padding: 16px 16px 18px;
-  }
-
-  .cardTitle {
-    font-size: 19px;
+/* ================= ACCESSIBILITY & PREFERS-REDUCED-MOTION ================= */
+@media (prefers-reduced-motion: reduce) {
+  .sliderTrack {
+    animation: none !important;
   }
 }
 
-@media (max-width: 860px) {
+/* ================= RESPONSIVE BEHAVIOR ================= */
+@media (max-width: 768px) {
   .sectionWrapper {
-    margin: 40px auto 70px;
+    padding: 50px 0 62px 0;
   }
-
-  .headerBlock {
-    margin-bottom: 28px;
+  .container {
+    padding: 0 12px;
   }
-
-  .title {
-    font-size: 30px;
+  .sectionHeader {
+    margin-bottom: 32px;
   }
-
-  .subtitle {
-    font-size: 14px;
+  .mainTitle {
+    font-size: 2.1rem;
   }
-
-  .flowerCard {
-    flex: 0 0 250px;
-    width: 250px;
-    border-radius: 20px;
+  .flowerItem {
+    flex: 0 0 230px;
+    width: 230px;
+    padding: 0 12px;
   }
-
-  .imageContainer {
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
+  .backdropWrapper {
+    max-width: 195px;
+    height: 220px;
   }
-}
-
-@media (max-width: 580px) {
-  .sectionWrapper {
-    margin: 30px auto 60px;
+  .pinkOvalGlow {
+    width: 160px;
+    height: 160px;
   }
-
-  .title {
-    font-size: 26px;
-    letter-spacing: 1.5px;
+  .flowerTitle {
+    font-size: 1.25rem;
   }
-
-  .subtitle {
-    font-size: 13.5px;
-  }
-
-  .flowerCard {
-    flex: 0 0 220px;
-    width: 220px;
-    border-radius: 18px;
-  }
-
-  .imageContainer {
-    border-top-left-radius: 18px;
-    border-top-right-radius: 18px;
-  }
-
-  .cardContent {
-    padding: 14px 12px 16px;
-  }
-
-  .cardTitle {
-    font-size: 17px;
-  }
-
-  .cardSubtitle {
-    font-size: 12px;
-  }
-
-  .arrowButton {
-    width: 30px;
-    height: 30px;
-    min-width: 30px;
-    min-height: 30px;
-  }
-
-  .arrowIcon {
-    width: 14px;
-    height: 14px;
+  .navBtn {
+    width: 36px;
+    height: 36px;
   }
 }

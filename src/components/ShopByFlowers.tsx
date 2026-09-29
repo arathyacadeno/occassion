@@ -1,14 +1,15 @@
 "use client";
 
 import React, { useRef, useState } from "react";
+import Link from "next/link";
+import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import styles from "./ShopByFlowers.module.css";
 
 interface FlowerCategory {
   id: string;
   title: string;
-  subtitle: string;
+  description: string;
   image: string;
-  alt: string;
   href: string;
 }
 
@@ -16,154 +17,200 @@ const FLOWER_CATEGORIES: FlowerCategory[] = [
   {
     id: "roses",
     title: "Roses",
-    subtitle: "Romantic & timeless",
-    image: "/images/flower-pink-roses.jpg",
-    alt: "Luxurious bouquet of soft pink roses with dewy petals",
-    href: "#roses",
-  },
-  {
-    id: "white-roses",
-    title: "White Roses",
-    subtitle: "Pure & elegant",
-    image: "/images/flower-white-roses.jpg",
-    alt: "Graceful bridal bouquet of pure white and ivory roses",
-    href: "#white-roses",
-  },
-  {
-    id: "tulips",
-    title: "Tulips",
-    subtitle: "Fresh & graceful",
-    image: "/images/flower-pink-tulips.jpg",
-    alt: "Fresh vibrant bouquet of pastel pink French tulips",
-    href: "#tulips",
+    description: "Romantic & timeless",
+    image: "/images/flowers-roses-nobg.png",
+    href: "/flower-bouquets",
   },
   {
     id: "lilies",
     title: "Lilies",
-    subtitle: "Elegant & serene",
-    image: "/images/flower-white-lilies.jpg",
-    alt: "Aesthetic bouquet of magnificent pristine white Oriental lilies",
-    href: "#lilies",
+    description: "Elegant & graceful",
+    image: "/images/flowers-lilies-nobg.png",
+    href: "/flower-bouquets",
   },
   {
-    id: "peonies",
-    title: "Peonies",
-    subtitle: "Lush & enchanting",
-    image: "/images/farm-peonies-tall-large.jpg",
-    alt: "Opulent lush pink Sarah Bernhardt peonies tied with satin ribbon",
-    href: "#peonies",
+    id: "sunflowers",
+    title: "Sunflowers",
+    description: "Bright & joyful",
+    image: "/images/flowers-sunflowers-nobg.png",
+    href: "/flower-bouquets",
   },
   {
-    id: "ranunculus",
-    title: "Ranunculus",
-    subtitle: "Vibrant & artistic",
-    image: "/images/farm-hand-bouquet-large.jpg",
-    alt: "Vivid magenta ranunculus and artisanal hand-tied botanical arrangement",
-    href: "#ranunculus",
-  },
-  {
-    id: "gerberas",
-    title: "Gerberas",
-    subtitle: "Joyful & radiant",
-    image: "/images/cat-birthday.jpg",
-    alt: "Lively white gerberas paired with peach garden roses and eucalyptus",
-    href: "#gerberas",
+    id: "tulips",
+    title: "Tulips",
+    description: "Sweet & charming",
+    image: "/images/flowers-tulips-nobg.png",
+    href: "/flower-bouquets",
   },
   {
     id: "carnations",
     title: "Carnations",
-    subtitle: "Charming & delicate",
-    image: "/images/cat-friendship.jpg",
-    alt: "Artisan peach carnations and garden rosebuds in presentation bag",
-    href: "#carnations",
+    description: "Charming & delicate",
+    image: "/images/flowers-carnations-nobg.png",
+    href: "/flower-bouquets",
   },
   {
-    id: "delphiniums",
-    title: "Delphiniums",
-    subtitle: "Tall & majestic",
-    image: "/images/cat-seasonal-flowers.jpg",
-    alt: "Majestic tall pink snapdragons and seasonal cottage blooms",
-    href: "#delphiniums",
+    id: "peonies",
+    title: "Peonies",
+    description: "Lush & enchanting",
+    image: "/images/flowers-peonies-nobg.png",
+    href: "/flower-bouquets",
+  },
+  {
+    id: "gerberas",
+    title: "Gerberas",
+    description: "Joyful & radiant",
+    image: "/images/flowers-gerberas-nobg.png",
+    href: "/flower-bouquets",
   },
   {
     id: "pastel-tulips",
     title: "Pastel Tulips",
-    subtitle: "Sweet & poetic",
-    image: "/images/farm-tulips-wrap-large.jpg",
-    alt: "Spring pastel tulips bouquet gracefully wrapped in powder blush paper",
-    href: "#pastel-tulips",
+    description: "Sweet & poetic",
+    image: "/images/flowers-pasteltulips-nobg.png",
+    href: "/flower-bouquets",
   },
 ];
+
+// Duplicate items twice so the infinite loop flows seamlessly to the right
+const ALL_CARDS = [...FLOWER_CATEGORIES, ...FLOWER_CATEGORIES];
 
 export default function ShopByFlowers() {
   const [isPaused, setIsPaused] = useState(false);
   const trackRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
 
-  // Duplicate items array twice so the infinite loop flows seamlessly to the right
-  const allCards = [...FLOWER_CATEGORIES, ...FLOWER_CATEGORIES];
+  const handleNudge = (direction: "left" | "right") => {
+    if (!viewportRef.current) return;
+    const scrollAmount = direction === "right" ? 300 : -300;
+    viewportRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+  };
 
   return (
-    <section className={styles.sectionWrapper} id="shop-by-flowers" aria-label="Shop by Flowers">
-      {/* Section Header */}
-      <div className={styles.sectionHeader}>
-        <h2 className={styles.mainTitle}>Shop By Flowers</h2>
-        <span className={styles.subtitle}>Curated Blooms</span>
-      </div>
+    <section
+      className={styles.sectionWrapper}
+      id="shop-by-flowers"
+      aria-label="Shop by Flowers"
+    >
+      <div className={styles.container}>
+        {/* ================= SECTION HEADER ================= */}
+        <div className={styles.sectionHeader}>
+          <span className={styles.subtitle}>CURATED BLOOMS</span>
+          <h2 className={styles.mainTitle}>Shop By Flowers</h2>
 
-      {/* Slider Viewport with Edge Fade Mask */}
-      <div
-        className={styles.sliderViewport}
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
-      >
-        <div
-          ref={trackRef}
-          className={styles.sliderTrack}
-          style={{ animationPlayState: isPaused ? "paused" : "running" }}
-        >
-          {allCards.map((cat, idx) => (
-            <a
-              key={`${cat.id}-${idx}`}
-              href={cat.href}
-              className={styles.flowerCard}
-              aria-label={`Shop ${cat.title} - ${cat.subtitle}`}
-            >
-              {/* Top Large Flower Image */}
-              <div className={styles.imageContainer}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={cat.image}
-                  alt={cat.alt}
-                  className={styles.flowerImage}
-                  loading={idx < 4 ? "eager" : "lazy"}
+          {/* Decorative floral icon with thin horizontal lines */}
+          <div className={styles.floralDivider} aria-hidden="true">
+            <span className={styles.dividerLine} />
+            <span className={styles.dividerIcon}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="2.2" fill="#db2777" />
+                <path
+                  d="M12 4.5C12 4.5 10 7.5 10 9.5C10 10.6 10.9 11.5 12 11.5C13.1 11.5 14 10.6 14 9.5C14 7.5 12 4.5 12 4.5Z"
+                  fill="#fbcfe8"
+                  stroke="#db2777"
+                  strokeWidth="0.8"
                 />
-              </div>
+                <path
+                  d="M12 19.5C12 19.5 10 16.5 10 14.5C10 13.4 10.9 12.5 12 12.5C13.1 12.5 14 13.4 14 14.5C14 16.5 12 19.5 12 19.5Z"
+                  fill="#fbcfe8"
+                  stroke="#db2777"
+                  strokeWidth="0.8"
+                />
+                <path
+                  d="M4.5 12C4.5 12 7.5 10 9.5 10C10.6 10 11.5 10.9 11.5 12C11.5 13.1 10.6 14 9.5 14C7.5 14 4.5 12 4.5 12Z"
+                  fill="#fbcfe8"
+                  stroke="#db2777"
+                  strokeWidth="0.8"
+                />
+                <path
+                  d="M19.5 12C19.5 12 16.5 10 14.5 10C13.4 10 12.5 10.9 12.5 12C12.5 13.1 13.4 14 14.5 14C16.5 14 19.5 12 19.5 12Z"
+                  fill="#fbcfe8"
+                  stroke="#db2777"
+                  strokeWidth="0.8"
+                />
+              </svg>
+            </span>
+            <span className={styles.dividerLine} />
+          </div>
+        </div>
 
-              {/* Card Information */}
-              <div className={styles.cardContent}>
-                <div className={styles.textGroup}>
-                  <h3 className={styles.cardTitle}>{cat.title}</h3>
-                  <p className={styles.cardSubtitle}>{cat.subtitle}</p>
-                </div>
+        {/* ================= CAROUSEL WRAPPER WITH CONTROLS ================= */}
+        <div className={styles.carouselOuter}>
+          {/* Circular Left Arrow */}
+          <button
+            type="button"
+            className={`${styles.navBtn} ${styles.prevBtn}`}
+            onClick={() => handleNudge("left")}
+            aria-label="Previous flower categories"
+          >
+            <ChevronLeft size={22} strokeWidth={2} />
+          </button>
 
-                {/* Circular Arrow Button */}
-                <div className={styles.arrowButton} aria-hidden="true">
-                  <svg
-                    className={styles.arrowIcon}
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                    <polyline points="12 5 19 12 12 19" />
-                  </svg>
+          {/* Slider Viewport with Edge Fade Mask & Continuous Auto-Slide to Right */}
+          <div
+            ref={viewportRef}
+            className={styles.sliderViewport}
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+          >
+            <div
+              ref={trackRef}
+              className={styles.sliderTrack}
+              style={{ animationPlayState: isPaused ? "paused" : "running" }}
+            >
+              {ALL_CARDS.map((cat, idx) => (
+                <div
+                  key={`${cat.id}-${idx}`}
+                  className={styles.flowerItem}
+                >
+                  <div className={styles.itemInner}>
+                    {/* Subtle light-pink circular/oval background behind bouquet */}
+                    <div className={styles.backdropWrapper}>
+                      <div className={styles.pinkOvalGlow} />
+
+                      {/* Floating Bouquet Wrapper */}
+                      <div className={styles.floatContainer}>
+                        <img
+                          src={cat.image}
+                          alt={`${cat.title} bouquet`}
+                          className={styles.bouquetImg}
+                          loading={idx < 6 ? "eager" : "lazy"}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Flower Information */}
+                    <div className={styles.infoArea}>
+                      <h3 className={styles.flowerTitle}>{cat.title}</h3>
+                      <p className={styles.flowerDesc}>{cat.description}</p>
+
+                      {/* Small circular pink outlined arrow button */}
+                      <Link
+                        href={cat.href}
+                        className={styles.arrowButton}
+                        aria-label={`Shop ${cat.title} bouquets`}
+                      >
+                        <ArrowRight size={15} strokeWidth={2.2} />
+                      </Link>
+                    </div>
+                  </div>
+
+                  {/* Thin vertical dotted separator between categories */}
+                  <div className={styles.dottedSeparator} aria-hidden="true" />
                 </div>
-              </div>
-            </a>
-          ))}
+              ))}
+            </div>
+          </div>
+
+          {/* Circular Right Arrow */}
+          <button
+            type="button"
+            className={`${styles.navBtn} ${styles.nextBtn}`}
+            onClick={() => handleNudge("right")}
+            aria-label="Next flower categories"
+          >
+            <ChevronRight size={22} strokeWidth={2} />
+          </button>
         </div>
       </div>
     </section>
