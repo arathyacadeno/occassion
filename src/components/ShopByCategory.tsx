@@ -12,19 +12,17 @@ interface CategoryCardItem {
   image: string;
   link: string;
   isExternal?: boolean;
-  animDirection: "left" | "right" | "bottom-left" | "bottom" | "bottom-right";
   delay: string;
 }
 
-const ROW_ONE_CARDS: CategoryCardItem[] = [
+const CATEGORY_CARDS: CategoryCardItem[] = [
   {
     id: "flower-basket",
     name: "Flower Basket",
     description:
       "Artisanal hand-woven baskets brimming with fresh roses, peonies, baby's breath & fragrant greenery.",
     image: "/images/flower-basket-cat.jpg",
-    link: "/garlands-and-baskets",
-    animDirection: "left",
+    link: "/flower-baskets",
     delay: "60ms",
   },
   {
@@ -33,23 +31,17 @@ const ROW_ONE_CARDS: CategoryCardItem[] = [
     description:
       "Luxury hand-tied flower bouquets wrapped in signature designer paper with French silk ribbons.",
     image: "/images/red-rose-bouquet.jpg",
-    link: "/flowers/bouquets",
-    animDirection: "right",
-    delay: "180ms",
+    link: "/flower-bouquets",
+    delay: "140ms",
   },
-];
-
-const ROW_TWO_CARDS: CategoryCardItem[] = [
   {
     id: "cakes",
     name: "Cakes",
     description:
       "Premium fresh cream celebration & wedding cakes adorned with delicate edible floral decorations.",
     image: "/images/celebration-cake-cat.jpg",
-    link: "https://wa.me/918606464700?text=Hello%20Occassions,%20I%20would%20like%20to%20order%20a%20fresh%20celebration%20cake.",
-    isExternal: true,
-    animDirection: "bottom-left",
-    delay: "300ms",
+    link: "/cakes",
+    delay: "220ms",
   },
   {
     id: "table-decor",
@@ -57,9 +49,8 @@ const ROW_TWO_CARDS: CategoryCardItem[] = [
     description:
       "Exquisite floral centerpieces, candelabras & cascading botanical runners for memorable banquets.",
     image: "/images/highlight-table-arrangements.jpg",
-    link: "/table-arrangements",
-    animDirection: "bottom",
-    delay: "420ms",
+    link: "/table-decor",
+    delay: "300ms",
   },
   {
     id: "wreath",
@@ -67,9 +58,8 @@ const ROW_TWO_CARDS: CategoryCardItem[] = [
     description:
       "Handcrafted fresh flower wreaths & circular botanical rings woven with silver eucalyptus and roses.",
     image: "/images/floral-wreath-cat.jpg",
-    link: "/church-arrangements",
-    animDirection: "bottom-right",
-    delay: "540ms",
+    link: "/wreaths",
+    delay: "380ms",
   },
 ];
 
@@ -79,7 +69,6 @@ export default function ShopByCategory() {
   const gridRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    // Reset if user scrolls all the way back up to hero, so animation can play again when reached
     const handleScroll = () => {
       if (window.scrollY < 30) {
         setIsVisible(false);
@@ -91,7 +80,6 @@ export default function ShopByCategory() {
   }, []);
 
   useEffect(() => {
-    // Observe the cards grid so animation fires right when the user reaches the cards
     const target = gridRef.current || sectionRef.current;
     if (!target) return;
 
@@ -100,7 +88,6 @@ export default function ShopByCategory() {
         if (entry.isIntersecting) {
           setIsVisible(true);
         } else if (entry.boundingClientRect.top > 0) {
-          // If the section scrolled below viewport (user scrolled back up)
           setIsVisible(false);
         }
       },
@@ -132,27 +119,14 @@ export default function ShopByCategory() {
           </p>
         </div>
 
-        {/* ================= 2 + 3 BENTO GRID ================= */}
+        {/* ================= 1 ROW WITH 5 CARDS ================= */}
         <div ref={gridRef} className={styles.gridContainer}>
-          {/* Row 1: 2 Large Cards */}
-          <div className={styles.rowLarge}>
-            {ROW_ONE_CARDS.map((cat) => (
+          <div className={styles.rowFive}>
+            {CATEGORY_CARDS.map((cat, idx) => (
               <CategoryCard
                 key={cat.id}
                 item={cat}
-                isLarge={true}
-                isVisible={isVisible}
-              />
-            ))}
-          </div>
-
-          {/* Row 2: 3 Smaller Cards */}
-          <div className={styles.rowSmall}>
-            {ROW_TWO_CARDS.map((cat) => (
-              <CategoryCard
-                key={cat.id}
-                item={cat}
-                isLarge={false}
+                index={idx}
                 isVisible={isVisible}
               />
             ))}
@@ -165,30 +139,20 @@ export default function ShopByCategory() {
 
 function CategoryCard({
   item,
-  isLarge,
+  index,
   isVisible,
 }: {
   item: CategoryCardItem;
-  isLarge: boolean;
+  index: number;
   isVisible: boolean;
 }) {
-  const directionClasses: Record<CategoryCardItem["animDirection"], string> = {
-    left: styles.animFromLeft,
-    right: styles.animFromRight,
-    "bottom-left": styles.animFromBottomLeft,
-    bottom: styles.animFromBottom,
-    "bottom-right": styles.animFromBottomRight,
-  };
-
   const cardContent = (
     <article
-      className={`${styles.card} ${isLarge ? styles.cardLarge : styles.cardSmall} ${
-        directionClasses[item.animDirection]
-      } ${isVisible ? styles.cardVisible : ""}`}
+      className={`${styles.card} ${isVisible ? styles.cardVisible : ""}`}
       style={{ "--anim-delay": item.delay } as React.CSSProperties}
     >
       {/* Top Image Frame with Inset Soft Background */}
-      <div className={`${styles.imageFrame} ${isLarge ? styles.imageFrameLarge : styles.imageFrameSmall}`}>
+      <div className={styles.imageFrame}>
         <img
           src={item.image}
           alt={item.name}
@@ -201,17 +165,12 @@ function CategoryCard({
 
       {/* Bottom Text Content */}
       <div className={styles.cardContent}>
-        <div className={styles.textWrapper}>
-          <h3 className={`${styles.cardTitle} ${isLarge ? styles.titleLarge : styles.titleSmall}`}>
-            {item.name}
-          </h3>
-          <p className={styles.cardDesc}>{item.description}</p>
-        </div>
+        <h3 className={styles.cardTitle}>{item.name}</h3>
 
         {/* Subtle Arrow CTA */}
         <div className={styles.ctaRow}>
           <span className={styles.ctaText}>Explore</span>
-          <ArrowRight size={16} className={styles.ctaArrow} />
+          <ArrowRight size={15} className={styles.ctaArrow} />
         </div>
       </div>
     </article>

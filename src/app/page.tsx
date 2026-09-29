@@ -3,12 +3,10 @@
 import React, { useState } from "react";
 import Header from "@/components/Header";
 import SplitHero from "@/components/SplitHero";
-import HighlightSection from "@/components/HighlightSection";
 import ShopByCategory from "@/components/ShopByCategory";
-import AtelierVideoSection from "@/components/AtelierVideoSection";
-import StorySection from "@/components/StorySection";
+import ShopByOccasion from "@/components/ShopByOccasion";
 import ShopByFlowers from "@/components/ShopByFlowers";
-import Testimonials from "@/components/Testimonials";
+import HighlightSection from "@/components/HighlightSection";
 import Footer from "@/components/Footer";
 
 export default function Home() {
@@ -32,32 +30,26 @@ export default function Home() {
         currentSlide={currentSlide}
       />
 
-      {/* Hero: Rosebud/Marigold Split-Screen Vertical Scroll Slider */}
+      {/* 1. Home Page Hero */}
       <SplitHero
         onOpenMenu={() => setIsDrawerOpen(true)}
         targetSlide={targetSlide}
         onSlideChange={setCurrentSlide}
       />
 
-      {/* Shop By Category: 2 Large + 3 Smaller Bento Grid directly below Hero */}
+      {/* 2. Shop by Category */}
       <ShopByCategory />
 
-      {/* Highlights Section: Interactive Resizable Grid (Car decorations, Garlands, Church arrangements, Table arrangements) */}
-      <HighlightSection />
+      {/* 3. Shop by Occasion */}
+      <ShopByOccasion />
 
-      {/* Atelier Florist Crafting Video Section */}
-      <AtelierVideoSection />
-
-      {/* Our Story / Brand Showcase Section */}
-      <StorySection />
-
-      {/* Shop By Flowers: Roses, White Roses, Tulips, Lilies */}
+      {/* 4. Shop by Flower */}
       <ShopByFlowers />
 
-      {/* Testimonials: Lotus Background with Oval Showcase matching user reference */}
-      <Testimonials />
+      {/* 5. Our Highlights */}
+      <HighlightSection />
 
-      {/* Footer: Occassions Calicut, IFA certification, studio contact & WhatsApp booking */}
+      {/* 6. Footer */}
       <Footer />
     </main>
   );
