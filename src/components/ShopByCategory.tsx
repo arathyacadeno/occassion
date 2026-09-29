@@ -13,6 +13,10 @@ interface CategoryCardItem {
   link: string;
   isExternal?: boolean;
   delay: string;
+  /** Initial transform when card is off-screen (before animation) */
+  initTx: string;   // translateX value, e.g. "-80px"
+  initTy: string;   // translateY value, e.g. "0px"
+  initRot: string;  // rotate value,  e.g. "-8deg"
 }
 
 const CATEGORY_CARDS: CategoryCardItem[] = [
@@ -23,7 +27,11 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
       "Artisanal hand-woven baskets brimming with fresh roses, peonies, baby's breath & fragrant greenery.",
     image: "/images/flower-basket-cat.jpg",
     link: "/flower-baskets",
-    delay: "60ms",
+    delay: "0ms",
+    // Card 1: enter from the left, tilted CCW
+    initTx: "-72px",
+    initTy: "10px",
+    initRot: "-7deg",
   },
   {
     id: "flower-bouquet",
@@ -32,7 +40,11 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
       "Luxury hand-tied flower bouquets wrapped in signature designer paper with French silk ribbons.",
     image: "/images/red-rose-bouquet.jpg",
     link: "/flower-bouquets",
-    delay: "140ms",
+    delay: "120ms",
+    // Card 2: enter from top-left, tilted CW
+    initTx: "-50px",
+    initTy: "-60px",
+    initRot: "7deg",
   },
   {
     id: "cakes",
@@ -42,6 +54,10 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
     image: "/images/celebration-cake-cat.jpg",
     link: "/cakes",
     delay: "220ms",
+    // Card 3: enter from below, tilted CCW
+    initTx: "0px",
+    initTy: "70px",
+    initRot: "-6deg",
   },
   {
     id: "table-decor",
@@ -50,7 +66,11 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
       "Exquisite floral centerpieces, candelabras & cascading botanical runners for memorable banquets.",
     image: "/images/highlight-table-arrangements.jpg",
     link: "/table-decor",
-    delay: "300ms",
+    delay: "120ms",
+    // Card 4: enter from top-right, tilted CW
+    initTx: "50px",
+    initTy: "-60px",
+    initRot: "7deg",
   },
   {
     id: "wreath",
@@ -59,7 +79,11 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
       "Handcrafted fresh flower wreaths & circular botanical rings woven with silver eucalyptus and roses.",
     image: "/images/floral-wreath-cat.jpg",
     link: "/wreaths",
-    delay: "380ms",
+    delay: "0ms",
+    // Card 5: enter from the right, tilted CCW
+    initTx: "72px",
+    initTy: "10px",
+    initRot: "-7deg",
   },
 ];
 
@@ -98,7 +122,6 @@ export default function ShopByCategory() {
     );
 
     observer.observe(target);
-
     return () => observer.disconnect();
   }, []);
 
@@ -149,7 +172,14 @@ function CategoryCard({
   const cardContent = (
     <article
       className={`${styles.card} ${isVisible ? styles.cardVisible : ""}`}
-      style={{ "--anim-delay": item.delay } as React.CSSProperties}
+      style={
+        {
+          "--tx": item.initTx,
+          "--ty": item.initTy,
+          "--rot": item.initRot,
+          "--anim-delay": item.delay,
+        } as React.CSSProperties
+      }
     >
       {/* Top Image Frame with Inset Soft Background */}
       <div className={styles.imageFrame}>

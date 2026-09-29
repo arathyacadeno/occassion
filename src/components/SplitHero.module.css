@@ -1,5 +1,5 @@
 .heroWrapper {
-  --slide-h: calc(100vh - 100px);
+  --slide-h: calc(100vh - 72px);
   position: relative;
   width: 100vw;
   height: var(--slide-h);
@@ -348,8 +348,8 @@
 /* Mobile Responsive */
 @media (max-width: 900px) {
   .heroWrapper {
-    --slide-h: calc((100vh - 96px) / 2);
-    height: calc(100vh - 96px);
+    --slide-h: calc((100vh - 72px) / 2);
+    height: calc(100vh - 72px);
   }
 
   .splitContainer {
