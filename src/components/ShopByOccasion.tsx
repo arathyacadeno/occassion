@@ -51,14 +51,14 @@ const OCCASIONS_SLIDES: OccasionCardItem[][] = [
   // Slide 2 (3 cards)
   [
     {
-      id: "congratulations",
-      name: "Congratulations",
-      image: "/images/occasion-congratulations.jpg",
-      href: "/flower-bouquets?occasion=congratulations",
+      id: "thank-you",
+      name: "Thank You",
+      image: "/images/occasion-thank-you.jpg",
+      href: "/flower-bouquets?occasion=thank-you",
       staggerClass: styles.staggerLeft,
       delay: "0.06s",
       whatsappMessage:
-        "Hello Occassions Florist Calicut, I would like to send Congratulations flower bouquets.",
+        "Hello Occassions Florist Calicut, I would like to send a Thank You flower arrangement.",
     },
     {
       id: "wedding",
@@ -71,14 +71,14 @@ const OCCASIONS_SLIDES: OccasionCardItem[][] = [
         "Hello Occassions Florist Calicut, I would like to inquire about Wedding floral decor and bridal bouquets.",
     },
     {
-      id: "thank-you",
-      name: "Thank You",
-      image: "/images/occasion-thank-you.jpg",
-      href: "/flower-bouquets?occasion=thank-you",
+      id: "congratulations",
+      name: "Congratulations",
+      image: "/images/occasion-congratulations.png",
+      href: "/flower-bouquets?occasion=congratulations",
       staggerClass: styles.staggerRight,
       delay: "0.3s",
       whatsappMessage:
-        "Hello Occassions Florist Calicut, I would like to send a Thank You flower arrangement.",
+        "Hello Occassions Florist Calicut, I would like to send Congratulations flower bouquets.",
     },
   ],
 ];
@@ -217,26 +217,7 @@ export default function ShopByOccasion() {
           </button>
         </div>
 
-        {/* Slide Indicator Dots */}
-        <div
-          className={styles.paginationDots}
-          role="tablist"
-          aria-label="Occasion slides"
-        >
-          {OCCASIONS_SLIDES.map((_, idx) => (
-            <button
-              key={idx}
-              type="button"
-              role="tab"
-              aria-selected={currentSlide === idx}
-              className={`${styles.dot} ${
-                currentSlide === idx ? styles.activeDot : ""
-              }`}
-              onClick={() => handleSlideChange(idx)}
-              aria-label={`Go to occasion slide ${idx + 1}`}
-            />
-          ))}
-        </div>
+
       </div>
     </section>
   );
