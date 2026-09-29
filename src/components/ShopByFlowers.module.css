@@ -26,8 +26,8 @@
   font-family: var(--font-sans, -apple-system, sans-serif);
   font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-transform: capitalize;
   color: #db2777;
   margin-bottom: 8px;
 }
@@ -275,52 +275,18 @@
 
 .flowerTitle {
   font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(1.35rem, 1.6vw, 1.65rem);
+  font-size: clamp(1.35rem, 1.6vw, 1.7rem);
   font-weight: 600;
   letter-spacing: -0.01em;
   color: #111827;
-  margin: 0 0 5px 0;
+  margin: 0;
   line-height: 1.25;
-  transition: color 0.25s ease;
+  transition: color 0.25s ease, transform 0.25s ease;
 }
 
 .itemInner:hover .flowerTitle {
   color: #db2777;
-}
-
-.flowerDesc {
-  font-family: var(--font-sans, -apple-system, sans-serif);
-  font-size: 0.88rem;
-  font-weight: 400;
-  font-style: italic;
-  color: #64748b;
-  margin: 0 0 14px 0;
-  line-height: 1.35;
-}
-
-/* Small circular pink outlined arrow button */
-.arrowButton {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1.5px solid #f472b6;
-  background: transparent;
-  color: #db2777;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.itemInner:hover .arrowButton,
-.arrowButton:hover {
-  background: #db2777;
-  border-color: #db2777;
-  color: #ffffff;
-  transform: translateX(3px);
-  box-shadow: 0 4px 12px rgba(219, 39, 119, 0.25);
+  transform: translateY(-2px);
 }
 
 /* ================= THIN VERTICAL DOTTED SEPARATORS ================= */

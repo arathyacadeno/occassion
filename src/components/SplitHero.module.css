@@ -144,8 +144,8 @@
   font-size: clamp(2.2rem, 3.6vw, 3.4rem);
   font-weight: 700;
   color: #111111;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  text-transform: capitalize;
+  letter-spacing: -0.01em;
   line-height: 1.15;
   margin-bottom: 24px;
   opacity: 0;
@@ -222,10 +222,10 @@
   padding: 14px 38px;
   border: 1.5px solid #ec4899;
   font-family: var(--font-sans);
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-transform: capitalize;
   color: #111111;
   background-color: #ffffff;
   border-radius: 100px;
@@ -325,10 +325,10 @@
   color: #111111;
   border: 1.5px solid #fce7f3;
   padding: 6px 14px;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-transform: capitalize;
   border-radius: 6px;
   pointer-events: none;
   opacity: 0;

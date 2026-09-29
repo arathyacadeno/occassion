@@ -131,7 +131,7 @@ export default function ShopByOccasion() {
       <div className={styles.container}>
         {/* Section Header */}
         <div className={`${styles.sectionHeader} ${isVisible ? styles.headerInView : ""}`}>
-          <span className={styles.eyebrow}>CELEBRATE EVERY MOMENT</span>
+          <span className={styles.eyebrow}>Celebrate Every Moment</span>
           <h2 className={styles.mainHeading}>Shop by Occasion</h2>
           <p className={styles.subHeading}>
             Find the perfect fresh flowers, cakes, and artisanal arrangements handcrafted for life’s most cherished celebrations.

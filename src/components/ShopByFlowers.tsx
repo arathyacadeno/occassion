@@ -2,7 +2,7 @@
 
 import React, { useRef, useState } from "react";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import styles from "./ShopByFlowers.module.css";
 
 interface FlowerCategory {
@@ -95,7 +95,7 @@ export default function ShopByFlowers() {
       <div className={styles.container}>
         {/* ================= SECTION HEADER ================= */}
         <div className={styles.sectionHeader}>
-          <span className={styles.subtitle}>CURATED BLOOMS</span>
+          <span className={styles.subtitle}>Curated Blooms</span>
           <h2 className={styles.mainTitle}>Shop By Flowers</h2>
 
           {/* Decorative floral icon with thin horizontal lines */}
@@ -163,7 +163,11 @@ export default function ShopByFlowers() {
                   key={`${cat.id}-${idx}`}
                   className={styles.flowerItem}
                 >
-                  <div className={styles.itemInner}>
+                  <Link
+                    href={cat.href}
+                    className={styles.itemInner}
+                    aria-label={`Shop ${cat.title} bouquets`}
+                  >
                     {/* Subtle light-pink circular/oval background behind bouquet */}
                     <div className={styles.backdropWrapper}>
                       <div className={styles.pinkOvalGlow} />
@@ -179,21 +183,11 @@ export default function ShopByFlowers() {
                       </div>
                     </div>
 
-                    {/* Flower Information */}
+                    {/* Flower Title Only */}
                     <div className={styles.infoArea}>
                       <h3 className={styles.flowerTitle}>{cat.title}</h3>
-                      <p className={styles.flowerDesc}>{cat.description}</p>
-
-                      {/* Small circular pink outlined arrow button */}
-                      <Link
-                        href={cat.href}
-                        className={styles.arrowButton}
-                        aria-label={`Shop ${cat.title} bouquets`}
-                      >
-                        <ArrowRight size={15} strokeWidth={2.2} />
-                      </Link>
                     </div>
-                  </div>
+                  </Link>
 
                   {/* Thin vertical dotted separator between categories */}
                   <div className={styles.dottedSeparator} aria-hidden="true" />

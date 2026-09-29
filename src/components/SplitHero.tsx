@@ -60,10 +60,10 @@ export default function SplitHero({
       left: {
         type: "text" as const,
         tagline: "For flower lovers",
-        title: "EVERYTHING YOU NEED",
+        title: "Everything You Need",
         description:
           "From handcrafted bridal bouquets to lavish floral stages, we craft exquisite bespoke arrangements using fresh premium blossoms to celebrate life’s most cherished celebrations.",
-        btnText: "EXPLORE MORE",
+        btnText: "Explore More",
         bgIllustration: "/images/slide1-art.jpg",
       },
       right: {
@@ -84,10 +84,10 @@ export default function SplitHero({
       right: {
         type: "text" as const,
         tagline: "For flower lovers",
-        title: "PERFECT CHOICE",
+        title: "Perfect Choice",
         description:
           "Curated with passion and artistic finesse, our master florists hand-select every stem from trusted growers to create unforgettable impressions for weddings, anniversaries, and heartfelt gifts.",
-        btnText: "EXPLORE MORE",
+        btnText: "Explore More",
         bgIllustration: "/images/slide2-art.jpg",
       },
     },
@@ -96,10 +96,10 @@ export default function SplitHero({
       left: {
         type: "text" as const,
         tagline: "For flower lovers",
-        title: "FOR EVERY OCCASION",
+        title: "For Every Occasion",
         description:
           "Whether adorning luxury wedding cars, sacred church altars, or intimate banquet tables, our signature floral designs bring timeless elegance, fragrance, and joy to every moment.",
-        btnText: "EXPLORE MORE",
+        btnText: "Explore More",
         bgIllustration: "/images/slide3-art.jpg",
       },
       right: {

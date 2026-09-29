@@ -132,8 +132,8 @@
   font-size: 0.82rem;
   font-weight: 700;
   color: #0f172a;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-transform: capitalize;
   margin: 0;
   padding: 0;
 }
@@ -570,8 +570,8 @@
   font-size: 0.85rem;
   font-weight: 700;
   color: #0f172a;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-transform: capitalize;
 }
 
 .shopFlowersGrid {
@@ -713,8 +713,8 @@
   font-family: var(--font-serif);
   font-size: 1.35rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  text-transform: capitalize;
   color: #831843;
 }
 

@@ -109,9 +109,12 @@ export default function ShopByCategory() {
       aria-label="Shop by Category"
     >
       <div className={styles.container}>
-        {/* Simple Section Heading */}
+        {/* Section Heading & Subheading */}
         <div className={`${styles.sectionHeader} ${isVisible ? styles.headerInView : ""}`}>
-          <h2 className={styles.mainHeading}>SHOP BY CATEGORY</h2>
+          <h2 className={styles.mainHeading}>Shop By Category</h2>
+          <p className={styles.subHeading}>
+            Discover beautiful flowers, cakes, and handcrafted decorations for every occasion.
+          </p>
         </div>
 
         {/* 5 Categories Editorial Gallery Row */}

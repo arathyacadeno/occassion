@@ -32,11 +32,22 @@
   font-family: inherit;
   font-size: clamp(1.9rem, 2.7vw, 2.5rem);
   font-weight: 800;
-  letter-spacing: 0.04em;
+  letter-spacing: -0.02em;
   color: #0f172a;
   line-height: 1.2;
   margin: 0;
-  text-transform: uppercase;
+  text-transform: capitalize;
+}
+
+.subHeading {
+  font-family: inherit;
+  font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+  font-weight: 400;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 10px auto 0 auto;
+  max-width: 620px;
+  text-align: center;
 }
 
 /* ================= 5-CATEGORY GALLERY GRID ================= */

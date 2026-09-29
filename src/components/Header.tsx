@@ -224,7 +224,7 @@ export default function Header({
                   <div className={styles.shopFlowersGrid}>
                     {/* Column 1: By Type */}
                     <div className={styles.shopFlowersCol}>
-                      <h4 className={styles.shopFlowersColTitle}>BY TYPE</h4>
+                      <h4 className={styles.shopFlowersColTitle}>By Type</h4>
                       <div className={styles.shopFlowersDivider} />
                       <ul className={styles.shopFlowersList}>
                         <li>
@@ -282,7 +282,7 @@ export default function Header({
 
                     {/* Column 2: By Occasion */}
                     <div className={styles.shopFlowersCol}>
-                      <h4 className={styles.shopFlowersColTitle}>BY OCCASION</h4>
+                      <h4 className={styles.shopFlowersColTitle}>By Occasion</h4>
                       <div className={styles.shopFlowersDivider} />
                       <ul className={styles.shopFlowersList}>
                         <li>
@@ -340,7 +340,7 @@ export default function Header({
 
                     {/* Column 3: By Color */}
                     <div className={styles.shopFlowersCol}>
-                      <h4 className={styles.shopFlowersColTitle}>BY COLOR</h4>
+                      <h4 className={styles.shopFlowersColTitle}>By Color</h4>
                       <div className={styles.shopFlowersDivider} />
                       <ul className={styles.shopFlowersList}>
                         <li>

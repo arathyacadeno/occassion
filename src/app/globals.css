@@ -92,8 +92,8 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading, 'Manrope', sans-serif);
   color: var(--color-dark);
   font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  text-transform: none;
 }
 
 a {
@@ -135,10 +135,10 @@ button, input, select, textarea {
   gap: 10px;
   padding: 14px 34px;
   font-family: var(--font-sans);
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-transform: capitalize;
   color: var(--color-dark);
   border: 1.5px solid var(--color-rose);
   background: #ffffff;
@@ -276,8 +276,8 @@ button, input, select, textarea {
   font-size: clamp(1.9rem, 2.9vw, 2.8rem);
   font-weight: 600;
   color: #111827;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  text-transform: none;
+  letter-spacing: -0.01em;
   margin: 0 0 14px;
   text-align: left;
 }
