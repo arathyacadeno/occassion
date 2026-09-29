@@ -92,7 +92,7 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-inter);
   color: var(--color-dark);
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: -0.01em;
   text-transform: none;
 }

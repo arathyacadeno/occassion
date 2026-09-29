@@ -14,7 +14,7 @@
 /* Maximum-width container with responsive horizontal padding */
 .navbarContainer {
   position: relative;
-  max-width: 1440px;
+  max-width: 1360px;
   margin: 0 auto;
   padding: 0 32px;
   height: 72px;
