@@ -33,10 +33,10 @@
 }
 
 .mainTitle {
-  font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: clamp(2.3rem, 3.4vw, 3.2rem);
-  font-weight: 600;
-  letter-spacing: -0.015em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   color: #111827;
   line-height: 1.15;
   margin: 0 0 16px 0;
@@ -274,8 +274,8 @@
 }
 
 .flowerTitle {
-  font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(1.35rem, 1.6vw, 1.7rem);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: clamp(1.2rem, 1.4vw, 1.45rem);
   font-weight: 600;
   letter-spacing: -0.01em;
   color: #111827;

@@ -3,12 +3,12 @@
 :root {
   --font-script: 'Great Vibes', 'Alex Brush', cursive;
   --font-handwriting: 'Dancing Script', cursive;
-  --font-heading: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-serif: 'Manrope', sans-serif;
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-plus-jakarta: 'Plus Jakarta Sans', sans-serif;
-  --font-poppins: 'Poppins', sans-serif;
-  --font-manrope: 'Manrope', sans-serif;
+  --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-plus-jakarta: 'Inter', sans-serif;
+  --font-poppins: 'Inter', sans-serif;
+  --font-manrope: 'Inter', sans-serif;
   --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
   /* Exclusive Light Pink & Pure White Palette (NO black colors) */
@@ -59,10 +59,11 @@ html {
   scroll-behavior: smooth;
   font-size: 16px;
   background-color: #ffffff;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 body {
-  font-family: 'Plus Jakarta Sans', var(--font-sans);
+  font-family: 'Inter', var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color: var(--color-text);
   background-color: #ffffff;
   line-height: 1.6;
@@ -77,19 +78,19 @@ body {
 }
 
 .font-serif {
-  font-family: var(--font-heading, 'Manrope', sans-serif);
+  font-family: var(--font-inter);
 }
 
 .font-heading {
-  font-family: var(--font-heading, 'Manrope', sans-serif);
+  font-family: var(--font-inter);
 }
 
 .font-sans {
-  font-family: 'Plus Jakarta Sans', var(--font-sans);
+  font-family: var(--font-inter);
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading, 'Manrope', sans-serif);
+  font-family: var(--font-inter);
   color: var(--color-dark);
   font-weight: 700;
   letter-spacing: -0.01em;
@@ -103,7 +104,7 @@ a {
 }
 
 button, input, select, textarea {
-  font-family: 'Plus Jakarta Sans', var(--font-sans);
+  font-family: var(--font-inter);
   cursor: pointer;
   border: none;
   background: none;

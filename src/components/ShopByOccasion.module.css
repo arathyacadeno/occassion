@@ -1,31 +1,30 @@
+/* ==========================================================================
+   SHOP BY OCCASION - MINIMALIST EDITORIAL 3-CARD STAGGERED LAYOUT
+   ========================================================================== */
+
 .sectionWrapper {
   width: 100%;
-  background: linear-gradient(180deg, #ffffff 0%, #fff7f9 50%, #ffffff 100%);
-  padding: 68px 0 76px 0;
+  background-color: #ffffff;
+  padding: 84px 0 120px 0;
   position: relative;
   overflow: hidden;
-  border-top: 1px solid #fce7f3;
 }
 
 .container {
-  max-width: 1320px;
+  max-width: 1240px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 32px;
   box-sizing: border-box;
 }
 
 /* ================= SECTION HEADER ================= */
 .sectionHeader {
   text-align: center;
-  max-width: 720px;
-  margin: 0 auto 38px auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  margin: 0 auto 64px auto;
   opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 650ms cubic-bezier(0.16, 1, 0.3, 1),
-              transform 650ms cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(20px);
+  transition: opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
+              transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .headerInView {
@@ -33,96 +32,91 @@
   transform: translateY(0);
 }
 
-.eyebrow {
-  display: inline-block;
-  font-family: inherit;
-  font-size: 0.76rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: capitalize;
-  color: #db2777;
-  margin-bottom: 8px;
-}
-
 .mainHeading {
-  font-family: inherit;
-  font-size: clamp(1.9rem, 2.7vw, 2.45rem);
-  font-weight: 800;
-  letter-spacing: -0.025em;
-  color: #0f172a;
-  line-height: 1.2;
+  font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  font-size: clamp(2.3rem, 3.4vw, 3.2rem);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: #1a1a1a;
+  line-height: 1.15;
   margin: 0 0 10px 0;
+  text-transform: capitalize;
 }
 
 .subHeading {
-  font-family: inherit;
-  font-size: 0.98rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: clamp(0.92rem, 1.1vw, 1.02rem);
   font-weight: 400;
-  color: #64748b;
-  line-height: 1.55;
-  margin: 0;
+  color: #78716c;
+  line-height: 1.5;
+  margin: 0 auto;
+  letter-spacing: 0.02em;
 }
 
-/* ================= OCCASIONS GRID ================= */
+/* ================= 3-CARD STAGGERED MASONRY GRID ================= */
 .gridContainer {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+  gap: 40px;
+  align-items: start;
   width: 100%;
+  padding-bottom: 34px; /* Room for overlapping pills */
 }
 
+/* Staggered arrangement matching reference image:
+   - Left card: higher / standard position (margin-top: 0)
+   - Center card: positioned visibly lower (margin-top: 60px)
+   - Right card: higher / standard position (margin-top: 0)
+*/
+.staggerLeft {
+  margin-top: 0px;
+}
+
+.staggerCenter {
+  margin-top: 60px;
+}
+
+.staggerRight {
+  margin-top: 0px;
+}
+
+/* ================= CARD LINK & ARTICLE ================= */
 .cardLink {
   display: block;
   text-decoration: none;
   color: inherit;
-  height: 100%;
+  outline: none;
   cursor: pointer;
 }
 
-/* ================= OCCASION CARD DESIGN ================= */
 .card {
-  background-color: #ffffff;
-  border: 1px solid #fce7f3;
-  border-radius: 20px;
-  padding: 14px;
+  position: relative;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  box-sizing: border-box;
-  box-shadow: 0 4px 20px rgba(219, 39, 119, 0.05), 0 2px 8px rgba(15, 23, 42, 0.02);
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
+  align-items: center;
+  width: 100%;
   opacity: 0;
-  transform: translateY(35px) scale(0.97);
-  transition: opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
-              transform 750ms cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.3s ease;
-  transition-delay: var(--anim-delay, 0ms), var(--anim-delay, 0ms), 0s, 0s;
+  transform: translateY(28px);
+  transition: opacity 750ms cubic-bezier(0.16, 1, 0.3, 1),
+              transform 750ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--anim-delay, 0s);
 }
 
 .cardVisible {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: translateY(0);
 }
 
-.cardVisible:hover {
-  transform: translateY(-6px) scale(1);
-  border-color: #f472b6;
-  box-shadow: 0 16px 34px -8px rgba(219, 39, 119, 0.18), 0 6px 16px rgba(15, 23, 42, 0.06);
-  transition-delay: 0s, 0s, 0s, 0s;
-}
-
-/* Image Frame */
+/* ================= LARGE TALL RECTANGULAR IMAGE FRAME ================= */
 .imageFrame {
   position: relative;
   width: 100%;
-  height: 200px;
-  background-color: #fdf2f8;
-  border-radius: 14px;
+  aspect-ratio: 3 / 4;
+  border-radius: 22px;
   overflow: hidden;
-  border: 1px solid #fce7f3;
+  background-color: #f8fafc;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .cardImage {
@@ -130,163 +124,125 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: scale(1);
+  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
 }
 
-.cardVisible:hover .cardImage {
-  transform: scale(1.08);
+/* Hover: subtle zoom in on image */
+.cardLink:hover .cardImage {
+  transform: scale(1.055);
 }
 
-/* Emoji Badge */
-.emojiBadge {
+.cardLink:hover .imageFrame {
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.1);
+}
+
+/* ================= GOLD / MUSTARD OVERLAPPING PILL LABEL ================= */
+.pillContainer {
   position: absolute;
-  top: 12px;
-  left: 12px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(255, 255, 255, 0.92);
-  padding: 5px 12px;
-  border-radius: 9999px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  backdrop-filter: blur(6px);
-  z-index: 2;
-}
-
-.emojiIcon {
-  font-size: 1rem;
-  line-height: 1;
-}
-
-.emojiText {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: #0f172a;
-  letter-spacing: -0.01em;
-}
-
-/* Hover Overlay */
-.hoverOverlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(219, 39, 119, 0) 40%, rgba(219, 39, 119, 0.12) 100%);
-  opacity: 0;
+  bottom: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
-  transition: opacity 0.3s ease;
+  white-space: nowrap;
 }
 
-.cardVisible:hover .hoverOverlay {
-  opacity: 1;
-}
-
-/* Card Content */
-.cardContent {
-  padding: 16px 4px 4px 4px;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-
-.subtitle {
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: capitalize;
-  letter-spacing: 0.08em;
-  color: #db2777;
-  margin-bottom: 4px;
-}
-
-.cardTitle {
-  font-family: inherit;
-  font-size: 1.25rem;
-  font-weight: 800;
-  color: #0f172a;
-  margin: 0 0 8px 0;
-  line-height: 1.25;
-  transition: color 0.2s ease;
-}
-
-.cardVisible:hover .cardTitle {
-  color: #db2777;
-}
-
-.cardDesc {
-  font-family: inherit;
-  font-size: 0.88rem;
-  color: #64748b;
-  line-height: 1.48;
-  margin: 0 0 16px 0;
-  flex: 1;
-}
-
-/* CTA Row */
-.ctaRow {
+/* Thin Dotted Rounded Outer Border */
+.pillDottedOuter {
   display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 9px 16px;
-  background-color: #fff1f6;
-  color: #db2777;
-  border: 1px solid #fce7f3;
+  justify-content: center;
+  padding: 4px;
   border-radius: 9999px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  transition: all 0.25s ease;
-  margin-top: auto;
+  border: 1.5px dotted #b8912e;
+  background: #ffffff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+  transition: all 0.4s ease;
 }
 
-.ctaText {
-  letter-spacing: -0.01em;
-}
-
-.ctaIcon {
-  transition: transform 0.25s ease;
-}
-
-.cardVisible:hover .ctaRow {
-  background-color: #db2777;
+/* Gold / Mustard Solid Inner Pill */
+.pillSolidInner {
+  display: inline-block;
+  background: #ba9431; /* authentic warm gold/mustard matching reference */
   color: #ffffff;
-  border-color: #db2777;
-  box-shadow: 0 4px 14px rgba(219, 39, 119, 0.25);
+  font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.04rem, 1.25vw, 1.18rem);
+  font-weight: 500;
+  letter-spacing: 0.025em;
+  padding: 8px 32px;
+  border-radius: 9999px;
+  line-height: 1.2;
+  text-align: center;
+  transition: background-color 0.3s ease;
 }
 
-.cardVisible:hover .ctaIcon {
-  transform: scale(1.15);
+/* Hover effect: occasion label gently moves upward */
+.cardLink:hover .pillContainer {
+  transform: translate(-50%, -8px);
 }
 
-/* ================= ACCESSIBILITY ================= */
-@media (prefers-reduced-motion: reduce) {
-  .sectionHeader,
-  .card {
-    opacity: 1 !important;
-    transform: none !important;
-    transition: none !important;
-  }
+.cardLink:hover .pillDottedOuter {
+  border-color: #a88225;
+  box-shadow: 0 8px 24px rgba(186, 148, 49, 0.28);
 }
 
-/* ================= RESPONSIVE BEHAVIOR ================= */
-@media (max-width: 1024px) {
-  .gridContainer {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-  }
+.cardLink:hover .pillSolidInner {
+  background-color: #a88225;
 }
 
-@media (max-width: 600px) {
-  .sectionWrapper {
-    padding: 50px 0 58px 0;
-  }
+/* ================= RESPONSIVE BREAKPOINTS ================= */
+/* Tablet: 3 columns with subtle stagger or 2+1 */
+@media (max-width: 900px) {
   .container {
-    padding: 0 16px;
+    padding: 0 24px;
   }
-  .mainHeading {
-    font-size: 1.75rem;
+
+  .gridContainer {
+    gap: 24px;
   }
+
+  .staggerCenter {
+    margin-top: 40px;
+  }
+}
+
+/* Mobile: Single-column cards */
+@media (max-width: 640px) {
+  .sectionWrapper {
+    padding: 60px 0 84px 0;
+  }
+
+  .container {
+    padding: 0 20px;
+  }
+
+  .sectionHeader {
+    margin-bottom: 44px;
+  }
+
   .gridContainer {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 54px;
+    max-width: 360px;
+    margin: 0 auto;
+    padding-bottom: 24px;
   }
+
+  .staggerLeft,
+  .staggerCenter,
+  .staggerRight {
+    margin-top: 0px;
+  }
+
   .imageFrame {
-    height: 190px;
+    aspect-ratio: 3 / 3.9;
+  }
+
+  .pillSolidInner {
+    padding: 7px 26px;
+    font-size: 1rem;
   }
 }
