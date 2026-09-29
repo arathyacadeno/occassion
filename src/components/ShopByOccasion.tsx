@@ -15,7 +15,7 @@ interface OccasionCardItem {
 }
 
 const OCCASIONS_SLIDES: OccasionCardItem[][] = [
-  // Slide 1 (3 cards)
+  // Slide 1 (3 cards featuring uploaded images)
   [
     {
       id: "birthday",
@@ -38,27 +38,27 @@ const OCCASIONS_SLIDES: OccasionCardItem[][] = [
         "Hello Occassions Florist Calicut, I would like to explore luxury flowers for an Anniversary.",
     },
     {
-      id: "congratulations",
-      name: "Congratulations",
-      image: "/images/occasion-congratulations.jpg",
-      href: "/flower-bouquets?occasion=congratulations",
+      id: "best-wishes",
+      name: "Best Wishes",
+      image: "/images/occasion-best-wishes.jpg",
+      href: "/flower-bouquets?occasion=best-wishes",
       staggerClass: styles.staggerRight,
       delay: "0.3s",
       whatsappMessage:
-        "Hello Occassions Florist Calicut, I would like to send Congratulations flower bouquets.",
+        "Hello Occassions Florist Calicut, I would like to order cheerful Best Wishes flowers.",
     },
   ],
   // Slide 2 (3 cards)
   [
     {
-      id: "best-wishes",
-      name: "Best Wishes",
-      image: "/images/occasion-best-wishes-sun.jpg",
-      href: "/flower-bouquets?occasion=best-wishes",
+      id: "congratulations",
+      name: "Congratulations",
+      image: "/images/occasion-congratulations.jpg",
+      href: "/flower-bouquets?occasion=congratulations",
       staggerClass: styles.staggerLeft,
       delay: "0.06s",
       whatsappMessage:
-        "Hello Occassions Florist Calicut, I would like to order cheerful Best Wishes flowers.",
+        "Hello Occassions Florist Calicut, I would like to send Congratulations flower bouquets.",
     },
     {
       id: "wedding",
