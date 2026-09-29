@@ -303,15 +303,12 @@ export default function SplitHero({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [goToSlide, totalSlides]);
 
-  // Prevent any native page scrolling while hero slides are still in progress
+  // If page loads already scrolled down (e.g. on page refresh or anchor link),
+  // sync current slide with the final slide so hero doesn't lock or misalign
   useEffect(() => {
-    const handleScroll = () => {
-      if (currentSlideRef.current < totalSlides - 1 && window.scrollY > 0) {
-        window.scrollTo(0, 0);
-      }
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    if (typeof window !== "undefined" && window.scrollY > 80) {
+      setCurrentSlide(totalSlides - 1);
+    }
   }, [totalSlides]);
 
   // MultiScroll Counter-sliding Calculations:
