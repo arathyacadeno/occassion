@@ -1,8 +1,8 @@
 .footerWrapper {
   position: relative;
-  background-image: url('/images/footer-garden-bg.jpg');
+  background-image: url('/images/footer-floral-bg.jpg');
   background-size: cover;
-  background-position: center bottom;
+  background-position: center center;
   background-attachment: fixed;
   background-repeat: no-repeat;
   padding: 80px 24px 40px 24px;
@@ -12,7 +12,7 @@
 @media (max-width: 768px) {
   .footerWrapper {
     padding: 50px 16px 30px 16px;
-    background-attachment: scroll; /* smooth scroll fallback on touch devices */
+    background-attachment: scroll;
   }
 }
 
