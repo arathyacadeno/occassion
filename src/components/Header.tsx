@@ -12,8 +12,6 @@ import {
   Menu,
   X,
   Phone,
-  Check,
-  ChevronDown,
   ArrowRight,
   Sparkles,
   Flower2,
@@ -26,7 +24,6 @@ import {
   PartyPopper,
   Circle,
 } from "lucide-react";
-import OccassionsLogo from "./OccassionsLogo";
 import { useCart } from "@/context/CartContext";
 
 interface HeaderProps {
@@ -36,18 +33,50 @@ interface HeaderProps {
   currentSlide?: number;
 }
 
+/* Mega dropdown content, kept as data so the JSX stays short */
+const FLOWER_COLUMNS = [
+  {
+    title: "By Type",
+    items: [
+      { href: "/flowers/roses", label: "Roses", Icon: Flower2 },
+      { href: "/flowers/bouquets", label: "Bouquets", Icon: Sparkles },
+      { href: "/flowers/tulips", label: "Tulips", Icon: Flower },
+      { href: "/flowers/sunflowers", label: "Sunflowers", Icon: Sun },
+      { href: "/flowers/lilies", label: "Lilies", Icon: Feather },
+    ],
+  },
+  {
+    title: "By Occasion",
+    items: [
+      { href: "/flowers/anniversary", label: "Anniversary", Icon: Heart },
+      { href: "/flowers/birthday", label: "Birthday", Icon: Cake },
+      { href: "/flowers/wedding", label: "Wedding", Icon: Gem },
+      { href: "/flowers/mothers-day", label: "Mother's Day", Icon: Gift },
+      { href: "/flowers/congratulations", label: "Congratulations", Icon: PartyPopper },
+    ],
+  },
+  {
+    title: "By Color",
+    items: [
+      { href: "/flowers/pink-flowers", label: "Pink Flowers", Icon: Circle, color: "colorIconPink" },
+      { href: "/flowers/white-flowers", label: "White Flowers", Icon: Circle, color: "colorIconWhite" },
+      { href: "/flowers/red-flowers", label: "Red Flowers", Icon: Circle, color: "colorIconRed" },
+      { href: "/flowers/purple-flowers", label: "Purple Flowers", Icon: Circle, color: "colorIconPurple" },
+      { href: "/flowers/yellow-flowers", label: "Yellow Flowers", Icon: Circle, color: "colorIconYellow" },
+    ],
+  },
+] as const;
+
 export default function Header({
   isDrawerOpen: controlledDrawerOpen,
   onToggleDrawer,
   onSelectSlide,
-  currentSlide = 0,
 }: HeaderProps) {
   const pathname = usePathname();
   const { cartCount } = useCart();
   const [internalDrawerOpen, setInternalDrawerOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeModal, setActiveModal] = useState<"cart" | "signin" | null>(null);
-  const [activeCategory, setActiveCategory] = useState("Home");
 
   const [flowersHovered, setFlowersHovered] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -77,13 +106,11 @@ export default function Header({
     };
   }, []);
 
-  // Flowers is active with soft light-pink pill & pink text
+  // Flowers is active only on the home page and flower / table-arrangement pages
   const isFlowersActive =
-    !pathname ||
     pathname === "/" ||
-    pathname.startsWith("/flowers") ||
-    pathname.startsWith("/table-arrangements") ||
-    (!pathname.startsWith("/church-arrangements") && !pathname.startsWith("/cart"));
+    !!pathname?.startsWith("/flowers") ||
+    !!pathname?.startsWith("/table-arrangements");
 
   const isDrawerOpen =
     controlledDrawerOpen !== undefined ? controlledDrawerOpen : internalDrawerOpen;
@@ -96,8 +123,16 @@ export default function Header({
     }
   };
 
+  const scrollToHighlightsOr = (fallbackUrl: string) => {
+    const highlightEl = document.getElementById("highlights");
+    if (highlightEl) {
+      highlightEl.scrollIntoView({ behavior: "smooth" });
+    } else if (typeof window !== "undefined") {
+      window.location.href = fallbackUrl;
+    }
+  };
+
   const handleNavCategory = (categoryName: string, slideIndex?: number) => {
-    setActiveCategory(categoryName);
     if (slideIndex !== undefined && onSelectSlide) {
       onSelectSlide(slideIndex);
     }
@@ -108,33 +143,13 @@ export default function Header({
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
     } else if (categoryName === "Table arrangements") {
-      const highlightEl = document.getElementById("highlights");
-      if (highlightEl) {
-        highlightEl.scrollIntoView({ behavior: "smooth" });
-      } else if (typeof window !== "undefined") {
-        window.location.href = "/table-arrangements";
-      }
+      scrollToHighlightsOr("/table-arrangements");
     } else if (categoryName === "Car decorations") {
-      const highlightEl = document.getElementById("highlights");
-      if (highlightEl) {
-        highlightEl.scrollIntoView({ behavior: "smooth" });
-      } else if (typeof window !== "undefined") {
-        window.location.href = "/car-decorations";
-      }
+      scrollToHighlightsOr("/car-decorations");
     } else if (categoryName === "Church arrangements") {
-      const highlightEl = document.getElementById("highlights");
-      if (highlightEl) {
-        highlightEl.scrollIntoView({ behavior: "smooth" });
-      } else if (typeof window !== "undefined") {
-        window.location.href = "/church-arrangements";
-      }
+      scrollToHighlightsOr("/church-arrangements");
     } else if (categoryName === "Flower baskets & garlands") {
-      const highlightEl = document.getElementById("highlights");
-      if (highlightEl) {
-        highlightEl.scrollIntoView({ behavior: "smooth" });
-      } else if (typeof window !== "undefined") {
-        window.location.href = "/garlands-and-baskets";
-      }
+      scrollToHighlightsOr("/garlands-and-baskets");
     } else if (categoryName === "Contact & Location") {
       setDrawerOpen(true);
     }
@@ -163,8 +178,17 @@ export default function Header({
     } else if (q.includes("garland") || q.includes("basket") || q.includes("varmala")) {
       handleNavCategory("Flower baskets & garlands", 1);
     } else if (q.includes("cake")) {
-      handleNavCategory("Cakes", 0);
-    } else if (q.includes("contact") || q.includes("phone") || q.includes("location") || q.includes("address")) {
+      window.open(
+        "https://wa.me/918606464700?text=Hello%20Occassions,%20I%20would%20like%20to%20order%20a%20fresh%20celebration%20cake.",
+        "_blank",
+        "noopener,noreferrer"
+      );
+    } else if (
+      q.includes("contact") ||
+      q.includes("phone") ||
+      q.includes("location") ||
+      q.includes("address")
+    ) {
       setDrawerOpen(true);
     } else {
       window.location.href = "/flowers/all";
@@ -181,11 +205,28 @@ export default function Header({
     }
   };
 
+  const drawerSlideBtnStyle: React.CSSProperties = {
+    textAlign: "left",
+    background: "none",
+    border: "none",
+    cursor: "pointer",
+    width: "100%",
+  };
+
+  const drawerHeadingStyle: React.CSSProperties = {
+    fontFamily: "var(--font-sans)",
+    fontSize: "0.72rem",
+    letterSpacing: "0.18em",
+    textTransform: "uppercase",
+    color: "#888",
+    marginBottom: 12,
+  };
+
   return (
     <>
       <header className={styles.headerWrapper} role="banner">
         <div className={styles.navbarContainer}>
-          {/* Logo on the far left */}
+          {/* Left: logo */}
           <Link
             href="/"
             className={styles.brandArea}
@@ -198,7 +239,7 @@ export default function Header({
             />
           </Link>
 
-          {/* Navigation items in the center */}
+          {/* Center: navigation */}
           <nav className={styles.centerNav} aria-label="Main Navigation">
             <div
               className={styles.flowersNavWrapper}
@@ -207,14 +248,14 @@ export default function Header({
             >
               <Link
                 href="/flowers/roses"
-                className={`${styles.centerNavLink} ${isFlowersActive || flowersHovered ? styles.activeNavLink : ""}`}
+                className={`${styles.centerNavLink} ${isFlowersActive || flowersHovered ? styles.activeNavLink : ""
+                  }`}
                 aria-expanded={flowersHovered}
                 aria-haspopup="true"
               >
                 <span>Flowers</span>
               </Link>
 
-              {/* SHOP FLOWERS 3-Column Mega Dropdown (Clean, Luxury Boutique) */}
               {flowersHovered && (
                 <div
                   className={styles.shopFlowersDropdown}
@@ -222,182 +263,35 @@ export default function Header({
                   aria-label="Shop Flowers Dropdown"
                 >
                   <div className={styles.shopFlowersGrid}>
-                    {/* Column 1: By Type */}
-                    <div className={styles.shopFlowersCol}>
-                      <h4 className={styles.shopFlowersColTitle}>By Type</h4>
-                      <div className={styles.shopFlowersDivider} />
-                      <ul className={styles.shopFlowersList}>
-                        <li>
-                          <Link
-                            href="/flowers/roses"
-                            className={styles.shopFlowersItem}
-                            onClick={() => setFlowersHovered(false)}
-                          >
-                            <Flower2 size={16} strokeWidth={1.75} className={styles.itemIcon} />
-                            <span>Roses</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            href="/flowers/bouquets"
-                            className={styles.shopFlowersItem}
-                            onClick={() => setFlowersHovered(false)}
-                          >
-                            <Sparkles size={16} strokeWidth={1.75} className={styles.itemIcon} />
-                            <span>Bouquets</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            href="/flowers/tulips"
-                            className={styles.shopFlowersItem}
-                            onClick={() => setFlowersHovered(false)}
-                          >
-                            <Flower size={16} strokeWidth={1.75} className={styles.itemIcon} />
-                            <span>Tulips</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            href="/flowers/sunflowers"
-                            className={styles.shopFlowersItem}
-                            onClick={() => setFlowersHovered(false)}
-                          >
-                            <Sun size={16} strokeWidth={1.75} className={styles.itemIcon} />
-                            <span>Sunflowers</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            href="/flowers/lilies"
-                            className={styles.shopFlowersItem}
-                            onClick={() => setFlowersHovered(false)}
-                          >
-                            <Feather size={16} strokeWidth={1.75} className={styles.itemIcon} />
-                            <span>Lilies</span>
-                          </Link>
-                        </li>
-                      </ul>
-                    </div>
-
-                    {/* Column 2: By Occasion */}
-                    <div className={styles.shopFlowersCol}>
-                      <h4 className={styles.shopFlowersColTitle}>By Occasion</h4>
-                      <div className={styles.shopFlowersDivider} />
-                      <ul className={styles.shopFlowersList}>
-                        <li>
-                          <Link
-                            href="/flowers/anniversary"
-                            className={styles.shopFlowersItem}
-                            onClick={() => setFlowersHovered(false)}
-                          >
-                            <Heart size={16} strokeWidth={1.75} className={styles.itemIcon} />
-                            <span>Anniversary</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            href="/flowers/birthday"
-                            className={styles.shopFlowersItem}
-                            onClick={() => setFlowersHovered(false)}
-                          >
-                            <Cake size={16} strokeWidth={1.75} className={styles.itemIcon} />
-                            <span>Birthday</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            href="/flowers/wedding"
-                            className={styles.shopFlowersItem}
-                            onClick={() => setFlowersHovered(false)}
-                          >
-                            <Gem size={16} strokeWidth={1.75} className={styles.itemIcon} />
-                            <span>Wedding</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            href="/flowers/mothers-day"
-                            className={styles.shopFlowersItem}
-                            onClick={() => setFlowersHovered(false)}
-                          >
-                            <Gift size={16} strokeWidth={1.75} className={styles.itemIcon} />
-                            <span>Mother's Day</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            href="/flowers/congratulations"
-                            className={styles.shopFlowersItem}
-                            onClick={() => setFlowersHovered(false)}
-                          >
-                            <PartyPopper size={16} strokeWidth={1.75} className={styles.itemIcon} />
-                            <span>Congratulations</span>
-                          </Link>
-                        </li>
-                      </ul>
-                    </div>
-
-                    {/* Column 3: By Color */}
-                    <div className={styles.shopFlowersCol}>
-                      <h4 className={styles.shopFlowersColTitle}>By Color</h4>
-                      <div className={styles.shopFlowersDivider} />
-                      <ul className={styles.shopFlowersList}>
-                        <li>
-                          <Link
-                            href="/flowers/pink-flowers"
-                            className={styles.shopFlowersItem}
-                            onClick={() => setFlowersHovered(false)}
-                          >
-                            <Circle size={15} strokeWidth={2} className={`${styles.itemIcon} ${styles.colorIconPink}`} />
-                            <span>Pink Flowers</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            href="/flowers/white-flowers"
-                            className={styles.shopFlowersItem}
-                            onClick={() => setFlowersHovered(false)}
-                          >
-                            <Circle size={15} strokeWidth={2} className={`${styles.itemIcon} ${styles.colorIconWhite}`} />
-                            <span>White Flowers</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            href="/flowers/red-flowers"
-                            className={styles.shopFlowersItem}
-                            onClick={() => setFlowersHovered(false)}
-                          >
-                            <Circle size={15} strokeWidth={2} className={`${styles.itemIcon} ${styles.colorIconRed}`} />
-                            <span>Red Flowers</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            href="/flowers/purple-flowers"
-                            className={styles.shopFlowersItem}
-                            onClick={() => setFlowersHovered(false)}
-                          >
-                            <Circle size={15} strokeWidth={2} className={`${styles.itemIcon} ${styles.colorIconPurple}`} />
-                            <span>Purple Flowers</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            href="/flowers/yellow-flowers"
-                            className={styles.shopFlowersItem}
-                            onClick={() => setFlowersHovered(false)}
-                          >
-                            <Circle size={15} strokeWidth={2} className={`${styles.itemIcon} ${styles.colorIconYellow}`} />
-                            <span>Yellow Flowers</span>
-                          </Link>
-                        </li>
-                      </ul>
-                    </div>
+                    {FLOWER_COLUMNS.map((col) => (
+                      <div key={col.title} className={styles.shopFlowersCol}>
+                        <h4 className={styles.shopFlowersColTitle}>{col.title}</h4>
+                        <div className={styles.shopFlowersDivider} />
+                        <ul className={styles.shopFlowersList}>
+                          {col.items.map((item) => {
+                            const color = "color" in item ? item.color : undefined;
+                            return (
+                              <li key={item.href}>
+                                <Link
+                                  href={item.href}
+                                  className={styles.shopFlowersItem}
+                                  onClick={() => setFlowersHovered(false)}
+                                >
+                                  <item.Icon
+                                    size={color ? 15 : 16}
+                                    strokeWidth={color ? 2 : 1.75}
+                                    className={`${styles.itemIcon} ${color ? styles[color] : ""}`}
+                                  />
+                                  <span>{item.label}</span>
+                                </Link>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    ))}
                   </div>
 
-                  {/* View All Flowers Button */}
                   <div className={styles.shopFlowersFooter}>
                     <Link
                       href="/flowers/all"
@@ -411,6 +305,7 @@ export default function Header({
                 </div>
               )}
             </div>
+
             <a
               href="https://wa.me/918606464700?text=Hello%20Occassions,%20I%20would%20like%20to%20order%20a%20fresh%20celebration%20cake."
               target="_blank"
@@ -421,7 +316,8 @@ export default function Header({
             </a>
             <Link
               href="/church-arrangements"
-              className={`${styles.centerNavLink} ${pathname?.startsWith("/church-arrangements") ? styles.activeNavLink : ""}`}
+              className={`${styles.centerNavLink} ${pathname?.startsWith("/church-arrangements") ? styles.activeNavLink : ""
+                }`}
             >
               Special occasions
             </Link>
@@ -434,9 +330,8 @@ export default function Header({
             </Link>
           </nav>
 
-          {/* Right Section: Search bar followed by action icons */}
+          {/* Right: search + action icons */}
           <div className={styles.rightSection}>
-            {/* Search bar: white background, thin light-gray border, rounded corners, search icon on the left */}
             <form
               className={styles.searchBar}
               onSubmit={(e) => {
@@ -452,7 +347,7 @@ export default function Header({
               <input
                 type="text"
                 className={styles.searchInput}
-                placeholder="Search for flowers, cakes..."
+                placeholder="Search flowers, cakes..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 aria-label="Search for flowers, cakes and gifts"
@@ -473,20 +368,9 @@ export default function Header({
               )}
             </form>
 
-            {/* Action icons: simple dark outline icons */}
             <div className={styles.actionsGroup}>
-              {/* User/Account Icon */}
-              <button
-                className={styles.iconBtn}
-                onClick={() => setActiveModal("signin")}
-                type="button"
-                aria-label="Profile Account"
-                title="Profile / Account"
-              >
-                <User size={21} strokeWidth={1.8} />
-              </button>
 
-              {/* Shopping cart icon with small 2 notification badge */}
+
               <Link
                 href="/cart"
                 className={styles.iconBtn}
@@ -495,11 +379,12 @@ export default function Header({
               >
                 <div className={styles.cartIconWrap}>
                   <ShoppingCart size={21} strokeWidth={1.8} />
-                  <span className={styles.cartBadge}>{cartCount > 0 ? cartCount : 2}</span>
+                  {cartCount > 0 && (
+                    <span className={styles.cartBadge}>{cartCount}</span>
+                  )}
                 </div>
               </Link>
 
-              {/* Wishlist/Heart Icon */}
               <Link
                 href="/table-arrangements#arrangements"
                 className={styles.iconBtn}
@@ -509,7 +394,6 @@ export default function Header({
                 <Heart size={21} strokeWidth={1.8} />
               </Link>
 
-              {/* Mobile Menu Hamburger (for smaller screens) */}
               <button
                 className={styles.mobileMenuBtn}
                 onClick={() => setDrawerOpen(true)}
@@ -519,19 +403,23 @@ export default function Header({
               >
                 <Menu size={22} strokeWidth={1.8} />
               </button>
+              <button
+                className={styles.iconBtn}
+                onClick={() => setActiveModal("signin")}
+                type="button"
+                aria-label="Profile Account"
+                title="Profile / Account"
+              >
+                <User size={21} strokeWidth={1.8} />
+              </button>
             </div>
           </div>
         </div>
       </header>
 
-
-
-      {/* Modal 3: Cart Modal */}
+      {/* Cart modal */}
       {activeModal === "cart" && (
-        <div
-          className={styles.modalBackdrop}
-          onClick={() => setActiveModal(null)}
-        >
+        <div className={styles.modalBackdrop} onClick={() => setActiveModal(null)}>
           <div
             className={styles.modalBox}
             onClick={(e) => e.stopPropagation()}
@@ -568,13 +456,7 @@ export default function Header({
               >
                 💐
               </div>
-              <h4
-                style={{
-                  fontSize: "1.05rem",
-                  fontWeight: 700,
-                  marginBottom: 6,
-                }}
-              >
+              <h4 style={{ fontSize: "1.05rem", fontWeight: 700, marginBottom: 6 }}>
                 Your cart is empty
               </h4>
               <p
@@ -600,13 +482,7 @@ export default function Header({
                 Explore Floral Collection
               </button>
 
-              <div
-                style={{
-                  marginTop: 16,
-                  fontSize: "0.78rem",
-                  color: "#64748b",
-                }}
-              >
+              <div style={{ marginTop: 16, fontSize: "0.78rem", color: "#64748b" }}>
                 Or order directly via WhatsApp:{" "}
                 <a
                   href="https://wa.me/918606464700"
@@ -622,14 +498,9 @@ export default function Header({
         </div>
       )}
 
-
-
-      {/* Modal 5: Sign In Modal */}
+      {/* Sign in modal */}
       {activeModal === "signin" && (
-        <div
-          className={styles.modalBackdrop}
-          onClick={() => setActiveModal(null)}
-        >
+        <div className={styles.modalBackdrop} onClick={() => setActiveModal(null)}>
           <div
             className={styles.modalBox}
             onClick={(e) => e.stopPropagation()}
@@ -684,18 +555,16 @@ export default function Header({
                 lineHeight: 1.5,
               }}
             >
-              By continuing, you agree to Occassions Terms of Service &amp;
-              Privacy Policy. Fast checkout for all floral arrangements.
+              By continuing, you agree to Occassions Terms of Service &amp; Privacy
+              Policy. Fast checkout for all floral arrangements.
             </div>
           </div>
         </div>
       )}
 
-      {/* Slide-out Side Menu Drawer (Opened by "More" action or Contact) */}
+      {/* Slide-out side drawer */}
       <div
-        className={`${styles.drawerOverlay} ${
-          isDrawerOpen ? styles.drawerOpen : ""
-        }`}
+        className={`${styles.drawerOverlay} ${isDrawerOpen ? styles.drawerOpen : ""}`}
         onClick={() => setDrawerOpen(false)}
       >
         <aside
@@ -760,18 +629,7 @@ export default function Header({
             </span>
           </div>
 
-          <h4
-            style={{
-              fontFamily: "var(--font-sans)",
-              fontSize: "0.72rem",
-              letterSpacing: "0.18em",
-              textTransform: "uppercase",
-              color: "#888",
-              marginBottom: 12,
-            }}
-          >
-            Menu
-          </h4>
+          <h4 style={drawerHeadingStyle}>Menu</h4>
 
           <ul className={styles.drawerNavList}>
             <li>
@@ -819,90 +677,32 @@ export default function Header({
 
           <div className={styles.drawerDivider} />
 
-          <h4
-            style={{
-              fontFamily: "var(--font-sans)",
-              fontSize: "0.72rem",
-              letterSpacing: "0.18em",
-              textTransform: "uppercase",
-              color: "#888",
-              marginBottom: 12,
-            }}
-          >
-            Floral Showcase Navigation
-          </h4>
+          <h4 style={drawerHeadingStyle}>Floral Showcase Navigation</h4>
 
           <ul className={styles.drawerNavList}>
-            <li>
-              <button
-                className={styles.drawerNavLink}
-                onClick={() => {
-                  if (onSelectSlide) onSelectSlide(0);
-                  setDrawerOpen(false);
-                }}
-                style={{
-                  textAlign: "left",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  width: "100%",
-                }}
-              >
-                01. Everything You Need (Bridal)
-              </button>
-            </li>
-            <li>
-              <button
-                className={styles.drawerNavLink}
-                onClick={() => {
-                  if (onSelectSlide) onSelectSlide(1);
-                  setDrawerOpen(false);
-                }}
-                style={{
-                  textAlign: "left",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  width: "100%",
-                }}
-              >
-                02. Perfect Choice (Hydrangea)
-              </button>
-            </li>
-            <li>
-              <button
-                className={styles.drawerNavLink}
-                onClick={() => {
-                  if (onSelectSlide) onSelectSlide(2);
-                  setDrawerOpen(false);
-                }}
-                style={{
-                  textAlign: "left",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  width: "100%",
-                }}
-              >
-                03. For Every Occasion (Roses)
-              </button>
-            </li>
+            {[
+              "01. Everything You Need (Bridal)",
+              "02. Perfect Choice (Hydrangea)",
+              "03. For Every Occasion (Roses)",
+            ].map((label, i) => (
+              <li key={label}>
+                <button
+                  className={styles.drawerNavLink}
+                  onClick={() => {
+                    if (onSelectSlide) onSelectSlide(i);
+                    setDrawerOpen(false);
+                  }}
+                  style={drawerSlideBtnStyle}
+                >
+                  {label}
+                </button>
+              </li>
+            ))}
           </ul>
 
           <div className={styles.drawerDivider} />
 
-          <h4
-            style={{
-              fontFamily: "var(--font-sans)",
-              fontSize: "0.72rem",
-              letterSpacing: "0.18em",
-              textTransform: "uppercase",
-              color: "#888",
-              marginBottom: 12,
-            }}
-          >
-            Our Specialist Services
-          </h4>
+          <h4 style={drawerHeadingStyle}>Our Specialist Services</h4>
 
           <div
             style={{

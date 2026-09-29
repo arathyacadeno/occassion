@@ -11,35 +11,31 @@
   transition: all 0.2s ease;
 }
 
-/* Maximum-width container with responsive horizontal padding */
+/* 3-column grid: logo | centered nav | search + icons.
+   The nav can never overlap the side columns. */
 .navbarContainer {
   position: relative;
   width: 100%;
-  max-width: 1320px;
-  margin-inline: auto;
-  padding-inline: 40px;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 40px;
   height: 72px;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
+  column-gap: 24px;
   box-sizing: border-box;
 }
 
-@media (max-width: 768px) {
-  .navbarContainer {
-    padding-inline: 20px;
-  }
-}
-
-/* 1. Occasions Logo on Far Left */
+/* 1. Logo */
 .brandArea {
+  justify-self: start;
   display: flex;
   align-items: center;
   text-decoration: none;
   cursor: pointer;
   flex-shrink: 0;
   transition: opacity 0.2s ease, transform 0.2s ease;
-  z-index: 2;
 }
 
 .brandArea:hover {
@@ -55,16 +51,13 @@
   display: block;
 }
 
-/* 2. Navigation Items in the EXACT Center of the Webpage */
+/* 2. Navigation (normal flow, no absolute positioning) */
 .centerNav {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 20px;
-  z-index: 1;
-  height: 100%;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
 }
 
 .flowersNavWrapper {
@@ -74,7 +67,44 @@
   height: 72px;
 }
 
-/* 3-Column Luxury Boutique Mega Menu Dropdown */
+.centerNavLink {
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #0f172a;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 10px 18px;
+  border-radius: 9999px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.centerNavLink:hover {
+  color: #db2777;
+  background-color: #fdf2f8;
+}
+
+/* Active item: soft light-pink pill with pink text */
+.activeNavLink {
+  background-color: #fdf2f8;
+  color: #db2777;
+  font-weight: 600;
+}
+
+.activeNavLink:hover {
+  background-color: #fce7f3;
+  color: #be185d;
+}
+
+/* ---------- Shop Flowers 3-column mega dropdown ---------- */
 .shopFlowersDropdown {
   position: absolute;
   top: calc(100% - 2px);
@@ -85,16 +115,17 @@
   border: 1px solid #f1f5f9;
   border-radius: 20px;
   padding: 36px 42px 28px;
-  box-shadow: 0 20px 48px -10px rgba(15, 23, 42, 0.12), 0 4px 16px -2px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 20px 48px -10px rgba(15, 23, 42, 0.12),
+    0 4px 16px -2px rgba(15, 23, 42, 0.04);
   box-sizing: border-box;
   z-index: 999;
   pointer-events: auto;
   animation: dropdownSlideDown 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Invisible bridge preventing cursor from losing hover when moving from nav link into dropdown */
+/* Invisible bridge so the hover isn't lost between link and dropdown */
 .shopFlowersDropdown::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -14px;
   left: 0;
@@ -124,7 +155,6 @@
   flex-direction: column;
 }
 
-/* Very subtle vertical divider lines between columns */
 .shopFlowersCol:not(:last-child) {
   border-right: 1px solid #f1f5f9;
   padding-right: 36px;
@@ -174,7 +204,7 @@
   padding: 8px 0;
   background: transparent;
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-              color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
   white-space: nowrap;
 }
@@ -182,7 +212,6 @@
 .shopFlowersItem:hover {
   color: #db2777;
   transform: translateX(3px);
-  background: transparent;
 }
 
 .itemIcon {
@@ -195,7 +224,6 @@
   color: #db2777;
 }
 
-/* Color column line-circle accents in idle state */
 .colorIconPink {
   color: #ec4899;
 }
@@ -216,7 +244,6 @@
   color: #eab308;
 }
 
-/* On item hover, color icons smoothly switch to brand pink */
 .shopFlowersItem:hover .colorIconPink,
 .shopFlowersItem:hover .colorIconWhite,
 .shopFlowersItem:hover .colorIconRed,
@@ -225,7 +252,6 @@
   color: #db2777;
 }
 
-/* Centered "View All Flowers →" button below the three columns */
 .shopFlowersFooter {
   display: flex;
   justify-content: center;
@@ -265,64 +291,15 @@
   transform: translateX(3px);
 }
 
-.centerNavLink {
-  font-family: inherit;
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: #0f172a; /* dark navy / black */
-  text-decoration: none;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 8px 18px;
-  border-radius: 9999px;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  white-space: nowrap;
-  letter-spacing: -0.01em;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.centerNavLink:hover {
-  color: #db2777;
-  background-color: #fdf2f8;
-}
-
-/* Chevron indicator for dropdown */
-.navChevron {
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  margin-top: 1px;
-  color: inherit;
-}
-
-.navChevronRotated {
-  transform: rotate(180deg);
-}
-
-/* Active Flowers item: soft light-pink rounded pill with pink text */
-.activeNavLink {
-  background-color: #fdf2f8;
-  color: #db2777;
-  font-weight: 600;
-}
-
-.activeNavLink:hover {
-  background-color: #fce7f3;
-  color: #be185d;
-}
-
-/* 3. Right Section: Search Bar + Action Icons */
+/* 3. Right section: search bar + action icons */
 .rightSection {
+  justify-self: end;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   flex-shrink: 0;
-  margin-left: auto;
-  z-index: 2;
 }
 
-/* Search bar: white background, thin light-gray border, rounded corners, search icon on the left */
 .searchBar {
   display: flex;
   align-items: center;
@@ -330,7 +307,7 @@
   border: 1px solid #e2e8f0;
   border-radius: 9999px;
   height: 40px;
-  width: 220px;
+  width: 240px;
   padding: 0 14px;
   gap: 10px;
   box-sizing: border-box;
@@ -340,7 +317,7 @@
 .searchBar:focus-within {
   border-color: #cbd5e1;
   box-shadow: 0 2px 10px rgba(15, 23, 42, 0.05);
-  width: 245px;
+  width: 260px;
 }
 
 .searchIcon {
@@ -362,6 +339,7 @@
   font-size: 0.88rem;
   color: #0f172a;
   min-width: 0;
+  text-overflow: ellipsis;
 }
 
 .searchInput::placeholder {
@@ -387,18 +365,17 @@
   color: #0f172a;
 }
 
-/* Action Icons: simple dark outline icons */
 .actionsGroup {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px; /* iconBtn already has 8px padding */
 }
 
 .iconBtn {
   background: transparent;
   border: none;
   cursor: pointer;
-  color: #0f172a; /* dark navy / black outline */
+  color: #0f172a;
   padding: 8px;
   border-radius: 50%;
   display: flex;
@@ -416,7 +393,6 @@
   transform: translateY(-1px);
 }
 
-/* Shopping cart icon & small circular pink/orange badge positioned at top-right */
 .cartIconWrap {
   position: relative;
   display: flex;
@@ -428,7 +404,7 @@
   position: absolute;
   top: -5px;
   right: -8px;
-  background: #f43f5e; /* pink/orange warm coral */
+  background: #f43f5e;
   color: #ffffff;
   font-size: 0.65rem;
   font-weight: 700;
@@ -443,7 +419,6 @@
   line-height: 1;
 }
 
-/* Mobile Hamburger Menu Button */
 .mobileMenuBtn {
   display: none;
   background: transparent;
@@ -460,23 +435,33 @@
   color: #db2777;
 }
 
-/* Responsive Behavior */
+/* ---------- Responsive ---------- */
 @media (max-width: 1280px) {
   .navbarContainer {
     padding: 0 24px;
+    column-gap: 16px;
   }
   .centerNav {
-    gap: 12px;
+    gap: 4px;
   }
   .centerNavLink {
-    padding: 7px 14px;
+    padding: 8px 14px;
     font-size: 0.9rem;
   }
   .searchBar {
-    width: 185px;
+    width: 190px;
   }
   .searchBar:focus-within {
     width: 210px;
+  }
+}
+
+@media (max-width: 1180px) {
+  .searchBar {
+    width: 160px;
+  }
+  .searchBar:focus-within {
+    width: 190px;
   }
 }
 
@@ -484,8 +469,8 @@
   .navbarContainer {
     padding: 0 20px;
     height: 68px;
+    grid-template-columns: auto 1fr; /* nav is hidden: logo | right section */
   }
-  /* Hide centered nav on tablet/mobile and show mobile hamburger */
   .centerNav {
     display: none;
   }
@@ -511,20 +496,11 @@
     height: 38px;
     max-width: 160px;
   }
-  /* Mobile: hide desktop navigation and replace it with hamburger menu while keeping logo and action icons visible */
-  .centerNav {
-    display: none;
-  }
-  .mobileMenuBtn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
   .rightSection {
     gap: 10px;
   }
   .actionsGroup {
-    gap: 4px;
+    gap: 2px;
   }
   .iconBtn {
     padding: 6px;
@@ -537,151 +513,7 @@
   }
 }
 
-/* ========================================================
-   SHOP FLOWERS 3-COLUMN DROPDOWN (Shown ONLY on hover)
-   Matches exact user ASCII diagram
-======================================================== */
-.shopFlowersDropdown {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(680px, 94vw);
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(15, 23, 42, 0.04);
-  padding: 24px 30px 20px;
-  z-index: 850;
-  box-sizing: border-box;
-  animation: shopFlowersFade 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes shopFlowersFade {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -4px);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-}
-
-.shopFlowersHeader {
-  margin-bottom: 16px;
-}
-
-.shopFlowersTitle {
-  font-family: inherit;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #0f172a;
-  letter-spacing: 0.04em;
-  text-transform: capitalize;
-}
-
-.shopFlowersGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 28px;
-}
-
-.shopFlowersCol {
-  display: flex;
-  flex-direction: column;
-}
-
-.shopFlowersColTitle {
-  font-family: inherit;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #0f172a;
-  margin: 0 0 6px 0;
-}
-
-.shopFlowersDivider {
-  height: 1px;
-  background: #e2e8f0;
-  width: 100%;
-  margin-bottom: 12px;
-}
-
-.shopFlowersList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.shopFlowersItem {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 8px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-family: inherit;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #334155;
-  transition: all 0.18s ease;
-}
-
-.shopFlowersItem:hover {
-  background: #fdf2f8;
-  color: #db2777;
-  transform: translateX(3px);
-}
-
-.itemEmoji {
-  font-size: 1.05rem;
-  line-height: 1;
-}
-
-/* Footer with [ View All Flowers → ] */
-.shopFlowersFooter {
-  margin-top: 18px;
-  padding-top: 16px;
-  border-top: 1px solid #f1f5f9;
-  display: flex;
-  justify-content: center;
-}
-
-.shopFlowersViewAllBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: #fdf2f8;
-  color: #db2777;
-  font-family: inherit;
-  font-size: 0.88rem;
-  font-weight: 600;
-  padding: 9px 24px;
-  border-radius: 9999px;
-  text-decoration: none;
-  border: 1px solid #fce7f3;
-  transition: all 0.2s ease;
-}
-
-.shopFlowersViewAllBtn:hover {
-  background: #db2777;
-  color: #ffffff;
-  border-color: #db2777;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(219, 39, 119, 0.25);
-}
-
-@media (max-width: 680px) {
-  .shopFlowersGrid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-}
-
-/* Modals */
+/* ---------- Modals ---------- */
 .modalBackdrop {
   position: fixed;
   inset: 0;
@@ -792,7 +624,7 @@
   box-shadow: 0 6px 18px rgba(219, 39, 119, 0.4);
 }
 
-/* Side Drawer Overlay & Panel in Light Pink & White */
+/* ---------- Side drawer ---------- */
 .drawerOverlay {
   position: fixed;
   inset: 0;
@@ -825,6 +657,7 @@
   flex-direction: column;
   overflow-y: auto;
   padding: 40px 36px;
+  box-sizing: border-box;
 }
 
 .drawerOpen .drawerPanel {
@@ -859,6 +692,7 @@
 
 .drawerNavList {
   list-style: none;
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: 14px;
