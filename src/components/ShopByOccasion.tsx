@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import styles from "./ShopByOccasion.module.css";
 
-interface OccasionItem {
+interface OccasionCardItem {
   id: string;
   name: string;
   image: string;
@@ -13,50 +14,78 @@ interface OccasionItem {
   whatsappMessage: string;
 }
 
-const OCCASIONS: OccasionItem[] = [
-  {
-    id: "birthday",
-    name: "Birthday",
-    image: "/images/occasion-birthday.jpg",
-    href: "/flower-bouquets?occasion=birthday",
-    staggerClass: styles.staggerCard0,
-    delay: "0.05s",
-    whatsappMessage:
-      "Hello Occassions Florist Calicut, I would like to order fresh flowers for a Birthday celebration.",
-  },
-  {
-    id: "anniversary",
-    name: "Anniversary",
-    image: "/images/occasion-anniversary.jpg",
-    href: "/flower-bouquets?occasion=anniversary",
-    staggerClass: styles.staggerCard1,
-    delay: "0.15s",
-    whatsappMessage:
-      "Hello Occassions Florist Calicut, I would like to explore luxury flowers for an Anniversary.",
-  },
-  {
-    id: "congratulations",
-    name: "Congratulations",
-    image: "/images/occasion-congratulations.jpg",
-    href: "/flower-bouquets?occasion=congratulations",
-    staggerClass: styles.staggerCard2,
-    delay: "0.25s",
-    whatsappMessage:
-      "Hello Occassions Florist Calicut, I would like to send Congratulations flower bouquets.",
-  },
-  {
-    id: "best-wishes",
-    name: "Best Wishes",
-    image: "/images/occasion-best-wishes-sun.jpg",
-    href: "/flower-bouquets?occasion=best-wishes",
-    staggerClass: styles.staggerCard3,
-    delay: "0.35s",
-    whatsappMessage:
-      "Hello Occassions Florist Calicut, I would like to order cheerful Best Wishes flowers.",
-  },
+const OCCASIONS_SLIDES: OccasionCardItem[][] = [
+  // Slide 1 (3 cards)
+  [
+    {
+      id: "birthday",
+      name: "Birthday",
+      image: "/images/occasion-birthday.jpg",
+      href: "/flower-bouquets?occasion=birthday",
+      staggerClass: styles.staggerLeft,
+      delay: "0.06s",
+      whatsappMessage:
+        "Hello Occassions Florist Calicut, I would like to order fresh flowers for a Birthday celebration.",
+    },
+    {
+      id: "anniversary",
+      name: "Anniversary",
+      image: "/images/occasion-anniversary.jpg",
+      href: "/flower-bouquets?occasion=anniversary",
+      staggerClass: styles.staggerCenter,
+      delay: "0.18s",
+      whatsappMessage:
+        "Hello Occassions Florist Calicut, I would like to explore luxury flowers for an Anniversary.",
+    },
+    {
+      id: "congratulations",
+      name: "Congratulations",
+      image: "/images/occasion-congratulations.jpg",
+      href: "/flower-bouquets?occasion=congratulations",
+      staggerClass: styles.staggerRight,
+      delay: "0.3s",
+      whatsappMessage:
+        "Hello Occassions Florist Calicut, I would like to send Congratulations flower bouquets.",
+    },
+  ],
+  // Slide 2 (3 cards)
+  [
+    {
+      id: "best-wishes",
+      name: "Best Wishes",
+      image: "/images/occasion-best-wishes-sun.jpg",
+      href: "/flower-bouquets?occasion=best-wishes",
+      staggerClass: styles.staggerLeft,
+      delay: "0.06s",
+      whatsappMessage:
+        "Hello Occassions Florist Calicut, I would like to order cheerful Best Wishes flowers.",
+    },
+    {
+      id: "wedding",
+      name: "Wedding",
+      image: "/images/occasion-wedding.jpg",
+      href: "/flower-bouquets?occasion=wedding",
+      staggerClass: styles.staggerCenter,
+      delay: "0.18s",
+      whatsappMessage:
+        "Hello Occassions Florist Calicut, I would like to inquire about Wedding floral decor and bridal bouquets.",
+    },
+    {
+      id: "thank-you",
+      name: "Thank You",
+      image: "/images/occasion-thank-you.jpg",
+      href: "/flower-bouquets?occasion=thank-you",
+      staggerClass: styles.staggerRight,
+      delay: "0.3s",
+      whatsappMessage:
+        "Hello Occassions Florist Calicut, I would like to send a Thank You flower arrangement.",
+    },
+  ],
 ];
 
 export default function ShopByOccasion() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement | null>(null);
 
@@ -81,6 +110,25 @@ export default function ShopByOccasion() {
     return () => observer.disconnect();
   }, []);
 
+  const handleSlideChange = (nextIndex: number) => {
+    if (isTransitioning || nextIndex === currentSlide) return;
+    setIsTransitioning(true);
+    setCurrentSlide(nextIndex);
+    setTimeout(() => {
+      setIsTransitioning(false);
+    }, 400);
+  };
+
+  const handleNext = () => {
+    handleSlideChange((currentSlide + 1) % OCCASIONS_SLIDES.length);
+  };
+
+  const handlePrev = () => {
+    handleSlideChange(
+      (currentSlide - 1 + OCCASIONS_SLIDES.length) % OCCASIONS_SLIDES.length
+    );
+  };
+
   return (
     <section
       ref={sectionRef}
@@ -99,10 +147,59 @@ export default function ShopByOccasion() {
           <p className={styles.subHeading}>Flowers for every special moment</p>
         </div>
 
-        {/* 4-Card Staggered Floral Grid */}
-        <div className={styles.gridContainer}>
-          {OCCASIONS.map((item) => (
-            <OccasionCard key={item.id} item={item} isVisible={isVisible} />
+        {/* 3-Card Carousel Container */}
+        <div className={styles.carouselContainer}>
+          {/* Previous Button */}
+          <button
+            type="button"
+            className={`${styles.navBtn} ${styles.prevBtn}`}
+            onClick={handlePrev}
+            aria-label="Previous occasion cards"
+          >
+            <ChevronLeft size={22} strokeWidth={2} />
+          </button>
+
+          {/* Exactly 3 Cards Grid */}
+          <div
+            className={`${styles.gridContainer} ${
+              isTransitioning ? styles.slideTransition : ""
+            }`}
+            key={currentSlide}
+          >
+            {OCCASIONS_SLIDES[currentSlide].map((item) => (
+              <OccasionCard key={item.id} item={item} isVisible={isVisible} />
+            ))}
+          </div>
+
+          {/* Next Button */}
+          <button
+            type="button"
+            className={`${styles.navBtn} ${styles.nextBtn}`}
+            onClick={handleNext}
+            aria-label="Next occasion cards"
+          >
+            <ChevronRight size={22} strokeWidth={2} />
+          </button>
+        </div>
+
+        {/* Slide Indicator Dots */}
+        <div
+          className={styles.paginationDots}
+          role="tablist"
+          aria-label="Occasion slides"
+        >
+          {OCCASIONS_SLIDES.map((_, idx) => (
+            <button
+              key={idx}
+              type="button"
+              role="tab"
+              aria-selected={currentSlide === idx}
+              className={`${styles.dot} ${
+                currentSlide === idx ? styles.activeDot : ""
+              }`}
+              onClick={() => handleSlideChange(idx)}
+              aria-label={`Go to occasion slide ${idx + 1}`}
+            />
           ))}
         </div>
       </div>
@@ -114,7 +211,7 @@ function OccasionCard({
   item,
   isVisible,
 }: {
-  item: OccasionItem;
+  item: OccasionCardItem;
   isVisible: boolean;
 }) {
   const whatsappUrl = `https://wa.me/918606464700?text=${encodeURIComponent(
