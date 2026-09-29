@@ -1,30 +1,26 @@
 .sectionWrapper {
   width: 100%;
   background-color: #fff5f8;
-  padding: 54px 0 64px 0;
+  padding: 68px 0 76px 0;
   position: relative;
   overflow: hidden;
 }
 
 .container {
-  max-width: 1320px;
+  max-width: 1360px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 32px;
   box-sizing: border-box;
 }
 
-/* ================= SECTION HEADER ================= */
+/* ================= SECTION HEADING ================= */
 .sectionHeader {
   text-align: center;
-  max-width: 680px;
-  margin: 0 auto 34px auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  margin: 0 auto 46px auto;
   opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 650ms cubic-bezier(0.16, 1, 0.3, 1),
-              transform 650ms cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(20px);
+  transition: opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
+              transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .headerInView {
@@ -32,216 +28,131 @@
   transform: translateY(0);
 }
 
-.eyebrow {
-  display: inline-block;
-  font-family: inherit;
-  font-size: 0.76rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #db2777;
-  margin-bottom: 8px;
-}
-
 .mainHeading {
   font-family: inherit;
-  font-size: clamp(1.85rem, 2.5vw, 2.35rem);
+  font-size: clamp(1.9rem, 2.7vw, 2.5rem);
   font-weight: 800;
-  letter-spacing: -0.025em;
+  letter-spacing: 0.04em;
   color: #0f172a;
   line-height: 1.2;
-  margin: 0 0 8px 0;
-}
-
-.subHeading {
-  font-family: inherit;
-  font-size: 0.95rem;
-  font-weight: 400;
-  color: #64748b;
-  line-height: 1.48;
   margin: 0;
+  text-transform: uppercase;
 }
 
-/* ================= 1 ROW 5-CARD GRID ================= */
-.gridContainer {
-  width: 100%;
-}
-
-.rowFive {
+/* ================= 5-CATEGORY GALLERY GRID ================= */
+.galleryGrid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 18px;
+  gap: 26px;
   width: 100%;
+  align-items: start;
 }
 
-.cardLink {
-  display: block;
-  text-decoration: none;
-  color: inherit;
-  height: 100%;
-  cursor: pointer;
-}
-
-/* ================= CARD DESIGN ================= */
-.card {
-  background-color: #ffffff;
-  border: 1px solid #fce7f3;
-  border-radius: 18px;
-  padding: 10px 10px 14px 10px;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  box-sizing: border-box;
-  box-shadow: 0 4px 18px rgba(219, 39, 119, 0.05), 0 2px 8px rgba(15, 23, 42, 0.03);
-  position: relative;
-  overflow: hidden;
+/* Directional Entrance Container */
+.itemContainer {
+  width: 100%;
   will-change: transform, opacity;
-  cursor: pointer;
 
-  /* ---- directional entrance initial state ---- */
+  /* Initial off-screen state */
   opacity: 0;
-  /* each card supplies --tx, --ty, --rot via inline style */
   transform:
-    translateX(var(--tx, 0px))
-    translateY(var(--ty, 30px))
+    translate3d(var(--tx, 0px), var(--ty, 30px), 0)
     rotate(var(--rot, 0deg))
     scale(0.92);
 
   transition:
-    opacity  820ms cubic-bezier(0.16, 1, 0.3, 1),
-    transform 900ms cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 0.28s ease;
+    opacity 850ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 950ms cubic-bezier(0.16, 1, 0.3, 1);
   transition-delay:
-    var(--anim-delay, 0ms),
-    var(--anim-delay, 0ms),
-    0s,
-    0s;
+    var(--anim-delay, 0s),
+    var(--anim-delay, 0s);
 }
 
-/* ---- final settled position: identity ---- */
-.cardVisible {
+/* Settled Viewport State (plays once) */
+.itemVisible {
   opacity: 1;
-  transform: translateX(0) translateY(0) rotate(0deg) scale(1);
+  transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
 }
 
-/* ---- hover lifts the card after it has settled ---- */
-.cardVisible:hover {
-  transform: translateX(0) translateY(-5px) rotate(0deg) scale(1);
-  border-color: #f472b6;
-  box-shadow: 0 14px 28px -6px rgba(219, 39, 119, 0.16), 0 4px 12px rgba(219, 39, 119, 0.08);
-  transition-delay: 0s, 0s, 0s, 0s;
+/* Interactive link */
+.categoryLink {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
 }
 
-/* Image Inset Frame */
+.categoryLink:focus-visible {
+  outline: 2px solid #db2777;
+  outline-offset: 4px;
+  border-radius: 24px;
+}
+
+/* Item Wrapper */
+.itemWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* ================= RECTANGULAR IMAGE FRAME ================= */
 .imageFrame {
   position: relative;
   width: 100%;
-  height: 180px;
-  background-color: #fdf2f8;
-  border-radius: 12px;
+  aspect-ratio: 3 / 4;
+  border-radius: 22px;
   overflow: hidden;
-  border: 1px solid #fce7f3;
+  background-color: #fdf2f8;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+  transition:
+    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.cardImage {
+.categoryImage {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.cardVisible:hover .cardImage {
-  transform: scale(1.06);
+/* Hover Effects on Image */
+.categoryLink:hover .imageFrame {
+  box-shadow: 0 14px 30px -4px rgba(219, 39, 119, 0.16);
 }
 
-/* Subtle Pink Hover Overlay */
-.hoverOverlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(219, 39, 119, 0.05);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.28s ease;
+.categoryLink:hover .categoryImage {
+  transform: scale(1.04);
 }
 
-.cardVisible:hover .hoverOverlay {
-  opacity: 1;
-}
-
-/* Card Content */
-.cardContent {
-  padding: 14px 4px 0 4px;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  justify-content: space-between;
-}
-
-.textWrapper {
-  margin-bottom: 0;
-}
-
-.cardTitle {
+/* ================= TYPOGRAPHY ================= */
+.categoryTitle {
   font-family: inherit;
-  font-size: 1.05rem;
-  font-weight: 700;
+  font-size: clamp(1.28rem, 1.6vw, 1.65rem); /* ~24px to 27px on desktop */
+  font-weight: 500;
   color: #0f172a;
-  margin: 0 0 10px 0;
+  text-align: center;
+  margin: 18px 0 0 0;
   line-height: 1.25;
-  text-transform: none;
-  transition: color 0.2s ease;
-}
-
-.cardVisible:hover .cardTitle {
-  color: #db2777;
-}
-
-.cardDesc {
-  font-family: inherit;
-  font-size: 0.84rem;
-  color: #64748b;
-  line-height: 1.45;
-  margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* CTA Arrow Row */
-.ctaRow {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  color: #db2777;
-  font-size: 0.85rem;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  margin-top: auto;
-  padding-top: 6px;
-}
-
-.ctaText {
   letter-spacing: -0.01em;
+  transition:
+    color 0.28s ease,
+    transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.ctaArrow {
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.cardVisible:hover .ctaArrow {
-  transform: translateX(3px);
+/* Hover Effect on Category Text */
+.categoryLink:hover .categoryTitle {
+  color: #db2777;
+  transform: translateY(-2px);
 }
 
 /* ================= ACCESSIBILITY & PREFERS-REDUCED-MOTION ================= */
 @media (prefers-reduced-motion: reduce) {
   .sectionHeader,
-  .card {
+  .itemContainer {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
@@ -249,51 +160,73 @@
 }
 
 /* ================= RESPONSIVE BEHAVIOR ================= */
-@media (max-width: 1180px) {
-  .rowFive {
+/* Tablet (approx 3 per row) */
+@media (max-width: 1120px) {
+  .galleryGrid {
     grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
+    gap: 22px;
   }
-  .rowFive > :nth-child(4),
-  .rowFive > :nth-child(5) {
+  .galleryGrid > :nth-child(4),
+  .galleryGrid > :nth-child(5) {
     grid-column: span 1;
   }
-  .imageFrame {
-    height: 190px;
+  .categoryTitle {
+    font-size: 1.35rem;
+    margin-top: 14px;
   }
 }
 
+/* Tablet / Mobile (2 categories per row) */
 @media (max-width: 768px) {
-  .rowFive {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-  }
-  .rowFive > :last-child {
-    grid-column: span 2;
-  }
-  .imageFrame {
-    height: 175px;
-  }
-}
-
-@media (max-width: 520px) {
   .sectionWrapper {
-    padding: 40px 0 48px 0;
+    padding: 52px 0 60px 0;
   }
   .container {
-    padding: 0 16px;
+    padding: 0 20px;
+  }
+  .sectionHeader {
+    margin-bottom: 32px;
   }
   .mainHeading {
-    font-size: 1.7rem;
+    font-size: 1.8rem;
   }
-  .rowFive {
-    grid-template-columns: 1fr;
-    gap: 14px;
+  .galleryGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
   }
-  .rowFive > :last-child {
-    grid-column: span 1;
+  .galleryGrid > :last-child {
+    grid-column: span 2;
+    max-width: 50%;
+    margin: 0 auto;
+    width: 100%;
   }
   .imageFrame {
-    height: 190px;
+    border-radius: 20px;
+  }
+  .categoryTitle {
+    font-size: 1.2rem;
+    margin-top: 12px;
+  }
+}
+
+/* Small mobile (still 2 per row) */
+@media (max-width: 480px) {
+  .container {
+    padding: 0 14px;
+  }
+  .galleryGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .galleryGrid > :last-child {
+    grid-column: span 2;
+    max-width: 100%;
+  }
+  .imageFrame {
+    border-radius: 18px;
+  }
+  .categoryTitle {
+    font-size: 1.05rem;
+    margin-top: 10px;
   }
 }
