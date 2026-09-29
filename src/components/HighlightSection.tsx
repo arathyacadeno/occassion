@@ -200,17 +200,7 @@ export default function HighlightSection() {
 
           {/* Central text panel */}
           <div className={`${styles.centerPanel} ${isInView ? styles.centerPanelInView : ""}`}>
-            <div className={styles.centerOrnament} aria-hidden="true">
-              <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
-                <circle cx="26" cy="26" r="4.5" fill="#ec4899" />
-                <ellipse cx="26" cy="13" rx="5.5" ry="10" fill="#fce7f3" stroke="#db2777" strokeWidth="1.2" />
-                <ellipse cx="26" cy="39" rx="5.5" ry="10" fill="#fce7f3" stroke="#db2777" strokeWidth="1.2" />
-                <ellipse cx="13" cy="26" rx="10" ry="5.5" fill="#fce7f3" stroke="#db2777" strokeWidth="1.2" />
-                <ellipse cx="39" cy="26" rx="10" ry="5.5" fill="#fce7f3" stroke="#db2777" strokeWidth="1.2" />
-              </svg>
-            </div>
 
-            <span className={styles.centerEyebrow}>OUR HIGHLIGHTS</span>
             <h3 className={styles.centerHeading}>
               Make Every<br />Moment Bloom
             </h3>
@@ -218,11 +208,7 @@ export default function HighlightSection() {
             <p className={styles.centerBody}>
               Beautiful floral creations for<br />life&apos;s most special moments.
             </p>
-            <div className={styles.centerDots} aria-hidden="true">
-              <span className={styles.dot} />
-              <span className={`${styles.dot} ${styles.dotLarge}`} />
-              <span className={styles.dot} />
-            </div>
+
           </div>
         </div>
       </div>
