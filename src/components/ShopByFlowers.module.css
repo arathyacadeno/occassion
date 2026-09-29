@@ -7,10 +7,17 @@
 }
 
 .container {
-  max-width: 1360px;
-  margin: 0 auto;
-  padding: 0 32px;
+  width: 100%;
+  max-width: 1320px;
+  margin-inline: auto;
+  padding-inline: 40px;
   box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding-inline: 20px;
+  }
 }
 
 /* ================= SECTION HEADER ================= */
@@ -33,7 +40,7 @@
 }
 
 .mainTitle {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-sans);
   font-size: clamp(2.3rem, 3.4vw, 3.2rem);
   font-weight: 500;
   letter-spacing: -0.02em;
@@ -274,7 +281,7 @@
 }
 
 .flowerTitle {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-sans);
   font-size: clamp(1.15rem, 1.35vw, 1.4rem);
   font-weight: 400;
   letter-spacing: -0.01em;
@@ -313,7 +320,7 @@
     padding: 50px 0 62px 0;
   }
   .container {
-    padding: 0 12px;
+    padding-inline: 20px;
   }
   .sectionHeader {
     margin-bottom: 32px;

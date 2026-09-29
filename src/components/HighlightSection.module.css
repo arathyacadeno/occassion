@@ -63,11 +63,19 @@
 }
 
 .container {
-  max-width: 1360px;
-  margin: 0 auto;
-  padding: 0 32px;
+  width: 100%;
+  max-width: 1320px;
+  margin-inline: auto;
+  padding-inline: 40px;
+  box-sizing: border-box;
   position: relative;
   z-index: 2;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding-inline: 20px;
+  }
 }
 
 /* Section Header - Exactly matching ShopByCategory */
@@ -91,9 +99,9 @@
 }
 
 .sectionMainTitle {
-  font-family: var(--font-heading, 'Inter', sans-serif);
+  font-family: var(--font-sans);
   font-size: clamp(2rem, 3.2vw, 3rem);
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: -0.01em;
   color: #1a1a1a;
   line-height: 1.2;

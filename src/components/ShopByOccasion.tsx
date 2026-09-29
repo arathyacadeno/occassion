@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./ShopByOccasion.module.css";
 
-interface OccasionCardItem {
+interface OccasionItem {
   id: string;
   name: string;
   image: string;
@@ -13,36 +13,46 @@ interface OccasionCardItem {
   whatsappMessage: string;
 }
 
-const OCCASIONS_DATA: OccasionCardItem[] = [
+const OCCASIONS: OccasionItem[] = [
   {
     id: "birthday",
     name: "Birthday",
     image: "/images/occasion-birthday.jpg",
     href: "/flower-bouquets?occasion=birthday",
-    staggerClass: styles.staggerLeft,
-    delay: "0.08s",
+    staggerClass: styles.staggerCard0,
+    delay: "0.05s",
     whatsappMessage:
       "Hello Occassions Florist Calicut, I would like to order fresh flowers for a Birthday celebration.",
   },
   {
     id: "anniversary",
     name: "Anniversary",
-    image: "/images/occasion-congratulations.jpg",
+    image: "/images/occasion-anniversary.jpg",
     href: "/flower-bouquets?occasion=anniversary",
-    staggerClass: styles.staggerCenter,
-    delay: "0.22s",
+    staggerClass: styles.staggerCard1,
+    delay: "0.15s",
     whatsappMessage:
       "Hello Occassions Florist Calicut, I would like to explore luxury flowers for an Anniversary.",
   },
   {
     id: "congratulations",
     name: "Congratulations",
-    image: "/images/occasion-best-wishes.jpg",
+    image: "/images/occasion-congratulations.jpg",
     href: "/flower-bouquets?occasion=congratulations",
-    staggerClass: styles.staggerRight,
-    delay: "0.36s",
+    staggerClass: styles.staggerCard2,
+    delay: "0.25s",
     whatsappMessage:
       "Hello Occassions Florist Calicut, I would like to send Congratulations flower bouquets.",
+  },
+  {
+    id: "best-wishes",
+    name: "Best Wishes",
+    image: "/images/occasion-best-wishes-sun.jpg",
+    href: "/flower-bouquets?occasion=best-wishes",
+    staggerClass: styles.staggerCard3,
+    delay: "0.35s",
+    whatsappMessage:
+      "Hello Occassions Florist Calicut, I would like to order cheerful Best Wishes flowers.",
   },
 ];
 
@@ -85,13 +95,13 @@ export default function ShopByOccasion() {
             isVisible ? styles.headerInView : ""
           }`}
         >
-          <h2 className={styles.mainHeading}>Shop by Occasion</h2>
+          <h2 className={styles.mainHeading}>Shop By Occasion</h2>
           <p className={styles.subHeading}>Flowers for every special moment</p>
         </div>
 
-        {/* 3 Staggered Occasion Cards Matching Reference */}
+        {/* 4-Card Staggered Floral Grid */}
         <div className={styles.gridContainer}>
-          {OCCASIONS_DATA.map((item) => (
+          {OCCASIONS.map((item) => (
             <OccasionCard key={item.id} item={item} isVisible={isVisible} />
           ))}
         </div>
@@ -104,7 +114,7 @@ function OccasionCard({
   item,
   isVisible,
 }: {
-  item: OccasionCardItem;
+  item: OccasionItem;
   isVisible: boolean;
 }) {
   const whatsappUrl = `https://wa.me/918606464700?text=${encodeURIComponent(
@@ -123,7 +133,7 @@ function OccasionCard({
         className={`${styles.card} ${isVisible ? styles.cardVisible : ""}`}
         style={{ "--anim-delay": item.delay } as React.CSSProperties}
       >
-        {/* Large Rectangular Image Frame with Softly Rounded Corners */}
+        {/* Large Rounded Image Frame */}
         <div className={styles.imageFrame}>
           <img
             src={item.image}
@@ -133,7 +143,7 @@ function OccasionCard({
           />
         </div>
 
-        {/* Elegant Gold/Mustard Pill-Shaped Label with Dotted Rounded Outline */}
+        {/* Gold/Mustard Pill Label with Dotted Rounded Outline */}
         <div className={styles.pillContainer}>
           <div className={styles.pillDottedOuter}>
             <span className={styles.pillSolidInner}>{item.name}</span>

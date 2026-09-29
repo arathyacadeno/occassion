@@ -1,26 +1,40 @@
 /* ==========================================================================
-   SHOP BY OCCASION - MINIMALIST EDITORIAL 3-CARD STAGGERED LAYOUT
+   SHOP BY OCCASION - 4-CARD STAGGERED FLORAL MASONRY (1320px CONTAINER)
    ========================================================================== */
 
 .sectionWrapper {
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   width: 100%;
   background-color: #ffffff;
-  padding: 84px 0 140px 0;
+  padding: 84px 0 110px 0;
   position: relative;
   overflow: hidden;
+  font-family: var(--font-sans);
 }
 
+.sectionWrapper * {
+  font-family: var(--font-sans) !important;
+}
+
+/* Global 1320px Container */
 .container {
-  max-width: 1360px;
-  margin: 0 auto;
-  padding: 0 32px;
+  width: 100%;
+  max-width: 1320px;
+  margin-inline: auto;
+  padding-inline: 40px;
   box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding-inline: 20px;
+  }
 }
 
 /* ================= SECTION HEADER ================= */
 .sectionHeader {
   text-align: center;
-  margin: 0 auto 64px auto;
+  margin: 0 auto 52px auto;
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
@@ -33,51 +47,57 @@
 }
 
 .mainHeading {
-  font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
-  font-size: clamp(2.3rem, 3.4vw, 3.2rem);
+  font-family: var(--font-sans);
+  font-size: clamp(1.9rem, 2.7vw, 2.5rem);
   font-weight: 500;
-  letter-spacing: -0.01em;
-  color: #1a1a1a;
-  line-height: 1.15;
-  margin: 0 0 10px 0;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+  line-height: 1.2;
+  margin: 0;
   text-transform: capitalize;
 }
 
 .subHeading {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: clamp(0.92rem, 1.1vw, 1.02rem);
+  font-family: var(--font-sans);
+  font-size: clamp(0.95rem, 1.2vw, 1.05rem);
   font-weight: 400;
-  color: #78716c;
+  color: #64748b;
   line-height: 1.5;
-  margin: 0 auto;
-  letter-spacing: 0.02em;
+  margin: 10px auto 0 auto;
+  max-width: 620px;
+  text-align: center;
 }
 
-/* ================= 3-CARD STAGGERED MASONRY GRID ================= */
+/* ================= 4-CARD STAGGERED MASONRY GRID ================= */
 .gridContainer {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 40px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px;
   align-items: start;
   width: 100%;
-  padding-bottom: 54px; /* Room for lower center overlapping pill */
+  padding-bottom: 56px; /* Room for lower center overlapping pills */
 }
 
 /* Staggered arrangement matching reference image:
-   - Left card: higher / standard position (margin-top: 0)
-   - Center card: positioned prominently lower (margin-top: 110px)
-   - Right card: higher / standard position (margin-top: 0)
+   - Card 0 (Birthday): top aligned
+   - Card 1 (Anniversary): positioned 42px lower
+   - Card 2 (Congratulations): top aligned
+   - Card 3 (Best Wishes): positioned 42px lower
 */
-.staggerLeft {
+.staggerCard0 {
   margin-top: 0px;
 }
 
-.staggerCenter {
-  margin-top: 110px;
+.staggerCard1 {
+  margin-top: 42px;
 }
 
-.staggerRight {
+.staggerCard2 {
   margin-top: 0px;
+}
+
+.staggerCard3 {
+  margin-top: 42px;
 }
 
 /* ================= CARD LINK & ARTICLE ================= */
@@ -107,15 +127,15 @@
   transform: translateY(0);
 }
 
-/* ================= LARGE TALL RECTANGULAR IMAGE FRAME ================= */
+/* ================= PROPORTIONED IMAGE FRAME ================= */
 .imageFrame {
   position: relative;
   width: 100%;
-  aspect-ratio: 3 / 4;
-  border-radius: 22px;
+  aspect-ratio: 1 / 1.12;
+  border-radius: 16px;
   overflow: hidden;
   background-color: #f8fafc;
-  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
   transition: box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -131,7 +151,7 @@
 
 /* Hover: subtle zoom in on image */
 .cardLink:hover .cardImage {
-  transform: scale(1.055);
+  transform: scale(1.05);
 }
 
 .cardLink:hover .imageFrame {
@@ -155,7 +175,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 4px;
+  padding: 3.5px;
   border-radius: 9999px;
   border: 1.5px dotted #b8912e;
   background: #ffffff;
@@ -168,20 +188,20 @@
   display: inline-block;
   background: #ba9431; /* authentic warm gold/mustard matching reference */
   color: #ffffff;
-  font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
-  font-size: clamp(1.04rem, 1.25vw, 1.18rem);
+  font-family: var(--font-sans);
+  font-size: clamp(0.95rem, 1.1vw, 1.05rem);
   font-weight: 500;
   letter-spacing: 0.025em;
-  padding: 8px 32px;
+  padding: 6.5px 24px;
   border-radius: 9999px;
-  line-height: 1.2;
+  line-height: 1.25;
   text-align: center;
   transition: background-color 0.3s ease;
 }
 
 /* Hover effect: occasion label gently moves upward */
 .cardLink:hover .pillContainer {
-  transform: translate(-50%, -8px);
+  transform: translate(-50%, -6px);
 }
 
 .cardLink:hover .pillDottedOuter {
@@ -194,18 +214,27 @@
 }
 
 /* ================= RESPONSIVE BREAKPOINTS ================= */
-/* Tablet: 3 columns with subtle stagger or 2+1 */
-@media (max-width: 900px) {
-  .container {
-    padding: 0 24px;
-  }
-
+@media (max-width: 1024px) {
   .gridContainer {
+    grid-template-columns: repeat(2, 1fr);
     gap: 24px;
+    padding-bottom: 48px;
   }
 
-  .staggerCenter {
-    margin-top: 65px;
+  .staggerCard0 {
+    margin-top: 0px;
+  }
+
+  .staggerCard1 {
+    margin-top: 32px;
+  }
+
+  .staggerCard2 {
+    margin-top: 0px;
+  }
+
+  .staggerCard3 {
+    margin-top: 32px;
   }
 }
 
@@ -215,34 +244,32 @@
     padding: 60px 0 84px 0;
   }
 
-  .container {
-    padding: 0 20px;
-  }
-
   .sectionHeader {
-    margin-bottom: 44px;
+    margin-bottom: 38px;
   }
 
   .gridContainer {
     grid-template-columns: 1fr;
-    gap: 54px;
-    max-width: 360px;
+    gap: 44px;
+    max-width: 340px;
     margin: 0 auto;
     padding-bottom: 24px;
   }
 
-  .staggerLeft,
-  .staggerCenter,
-  .staggerRight {
+  .staggerCard0,
+  .staggerCard1,
+  .staggerCard2,
+  .staggerCard3 {
     margin-top: 0px;
   }
 
   .imageFrame {
-    aspect-ratio: 3 / 3.9;
+    aspect-ratio: 1 / 1.1;
+    border-radius: 16px;
   }
 
   .pillSolidInner {
-    padding: 7px 26px;
-    font-size: 1rem;
+    padding: 6px 20px;
+    font-size: 0.95rem;
   }
 }
