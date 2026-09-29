@@ -78,13 +78,13 @@
   }
 }
 
-/* Section Header - Exactly matching ShopByCategory */
+/* Section Header with Centered Floral Divider Structure */
 .sectionHeader {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  text-align: left;
-  margin-bottom: 36px;
+  align-items: center;
+  text-align: center;
+  margin: 0 auto 46px auto;
   position: relative;
   opacity: 0;
   transform: translate3d(0, 30px, 0);
@@ -98,25 +98,60 @@
   transform: translate3d(0, 0, 0);
 }
 
-.sectionMainTitle {
+.subtitle {
+  font-family: var(--font-sans, -apple-system, sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: capitalize;
+  color: #db2777;
+  margin-bottom: 8px;
+}
+
+.mainTitle {
   font-family: var(--font-sans);
-  font-size: clamp(2rem, 3.2vw, 3rem);
+  font-size: clamp(2.3rem, 3.4vw, 3.2rem);
   font-weight: 500;
-  letter-spacing: -0.01em;
-  color: #1a1a1a;
-  line-height: 1.2;
-  margin: 0 0 6px 0;
+  letter-spacing: -0.02em;
+  color: #111827;
+  line-height: 1.15;
+  margin: 0 0 16px 0;
   text-transform: none;
 }
 
-.categoryTagline {
-  font-family: var(--font-sans);
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: capitalize;
-  color: #ec4899;
-  margin: 0;
+/* Floral decorative divider with thin horizontal lines */
+.floralDivider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 280px;
+}
+
+.dividerLine {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(219, 39, 119, 0.05),
+    rgba(219, 39, 119, 0.35)
+  );
+}
+
+.dividerLine:last-child {
+  background: linear-gradient(
+    90deg,
+    rgba(219, 39, 119, 0.35),
+    rgba(219, 39, 119, 0.05)
+  );
+}
+
+.dividerIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #db2777;
 }
 
 /* ================= CENTERED 4-CARD BENTO GRID (LARGER & CENTERED) ================= */
