@@ -1,55 +1,94 @@
+"use client";
+
 import React from "react";
-import { CategoryProduct } from "@/data/categoryProducts";
+import Link from "next/link";
+import { Heart } from "lucide-react";
+import { Product } from "@/data/catalog";
+import { useWishlist } from "@/context/WishlistContext";
+import { AddToCartButton } from "./Buttons";
 import styles from "./ProductCard.module.css";
 
 interface ProductCardProps {
-  product: CategoryProduct;
+  product: Product;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const whatsappUrl = `https://wa.me/918606464700?text=${encodeURIComponent(
-    `Hello Occassions Florist, I would like to order/inquire about "${product.title}" (${product.price}).`
-  )}`;
+  const { isInWishlist, toggleItem } = useWishlist();
+  const isWishlisted = isInWishlist(product.id);
+  const productHref = `/${product.category}/${product.slug}`;
+
+  const toggleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleItem(product);
+  };
+
+  const discountPercent =
+    product.originalPrice && product.originalPrice > product.price
+      ? Math.round(
+          ((product.originalPrice - product.price) / product.originalPrice) * 100
+        )
+      : null;
 
   return (
-    <a
-      href={whatsappUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={styles.card}
-      title={`${product.title} - ${product.price}`}
-      aria-label={`${product.title} - ${product.price}`}
-    >
-      {/* Product Image on top portion */}
-      <div className={styles.imageWrapper}>
+    <article className={styles.card}>
+      {/* Top Product Image (Clicking navigates to product detail page) */}
+      <Link href={productHref} className={styles.imageLink} aria-label={product.name}>
         <img
           src={product.image}
-          alt={product.title}
+          alt={product.name}
           className={styles.productImage}
           loading="lazy"
         />
-      </div>
+        {product.badge && <span className={styles.badgeTag}>{product.badge}</span>}
+      </Link>
 
-      {/* Subtle organic wave contour from reference design */}
-      <div className={styles.waveDivider} aria-hidden="true">
-        <svg
-          viewBox="0 0 400 30"
-          preserveAspectRatio="none"
-          className={styles.waveSvg}
-        >
-          <path
-            d="M 0 16 Q 120 32 240 10 T 400 24 L 400 30 L 0 30 Z"
-            fill="currentColor"
-          />
-        </svg>
-      </div>
+      {/* Lower Product Info Section */}
+      <div className={styles.cardBody}>
+        <div>
+          {/* Product Name + Wishlist Icon */}
+          <div className={styles.headerRow}>
+            <Link href={productHref} className={styles.productTitle}>
+              {product.name}
+            </Link>
+            <button
+              type="button"
+              onClick={toggleWishlist}
+              className={`${styles.wishlistBtn} ${
+                isWishlisted ? styles.wishlistActive : ""
+              }`}
+              aria-label={
+                isWishlisted ? "Remove from wishlist" : "Add to wishlist"
+              }
+              title={isWishlisted ? "In Wishlist" : "Add to Wishlist"}
+            >
+              <Heart
+                size={19}
+                strokeWidth={1.8}
+                fill={isWishlisted ? "currentColor" : "none"}
+              />
+            </button>
+          </div>
 
-      {/* Clean light-gray lower content area matching reference mockup */}
-      <div className={styles.lightGrayArea}>
-        <span className={styles.srOnly}>
-          {product.title} - {product.price}
-        </span>
+          {/* Price & Original Price */}
+          <div className={styles.priceRow}>
+            <span className={styles.currentPrice}>₹{product.price.toLocaleString("en-IN")}</span>
+            {product.originalPrice && (
+              <span className={styles.originalPrice}>
+                ₹{product.originalPrice.toLocaleString("en-IN")}
+              </span>
+            )}
+            {discountPercent && (
+              <span className={styles.discountBadge}>{discountPercent}% OFF</span>
+            )}
+          </div>
+        </div>
+
+        {/* [ Add to Cart ] Button */}
+        <div className={styles.actionArea}>
+          <AddToCartButton product={product} />
+        </div>
       </div>
-    </a>
+    </article>
   );
 }

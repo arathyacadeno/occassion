@@ -1,10 +1,10 @@
 import React from "react";
-import { CategoryProduct } from "@/data/categoryProducts";
+import { Product } from "@/data/catalog";
 import ProductCard from "./ProductCard";
 import styles from "./ProductGrid.module.css";
 
 interface ProductGridProps {
-  products: CategoryProduct[];
+  products: Product[];
   ariaLabel?: string;
 }
 

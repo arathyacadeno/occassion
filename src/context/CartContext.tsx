@@ -22,43 +22,34 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-const INITIAL_DEMO_ITEMS: CartItem[] = [
-  {
-    bouquet: BOUQUETS_DATA[0], // Classic Calicut Bridal Bouquet (₹1,899)
-    quantity: 1,
-    selectedSize: "Signature",
-    vaseOption: true,
-    customNote: "Wishing you a lifetime of love and blooming happiness!",
-  },
-  {
-    bouquet: BOUQUETS_DATA[1], // Celebration Floral & Cake Hamper (₹1,499)
-    quantity: 1,
-    selectedSize: "Signature",
-    vaseOption: false,
-    customNote: "Happy Birthday! May your day be as sweet as these blooms.",
-  },
-];
-
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Initialize from localStorage or default demo items
+  // Initialize from localStorage or empty array
   useEffect(() => {
     try {
       const stored = localStorage.getItem("occassions_cart");
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setItems(parsed);
+        if (Array.isArray(parsed)) {
+          // Filter out legacy hardcoded demo placeholder items if present
+          const userItems = parsed.filter(
+            (item: CartItem) =>
+              item.customNote !==
+                "Wishing you a lifetime of love and blooming happiness!" &&
+              item.customNote !==
+                "Happy Birthday! May your day be as sweet as these blooms."
+          );
+          setItems(userItems);
         } else {
-          setItems(INITIAL_DEMO_ITEMS);
+          setItems([]);
         }
       } else {
-        setItems(INITIAL_DEMO_ITEMS);
+        setItems([]);
       }
     } catch {
-      setItems(INITIAL_DEMO_ITEMS);
+      setItems([]);
     }
     setIsLoaded(true);
   }, []);

@@ -108,16 +108,19 @@ export default function Header({
 
   // Category active states for Next.js navigation
   const isFlowerActive =
+    pathname === "/flower" ||
+    !!pathname?.startsWith("/flower/") ||
     pathname === "/flower-baskets" ||
-    !!pathname?.startsWith("/flower-baskets") ||
-    pathname === "/bouquets" ||
-    !!pathname?.startsWith("/bouquets") ||
-    !!pathname?.startsWith("/flowers");
+    pathname === "/bouquets";
   const isCakesActive =
-    pathname === "/cakes" || !!pathname?.startsWith("/cakes");
-  const isOccasionActive =
-    pathname === "/church-arrangements" ||
-    !!pathname?.startsWith("/church-arrangements");
+    pathname === "/cakes" || !!pathname?.startsWith("/cakes/");
+  const isSpecialOccasionsActive =
+    pathname === "/special-occasions" ||
+    !!pathname?.startsWith("/special-occasions/") ||
+    pathname === "/church-arrangements";
+  const isHighlightsActive =
+    pathname === "/our-highlights" ||
+    !!pathname?.startsWith("/our-highlights/");
 
   const isFlowersActive =
     pathname === "/" ||
@@ -254,7 +257,7 @@ export default function Header({
           {/* Center: navigation */}
           <nav className={styles.centerNav} aria-label="Main Navigation">
             <Link
-              href="/flower-baskets"
+              href="/flower"
               className={`${styles.centerNavLink} ${
                 isFlowerActive ? styles.activeNavLink : ""
               }`}
@@ -272,18 +275,19 @@ export default function Header({
             </Link>
 
             <Link
-              href="/church-arrangements"
+              href="/special-occasions"
               className={`${styles.centerNavLink} ${
-                isOccasionActive ? styles.activeNavLink : ""
+                isSpecialOccasionsActive ? styles.activeNavLink : ""
               }`}
             >
               Special Occasions
             </Link>
 
             <Link
-              href="/#highlights"
-              onClick={handleHighlightsClick}
-              className={styles.centerNavLink}
+              href="/our-highlights"
+              className={`${styles.centerNavLink} ${
+                isHighlightsActive ? styles.activeNavLink : ""
+              }`}
             >
               Our highlights
             </Link>
@@ -593,7 +597,7 @@ export default function Header({
           <ul className={styles.drawerNavList}>
             <li>
               <Link
-                href="/flower-baskets"
+                href="/flower"
                 className={`${styles.drawerNavLink} ${isFlowerActive ? styles.activeNavLink : ""}`}
                 onClick={() => setDrawerOpen(false)}
               >
@@ -611,8 +615,8 @@ export default function Header({
             </li>
             <li>
               <Link
-                href="/church-arrangements"
-                className={`${styles.drawerNavLink} ${isOccasionActive ? styles.activeNavLink : ""}`}
+                href="/special-occasions"
+                className={`${styles.drawerNavLink} ${isSpecialOccasionsActive ? styles.activeNavLink : ""}`}
                 onClick={() => setDrawerOpen(false)}
               >
                 Special Occasions
@@ -620,12 +624,9 @@ export default function Header({
             </li>
             <li>
               <Link
-                href="/#highlights"
-                className={styles.drawerNavLink}
-                onClick={(e) => {
-                  handleHighlightsClick(e);
-                  setDrawerOpen(false);
-                }}
+                href="/our-highlights"
+                className={`${styles.drawerNavLink} ${isHighlightsActive ? styles.activeNavLink : ""}`}
+                onClick={() => setDrawerOpen(false)}
               >
                 Our highlights
               </Link>

@@ -4,33 +4,35 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search, ShoppingCart, Heart, Menu, X } from "lucide-react";
+import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 import styles from "./Navbar.module.css";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { cartCount } = useCart();
+  const { wishlistCount } = useWishlist();
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  // Exact 4 navigation categories
   const isFlowerActive =
+    pathname === "/flower" ||
+    pathname.startsWith("/flower/") ||
     pathname === "/flower-baskets" ||
-    !!pathname?.startsWith("/flower-baskets") ||
-    pathname === "/bouquets" ||
-    !!pathname?.startsWith("/bouquets") ||
-    !!pathname?.startsWith("/flowers");
-  const isCakesActive =
-    pathname === "/cakes" || !!pathname?.startsWith("/cakes");
-  const isOccasionActive =
-    pathname === "/church-arrangements" ||
-    !!pathname?.startsWith("/church-arrangements");
+    pathname === "/bouquets";
 
-  const handleHighlightsClick = (e: React.MouseEvent) => {
-    if (typeof window !== "undefined" && window.location.pathname === "/") {
-      e.preventDefault();
-      const highlightEl = document.getElementById("highlights");
-      if (highlightEl) {
-        highlightEl.scrollIntoView({ behavior: "smooth" });
-      }
-    }
-  };
+  const isCakesActive =
+    pathname === "/cakes" || pathname.startsWith("/cakes/");
+
+  const isSpecialOccasionsActive =
+    pathname === "/special-occasions" ||
+    pathname.startsWith("/special-occasions/") ||
+    pathname === "/church-arrangements";
+
+  const isHighlightsActive =
+    pathname === "/our-highlights" ||
+    pathname.startsWith("/our-highlights/") ||
+    pathname === "/#highlights";
 
   return (
     <header className={styles.navbarWrapper}>
@@ -44,10 +46,10 @@ export default function Navbar() {
           />
         </Link>
 
-        {/* Center: Category navigation */}
+        {/* Center: Exactly 4 categories */}
         <nav className={styles.navLinks} aria-label="Main Navigation">
           <Link
-            href="/flower-baskets"
+            href="/flower"
             className={`${styles.navLink} ${
               isFlowerActive ? styles.activeNavLink : ""
             }`}
@@ -63,17 +65,18 @@ export default function Navbar() {
             Cakes
           </Link>
           <Link
-            href="/church-arrangements"
+            href="/special-occasions"
             className={`${styles.navLink} ${
-              isOccasionActive ? styles.activeNavLink : ""
+              isSpecialOccasionsActive ? styles.activeNavLink : ""
             }`}
           >
             Special Occasions
           </Link>
           <Link
-            href="/#highlights"
-            onClick={handleHighlightsClick}
-            className={styles.navLink}
+            href="/our-highlights"
+            className={`${styles.navLink} ${
+              isHighlightsActive ? styles.activeNavLink : ""
+            }`}
           >
             Our highlights
           </Link>
@@ -96,14 +99,20 @@ export default function Navbar() {
             title="Shopping Cart"
           >
             <ShoppingCart size={20} strokeWidth={1.8} />
+            {cartCount > 0 && (
+              <span className={styles.cartBadge}>{cartCount}</span>
+            )}
           </Link>
           <Link
-            href="/#categories"
+            href="/wishlist"
             className={styles.iconButton}
             aria-label="Wishlist"
             title="Wishlist"
           >
             <Heart size={20} strokeWidth={1.8} />
+            {wishlistCount > 0 && (
+              <span className={styles.cartBadge}>{wishlistCount}</span>
+            )}
           </Link>
           <button
             type="button"
@@ -120,7 +129,7 @@ export default function Navbar() {
       {mobileOpen && (
         <div className={styles.mobileMenu}>
           <Link
-            href="/flower-baskets"
+            href="/flower"
             className={`${styles.mobileNavLink} ${
               isFlowerActive ? styles.activeNavLink : ""
             }`}
@@ -138,21 +147,20 @@ export default function Navbar() {
             Cakes
           </Link>
           <Link
-            href="/church-arrangements"
+            href="/special-occasions"
             className={`${styles.mobileNavLink} ${
-              isOccasionActive ? styles.activeNavLink : ""
+              isSpecialOccasionsActive ? styles.activeNavLink : ""
             }`}
             onClick={() => setMobileOpen(false)}
           >
             Special Occasions
           </Link>
           <Link
-            href="/#highlights"
-            className={styles.mobileNavLink}
-            onClick={(e) => {
-              handleHighlightsClick(e);
-              setMobileOpen(false);
-            }}
+            href="/our-highlights"
+            className={`${styles.mobileNavLink} ${
+              isHighlightsActive ? styles.activeNavLink : ""
+            }`}
+            onClick={() => setMobileOpen(false)}
           >
             Our highlights
           </Link>

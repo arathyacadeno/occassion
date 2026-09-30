@@ -1,0 +1,48 @@
+.pageWrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+}
+
+.mainContainer {
+  flex: 1;
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 48px 36px 90px 36px;
+  box-sizing: border-box;
+}
+
+.productLayout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: flex-start;
+  margin-bottom: 80px;
+}
+
+.relatedSection {
+  border-top: 1px solid #f1f5f9;
+  padding-top: 60px;
+}
+
+.relatedHeading {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #111827;
+  text-align: center;
+  margin: 0 0 36px 0;
+  letter-spacing: -0.01em;
+}
+
+@media (max-width: 960px) {
+  .productLayout {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .mainContainer {
+    padding: 28px 20px 60px 20px;
+  }
+}

@@ -1,8 +1,17 @@
+/* ================= UNIFIED NAVBAR =================
+   Matches reference specifications:
+   - Exactly 4 categories: Flower, Cakes, Special Occasions, Our highlights
+   - White background, subtle bottom shadow/border
+   - Dark text, clean modern typography
+   - Generous spacing between navigation items
+   - Active category: bold text + thin dark underline directly under item
+   - Responsive mobile menu
+================================================== */
 .navbarWrapper {
   width: 100%;
   background-color: #ffffff;
   border-bottom: 1px solid #f0f2f4;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.025);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -12,14 +21,14 @@
   max-width: 1360px;
   height: 76px;
   margin: 0 auto;
-  padding: 0 36px;
+  padding: 0 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   box-sizing: border-box;
 }
 
-/* Left: Logo */
+/* Left: Brand Logo */
 .logoLink {
   display: flex;
   align-items: center;
@@ -34,20 +43,20 @@
   display: block;
 }
 
-/* Center: Category Links */
+/* Center: 4 Categories with generous spacing */
 .navLinks {
   display: flex;
   align-items: center;
-  gap: 36px;
+  gap: 48px;
 }
 
 .navLink {
   color: #111827;
   text-decoration: none;
-  font-size: 0.95rem;
+  font-size: 0.96rem;
   font-weight: 400;
   letter-spacing: -0.01em;
-  padding: 8px 4px;
+  padding: 10px 2px;
   position: relative;
   transition: color 0.2s ease;
   white-space: nowrap;
@@ -57,24 +66,24 @@
   color: #000000;
 }
 
-/* Active Category Indication */
+/* Active Category: Bold text + Thin dark underline */
 .activeNavLink {
   color: #000000;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .activeNavLink::after {
   content: "";
   position: absolute;
   bottom: 0;
-  left: 4px;
-  right: 4px;
+  left: 0;
+  right: 0;
   height: 2px;
   background-color: #111827;
-  border-radius: 2px;
+  border-radius: 1px;
 }
 
-/* Right: Action Icons */
+/* Right Action Icons */
 .rightIcons {
   display: flex;
   align-items: center;
@@ -93,12 +102,30 @@
   justify-content: center;
   text-decoration: none;
   border-radius: 50%;
+  position: relative;
   transition: color 0.2s ease, background-color 0.2s ease;
 }
 
 .iconButton:hover {
   color: #000000;
   background-color: #f8fafc;
+}
+
+.cartBadge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background-color: #db2777;
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  min-width: 17px;
+  height: 17px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
 }
 
 .mobileMenuButton {
@@ -112,12 +139,18 @@
   justify-content: center;
 }
 
-/* Mobile Drawer Overlay */
+/* Mobile responsive menu */
 .mobileMenu {
   display: none;
 }
 
-@media (max-width: 960px) {
+@media (max-width: 1024px) {
+  .navLinks {
+    gap: 32px;
+  }
+}
+
+@media (max-width: 860px) {
   .navLinks {
     display: none;
   }
@@ -141,7 +174,7 @@
     background-color: #ffffff;
     border-top: 1px solid #f1f3f5;
     padding: 16px 24px 24px 24px;
-    gap: 14px;
+    gap: 12px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
   }
 
@@ -151,10 +184,12 @@
     font-size: 1rem;
     padding: 10px 0;
     border-bottom: 1px solid #f8fafc;
+    position: relative;
+    display: inline-block;
   }
 
   .mobileNavLink.activeNavLink {
-    font-weight: 600;
+    font-weight: 700;
     color: #000000;
   }
 }
