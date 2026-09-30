@@ -88,7 +88,7 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin: 0 auto 56px;
+  margin: 0 auto 46px auto;
   opacity: 0;
   transform: translateY(28px);
   transition: opacity 0.85s cubic-bezier(0.16,1,0.3,1),
@@ -101,11 +101,11 @@
 }
 
 .subtitle {
-  font-family: var(--font-sans, sans-serif);
-  font-size: 11px;
+  font-family: var(--font-sans, -apple-system, sans-serif);
+  font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-transform: capitalize;
   color: #db2777;
   margin-bottom: 8px;
 }
@@ -118,21 +118,24 @@
   color: #111827;
   line-height: 1.15;
   margin: 0 0 18px;
+  text-transform: none;
 }
 
 .floralDivider {
   display: flex;
   align-items: center;
-  gap: 14px;
-  width: 220px;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 280px;
 }
 .dividerLine {
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, rgba(219,39,119,0.04), rgba(219,39,119,0.3));
+  background: linear-gradient(90deg, rgba(219,39,119,0.05), rgba(219,39,119,0.35));
 }
 .dividerLine:last-child {
-  background: linear-gradient(90deg, rgba(219,39,119,0.3), rgba(219,39,119,0.04));
+  background: linear-gradient(90deg, rgba(219,39,119,0.35), rgba(219,39,119,0.05));
 }
 .dividerIcon {
   display: inline-flex;
