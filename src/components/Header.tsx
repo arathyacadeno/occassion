@@ -25,6 +25,7 @@ import {
   Circle,
 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 
 interface HeaderProps {
   isDrawerOpen?: boolean;
@@ -74,6 +75,7 @@ export default function Header({
 }: HeaderProps) {
   const pathname = usePathname();
   const { cartCount } = useCart();
+  const { wishlistCount } = useWishlist();
   const [internalDrawerOpen, setInternalDrawerOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeModal, setActiveModal] = useState<"cart" | "signin" | null>(null);
@@ -349,12 +351,17 @@ export default function Header({
               </Link>
 
               <Link
-                href="/table-arrangements#arrangements"
+                href="/wishlist"
                 className={styles.iconBtn}
                 aria-label="View Wishlist"
                 title="Wishlist"
               >
-                <Heart size={21} strokeWidth={1.8} />
+                <div className={styles.cartIconWrap}>
+                  <Heart size={21} strokeWidth={1.8} />
+                  {wishlistCount > 0 && (
+                    <span className={styles.cartBadge}>{wishlistCount}</span>
+                  )}
+                </div>
               </Link>
 
               <button
