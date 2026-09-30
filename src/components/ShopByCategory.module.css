@@ -1,7 +1,7 @@
 .sectionWrapper {
   width: 100%;
   background-color: #fff5f8;
-  padding: 68px 0 76px 0;
+  padding: 100px 0 115px 0;
   position: relative;
   overflow: hidden;
 }
@@ -234,7 +234,7 @@
 /* Tablet / Mobile (2 categories per row) */
 @media (max-width: 768px) {
   .sectionWrapper {
-    padding: 52px 0 60px 0;
+    padding: 72px 0 84px 0;
   }
   .container {
     padding: 0 20px;
