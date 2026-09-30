@@ -7,7 +7,9 @@
 /* ── Section Shell ── */
 .sectionWrapper {
   width: 100%;
-  background: linear-gradient(115deg, #ffffff 0%, #ffffff 42%, pink 100%);
+  background:
+    radial-gradient(ellipse 36% 55% at 0% 100%, #ffffff 0%, #ffffff 32%, rgba(255, 255, 255, 0) 72%),
+    linear-gradient(180deg, pink 0%, pink 45%, #ffffff 100%);
   padding: 95px 0 105px;
   position: relative;
   overflow: hidden;
@@ -19,10 +21,12 @@
   position: absolute;
   left: 0;
   bottom: 0;
+  width: 200px;
+  height: auto;
+  object-fit: contain;
   z-index: 1;
   pointer-events: none;
   user-select: none;
-  width: clamp(210px, 18vw, 280px);
 }
 
 /* ── Global Container ── */
