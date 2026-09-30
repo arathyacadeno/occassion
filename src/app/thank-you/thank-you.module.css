@@ -173,43 +173,48 @@
   margin-bottom: 28px;
 }
 
-.orderIdRow {
+.orderInfoList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.infoRowItem {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.idLabel {
-  font-size: 0.76rem;
-  color: #94a3b8;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  display: block;
+.infoRowLabel {
+  font-size: 0.88rem;
+  color: #64748b;
+  font-weight: 500;
 }
 
-.idCode {
+.infoRowValueBold {
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: #111827;
+  text-align: right;
+}
+
+.infoRowValue {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #1f2937;
+  text-align: right;
+}
+
+.infoRowValuePrice {
   font-size: 1.15rem;
   font-weight: 700;
   color: #111827;
-  letter-spacing: 0.03em;
-}
-
-.statusPill {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background-color: #dcfce7;
-  color: #15803d;
-  font-size: 0.78rem;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 9999px;
 }
 
 .divider {
   height: 1px;
   background-color: #e2e8f0;
-  margin: 14px 0;
+  margin: 16px 0;
 }
 
 /* Product & Price Row */

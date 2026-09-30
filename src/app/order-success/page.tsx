@@ -6,42 +6,31 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCheckout } from "@/context/CheckoutContext";
-import { Check, ArrowRight, Sparkles, PackageCheck } from "lucide-react";
+import { useCart } from "@/context/CartContext";
+import { Check, ArrowRight, ShoppingBag } from "lucide-react";
 import styles from "./order-success.module.css";
 
 export default function OrderSuccessPage() {
   const router = useRouter();
   const { completedOrder } = useCheckout();
+  const { clearCart } = useCart();
   const [mounted, setMounted] = useState(false);
-  const [countdown, setCountdown] = useState(4);
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    clearCart();
+    try {
+      localStorage.removeItem("occassions_cart");
+    } catch (e) {
+      console.error(e);
+    }
+  }, [clearCart]);
 
   // Guard: If no completed order, redirect to flower page
   useEffect(() => {
     if (mounted && !completedOrder) {
       router.replace("/flower");
     }
-  }, [mounted, completedOrder, router]);
-
-  // Countdown timer to automatically transition to /thank-you
-  useEffect(() => {
-    if (!mounted || !completedOrder) return;
-
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          router.push("/thank-you");
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
   }, [mounted, completedOrder, router]);
 
   if (!mounted || !completedOrder) {
@@ -54,28 +43,18 @@ export default function OrderSuccessPage() {
 
       <main className={styles.mainContainer}>
         <div className={styles.successCard}>
-          {/* Animated Glowing Checkmark Icon */}
+          {/* Clean Checkmark Icon */}
           <div className={styles.iconContainer}>
             <div className={styles.outerPulse} />
             <div className={styles.innerCircle}>
-              <Check size={44} strokeWidth={3} className={styles.checkIcon} />
+              <Check size={40} strokeWidth={2.8} className={styles.checkIcon} />
             </div>
           </div>
 
-          <div className={styles.badgeRow}>
-            <span className={styles.successPill}>
-              <Sparkles size={14} /> Confirmed Order
-            </span>
-          </div>
-
           <h1 className={styles.mainTitle}>Order Placed Successfully!</h1>
-          <p className={styles.thankText}>Thank you for your order.</p>
-          <p className={styles.descText}>
-            Your order has been confirmed and our expert florists are now handcrafting
-            your bouquet. We&apos;ll keep you updated via WhatsApp and SMS.
-          </p>
+          <p className={styles.descText}>Your order has been confirmed.</p>
 
-          {/* Quick Summary Pill */}
+          {/* Clean Order Detail Card */}
           <div className={styles.orderSummaryPill}>
             <div className={styles.summaryItem}>
               <span className={styles.itemLabel}>Order ID</span>
@@ -83,24 +62,29 @@ export default function OrderSuccessPage() {
             </div>
             <div className={styles.pillDivider} />
             <div className={styles.summaryItem}>
-              <span className={styles.itemLabel}>Total Paid</span>
+              <span className={styles.itemLabel}>Payment</span>
+              <span className={styles.itemValue}>{completedOrder.paymentMethod}</span>
+            </div>
+            <div className={styles.pillDivider} />
+            <div className={styles.summaryItem}>
+              <span className={styles.itemLabel}>Total</span>
               <span className={styles.itemValue}>
                 ₹{completedOrder.price.toLocaleString("en-IN")}
               </span>
             </div>
           </div>
 
-          {/* Auto redirection notice & action buttons */}
+          {/* Action buttons */}
           <div className={styles.actionsBox}>
             <Link href="/thank-you" className={styles.primaryBtn}>
-              <PackageCheck size={18} />
-              <span>View Order Details &amp; Receipt</span>
+              <span>View Thank You &amp; Order Details</span>
               <ArrowRight size={16} />
             </Link>
 
-            <p className={styles.countdownNotice}>
-              Redirecting to your order receipt in <strong>{countdown}s</strong>...
-            </p>
+            <Link href="/flower" className={styles.secondaryLink}>
+              <ShoppingBag size={16} />
+              <span>Continue Shopping</span>
+            </Link>
           </div>
         </div>
       </main>

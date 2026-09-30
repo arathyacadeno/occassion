@@ -6,6 +6,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCheckout } from "@/context/CheckoutContext";
+import { useCart } from "@/context/CartContext";
 import {
   CreditCard,
   QrCode,
@@ -23,7 +24,14 @@ type PaymentMethodType = "upi" | "card" | "netbanking" | "cod";
 
 export default function PaymentPage() {
   const router = useRouter();
-  const { checkoutItem, mobileNumber, completeOrder } = useCheckout();
+  const { clearCart } = useCart();
+  const {
+    checkoutItem,
+    checkoutItems,
+    totalAmount,
+    mobileNumber,
+    completeOrder,
+  } = useCheckout();
 
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethodType>("upi");
   const [upiId, setUpiId] = useState("");
@@ -34,20 +42,32 @@ export default function PaymentPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [mounted, setMounted] = useState(false);
 
+  const displayItems =
+    checkoutItems.length > 0
+      ? checkoutItems
+      : checkoutItem
+      ? [checkoutItem]
+      : [];
+
   useEffect(() => {
     setMounted(true);
     // Guard: If no checkout item or mobile number, redirect to checkout
-    if (!checkoutItem || !mobileNumber) {
+    if (displayItems.length === 0 || !mobileNumber) {
       router.replace("/checkout");
     }
-  }, [checkoutItem, mobileNumber, router]);
+  }, [displayItems.length, mobileNumber, router]);
 
-  if (!mounted || !checkoutItem) {
+  if (!mounted || displayItems.length === 0) {
     return null;
   }
 
-  const quantity = checkoutItem.quantity || 1;
-  const totalPrice = checkoutItem.price * quantity;
+  const finalTotal =
+    totalAmount > 0
+      ? totalAmount
+      : displayItems.reduce(
+          (acc, item) => acc + item.price * (item.quantity || 1),
+          0
+        );
 
   // Simulate payment processing flow
   const handlePayment = (e: React.FormEvent) => {
@@ -64,6 +84,7 @@ export default function PaymentPage() {
     // Simulate gateway handoff & verification (1.8s)
     setTimeout(() => {
       const order = completeOrder(methodNames[selectedMethod]);
+      clearCart();
       if (order) {
         router.push("/order-success");
       }
@@ -164,7 +185,7 @@ export default function PaymentPage() {
                       className={styles.payNowBtn}
                     >
                       <Lock size={16} />
-                      <span>Pay ₹{totalPrice.toLocaleString("en-IN")}</span>
+                      <span>Pay ₹{finalTotal.toLocaleString("en-IN")}</span>
                     </button>
                   </div>
                 )}
@@ -251,7 +272,7 @@ export default function PaymentPage() {
                         className={styles.payNowBtn}
                       >
                         <Lock size={16} />
-                        <span>Pay ₹{totalPrice.toLocaleString("en-IN")}</span>
+                        <span>Pay ₹{finalTotal.toLocaleString("en-IN")}</span>
                       </button>
                     </div>
                   </div>
@@ -320,7 +341,7 @@ export default function PaymentPage() {
                       className={styles.payNowBtn}
                     >
                       <Lock size={16} />
-                      <span>Pay ₹{totalPrice.toLocaleString("en-IN")}</span>
+                      <span>Pay ₹{finalTotal.toLocaleString("en-IN")}</span>
                     </button>
                   </div>
                 )}
@@ -373,7 +394,7 @@ export default function PaymentPage() {
                       className={styles.placeOrderBtn}
                     >
                       <Sparkles size={16} />
-                      <span>Place Order</span>
+                      <span>Pay ₹{finalTotal.toLocaleString("en-IN")} (COD)</span>
                     </button>
                   </div>
                 )}
@@ -384,43 +405,43 @@ export default function PaymentPage() {
           {/* Right Column: Order Summary Sidebar */}
           <div className={styles.sidebarColumn}>
             <div className={styles.summaryBox}>
-              <h3 className={styles.summaryTitle}>Payment Summary</h3>
+              <h3 className={styles.summaryTitle}>Order Summary</h3>
 
-              <div className={styles.productRow}>
-                <img
-                  src={checkoutItem.image}
-                  alt={checkoutItem.name}
-                  className={styles.productImg}
-                />
-                <div>
-                  <h4 className={styles.productName}>{checkoutItem.name}</h4>
-                  <p className={styles.productSubtext}>
-                    Quantity: {quantity} × ₹{checkoutItem.price.toLocaleString("en-IN")}
-                  </p>
-                </div>
+              <div className={styles.productsList}>
+                {displayItems.map((item, index) => (
+                  <div key={item.id || index} className={styles.productRow}>
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className={styles.productImg}
+                    />
+                    <div className={styles.productInfo}>
+                      <h4 className={styles.productName}>{item.name}</h4>
+                      <p className={styles.productSubtext}>
+                        Qty: {item.quantity || 1} × ₹{item.price.toLocaleString("en-IN")}
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
 
               <div className={styles.divider} />
 
               <div className={styles.costLine}>
-                <span>Items Subtotal</span>
-                <span>₹{totalPrice.toLocaleString("en-IN")}</span>
+                <span>Subtotal</span>
+                <span>₹{finalTotal.toLocaleString("en-IN")}</span>
               </div>
               <div className={styles.costLine}>
-                <span>Express Delivery</span>
-                <span className={styles.greenCost}>FREE</span>
-              </div>
-              <div className={styles.costLine}>
-                <span>Floral Gift Wrapping</span>
+                <span>Delivery</span>
                 <span className={styles.greenCost}>FREE</span>
               </div>
 
               <div className={styles.divider} />
 
               <div className={styles.totalLine}>
-                <span>Total Amount</span>
+                <span>Total</span>
                 <span className={styles.totalAmount}>
-                  ₹{totalPrice.toLocaleString("en-IN")}
+                  ₹{finalTotal.toLocaleString("en-IN")}
                 </span>
               </div>
 
@@ -431,7 +452,7 @@ export default function PaymentPage() {
 
               <div className={styles.securityBox}>
                 <ShieldCheck size={20} className={styles.secShield} />
-                <span>256-bit SSL Encrypted & PCI-DSS Compliant</span>
+                <span>256-bit SSL Encrypted &amp; PCI-DSS Compliant</span>
               </div>
             </div>
           </div>
@@ -447,10 +468,9 @@ export default function PaymentPage() {
               <Lock size={26} className={styles.spinnerCenterIcon} />
             </div>
 
-            <h3 className={styles.processingTitle}>Processing Payment...</h3>
+            <h3 className={styles.processingTitle}>Processing Payment</h3>
             <p className={styles.processingDesc}>
-              Please wait while we securely connect with your banking network. Do not
-              refresh or close this window.
+              Please wait while we securely process your payment.
             </p>
 
             <div className={styles.processingPill}>

@@ -6,6 +6,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCheckout } from "@/context/CheckoutContext";
+import { useCart } from "@/context/CartContext";
 import {
   Sparkles,
   Phone,
@@ -22,11 +23,18 @@ import styles from "./thank-you.module.css";
 export default function ThankYouPage() {
   const router = useRouter();
   const { completedOrder } = useCheckout();
+  const { clearCart } = useCart();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    clearCart();
+    try {
+      localStorage.removeItem("occassions_cart");
+    } catch (e) {
+      console.error(e);
+    }
+  }, [clearCart]);
 
   // Guard: If no completed order, redirect back to flowers catalog
   useEffect(() => {
@@ -101,32 +109,33 @@ export default function ThankYouPage() {
 
             {/* Order Confirmation Details Box */}
             <div className={styles.receiptBox}>
-              <div className={styles.orderIdRow}>
-                <div>
-                  <span className={styles.idLabel}>Order ID</span>
-                  <div className={styles.idCode}>#{completedOrder.orderId}</div>
-                </div>
-
-                <div className={styles.statusPill}>
-                  <CheckCircle size={14} /> Confirmed
-                </div>
-              </div>
-
-              <div className={styles.divider} />
-
-              {/* Product and Price Row */}
-              <div className={styles.productSummaryRow}>
-                <div className={styles.productInfoLeft}>
-                  <h3 className={styles.productNameTitle}>
+              <div className={styles.orderInfoList}>
+                <div className={styles.infoRowItem}>
+                  <span className={styles.infoRowLabel}>Product</span>
+                  <span className={styles.infoRowValueBold}>
                     {completedOrder.productName}
-                  </h3>
-                  <p className={styles.qtyText}>
-                    Quantity: {completedOrder.quantity}
-                  </p>
+                  </span>
                 </div>
 
-                <div className={styles.productPriceAmount}>
-                  ₹{completedOrder.price.toLocaleString("en-IN")}
+                <div className={styles.infoRowItem}>
+                  <span className={styles.infoRowLabel}>Order ID</span>
+                  <span className={styles.infoRowValue}>
+                    #{completedOrder.orderId}
+                  </span>
+                </div>
+
+                <div className={styles.infoRowItem}>
+                  <span className={styles.infoRowLabel}>Total</span>
+                  <span className={styles.infoRowValuePrice}>
+                    ₹{completedOrder.price.toLocaleString("en-IN")}
+                  </span>
+                </div>
+
+                <div className={styles.infoRowItem}>
+                  <span className={styles.infoRowLabel}>Payment</span>
+                  <span className={styles.infoRowValue}>
+                    {completedOrder.paymentMethod}
+                  </span>
                 </div>
               </div>
 

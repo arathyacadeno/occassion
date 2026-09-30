@@ -21,12 +21,26 @@ import styles from "./checkout.module.css";
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { checkoutItem, mobileNumber, setMobile, updateQuantity } = useCheckout();
+  const {
+    checkoutItem,
+    checkoutItems,
+    totalAmount,
+    mobileNumber,
+    setMobile,
+    updateQuantity,
+  } = useCheckout();
 
   const [inputMobile, setInputMobile] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSummaryStep, setIsSummaryStep] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  const displayItems =
+    checkoutItems.length > 0
+      ? checkoutItems
+      : checkoutItem
+      ? [checkoutItem]
+      : [];
 
   useEffect(() => {
     setMounted(true);
@@ -65,7 +79,7 @@ export default function CheckoutPage() {
   };
 
   const handleProceedToPayment = () => {
-    if (!checkoutItem) return;
+    if (displayItems.length === 0) return;
     router.push("/payment");
   };
 
@@ -74,7 +88,7 @@ export default function CheckoutPage() {
   }
 
   // Guard: If no product selected, show friendly empty checkout banner
-  if (!checkoutItem) {
+  if (displayItems.length === 0) {
     return (
       <div className={styles.pageWrapper}>
         <Navbar />
@@ -86,7 +100,7 @@ export default function CheckoutPage() {
             <h1 className={styles.emptyTitle}>No Product Selected for Checkout</h1>
             <p className={styles.emptyDesc}>
               Please select a flower arrangement, cake, or gift and click &quot;Buy Now&quot;
-              to proceed with your order.
+              or proceed from your cart.
             </p>
             <Link href="/flower" className={styles.browseBtn}>
               Browse Flowers <ArrowRight size={16} />
@@ -98,8 +112,13 @@ export default function CheckoutPage() {
     );
   }
 
-  const quantity = checkoutItem.quantity || 1;
-  const totalPrice = checkoutItem.price * quantity;
+  const finalTotal =
+    totalAmount > 0
+      ? totalAmount
+      : displayItems.reduce(
+          (acc, item) => acc + item.price * (item.quantity || 1),
+          0
+        );
 
   return (
     <div className={styles.pageWrapper}>
@@ -209,53 +228,64 @@ export default function CheckoutPage() {
                   <h2 className={styles.headingTitle}>Order Summary</h2>
                 </div>
 
-                <div className={styles.summaryItemRow}>
-                  <img
-                    src={checkoutItem.image}
-                    alt={checkoutItem.name}
-                    className={styles.summaryProductImg}
-                  />
+                {displayItems.map((item) => (
+                  <div key={item.id} className={styles.summaryItemRow}>
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className={styles.summaryProductImg}
+                    />
 
-                  <div className={styles.summaryItemDetails}>
-                    <span className={styles.summaryCategory}>
-                      {checkoutItem.category.toUpperCase()}
-                    </span>
-                    <h3 className={styles.summaryProductName}>
-                      {checkoutItem.name}
-                    </h3>
-                    <div className={styles.summaryPriceUnit}>
-                      ₹{checkoutItem.price.toLocaleString("en-IN")} each
-                    </div>
+                    <div className={styles.summaryItemDetails}>
+                      <span className={styles.summaryCategory}>
+                        {item.category.toUpperCase()}
+                      </span>
+                      <h3 className={styles.summaryProductName}>
+                        {item.name}
+                      </h3>
+                      <div className={styles.summaryPriceUnit}>
+                        ₹{item.price.toLocaleString("en-IN")} each
+                      </div>
 
-                    <div className={styles.qtyControlRow}>
-                      <span className={styles.qtyLabel}>Quantity:</span>
-                      <div className={styles.stepperContainer}>
-                        <button
-                          type="button"
-                          onClick={() => updateQuantity(Math.max(1, quantity - 1))}
-                          disabled={quantity <= 1}
-                          className={styles.stepperBtn}
-                          aria-label="Decrease quantity"
-                        >
-                          <Minus size={13} />
-                        </button>
-                        <span className={styles.qtyDisplay}>{quantity}</span>
-                        <button
-                          type="button"
-                          onClick={() => updateQuantity(quantity + 1)}
-                          className={styles.stepperBtn}
-                          aria-label="Increase quantity"
-                        >
-                          <Plus size={13} />
-                        </button>
+                      <div className={styles.qtyControlRow}>
+                        <span className={styles.qtyLabel}>Quantity:</span>
+                        <div className={styles.stepperContainer}>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateQuantity(
+                                item.id,
+                                Math.max(1, (item.quantity || 1) - 1)
+                              )
+                            }
+                            disabled={(item.quantity || 1) <= 1}
+                            className={styles.stepperBtn}
+                            aria-label="Decrease quantity"
+                          >
+                            <Minus size={13} />
+                          </button>
+                          <span className={styles.qtyDisplay}>
+                            {item.quantity || 1}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateQuantity(item.id, (item.quantity || 1) + 1)
+                            }
+                            className={styles.stepperBtn}
+                            aria-label="Increase quantity"
+                          >
+                            <Plus size={13} />
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className={styles.itemTotalPrice}>
-                    ₹{totalPrice.toLocaleString("en-IN")}
+                    <div className={styles.itemTotalPrice}>
+                      ₹{((item.price) * (item.quantity || 1)).toLocaleString("en-IN")}
+                    </div>
                   </div>
-                </div>
+                ))}
 
                 <div className={styles.summaryMetaList}>
                   <div className={styles.metaRow}>
@@ -278,7 +308,7 @@ export default function CheckoutPage() {
                 <div className={styles.totalRow}>
                   <span className={styles.totalLabel}>Total</span>
                   <span className={styles.totalValue}>
-                    ₹{totalPrice.toLocaleString("en-IN")}
+                    ₹{finalTotal.toLocaleString("en-IN")}
                   </span>
                 </div>
 
@@ -299,25 +329,27 @@ export default function CheckoutPage() {
             <div className={styles.sideSummaryCard}>
               <h3 className={styles.sideSummaryTitle}>Order Overview</h3>
 
-              <div className={styles.sideProductMini}>
-                <img
-                  src={checkoutItem.image}
-                  alt={checkoutItem.name}
-                  className={styles.sideProductImg}
-                />
-                <div>
-                  <h4 className={styles.sideProductName}>{checkoutItem.name}</h4>
-                  <p className={styles.sideProductPrice}>
-                    Qty: {quantity} × ₹{checkoutItem.price.toLocaleString("en-IN")}
-                  </p>
+              {displayItems.map((item) => (
+                <div key={item.id} className={styles.sideProductMini}>
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className={styles.sideProductImg}
+                  />
+                  <div>
+                    <h4 className={styles.sideProductName}>{item.name}</h4>
+                    <p className={styles.sideProductPrice}>
+                      Qty: {item.quantity || 1} × ₹{item.price.toLocaleString("en-IN")}
+                    </p>
+                  </div>
                 </div>
-              </div>
+              ))}
 
               <div className={styles.sideDivider} />
 
               <div className={styles.sideCostRow}>
                 <span>Subtotal</span>
-                <span>₹{totalPrice.toLocaleString("en-IN")}</span>
+                <span>₹{finalTotal.toLocaleString("en-IN")}</span>
               </div>
               <div className={styles.sideCostRow}>
                 <span>Delivery</span>
@@ -329,7 +361,7 @@ export default function CheckoutPage() {
               <div className={styles.sideTotalRow}>
                 <span>Estimated Total</span>
                 <span className={styles.sideTotalAmount}>
-                  ₹{totalPrice.toLocaleString("en-IN")}
+                  ₹{finalTotal.toLocaleString("en-IN")}
                 </span>
               </div>
 
