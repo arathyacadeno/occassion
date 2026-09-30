@@ -36,8 +36,74 @@
   position: relative;
   z-index: 3;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+/* ================= SECTION HEADER ================= */
+.sectionHeader {
+  text-align: center;
+  margin: 0 auto 46px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.subtitle {
+  font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: capitalize;
+  color: #db2777;
+  margin-bottom: 8px;
+}
+
+.mainTitle {
+  font-family: var(--font-sans, sans-serif);
+  font-size: 40px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: #111827;
+  line-height: 1.15;
+  margin: 0 0 18px;
+  text-transform: none;
+}
+
+/* Floral decorative divider with thin horizontal lines */
+.floralDivider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 280px;
+}
+
+.dividerLine {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(219, 39, 119, 0.05),
+    rgba(219, 39, 119, 0.35)
+  );
+}
+
+.dividerLine:last-child {
+  background: linear-gradient(
+    270deg,
+    rgba(219, 39, 119, 0.05),
+    rgba(219, 39, 119, 0.35)
+  );
+}
+
+.dividerIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #db2777;
 }
 
 /* Outer layout holding the left arrow, oval card, and right arrow */

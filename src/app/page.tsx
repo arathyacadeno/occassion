@@ -8,6 +8,7 @@ import ShopByOccasion from "@/components/ShopByOccasion";
 import JoyfulGiftsBanner from "@/components/JoyfulGiftsBanner";
 import ShopByFlowers from "@/components/ShopByFlowers";
 import HighlightSection from "@/components/HighlightSection";
+import Testimonials from "@/components/Testimonials";
 import Footer from "@/components/Footer";
 
 export default function Home() {
@@ -52,6 +53,9 @@ export default function Home() {
 
       {/* 5. Our Highlights */}
       <HighlightSection />
+
+      {/* 5.5 Testimonials */}
+      <Testimonials />
 
       {/* 6. Footer */}
       <Footer />
