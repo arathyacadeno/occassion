@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import styles from "./ShopByCategory.module.css";
 
 interface CategoryCardItem {
@@ -21,7 +22,7 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
   {
     id: "flower-basket",
     name: "Flower Basket",
-    image: "/images/flower-basket-cat.jpg",
+    image: "/images/category-flower-basket.jpg",
     link: "/flower-baskets",
     delay: "0s",
     // 1. Flower Basket → from left
@@ -32,7 +33,7 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
   {
     id: "flower-bouquet",
     name: "Flower Bouquet",
-    image: "/images/red-rose-bouquet.jpg",
+    image: "/images/category-flower-bouquet.jpg",
     link: "/flower-bouquets",
     delay: "0.14s",
     // 2. Flower Bouquet → from top-left
@@ -43,7 +44,7 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
   {
     id: "cakes",
     name: "Cakes",
-    image: "/images/celebration-cake-cat.jpg",
+    image: "/images/category-cakes.jpg",
     link: "/cakes",
     delay: "0.28s",
     // 3. Cakes → from bottom
@@ -54,7 +55,7 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
   {
     id: "table-decor",
     name: "Table Decor",
-    image: "/images/highlight-table-arrangements.jpg",
+    image: "/images/category-table-decor.jpg",
     link: "/table-decor",
     delay: "0.42s",
     // 4. Table Decor → from top-right
@@ -65,7 +66,7 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
   {
     id: "wreath",
     name: "Wreath",
-    image: "/images/floral-wreath-cat.jpg",
+    image: "/images/category-wreath.jpg",
     link: "/wreaths",
     delay: "0.56s",
     // 5. Wreath → from right
@@ -87,7 +88,7 @@ export default function ShopByCategory() {
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true);
-          // Trigger when entering viewport and play only once
+          // Play only once
           observer.disconnect();
         }
       },
@@ -109,12 +110,14 @@ export default function ShopByCategory() {
       aria-label="Shop by Category"
     >
       <div className={styles.container}>
-        {/* Section Heading with Floral Divider Structure */}
-        <div className={`${styles.sectionHeader} ${isVisible ? styles.headerInView : ""}`}>
+        {/* Section heading with floral divider */}
+        <div
+          className={`${styles.sectionHeader} ${isVisible ? styles.headerInView : ""
+            }`}
+        >
           <span className={styles.subtitle}>Fresh Collections</span>
           <h2 className={styles.mainTitle}>Shop By Category</h2>
 
-          {/* Decorative floral icon with thin horizontal lines */}
           <div className={styles.floralDivider} aria-hidden="true">
             <span className={styles.dividerLine} />
             <span className={styles.dividerIcon}>
@@ -150,14 +153,10 @@ export default function ShopByCategory() {
           </div>
         </div>
 
-        {/* 5 Categories Editorial Gallery Row */}
+        {/* 5 category gallery */}
         <div className={styles.galleryGrid}>
           {CATEGORY_CARDS.map((cat) => (
-            <CategoryItem
-              key={cat.id}
-              item={cat}
-              isVisible={isVisible}
-            />
+            <CategoryItem key={cat.id} item={cat} isVisible={isVisible} />
           ))}
         </div>
       </div>
@@ -174,24 +173,28 @@ function CategoryItem({
 }) {
   const content = (
     <div className={styles.itemWrapper}>
-      {/* Large Rectangular Image Area with 20px-24px rounded corners */}
       <div className={styles.imageFrame}>
-        <img
+        <Image
           src={item.image}
           alt={item.name}
+          fill
+          quality={95}
+          sizes="(max-width: 640px) 50vw, (max-width: 960px) 33vw, 250px"
           className={styles.categoryImage}
-          loading="lazy"
         />
+        <span className={styles.shopPill} aria-hidden="true">
+          Shop now
+        </span>
       </div>
 
-      {/* Clean Category Name Underneath */}
       <h3 className={styles.categoryTitle}>{item.name}</h3>
     </div>
   );
 
   return (
     <div
-      className={`${styles.itemContainer} ${isVisible ? styles.itemVisible : ""}`}
+      className={`${styles.itemContainer} ${isVisible ? styles.itemVisible : ""
+        }`}
       style={
         {
           "--tx": item.initTx,

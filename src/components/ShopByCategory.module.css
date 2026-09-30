@@ -1,29 +1,23 @@
 .sectionWrapper {
   width: 100%;
-  background-color: #fff5f8;
-  padding: 100px 0 115px 0;
+  background: linear-gradient(180deg, #fff5f8 0%, #ffffff 100%);
+  padding: 70px 0 100px 0;
   position: relative;
   overflow: hidden;
 }
 
 .container {
   width: 100%;
-  max-width: 1480px;
+  max-width: 1240px;
   margin-inline: auto;
   padding-inline: 32px;
   box-sizing: border-box;
 }
 
-@media (max-width: 768px) {
-  .container {
-    padding-inline: 20px;
-  }
-}
-
 /* ================= SECTION HEADING ================= */
 .sectionHeader {
   text-align: center;
-  margin: 0 auto 46px auto;
+  margin: 0 auto 44px auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -40,26 +34,26 @@
 
 .subtitle {
   font-family: var(--font-sans, -apple-system, sans-serif);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: capitalize;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: #db2777;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .mainTitle {
-  font-family: var(--font-sans, sans-serif);
-  font-size: 40px;
+  font-family: var(--font-serif, "Playfair Display", Georgia, serif);
+  font-size: 42px;
   font-weight: 600;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.01em;
   color: #111827;
   line-height: 1.15;
   margin: 0 0 18px;
   text-transform: none;
 }
 
-/* Floral decorative divider with thin horizontal lines */
+/* Floral divider */
 .floralDivider {
   display: flex;
   align-items: center;
@@ -98,38 +92,41 @@
 .galleryGrid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 26px;
+  gap: 24px;
   width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
   align-items: start;
 }
 
-/* Directional Entrance Container */
+/* Staggered editorial offset (desktop only) */
+@media (min-width: 961px) {
+  .galleryGrid > :nth-child(even) {
+    margin-top: 32px;
+  }
+}
+
+/* Directional entrance container */
 .itemContainer {
   width: 100%;
   will-change: transform, opacity;
-
-  /* Initial off-screen state */
   opacity: 0;
   transform:
     translate3d(var(--tx, 0px), var(--ty, 30px), 0)
     rotate(var(--rot, 0deg))
     scale(0.92);
-
   transition:
     opacity 850ms cubic-bezier(0.16, 1, 0.3, 1),
     transform 950ms cubic-bezier(0.16, 1, 0.3, 1);
-  transition-delay:
-    var(--anim-delay, 0s),
-    var(--anim-delay, 0s);
+  transition-delay: var(--anim-delay, 0s), var(--anim-delay, 0s);
 }
 
-/* Settled Viewport State (plays once) */
 .itemVisible {
   opacity: 1;
   transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
 }
 
-/* Interactive link */
+/* Link */
 .categoryLink {
   display: block;
   text-decoration: none;
@@ -141,10 +138,9 @@
 .categoryLink:focus-visible {
   outline: 2px solid #db2777;
   outline-offset: 4px;
-  border-radius: 24px;
+  border-radius: 22px;
 }
 
-/* Item Wrapper */
 .itemWrapper {
   display: flex;
   flex-direction: column;
@@ -152,45 +148,101 @@
   width: 100%;
 }
 
-/* ================= RECTANGULAR IMAGE FRAME ================= */
+/* ================= IMAGE FRAME ================= */
 .imageFrame {
   position: relative;
   width: 100%;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 4 / 5;
   border-radius: 22px;
   overflow: hidden;
   background-color: #fdf2f8;
-  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.07);
   transition:
     box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
     transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .categoryImage {
-  width: 100%;
-  height: 100%;
   object-fit: cover;
-  display: block;
   transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Hover Effects on Image */
-.categoryLink:hover .imageFrame {
-  box-shadow: 0 14px 30px -4px rgba(219, 39, 119, 0.16);
+/* Soft pink gradient on hover */
+.imageFrame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(219, 39, 119, 0.28),
+    transparent 50%
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
 }
 
-.categoryLink:hover .categoryImage {
-  transform: scale(1.04);
+/* "Shop now" pill */
+.shopPill {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  z-index: 2;
+  transform: translate(-50%, 12px);
+  opacity: 0;
+  padding: 7px 16px;
+  font-family: var(--font-sans, -apple-system, sans-serif);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: #db2777;
+  background: #ffffff;
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+  transition:
+    opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Hover + keyboard focus */
+.categoryLink:hover .imageFrame,
+.categoryLink:focus-visible .imageFrame {
+  box-shadow: 0 16px 32px -6px rgba(219, 39, 119, 0.25);
+  transform: translateY(-3px);
+}
+
+.categoryLink:hover .categoryImage,
+.categoryLink:focus-visible .categoryImage {
+  transform: scale(1.06);
+}
+
+.categoryLink:hover .imageFrame::after,
+.categoryLink:focus-visible .imageFrame::after {
+  opacity: 1;
+}
+
+.categoryLink:hover .shopPill,
+.categoryLink:focus-visible .shopPill {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* Touch devices have no hover: keep the pill visible */
+@media (hover: none) {
+  .shopPill {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }
 
 /* ================= TYPOGRAPHY ================= */
 .categoryTitle {
-  font-family: var(--font-sans);
-  font-size: clamp(1.15rem, 1.4vw, 1.45rem);
-  font-weight: 400;
+  font-family: var(--font-sans, -apple-system, sans-serif);
+  font-size: clamp(1rem, 1.15vw, 1.15rem);
+  font-weight: 600;
   color: #0f172a;
   text-align: center;
-  margin: 16px 0 0 0;
+  margin: 14px 0 0 0;
   line-height: 1.25;
   letter-spacing: -0.01em;
   transition:
@@ -198,13 +250,12 @@
     transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Hover Effect on Category Text */
 .categoryLink:hover .categoryTitle {
   color: #db2777;
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
-/* ================= ACCESSIBILITY & PREFERS-REDUCED-MOTION ================= */
+/* ================= REDUCED MOTION ================= */
 @media (prefers-reduced-motion: reduce) {
   .sectionHeader,
   .itemContainer {
@@ -212,76 +263,94 @@
     transform: none !important;
     transition: none !important;
   }
+  .categoryImage,
+  .imageFrame,
+  .shopPill {
+    transition: none;
+  }
 }
 
-/* ================= RESPONSIVE BEHAVIOR ================= */
-/* Tablet (approx 3 per row) */
-@media (max-width: 1120px) {
+/* ================= RESPONSIVE ================= */
+
+/* Tablet: 3 on top, 2 centered below */
+@media (max-width: 960px) {
+  .container {
+    padding-inline: 24px;
+  }
   .galleryGrid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 22px;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 20px;
+    max-width: 640px;
   }
-  .galleryGrid > :nth-child(4),
+  .galleryGrid > * {
+    grid-column: span 2;
+  }
+  .galleryGrid > :nth-child(4) {
+    grid-column: 2 / span 2;
+  }
   .galleryGrid > :nth-child(5) {
-    grid-column: span 1;
+    grid-column: 4 / span 2;
   }
-  .categoryTitle {
-    font-size: 1.35rem;
-    margin-top: 14px;
+  .mainTitle {
+    font-size: 36px;
   }
 }
 
-/* Tablet / Mobile (2 categories per row) */
-@media (max-width: 768px) {
+/* Mobile: 2 per row, last one centered */
+@media (max-width: 640px) {
   .sectionWrapper {
-    padding: 72px 0 84px 0;
+    padding: 56px 0 72px 0;
   }
   .container {
-    padding: 0 20px;
+    padding-inline: 16px;
   }
   .sectionHeader {
-    margin-bottom: 32px;
+    margin-bottom: 30px;
   }
-  .mainHeading {
-    font-size: 1.8rem;
+  .mainTitle {
+    font-size: 32px;
   }
   .galleryGrid {
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
+    max-width: 400px;
+  }
+  .galleryGrid > :nth-child(n) {
+    grid-column: auto;
   }
   .galleryGrid > :last-child {
-    grid-column: span 2;
-    max-width: 50%;
-    margin: 0 auto;
-    width: 100%;
-  }
-  .imageFrame {
-    border-radius: 20px;
-  }
-  .categoryTitle {
-    font-size: 1.2rem;
-    margin-top: 12px;
-  }
-}
-
-/* Small mobile (still 2 per row) */
-@media (max-width: 480px) {
-  .container {
-    padding: 0 14px;
-  }
-  .galleryGrid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-  .galleryGrid > :last-child {
-    grid-column: span 2;
-    max-width: 100%;
+    grid-column: 1 / -1;
+    width: calc(50% - 8px);
+    justify-self: center;
   }
   .imageFrame {
     border-radius: 18px;
   }
   .categoryTitle {
-    font-size: 1.05rem;
+    font-size: 0.98rem;
     margin-top: 10px;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 420px) {
+  .container {
+    padding-inline: 12px;
+  }
+  .galleryGrid {
+    gap: 12px;
+  }
+  .galleryGrid > :last-child {
+    width: calc(50% - 6px);
+  }
+  .imageFrame {
+    border-radius: 16px;
+  }
+  .categoryTitle {
+    font-size: 0.92rem;
+  }
+  .shopPill {
+    font-size: 11px;
+    padding: 6px 12px;
   }
 }
