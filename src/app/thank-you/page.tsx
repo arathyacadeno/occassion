@@ -93,12 +93,6 @@ export default function ThankYouPage() {
               />
               <div className={styles.imageOverlayGradient} />
 
-              {/* Floating Handcrafted Floral Badge */}
-              <div className={styles.floralFloatingBadge}>
-                <Sparkles size={16} className={styles.sparkleIcon} />
-                <span>Handcrafted Fresh in Calicut</span>
-              </div>
-
               <div className={styles.productPill}>
                 <span className={styles.pillCategory}>
                   {(activeOrder.productCategory || "Flower").toUpperCase()}
@@ -112,12 +106,6 @@ export default function ThankYouPage() {
           <div className={styles.detailsColumn}>
             {/* Floral Greeting Header */}
             <div className={styles.headerSection}>
-              <div className={styles.floralEmblem}>
-                <span className={styles.flowerEmoji} role="img" aria-label="blossom">
-                  🌸
-                </span>
-              </div>
-
               <h1 className={styles.pageTitle}>Thank You for Your Order!</h1>
               <p className={styles.pageSubtitle}>
                 Your order has been placed successfully.

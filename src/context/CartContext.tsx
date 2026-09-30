@@ -37,9 +37,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           const userItems = parsed.filter(
             (item: CartItem) =>
               item.customNote !==
-                "Wishing you a lifetime of love and blooming happiness!" &&
+              "Wishing you a lifetime of love and blooming happiness!" &&
               item.customNote !==
-                "Happy Birthday! May your day be as sweet as these blooms."
+              "Happy Birthday! May your day be as sweet as these blooms."
           );
           setItems(userItems);
         } else {
