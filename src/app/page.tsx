@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import SplitHero from "@/components/SplitHero";
 import ShopByCategory from "@/components/ShopByCategory";
 import ShopByOccasion from "@/components/ShopByOccasion";
+import JoyfulGiftsBanner from "@/components/JoyfulGiftsBanner";
 import ShopByFlowers from "@/components/ShopByFlowers";
 import HighlightSection from "@/components/HighlightSection";
 import Footer from "@/components/Footer";
@@ -42,6 +43,9 @@ export default function Home() {
 
       {/* 3. Shop by Occasion */}
       <ShopByOccasion />
+
+      {/* 3.5 Celebration Gifts Promotional Banner */}
+      <JoyfulGiftsBanner />
 
       {/* 4. Shop by Flower */}
       <ShopByFlowers />

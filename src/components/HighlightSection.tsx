@@ -19,20 +19,20 @@ export interface HighlightCard {
 
 const highlightCards: HighlightCard[] = [
   {
-    id: "stage-decor",
+    id: "table-arrangement",
     position: "topLeft",
-    tag: "Event",
-    title: "Stage Decor",
-    subtitle: "Grand Wedding and Event Stages",
+    tag: "Decoration",
+    title: "Table Arrangement",
+    subtitle: "Opulent Banquet Centerpieces",
     image: "/images/highlight-table-arrangements.jpg",
-    desc: "Transform any stage into a breathtaking floral masterpiece. From grand wedding backdrops to elegant event stages, we craft immersive floral installations with cascading blooms, draping greens, and luminous lighting.",
+    desc: "Elevate your reception dinner and VIP banquet tables with opulent elevated crystal centerpieces, lush cascading hydrangeas, blush roses, and glowing candlelight.",
     features: [
-      "Custom Floral Backdrop Installations",
-      "Cascading Bloom Arches",
-      "Ambient Lighting Coordination",
-      "On-Site Calicut Venue Setup",
+      "Elevated Crystal Centerpieces",
+      "Lush Floral Banquet Runners",
+      "Floating Candle & Glass Ambiance",
+      "VIP Head Table Styling",
     ],
-    whatsAppText: "Hello Occassions Florist Calicut, I would like to inquire about Stage Decor for my event.",
+    whatsAppText: "Hello Occassions Florist Calicut, I would like to inquire about wedding Table Arrangements.",
     href: "/table-arrangements",
   },
   {
@@ -278,17 +278,14 @@ function EditorialCard({ card, isInView, posClass, delay, onOpen }: {
       <div className={styles.cardImgWrap}>
         <img src={card.image} alt={card.title} className={styles.cardImg} loading="lazy" />
         <div className={styles.cardLabel}>
-          <div className={styles.cardLabelLeft}>
-            <span className={styles.cardTag}>{card.tag}</span>
-            <span className={styles.cardTitle}>{card.title}</span>
-          </div>
+          <span className={styles.cardTitle}>{card.title}</span>
           {card.href ? (
             <Link href={card.href} className={styles.cardArrowBtn} onClick={(e) => e.stopPropagation()} aria-label={`Explore ${card.title}`}>
-              <ArrowUpRight size={18} strokeWidth={2} />
+              <ArrowUpRight size={18} strokeWidth={2.2} />
             </Link>
           ) : (
             <button type="button" className={styles.cardArrowBtn} onClick={onOpen} aria-label={`Explore ${card.title}`}>
-              <ArrowUpRight size={18} strokeWidth={2} />
+              <ArrowUpRight size={18} strokeWidth={2.2} />
             </button>
           )}
         </div>

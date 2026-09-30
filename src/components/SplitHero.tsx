@@ -347,11 +347,11 @@ export default function SplitHero({
                         ref={handleVideoRef}
                         className={styles.slideVideo}
                         src={slide.left.video}
-                        poster={slide.left.bgImage}
                         autoPlay
                         muted
                         loop
                         playsInline
+                        preload="auto"
                       />
                     )}
                   </>
@@ -404,11 +404,11 @@ export default function SplitHero({
                           ref={handleVideoRef}
                           className={styles.slideVideo}
                           src={panel.video}
-                          poster={panel.bgImage}
                           autoPlay
                           muted
                           loop
                           playsInline
+                          preload="auto"
                         />
                       )}
                     </>
