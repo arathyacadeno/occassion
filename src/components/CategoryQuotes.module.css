@@ -1,0 +1,327 @@
+/* ==========================================================================
+   CATEGORY QUOTES SECTION - "LOVED IN EVERY BLOOM"
+   ========================================================================== */
+
+.sectionWrapper {
+  width: 100%;
+  background: linear-gradient(180deg, #ffffff 0%, #fff5f8 40%, #fff0f5 100%);
+  padding: 80px 0 95px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: 24px;
+  box-sizing: border-box;
+}
+
+/* ================= SECTION HEADER ================= */
+.header {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 48px auto;
+}
+
+.title {
+  font-family: var(--font-serif, "Playfair Display", Georgia, serif);
+  font-size: clamp(2rem, 2.5vw, 2.6rem);
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin: 0 0 14px 0;
+}
+
+.subtitle {
+  font-family: var(--font-sans, -apple-system, sans-serif);
+  font-size: clamp(0.95rem, 1.1vw, 1.05rem);
+  color: #4b5563;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ================= CAROUSEL WRAPPER ================= */
+.carouselWrapper {
+  position: relative;
+  width: 100%;
+  max-width: 1160px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ================= NAV BUTTONS ================= */
+.navBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid rgba(219, 39, 119, 0.15);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  outline: none;
+}
+
+.navBtn:hover {
+  background: #db2777;
+  color: #ffffff;
+  border-color: #db2777;
+  box-shadow: 0 8px 22px rgba(219, 39, 119, 0.28);
+  transform: translateY(-50%) scale(1.08);
+}
+
+.navBtn:focus-visible {
+  outline: 2px solid #db2777;
+  outline-offset: 3px;
+}
+
+.prevBtn {
+  left: 0;
+}
+
+.nextBtn {
+  right: 0;
+}
+
+/* ================= 3-CARD STAGE ================= */
+.cardsTrack {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+  padding: 24px 50px 36px 50px;
+  box-sizing: border-box;
+}
+
+/* Base Card Style */
+.card {
+  position: relative;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 32px 28px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-sizing: border-box;
+  transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+/* Center Highlighted Card */
+.activeCard {
+  flex: 0 0 380px;
+  max-width: 380px;
+  box-shadow: 0 16px 38px -6px rgba(219, 39, 119, 0.16),
+              0 4px 14px rgba(15, 23, 42, 0.04);
+  transform: scale(1.03);
+  z-index: 5;
+  border: 1px solid rgba(251, 207, 232, 0.6);
+}
+
+/* Left and Right Background Cards */
+.sideCard {
+  flex: 0 0 320px;
+  max-width: 320px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+  transform: scale(0.92);
+  opacity: 0.62;
+  cursor: pointer;
+  z-index: 2;
+  filter: blur(0.2px);
+}
+
+.sideCard:hover {
+  opacity: 0.88;
+  transform: scale(0.94);
+  box-shadow: 0 10px 26px rgba(219, 39, 119, 0.12);
+}
+
+/* Star Rating Row */
+.starsRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin-bottom: 16px;
+}
+
+.starFilled {
+  color: #db2777;
+  fill: #db2777;
+}
+
+.starEmpty {
+  color: #fbcfe8;
+  fill: #fbcfe8;
+}
+
+/* Quote Title / Heading */
+.cardTitle {
+  font-family: var(--font-serif, "Playfair Display", Georgia, serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 10px 0;
+  line-height: 1.35;
+}
+
+/* Review Body Text */
+.cardBody {
+  font-family: var(--font-sans, -apple-system, sans-serif);
+  font-size: 0.88rem;
+  line-height: 1.62;
+  color: #4b5563;
+  margin: 0 0 20px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Reviewer Name */
+.cardAuthor {
+  font-family: var(--font-sans, -apple-system, sans-serif);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #111827;
+  margin-top: auto;
+}
+
+/* ================= BIG DECORATIVE PINK QUOTE MARKS ================= */
+.quoteMarkBottomRight {
+  position: absolute;
+  right: 18px;
+  bottom: -18px;
+  font-family: Georgia, serif;
+  font-size: 64px;
+  font-weight: 900;
+  line-height: 1;
+  color: #db2777;
+  opacity: 0.85;
+  pointer-events: none;
+  text-shadow: 0 4px 12px rgba(219, 39, 119, 0.2);
+}
+
+.quoteMarkBottomLeft {
+  position: absolute;
+  left: 18px;
+  bottom: -18px;
+  font-family: Georgia, serif;
+  font-size: 64px;
+  font-weight: 900;
+  line-height: 1;
+  color: #f472b6;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ================= PAGINATION DOTS ================= */
+.dotsRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #fbcfe8;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+
+.activeDot {
+  width: 24px;
+  background: #db2777;
+}
+
+/* ================= RESPONSIVE BEHAVIOR ================= */
+@media (max-width: 960px) {
+  .sectionWrapper {
+    padding: 65px 0 80px 0;
+  }
+  .cardsTrack {
+    padding-inline: 40px;
+    gap: 14px;
+  }
+  .activeCard {
+    flex: 0 0 340px;
+    max-width: 340px;
+  }
+  .sideCard {
+    flex: 0 0 260px;
+    max-width: 260px;
+    padding: 24px 20px 22px 20px;
+  }
+  .cardBody {
+    -webkit-line-clamp: 4;
+  }
+}
+
+@media (max-width: 768px) {
+  .cardsTrack {
+    padding-inline: 20px;
+  }
+  /* Hide side cards on tablet / mobile to focus on the active center card */
+  .sideCard {
+    display: none;
+  }
+  .activeCard {
+    flex: 1 1 100%;
+    max-width: 440px;
+    transform: none;
+  }
+  .navBtn {
+    width: 38px;
+    height: 38px;
+  }
+  .prevBtn {
+    left: -6px;
+  }
+  .nextBtn {
+    right: -6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sectionWrapper {
+    padding: 50px 0 65px 0;
+  }
+  .activeCard {
+    padding: 26px 20px 22px 20px;
+  }
+  .cardTitle {
+    font-size: 1.05rem;
+  }
+  .cardBody {
+    font-size: 0.84rem;
+  }
+  .quoteMarkBottomRight,
+  .quoteMarkBottomLeft {
+    font-size: 50px;
+    bottom: -14px;
+  }
+}

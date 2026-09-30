@@ -5,6 +5,7 @@ import Link from "next/link";
 import styles from "./car-decorations.module.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import CategoryQuotes from "@/components/CategoryQuotes";
 import { useCart } from "@/context/CartContext";
 import { Bouquet } from "@/types";
 import {
@@ -645,6 +646,9 @@ export default function CarDecorationsPage() {
             </div>
           </div>
         </div>
+
+        {/* Customer Quotes Section */}
+        <CategoryQuotes />
       </main>
 
       {/* Cart Toast Notification */}

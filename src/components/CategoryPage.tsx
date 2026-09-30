@@ -2,6 +2,7 @@ import React from "react";
 import Navbar from "@/components/Navbar";
 import CategoryHeader from "@/components/CategoryHeader";
 import ProductGrid from "@/components/ProductGrid";
+import CategoryQuotes from "@/components/CategoryQuotes";
 import Footer from "@/components/Footer";
 import { Product } from "@/data/catalog";
 
@@ -29,6 +30,7 @@ export default function CategoryPage({
       <main style={{ flex: 1 }}>
         <CategoryHeader title={title} description={description} />
         <ProductGrid products={products} ariaLabel={`${title} Collection`} />
+        <CategoryQuotes />
       </main>
       <Footer />
     </div>
