@@ -1,345 +1,767 @@
-/* ==========================================================================
-   OCCASIONS FOOTER — Floating White Card on Floral Background
-   5 columns: Brand | Our Services | Connect | Address | Newsletter
-   ========================================================================== */
+/* =========================================================
+   OCCASIONS FOOTER
+   FIXED BACKGROUND + SCROLLING WHITE CARD
+   ========================================================= */
 
 .footerWrapper {
   position: relative;
+
   width: 100%;
-  padding: 56px 24px 38px;
-  overflow: hidden;
+
+  min-height: 700px;
+
+  padding: 90px 0;
+
   box-sizing: border-box;
 
-  /* Floral meadow background */
+  overflow: hidden;
+
+  /*
+    BACKGROUND IMAGE
+  */
   background-image: url("/images/footer-section.svg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+
+  /*
+    IMPORTANT:
+    Fixed means the background stays in the same position
+    when the page is scrolling.
+  */
   background-attachment: fixed;
+
+  /*
+    Shows the background across the complete section.
+  */
+  background-size: cover;
+
+  background-position: center center;
+
+  background-repeat: no-repeat;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
 }
 
-/* ================= FLOATING WHITE CARD ================= */
+
+/* =========================================================
+   WHITE CARD
+   THIS CARD SCROLLS WITH THE PAGE
+   ========================================================= */
+
 .footerCard {
   position: relative;
+
   z-index: 2;
-  width: 100%;
-  max-width: 1670px;
-  min-height: 479px;
+
+  width: 96%;
+
+  max-width: 1500px;
+
+  /*
+    Slightly longer card
+  */
+  height: 350px;
+
+  min-height: 350px;
+
+  max-height: 350px;
+
   margin: 0 auto;
-  background: #ffffff;
-  border-radius: 40px;
-  padding: 56px 64px 38px;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.07);
+
+  padding: 42px 52px 22px;
+
   box-sizing: border-box;
+
+  background: #ffffff;
+
+  border-radius: 34px;
+
+  box-shadow:
+    0 14px 40px rgba(0, 0, 0, 0.09);
+
   display: flex;
+
   flex-direction: column;
+
   justify-content: space-between;
+
+  /*
+    IMPORTANT:
+    Card itself is NOT fixed.
+    Therefore it scrolls normally.
+  */
+  overflow: hidden;
 }
 
-/* ================= MAIN 5-COLUMN GRID ================= */
+
+/* =========================================================
+   MAIN GRID
+   ========================================================= */
+
 .mainGrid {
+  width: 100%;
+
   display: grid;
-  grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 1.4fr);
-  column-gap: 28px;
-  row-gap: 32px;
-  justify-items: center;
+
+  grid-template-columns:
+    1.5fr
+    1fr
+    1fr
+    1.25fr
+    1.2fr;
+
+  column-gap: 40px;
+
   align-items: start;
-  margin-bottom: 34px;
+
+  flex: 1;
 }
 
-/* ── Column 1: Brand & Socials ── */
+
+/* =========================================================
+   BRAND
+   ========================================================= */
+
 .brandCol {
   display: flex;
+
   flex-direction: column;
-  align-items: center;
-  text-align: center;
+
+  align-items: flex-start;
+
+  text-align: left;
+
   min-width: 0;
 }
+
 
 .logoLink {
   display: inline-flex;
-  justify-content: center;
-  margin-bottom: 18px;
+
+  margin-bottom: 14px;
+
   text-decoration: none;
 }
 
+
 .logoImg {
-  height: 48px;
   width: auto;
+
+  height: 45px;
+
   object-fit: contain;
+
   display: block;
 }
 
+
 .brandQuote {
-  font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
-  font-size: 13.5px;
-  line-height: 1.65;
+  font-family:
+    var(
+      --font-sans,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      Roboto,
+      sans-serif
+    );
+
+  font-size: 12.5px;
+
+  line-height: 1.55;
+
   color: #374151;
-  margin: 0 auto 22px;
-  max-width: 300px;
-  text-align: center;
+
+  margin: 0 0 18px;
+
+  max-width: 275px;
+
+  text-align: left;
+
   letter-spacing: -0.01em;
 }
+
+
+/* =========================================================
+   SOCIAL
+   ========================================================= */
 
 .socialRow {
   display: flex;
+
   align-items: center;
-  justify-content: center;
+
   gap: 10px;
 }
 
+
 .socialBtn {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
+  width: 33px;
+
+  height: 33px;
+
+  border-radius: 9px;
+
   background: #eef2ff;
+
   color: #111827;
+
   display: inline-flex;
+
   align-items: center;
+
   justify-content: center;
+
   text-decoration: none;
-  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
 }
+
 
 .socialBtn:hover {
   background: #e0e7ff;
+
   color: #ff4770;
+
   transform: translateY(-2px);
 }
 
-/* ── Common Column Headings ── */
+
+.socialBtn svg {
+  width: 14px;
+
+  height: 14px;
+}
+
+
+/* =========================================================
+   COLUMN TITLES
+   ========================================================= */
+
 .colTitle {
-  font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
-  font-size: 15px;
+  font-family:
+    var(
+      --font-sans,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      Roboto,
+      sans-serif
+    );
+
+  font-size: 14px;
+
   font-weight: 600;
+
   color: #ff5277;
-  margin: 0 0 20px;
-  text-align: center;
+
+  margin: 0 0 21px;
+
+  text-align: left;
+
   letter-spacing: -0.01em;
 }
 
-/* ── Columns 2 & 3: Navigation Links ── */
+
+/* =========================================================
+   LINKS
+   ========================================================= */
+
 .linksCol {
   display: flex;
+
   flex-direction: column;
-  align-items: center;
-  text-align: center;
+
+  align-items: flex-start;
+
+  text-align: left;
+
   min-width: 0;
 }
 
+
 .linksList {
   list-style: none;
+
   padding: 0;
+
   margin: 0;
+
   display: flex;
+
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 13px;
+
+  align-items: flex-start;
+
+  gap: 14px;
 }
 
+
 .navLink {
-  font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
-  font-size: 14px;
+  font-family:
+    var(
+      --font-sans,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      Roboto,
+      sans-serif
+    );
+
+  font-size: 13px;
+
   font-weight: 400;
+
   color: #262626;
+
   text-decoration: none;
+
+  line-height: 1.3;
+
   transition: color 0.2s ease;
 }
+
 
 .navLink:hover {
   color: #ff5277;
 }
 
-/* ── Column 4: Address ── */
+
+/* =========================================================
+   ADDRESS
+   ========================================================= */
+
 .addressCol {
   display: flex;
+
   flex-direction: column;
-  align-items: center;
-  text-align: center;
+
+  align-items: flex-start;
+
+  text-align: left;
+
   min-width: 0;
 }
 
+
 .addressContent {
-  font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
-  font-size: 14px;
-  line-height: 1.6;
+  font-family:
+    var(
+      --font-sans,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      Roboto,
+      sans-serif
+    );
+
+  font-size: 13px;
+
+  line-height: 1.55;
+
   color: #262626;
-  text-align: center;
+
+  text-align: left;
 }
 
+
 .addressText {
-  margin: 0 0 16px;
+  margin: 0 0 18px;
+
   color: #262626;
-  text-align: center;
+
+  text-align: left;
 }
+
 
 .helpText {
   margin: 0;
+
   color: #262626;
+
   white-space: nowrap;
-  text-align: center;
+
+  text-align: left;
 }
+
 
 .phoneLink {
   color: #262626;
+
   text-decoration: none;
+
   margin-left: 4px;
+
   transition: color 0.2s ease;
 }
+
 
 .phoneLink:hover {
   color: #ff5277;
 }
 
-/* ── Column 5: Newsletter ── */
+
+/* =========================================================
+   NEWSLETTER
+   ========================================================= */
+
 .newsletterCol {
   display: flex;
+
   flex-direction: column;
-  align-items: center;
-  text-align: center;
+
+  align-items: flex-start;
+
+  text-align: left;
+
   min-width: 0;
 }
 
+
 .newsletterForm {
-  background: #f0f4ff;
-  border-radius: 14px;
-  padding: 5px 6px 5px 18px;
-  display: flex;
-  align-items: center;
   width: 100%;
-  max-width: 290px;
-  margin: 0 auto;
+
+  max-width: 280px;
+
+  height: 46px;
+
+  background: #f0f4ff;
+
+  border-radius: 14px;
+
+  padding: 4px 5px 4px 14px;
+
+  display: flex;
+
+  align-items: center;
+
   box-sizing: border-box;
+
   transition: box-shadow 0.2s ease;
 }
 
+
 .newsletterForm:focus-within {
-  box-shadow: 0 0 0 2px rgba(255, 82, 119, 0.25);
+  box-shadow:
+    0 0 0 2px rgba(255, 82, 119, 0.2);
 }
+
 
 .newsletterInput {
   flex: 1;
+
   min-width: 0;
+
+  height: 100%;
+
   border: none;
-  background: transparent;
+
   outline: none;
-  font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
-  font-size: 13.5px;
+
+  background: transparent;
+
+  font-family:
+    var(
+      --font-sans,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      Roboto,
+      sans-serif
+    );
+
+  font-size: 12px;
+
   color: #111827;
 }
+
 
 .newsletterInput::placeholder {
   color: #94a3b8;
 }
 
+
 .sendBtn {
-  width: 52px;
-  height: 38px;
-  border-radius: 10px;
+  width: 43px;
+
+  height: 35px;
+
+  border-radius: 11px;
+
   background: #ff4770;
+
   color: #ffffff;
+
   border: none;
+
   display: inline-flex;
+
   align-items: center;
+
   justify-content: center;
+
   cursor: pointer;
+
   flex-shrink: 0;
-  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 12px rgba(255, 71, 112, 0.28);
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
+
 
 .sendBtn:hover {
   background: #e63960;
+
   transform: scale(1.03);
 }
 
-/* ================= COPYRIGHT ================= */
-.copyrightRow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-top: 10px;
+
+.sendBtn svg {
+  width: 15px;
+
+  height: 15px;
 }
 
+
+/* =========================================================
+   COPYRIGHT
+   ========================================================= */
+
+.copyrightRow {
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: flex-end;
+
+  margin-top: auto;
+
+  padding-top: 12px;
+}
+
+
 .copyrightText {
-  font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
-  font-size: 12.5px;
+  font-family:
+    var(
+      --font-sans,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      Roboto,
+      sans-serif
+    );
+
+  font-size: 11px;
+
   color: #262626;
+
   margin: 0;
-  text-align: center;
+
+  text-align: right;
+
   letter-spacing: -0.01em;
 }
 
-/* ================= RESPONSIVE ================= */
 
-/* Medium screen: 1100px */
-@media (max-width: 1100px) {
+/* =========================================================
+   LARGE DESKTOP
+   ========================================================= */
+
+@media (min-width: 1400px) {
   .footerCard {
-    padding: 42px 38px 28px;
-    border-radius: 32px;
+    width: 94%;
+
+    max-width: 1500px;
   }
+}
+
+
+/* =========================================================
+   MEDIUM DESKTOP
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+  .footerWrapper {
+    min-height: 500px;
+
+    padding: 75px 0;
+  }
+
+  .footerCard {
+    width: 95%;
+
+    padding: 36px 34px 22px;
+  }
+
   .mainGrid {
-    grid-template-columns:
-      minmax(0, 2.3fr) minmax(0, 1.08fr) minmax(0, 1fr) minmax(0, 1.63fr) minmax(0, 1.4fr);
-    column-gap: 16px;
+    column-gap: 24px;
   }
+
   .helpText {
     white-space: normal;
   }
 }
 
-/* Tablet screen: 880px */
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
 @media (max-width: 880px) {
+
   .footerWrapper {
-    padding: 44px 18px 30px;
-  }
-  .footerCard {
-    padding: 38px 30px 26px;
-    border-radius: 28px;
     min-height: auto;
+
+    padding: 60px 16px;
+
+    /*
+      Keep background fixed.
+    */
+    background-attachment: fixed;
+
+    background-size: cover;
+
+    background-position: center center;
   }
+
+  .footerCard {
+    width: 95%;
+
+    height: auto;
+
+    min-height: 450px;
+
+    max-height: none;
+
+    padding: 32px 28px 22px;
+
+    border-radius: 28px;
+  }
+
   .mainGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 32px;
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 28px;
   }
+
   .brandCol {
     grid-column: 1 / -1;
   }
+
   .brandQuote {
-    max-width: 480px;
+    max-width: 430px;
   }
+
   .copyrightRow {
     justify-content: center;
-    text-align: center;
+
+    padding-top: 20px;
   }
+
   .copyrightText {
     text-align: center;
   }
 }
 
-/* Mobile screen: 580px */
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
 @media (max-width: 580px) {
+
   .footerWrapper {
-    padding: 36px 14px 24px;
-    background-attachment: scroll;
+    min-height: auto;
+
+    padding: 45px 12px;
+
+    /*
+      Keep fixed background.
+    */
+    background-attachment: fixed;
+
+    background-size: cover;
+
+    background-position: center center;
   }
+
   .footerCard {
-    padding: 32px 20px 22px;
+    width: 96%;
+
+    height: auto;
+
+    min-height: 680px;
+
+    max-height: none;
+
+    padding: 28px 20px 20px;
+
     border-radius: 24px;
   }
+
   .mainGrid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 28px;
+    grid-template-columns: 1fr;
+
+    gap: 24px;
   }
+
+  .brandCol {
+    grid-column: auto;
+  }
+
   .newsletterForm {
     max-width: 100%;
   }
+
   .copyrightRow {
     justify-content: center;
+
+    padding-top: 20px;
   }
+
   .copyrightText {
-    font-size: 11.5px;
+    font-size: 10px;
+
     text-align: center;
+  }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 400px) {
+
+  .footerCard {
+    padding: 24px 16px 18px;
+
+    border-radius: 20px;
+  }
+
+  .logoImg {
+    height: 38px;
+  }
+
+  .brandQuote {
+    font-size: 11.5px;
+  }
+
+  .colTitle {
+    font-size: 13px;
+  }
+
+  .navLink {
+    font-size: 12px;
   }
 }

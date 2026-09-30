@@ -19,14 +19,17 @@
 /* ── Corner Animated Blooming Flower ── */
 .bloomingFlowerWrap {
   position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 200px;
+  left: -25px;
+  bottom: -15px;
+  width: clamp(175px, 15vw, 220px);
   height: auto;
   object-fit: contain;
   z-index: 1;
   pointer-events: none;
   user-select: none;
+  transform-origin: bottom left;
+  transform: rotate(11deg) skewX(-2deg);
+  transition: transform 0.3s ease;
 }
 
 /* ── Global Container ── */
@@ -38,6 +41,71 @@
   box-sizing: border-box;
   position: relative;
   z-index: 2;
+}
+
+/* ================= SECTION HEADER ================= */
+.sectionHeader {
+  text-align: center;
+  margin: 0 auto 52px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.subtitle {
+  font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: capitalize;
+  color: #db2777;
+  margin-bottom: 8px;
+}
+
+.mainTitle {
+  font-family: var(--font-sans, sans-serif);
+  font-size: 40px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: #111827;
+  line-height: 1.15;
+  margin: 0 0 18px;
+  text-transform: none;
+}
+
+/* Floral decorative divider with thin horizontal lines */
+.floralDivider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 280px;
+}
+
+.dividerLine {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(219, 39, 119, 0.05),
+    rgba(219, 39, 119, 0.35)
+  );
+}
+
+.dividerLine:last-child {
+  background: linear-gradient(
+    270deg,
+    rgba(219, 39, 119, 0.05),
+    rgba(219, 39, 119, 0.35)
+  );
+}
+
+.dividerIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #db2777;
 }
 
 /* ── 2-Column Split Layout ── */
