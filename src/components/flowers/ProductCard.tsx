@@ -70,7 +70,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           aria-hidden="true"
         >
           <path
-            d="M 0,0 C 95,0 175,30 300,30 L 300,36 L 0,36 Z"
+            d="M -4,0 C 100,0 180,36 304,36 L 304,48 L -4,48 Z"
             fill="#ffffff"
           />
         </svg>

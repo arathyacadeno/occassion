@@ -34,8 +34,9 @@
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 0.95;
-  background-color: #f8fafc;
+  background-color: #ffffff;
   overflow: hidden;
+  isolation: isolate;
 }
 
 .imageLink {
@@ -60,12 +61,13 @@
 /* The signature smooth wave SVG cutout */
 .waveDivider {
   position: absolute;
-  bottom: -1px;
-  left: 0;
-  width: 100%;
-  height: 38px;
+  bottom: -3px;
+  left: -2px;
+  right: -2px;
+  width: calc(100% + 4px);
+  height: 42px;
   pointer-events: none;
-  z-index: 2;
+  z-index: 3;
   display: block;
 }
 
@@ -120,6 +122,9 @@
 /* ================= CARD BODY ================= */
 .cardBody {
   padding: 14px 20px 22px 20px;
+  margin-top: -3px;
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
