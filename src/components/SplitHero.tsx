@@ -347,16 +347,13 @@ export default function SplitHero({
                         ref={handleVideoRef}
                         className={styles.slideVideo}
                         src={slide.left.video}
+                        poster={slide.left.bgImage}
                         autoPlay
                         muted
                         loop
                         playsInline
                       />
                     )}
-                    <div className={styles.imageOverlayGradient} />
-                    <div className={styles.cursiveOverlay}>
-                      {slide.left.cursiveOverlay}
-                    </div>
                   </>
                 ) : (
                   <>
@@ -367,19 +364,10 @@ export default function SplitHero({
                       }}
                     />
                     <div className={styles.textContent}>
-                      <div className={styles.tagline}>{slide.left.tagline}</div>
                       <h2 className={styles.title}>{slide.left.title}</h2>
                       <p className={styles.description}>
                         {slide.left.description}
                       </p>
-                      <div className={styles.buttonWrapper}>
-                        <button
-                          className={styles.readMoreBtn}
-                          onClick={handleExploreClick}
-                        >
-                          {slide.left.btnText}
-                        </button>
-                      </div>
                     </div>
                   </>
                 )}
@@ -416,16 +404,13 @@ export default function SplitHero({
                           ref={handleVideoRef}
                           className={styles.slideVideo}
                           src={panel.video}
+                          poster={panel.bgImage}
                           autoPlay
                           muted
                           loop
                           playsInline
                         />
                       )}
-                      <div className={styles.imageOverlayGradient} />
-                      <div className={styles.cursiveOverlay}>
-                        {panel.cursiveOverlay}
-                      </div>
                     </>
                   ) : (
                     <>
@@ -436,19 +421,10 @@ export default function SplitHero({
                         }}
                       />
                       <div className={styles.textContent}>
-                        <div className={styles.tagline}>{panel.tagline}</div>
                         <h2 className={styles.title}>{panel.title}</h2>
                         <p className={styles.description}>
                           {panel.description}
                         </p>
-                        <div className={styles.buttonWrapper}>
-                          <button
-                            className={styles.readMoreBtn}
-                            onClick={handleExploreClick}
-                          >
-                            {panel.btnText}
-                          </button>
-                        </div>
                       </div>
                     </>
                   )}

@@ -200,20 +200,12 @@
   }
 }
 
-.activeSlide .tagline {
-  animation: heroFadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
-}
-
 .activeSlide .title {
-  animation: heroFadeInUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.28s both;
+  animation: heroFadeInUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
 }
 
 .activeSlide .description {
-  animation: heroFadeInUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.42s both;
-}
-
-.activeSlide .buttonWrapper {
-  animation: heroFadeInUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.56s both;
+  animation: heroFadeInUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.32s both;
 }
 
 /* Read More Button in Light Pink & White */
