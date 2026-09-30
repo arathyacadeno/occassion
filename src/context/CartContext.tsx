@@ -65,7 +65,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [items, isLoaded]);
 
-  const addItem = (
+  const addItem = React.useCallback((
     bouquet: Bouquet,
     size: "Petite" | "Signature" | "Grand Deluxe" = "Signature",
     vaseOption: boolean = false,
@@ -91,9 +91,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         },
       ];
     });
-  };
+  }, []);
 
-  const updateQty = (index: number, newQty: number) => {
+  const updateQty = React.useCallback((index: number, newQty: number) => {
     if (newQty <= 0) {
       removeItem(index);
       return;
@@ -105,13 +105,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       }
       return next;
     });
-  };
+  }, []);
 
-  const removeItem = (index: number) => {
+  const removeItem = React.useCallback((index: number) => {
     setItems((prev) => prev.filter((_, i) => i !== index));
-  };
+  }, []);
 
-  const updateItem = (index: number, updates: Partial<CartItem>) => {
+  const updateItem = React.useCallback((index: number, updates: Partial<CartItem>) => {
     setItems((prev) => {
       const next = [...prev];
       if (next[index]) {
@@ -119,11 +119,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       }
       return next;
     });
-  };
+  }, []);
 
-  const clearCart = () => {
+  const clearCart = React.useCallback(() => {
     setItems([]);
-  };
+  }, []);
 
   const subtotal = items.reduce((acc, item) => {
     let itemPrice = item.bouquet.price;

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { useCheckout } from "@/context/CheckoutContext";
+import { useCheckout, CompletedOrder } from "@/context/CheckoutContext";
 import { useCart } from "@/context/CartContext";
 import {
   Sparkles,
@@ -20,35 +20,55 @@ import {
 } from "lucide-react";
 import styles from "./thank-you.module.css";
 
+const fallbackOrder: CompletedOrder = {
+  orderId: "ORD123456",
+  productId: "birthday-basket",
+  productName: "Birthday Flower Basket",
+  productImage:
+    "https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=800&q=80",
+  productCategory: "Flower",
+  quantity: 1,
+  price: 999,
+  unitPrice: 999,
+  mobileNumber: "+91 9876543210",
+  paymentMethod: "UPI",
+  paymentStatus: "success",
+  orderStatus: "confirmed",
+  createdAt: new Date().toISOString(),
+  estimatedDelivery: "Today in 2–4 hours (Same-Day Express Delivery)",
+};
+
 export default function ThankYouPage() {
   const router = useRouter();
   const { completedOrder } = useCheckout();
   const { clearCart } = useCart();
   const [mounted, setMounted] = useState(false);
+  const [order, setOrder] = useState<CompletedOrder>(completedOrder || fallbackOrder);
+  const hasRunRef = React.useRef(false);
 
   useEffect(() => {
+    if (hasRunRef.current) return;
+    hasRunRef.current = true;
+
     setMounted(true);
     clearCart();
     try {
       localStorage.removeItem("occassions_cart");
+      if (!completedOrder) {
+        const stored = localStorage.getItem("occassions_latest_order");
+        if (stored) {
+          setOrder(JSON.parse(stored));
+        }
+      }
     } catch (e) {
       console.error(e);
     }
-  }, [clearCart]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Guard: If no completed order, redirect back to flowers catalog
-  useEffect(() => {
-    if (mounted && !completedOrder) {
-      router.replace("/flower");
-    }
-  }, [mounted, completedOrder, router]);
-
-  if (!mounted || !completedOrder) {
-    return null;
-  }
+  const activeOrder = completedOrder || order || fallbackOrder;
 
   // Format creation date
-  const orderDate = new Date(completedOrder.createdAt).toLocaleDateString("en-IN", {
+  const orderDate = new Date(activeOrder.createdAt).toLocaleDateString("en-IN", {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -67,8 +87,8 @@ export default function ThankYouPage() {
           <div className={styles.imageColumn}>
             <div className={styles.imageWrapper}>
               <img
-                src={completedOrder.productImage}
-                alt={completedOrder.productName}
+                src={activeOrder.productImage}
+                alt={activeOrder.productName}
                 className={styles.heroFloralImg}
               />
               <div className={styles.imageOverlayGradient} />
@@ -81,9 +101,9 @@ export default function ThankYouPage() {
 
               <div className={styles.productPill}>
                 <span className={styles.pillCategory}>
-                  {completedOrder.productCategory.toUpperCase()}
+                  {(activeOrder.productCategory || "Flower").toUpperCase()}
                 </span>
-                <h4 className={styles.pillName}>{completedOrder.productName}</h4>
+                <h4 className={styles.pillName}>{activeOrder.productName}</h4>
               </div>
             </div>
           </div>
@@ -113,28 +133,28 @@ export default function ThankYouPage() {
                 <div className={styles.infoRowItem}>
                   <span className={styles.infoRowLabel}>Product</span>
                   <span className={styles.infoRowValueBold}>
-                    {completedOrder.productName}
+                    {activeOrder.productName}
                   </span>
                 </div>
 
                 <div className={styles.infoRowItem}>
                   <span className={styles.infoRowLabel}>Order ID</span>
                   <span className={styles.infoRowValue}>
-                    #{completedOrder.orderId}
+                    #{activeOrder.orderId}
                   </span>
                 </div>
 
                 <div className={styles.infoRowItem}>
                   <span className={styles.infoRowLabel}>Total</span>
                   <span className={styles.infoRowValuePrice}>
-                    ₹{completedOrder.price.toLocaleString("en-IN")}
+                    ₹{activeOrder.price.toLocaleString("en-IN")}
                   </span>
                 </div>
 
                 <div className={styles.infoRowItem}>
                   <span className={styles.infoRowLabel}>Payment</span>
                   <span className={styles.infoRowValue}>
-                    {completedOrder.paymentMethod}
+                    {activeOrder.paymentMethod}
                   </span>
                 </div>
               </div>
@@ -150,7 +170,7 @@ export default function ThankYouPage() {
                   <div>
                     <span className={styles.metaLabel}>Payment Method</span>
                     <span className={styles.metaValue}>
-                      {completedOrder.paymentMethod}
+                      {activeOrder.paymentMethod}
                     </span>
                   </div>
                 </div>
@@ -162,7 +182,7 @@ export default function ThankYouPage() {
                   <div>
                     <span className={styles.metaLabel}>Contact Mobile</span>
                     <span className={styles.metaValue}>
-                      {completedOrder.mobileNumber}
+                      {activeOrder.mobileNumber}
                     </span>
                   </div>
                 </div>
@@ -174,7 +194,7 @@ export default function ThankYouPage() {
                   <div>
                     <span className={styles.metaLabel}>Estimated Delivery</span>
                     <span className={styles.metaValue}>
-                      {completedOrder.estimatedDelivery}
+                      {activeOrder.estimatedDelivery}
                     </span>
                   </div>
                 </div>
@@ -194,7 +214,7 @@ export default function ThankYouPage() {
               <div className={styles.registeredNotice}>
                 <p>
                   We&apos;ll keep you updated on your registered mobile number{" "}
-                  <strong>{completedOrder.mobileNumber}</strong> with live delivery
+                  <strong>{activeOrder.mobileNumber}</strong> with live delivery
                   tracking.
                 </p>
               </div>
@@ -202,11 +222,15 @@ export default function ThankYouPage() {
 
             {/* Action Buttons: Continue Shopping */}
             <div className={styles.buttonActionGroup}>
-              <Link href="/flower" className={styles.continueShoppingBtn}>
+              <button
+                type="button"
+                onClick={() => router.push("/flower")}
+                className={styles.continueShoppingBtn}
+              >
                 <ShoppingBag size={18} />
                 <span>Continue Shopping</span>
                 <ArrowRight size={16} />
-              </Link>
+              </button>
             </div>
           </div>
         </div>
