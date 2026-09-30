@@ -136,11 +136,11 @@
 }
 
 .prevBtn {
-  left: -24px;
+  left: -64px;
 }
 
 .nextBtn {
-  right: -24px;
+  right: -64px;
 }
 
 .navBtn:hover {
@@ -347,20 +347,26 @@
 /* ================= RESPONSIVE BREAKPOINTS ================= */
 @media (max-width: 1060px) {
   .carouselContainer {
-    max-width: 900px;
+    max-width: 860px;
   }
   .prevBtn {
-    left: -16px;
+    left: -58px;
   }
   .nextBtn {
-    right: -16px;
+    right: -58px;
   }
 }
 
 /* Tablet */
 @media (max-width: 860px) {
   .carouselContainer {
-    max-width: 720px;
+    max-width: 680px;
+  }
+  .prevBtn {
+    left: -54px;
+  }
+  .nextBtn {
+    right: -54px;
   }
 
   .gridContainer {
