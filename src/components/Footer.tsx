@@ -27,10 +27,10 @@ export default function Footer() {
         <div className={styles.mainGrid}>
           {/* Column 1: Brand & Socials */}
           <div className={styles.brandCol}>
-            <Link href="/" className={styles.logoLink} aria-label="Occassions Home">
+            <Link href="/" className={styles.logoLink} aria-label="Occasions Home">
               <img
                 src="/images/occasions-logo.png"
-                alt="Occassions - Do it with flowers"
+                alt="Occasions - Do it with flowers"
                 className={styles.logoImg}
               />
             </Link>
@@ -175,7 +175,7 @@ export default function Footer() {
         {/* ================= COPYRIGHT ================= */}
         <div className={styles.copyrightRow}>
           <p className={styles.copyrightText}>
-            &copy; 2026 Occassions - Do it with flowers. All Rights Reserved.
+            &copy; 2026 Occasions - Do it with flowers. All Rights Reserved.
           </p>
         </div>
       </div>

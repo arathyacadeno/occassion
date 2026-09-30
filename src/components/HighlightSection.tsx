@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { MessageCircle, Phone, X, ArrowUpRight } from "lucide-react";
+import BloomingFlowerAnimation from "./BloomingFlowerAnimation";
 import styles from "./HighlightSection.module.css";
 
 export interface HighlightCard {
@@ -36,7 +37,7 @@ const highlightCards: HighlightCard[] = [
   {
     id: "stage-decor",
     tag: "Celebration",
-    title: "Table & Stage Decor",
+    title: "Stage Decor",
     subtitle: "Opulent Banquet & Centerpiece Styling",
     image: "/images/highlight-table-arrangements.jpg",
     desc: "Elevate your stage and banquet reception with opulent floral backdrops, elevated crystal centerpieces, blush roses, cascading hydrangeas, and glowing candlelight ambiance.",
@@ -52,7 +53,7 @@ const highlightCards: HighlightCard[] = [
   {
     id: "church-arrangement",
     tag: "Ceremony",
-    title: "Church Arrangement",
+    title: "Church Decor",
     subtitle: "Grand Altar Arches and Aisle Florals",
     image: "/images/highlight-church-arrangements.jpg",
     desc: "Create a sacred, heavenly atmosphere for your wedding ceremony with grand cathedral altar arches, romantic candlelit pew decorations, and cascading aisle runners.",
@@ -68,7 +69,7 @@ const highlightCards: HighlightCard[] = [
   {
     id: "garlands",
     tag: "Tradition",
-    title: "Garlands & Baskets",
+    title: "Garlands",
     subtitle: "Fresh Jasmine Varmala and Gift Baskets",
     image: "/images/highlight-garlands.jpg",
     desc: "Handcrafted traditional and contemporary bridal garlands, reception varmalas, and auspicious gift flower baskets meticulously strung with fresh fragrant jasmine, lotus buds, and Dutch roses.",
@@ -114,6 +115,11 @@ export default function HighlightSection() {
       ref={sectionRef}
       className={`${styles.sectionWrapper} ${isInView ? styles.sectionInView : ""}`}
     >
+      {/* Corner animated blooming flower */}
+      <div className={styles.bloomingFlowerWrap} aria-hidden="true">
+        <BloomingFlowerAnimation />
+      </div>
+
       <div className={styles.container}>
         <div className={styles.splitLayout}>
           {/* Left Column: Heading, Description */}

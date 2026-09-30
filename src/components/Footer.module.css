@@ -1,6 +1,6 @@
 /* ==========================================================================
    OCCASIONS FOOTER — Floating White Card on Floral Background
-   Exact 5-column arrangement matching design reference
+   5 columns: Brand | Our Services | Connect | Address | Newsletter
    ========================================================================== */
 
 .footerWrapper {
@@ -23,21 +23,29 @@
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 1300px;
+  max-width: 1670px;
+  min-height: 479px;
   margin: 0 auto;
   background: #ffffff;
   border-radius: 40px;
-  padding: 50px 54px 34px;
+  padding: 56px 64px 38px;
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.07);
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 /* ================= MAIN 5-COLUMN GRID ================= */
 .mainGrid {
   display: grid;
-  grid-template-columns: 1.35fr 1fr 1fr 1.25fr 1.35fr;
-  gap: 36px;
-  align-items: flex-start;
+  /* Brand gets a wide column, Services + Connect sit close together,
+     then Address, then Newsletter flush to the right edge */
+  grid-template-columns:
+    minmax(0, 2.3fr) minmax(0, 1.08fr) minmax(0, 1fr) minmax(0, 1.63fr) minmax(0, 1.4fr);
+  column-gap: 0;
+  row-gap: 32px;
+  align-items: start;
   margin-bottom: 34px;
 }
 
@@ -45,6 +53,7 @@
 .brandCol {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .logoLink {
@@ -66,7 +75,7 @@
   line-height: 1.65;
   color: #374151;
   margin: 0 0 22px;
-  max-width: 250px;
+  max-width: 300px;
   letter-spacing: -0.01em;
 }
 
@@ -249,8 +258,9 @@
     border-radius: 32px;
   }
   .mainGrid {
-    grid-template-columns: 1.2fr 1fr 1fr 1.2fr 1.3fr;
-    gap: 24px;
+    grid-template-columns:
+      minmax(0, 2.3fr) minmax(0, 1.08fr) minmax(0, 1fr) minmax(0, 1.63fr) minmax(0, 1.4fr);
+    column-gap: 16px;
   }
   .helpText {
     white-space: normal;
@@ -265,9 +275,10 @@
   .footerCard {
     padding: 38px 30px 26px;
     border-radius: 28px;
+    min-height: auto;
   }
   .mainGrid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 32px;
   }
   .brandCol {
@@ -296,7 +307,7 @@
     border-radius: 24px;
   }
   .mainGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 28px;
   }
   .newsletterForm {

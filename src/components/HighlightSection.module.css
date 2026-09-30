@@ -7,11 +7,22 @@
 /* ── Section Shell ── */
 .sectionWrapper {
   width: 100%;
-  background: #F2D8D9;
+  background: linear-gradient(115deg, #ffffff 0%, #ffffff 42%, pink 100%);
   padding: 95px 0 105px;
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
+}
+
+/* ── Corner Animated Blooming Flower ── */
+.bloomingFlowerWrap {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 1;
+  pointer-events: none;
+  user-select: none;
+  width: clamp(210px, 18vw, 280px);
 }
 
 /* ── Global Container ── */
@@ -364,13 +375,25 @@
 
 /* ── Keyframes ── */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes modalPop {
-  from { opacity: 0; transform: scale(0.96) translateY(12px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 /* ==========================================================
@@ -382,18 +405,23 @@
   .sectionWrapper {
     padding: 80px 0 90px;
   }
+
   .container {
     padding-inline: 32px;
   }
+
   .splitLayout {
     gap: 36px;
   }
+
   .leftCol {
     flex: 0 0 44%;
   }
+
   .cardsGrid {
     gap: 16px;
   }
+
   .card {
     border-radius: 20px;
   }
@@ -404,18 +432,26 @@
   .sectionWrapper {
     padding: 70px 0 80px;
   }
+
   .splitLayout {
     flex-direction: column;
     align-items: stretch;
     gap: 48px;
   }
+
   .leftCol {
     flex: none;
     max-width: 100%;
   }
+
+  .bloomingFlowerWrap {
+    display: none;
+  }
+
   .rightCol {
     max-width: 100%;
   }
+
   .cardsGrid {
     gap: 16px;
   }
@@ -426,41 +462,52 @@
   .sectionWrapper {
     padding: 56px 0 64px;
   }
+
   .container {
     padding-inline: 20px;
   }
+
   .heading {
     font-size: 32px;
     margin-bottom: 16px;
   }
+
   .description {
     font-size: 14px;
     line-height: 1.6;
   }
+
   .cardsGrid {
     gap: 12px;
   }
+
   .card {
     border-radius: 16px;
   }
+
   .cardOverlay {
     opacity: 1;
     padding: 12px 14px;
   }
+
   .cardTitle {
     font-size: 13px;
   }
+
   .cardArrowBtn {
     width: 30px;
     height: 30px;
   }
+
   .modalContent {
     grid-template-columns: 1fr;
   }
+
   .modalImageCol {
     min-height: 220px;
     border-radius: 20px 20px 0 0;
   }
+
   .modalDetailsCol {
     padding: 26px 20px;
   }
