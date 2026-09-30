@@ -10,9 +10,7 @@ interface CategoryCardItem {
   name: string;
   image: string;
   link: string;
-  isExternal?: boolean;
   delay: string;
-  /** Directional entrance initial transforms */
   initTx: string;
   initTy: string;
   initRot: string;
@@ -22,10 +20,9 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
   {
     id: "flower-basket",
     name: "Flower Basket",
-    image: "/images/category-flower-basket.jpg",
+    image: "/images/cat-flower-basket-luxe.jpg",
     link: "/flower-baskets",
     delay: "0s",
-    // 1. Flower Basket → from left
     initTx: "-68px",
     initTy: "0px",
     initRot: "-5deg",
@@ -33,10 +30,9 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
   {
     id: "flower-bouquet",
     name: "Flower Bouquet",
-    image: "/images/category-flower-bouquet.jpg",
+    image: "/images/cat-flower-bouquet-luxe.jpg",
     link: "/flower-bouquets",
     delay: "0.14s",
-    // 2. Flower Bouquet → from top-left
     initTx: "-44px",
     initTy: "-55px",
     initRot: "5deg",
@@ -44,10 +40,9 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
   {
     id: "cakes",
     name: "Cakes",
-    image: "/images/category-cakes.jpg",
+    image: "/images/cat-cakes-luxe.jpg",
     link: "/cakes",
     delay: "0.28s",
-    // 3. Cakes → from bottom
     initTx: "0px",
     initTy: "65px",
     initRot: "-4deg",
@@ -55,10 +50,9 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
   {
     id: "table-decor",
     name: "Table Decor",
-    image: "/images/category-table-decor.jpg",
+    image: "/images/cat-table-decor-luxe.jpg",
     link: "/table-decor",
     delay: "0.42s",
-    // 4. Table Decor → from top-right
     initTx: "44px",
     initTy: "-55px",
     initRot: "5deg",
@@ -66,10 +60,9 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
   {
     id: "wreath",
     name: "Wreath",
-    image: "/images/category-wreath.jpg",
+    image: "/images/cat-wreath-luxe.jpg",
     link: "/wreaths",
     delay: "0.56s",
-    // 5. Wreath → from right
     initTx: "68px",
     initTy: "0px",
     initRot: "-5deg",
@@ -88,7 +81,6 @@ export default function ShopByCategory() {
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true);
-          // Play only once
           observer.disconnect();
         }
       },
@@ -179,14 +171,11 @@ function CategoryItem({
           alt={item.name}
           fill
           quality={95}
-          sizes="(max-width: 640px) 50vw, (max-width: 960px) 33vw, 250px"
+          sizes="(max-width: 640px) 45vw, (max-width: 960px) 30vw, 220px"
           className={styles.categoryImage}
         />
-        <span className={styles.shopPill} aria-hidden="true">
-          Shop now
-        </span>
+        <span className={styles.shopPill}>Shop now</span>
       </div>
-
       <h3 className={styles.categoryTitle}>{item.name}</h3>
     </div>
   );
@@ -204,25 +193,13 @@ function CategoryItem({
         } as React.CSSProperties
       }
     >
-      {item.isExternal ? (
-        <a
-          href={item.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={styles.categoryLink}
-          aria-label={`Shop ${item.name}`}
-        >
-          {content}
-        </a>
-      ) : (
-        <Link
-          href={item.link}
-          className={styles.categoryLink}
-          aria-label={`Shop ${item.name}`}
-        >
-          {content}
-        </Link>
-      )}
+      <Link
+        href={item.link}
+        className={styles.categoryLink}
+        aria-label={`Shop ${item.name}`}
+      >
+        {content}
+      </Link>
     </div>
   );
 }

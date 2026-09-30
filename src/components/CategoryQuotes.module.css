@@ -233,31 +233,6 @@
   pointer-events: none;
 }
 
-/* ================= PAGINATION DOTS ================= */
-.dotsRow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 18px;
-}
-
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  background: #fbcfe8;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  transition: all 0.3s ease;
-}
-
-.activeDot {
-  width: 24px;
-  background: #db2777;
-}
-
 /* ================= RESPONSIVE BEHAVIOR ================= */
 @media (max-width: 960px) {
   .sectionWrapper {

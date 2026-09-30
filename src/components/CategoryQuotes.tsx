@@ -218,23 +218,6 @@ export default function CategoryQuotes({
             <ChevronRight size={22} strokeWidth={2.2} />
           </button>
         </div>
-
-        {/* Pagination Dots */}
-        <div className={styles.dotsRow} role="tablist" aria-label="Testimonial slides">
-          {quotes.map((item, idx) => (
-            <button
-              key={item.id}
-              type="button"
-              role="tab"
-              aria-selected={idx === activeIndex}
-              aria-label={`Go to slide ${idx + 1}`}
-              className={`${styles.dot} ${
-                idx === activeIndex ? styles.activeDot : ""
-              }`}
-              onClick={() => setActiveIndex(idx)}
-            />
-          ))}
-        </div>
       </div>
     </section>
   );

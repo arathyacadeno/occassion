@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { FlowerProduct } from "@/types";
 import { useCart } from "@/context/CartContext";
-import { Star, Heart, ShoppingBag, ArrowRight, Check } from "lucide-react";
+import { Star, Heart, ShoppingBag, ArrowRight, Check, Truck } from "lucide-react";
 import styles from "./ProductCard.module.css";
 
 interface ProductCardProps {
@@ -62,24 +62,22 @@ export default function ProductCard({ product }: ProductCardProps) {
           <Heart size={17} strokeWidth={2} fill={isWishlisted ? "#db2777" : "none"} />
         </button>
 
-        {/* Quick View overlay link */}
-        <Link href={productUrl} className={styles.quickViewOverlay}>
-          <span>View Details</span>
-          <ArrowRight size={14} />
-        </Link>
+        {/* Characteristic Smooth Wave SVG Cutout at bottom of image */}
+        <svg
+          className={styles.waveDivider}
+          viewBox="0 0 300 36"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M 0,0 C 95,0 175,30 300,30 L 300,36 L 0,36 Z"
+            fill="#ffffff"
+          />
+        </svg>
       </div>
 
       {/* Content */}
       <div className={styles.content}>
-        {/* Rating & Reviews */}
-        <div className={styles.ratingRow}>
-          <div className={styles.stars}>
-            <Star size={13} fill="#f59e0b" color="#f59e0b" />
-            <span className={styles.ratingScore}>{product.rating.toFixed(1)}</span>
-          </div>
-          <span className={styles.reviewsCount}>({product.reviewsCount} reviews)</span>
-        </div>
-
         {/* Title */}
         <h3 className={styles.productTitle}>
           <Link href={productUrl} className={styles.titleLink}>
@@ -87,10 +85,16 @@ export default function ProductCard({ product }: ProductCardProps) {
           </Link>
         </h3>
 
-        {/* Subtitle */}
-        <p className={styles.subtitle}>{product.subtitle}</p>
+        {/* Green Rating Pill Badge */}
+        <div
+          className={styles.ratingBadge}
+          aria-label={`Rated ${product.rating} out of 5 stars`}
+        >
+          <Star size={11} fill="#ffffff" color="#ffffff" strokeWidth={0} />
+          <span>{product.rating.toFixed(1)}</span>
+        </div>
 
-        {/* Price & Actions */}
+        {/* Price & Delivery */}
         <div className={styles.footerRow}>
           <div className={styles.priceGroup}>
             <span className={styles.price}>₹{product.price.toLocaleString("en-IN")}</span>
@@ -99,6 +103,10 @@ export default function ProductCard({ product }: ProductCardProps) {
                 ₹{product.originalPrice.toLocaleString("en-IN")}
               </span>
             )}
+            <span className={styles.freeDeliveryBadge}>
+              Free Delivery
+              <Truck size={13} className={styles.truckIcon} />
+            </span>
           </div>
 
           <div className={styles.actions}>
