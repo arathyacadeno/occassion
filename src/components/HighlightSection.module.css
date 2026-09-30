@@ -247,16 +247,15 @@
   border-radius: 20px;
   overflow: hidden;
   cursor: pointer;
-  background: #ffffff;
-  border: 1px solid #fce7f3;
+  background: transparent;
+  border: none;
   box-shadow: none;
 
   /* Default state: invisible, shifted per position */
   opacity: 0;
   transition:
     opacity  0.9s cubic-bezier(0.16,1,0.3,1) var(--card-delay, 0s),
-    transform 0.9s cubic-bezier(0.16,1,0.3,1) var(--card-delay, 0s),
-    border-color 0.3s ease;
+    transform 0.9s cubic-bezier(0.16,1,0.3,1) var(--card-delay, 0s);
   will-change: opacity, transform;
 }
 
@@ -278,10 +277,8 @@
 /* Hover lift */
 .editorialCard:hover {
   box-shadow: none;
-  border-color: #f472b6;
   transform: translate(0, -4px) !important;
-  transition: transform 0.4s cubic-bezier(0.16,1,0.3,1),
-              border-color 0.3s ease !important;
+  transition: transform 0.4s cubic-bezier(0.16,1,0.3,1) !important;
 }
 
 /* ── Image wrapper ── */
