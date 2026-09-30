@@ -1,0 +1,36 @@
+.gridContainer {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 36px 120px 36px;
+  box-sizing: border-box;
+}
+
+.productGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 60px 28px;
+  width: 100%;
+}
+
+@media (max-width: 1080px) {
+  .productGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 48px 24px;
+  }
+
+  .gridContainer {
+    padding: 0 28px 90px 28px;
+  }
+}
+
+@media (max-width: 640px) {
+  .productGrid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .gridContainer {
+    padding: 0 20px 70px 20px;
+  }
+}

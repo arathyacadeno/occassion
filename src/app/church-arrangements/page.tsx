@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
-import CategoryCatalog from "@/components/CategoryCatalog";
+import Navbar from "@/components/Navbar";
+import CategoryHeader from "@/components/CategoryHeader";
+import ProductGrid from "@/components/ProductGrid";
+import Footer from "@/components/Footer";
 import { CHURCH_ARRANGEMENT_PRODUCTS } from "@/data/categoryProducts";
 
 export const metadata: Metadata = {
@@ -10,10 +13,16 @@ export const metadata: Metadata = {
 
 export default function ChurchArrangementsPage() {
   return (
-    <CategoryCatalog
-      title="Church Arrangements"
-      subtitle="Grand floral arches, altar pedestal displays, and aisle adornments crafted for sacred wedding ceremonies and blessings."
-      products={CHURCH_ARRANGEMENT_PRODUCTS}
-    />
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", backgroundColor: "#ffffff" }}>
+      <Navbar />
+      <main style={{ flex: 1 }}>
+        <CategoryHeader
+          title="Church Arrangements"
+          description={"Grand floral arches, altar pedestal displays, and aisle adornments\ncrafted for sacred wedding ceremonies, altar sanctuaries, and blessings."}
+        />
+        <ProductGrid products={CHURCH_ARRANGEMENT_PRODUCTS} ariaLabel="Church Arrangement Products" />
+      </main>
+      <Footer />
+    </div>
   );
 }

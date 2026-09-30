@@ -1,0 +1,160 @@
+.navbarWrapper {
+  width: 100%;
+  background-color: #ffffff;
+  border-bottom: 1px solid #f0f2f4;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.02);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbarContainer {
+  max-width: 1360px;
+  height: 76px;
+  margin: 0 auto;
+  padding: 0 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+/* Left: Logo */
+.logoLink {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.logoImg {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+/* Center: Category Links */
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+}
+
+.navLink {
+  color: #111827;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  padding: 8px 4px;
+  position: relative;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+}
+
+.navLink:hover {
+  color: #000000;
+}
+
+/* Active Category Indication */
+.activeNavLink {
+  color: #000000;
+  font-weight: 600;
+}
+
+.activeNavLink::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 4px;
+  right: 4px;
+  height: 2px;
+  background-color: #111827;
+  border-radius: 2px;
+}
+
+/* Right: Action Icons */
+.rightIcons {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+.iconButton {
+  background: none;
+  border: none;
+  padding: 6px;
+  color: #111827;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border-radius: 50%;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.iconButton:hover {
+  color: #000000;
+  background-color: #f8fafc;
+}
+
+.mobileMenuButton {
+  display: none;
+  background: none;
+  border: none;
+  padding: 6px;
+  color: #111827;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Mobile Drawer Overlay */
+.mobileMenu {
+  display: none;
+}
+
+@media (max-width: 960px) {
+  .navLinks {
+    display: none;
+  }
+
+  .mobileMenuButton {
+    display: flex;
+  }
+
+  .navbarContainer {
+    padding: 0 20px;
+    height: 70px;
+  }
+
+  .logoImg {
+    height: 42px;
+  }
+
+  .mobileMenu {
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    border-top: 1px solid #f1f3f5;
+    padding: 16px 24px 24px 24px;
+    gap: 14px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+  }
+
+  .mobileNavLink {
+    color: #111827;
+    text-decoration: none;
+    font-size: 1rem;
+    padding: 10px 0;
+    border-bottom: 1px solid #f8fafc;
+  }
+
+  .mobileNavLink.activeNavLink {
+    font-weight: 600;
+    color: #000000;
+  }
+}

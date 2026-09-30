@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./Testimonials.module.css";
-import { Star, ArrowLeft, ArrowRight } from "lucide-react";
+import { Star } from "lucide-react";
 
 export interface TestimonialItem {
   id: number;
@@ -50,34 +50,20 @@ export default function Testimonials() {
 
   const total = TESTIMONIALS_DATA.length;
 
-  const changeSlide = useCallback(
-    (newIndex: number) => {
-      setFadeState("out");
-      setTimeout(() => {
-        setCurrentIndex(newIndex);
-        setFadeState("in");
-      }, 220);
-    },
-    []
-  );
-
-  const handleNext = useCallback(() => {
-    changeSlide((currentIndex + 1) % total);
-  }, [changeSlide, currentIndex, total]);
-
-  const handlePrev = useCallback(() => {
-    changeSlide((currentIndex - 1 + total) % total);
-  }, [changeSlide, currentIndex, total]);
-
-  // Gentle auto-slide every 7 seconds, pauses on hover
+  // Automatically transition testimonials every 4.5 seconds with smooth animation
   useEffect(() => {
     if (isPaused) return;
+
     const timer = setInterval(() => {
-      handleNext();
-    }, 7000);
+      setFadeState("out");
+      setTimeout(() => {
+        setCurrentIndex((prev) => (prev + 1) % total);
+        setFadeState("in");
+      }, 350);
+    }, 4500);
 
     return () => clearInterval(timer);
-  }, [handleNext, isPaused]);
+  }, [isPaused, total]);
 
   const current = TESTIMONIALS_DATA[currentIndex];
 
@@ -133,24 +119,14 @@ export default function Testimonials() {
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
-          {/* Left Circular Dashed Arrow Button (←) */}
-          <button
-            type="button"
-            className={styles.navBtnLeft}
-            onClick={handlePrev}
-            aria-label="Previous testimonial"
-          >
-            <ArrowLeft size={18} strokeWidth={1.8} />
-          </button>
-
-          {/* ================= CENTRAL OVAL CARD (FROM USER VIDEO) ================= */}
+          {/* ================= CENTRAL OVAL CARD ================= */}
           <div className={styles.ovalCard}>
             {/* Watermark Quote Icon */}
             <span className={styles.quoteMarkWatermark} aria-hidden="true">
               “
             </span>
 
-            {/* Active Testimonial Slide with Smooth Dissolve Animation */}
+            {/* Active Testimonial Slide with Automatic Smooth Fade Animation */}
             <div
               className={`${styles.slideWrapper} ${
                 fadeState === "in" ? styles.slideFadeIn : styles.slideFadeOut
@@ -185,18 +161,28 @@ export default function Testimonials() {
                 <span className={styles.authorRole}>{current.role}</span>
               </div>
             </div>
-          </div>
 
-          {/* Right Circular Filled Gold Arrow Button (→) */}
-          <button
-            type="button"
-            className={styles.navBtnRight}
-            onClick={handleNext}
-            aria-label="Next testimonial"
-          >
-            <ArrowRight size={18} strokeWidth={2} />
-          </button>
-        </div>
+            {/* Automatic Progress Indicator Dots */}
+            <div className={styles.autoIndicators} aria-label="Testimonial progress indicator">
+              {TESTIMONIALS_DATA.map((_, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => {
+                    setFadeState("out");
+                    setTimeout(() => {
+                      setCurrentIndex(idx);
+                      setFadeState("in");
+                    }, 350);
+                  }}
+                  className={`${styles.indicatorDot} ${
+                    idx === currentIndex ? styles.indicatorActive : ""
+                  }`}
+                  aria-label={`Go to testimonial ${idx + 1}`}
+                />
+              ))}
+            </div>
+          </div>
       </div>
     </section>
   );
