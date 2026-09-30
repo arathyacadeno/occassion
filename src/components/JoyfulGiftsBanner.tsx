@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import styles from "./JoyfulGiftsBanner.module.css";
 
@@ -29,12 +29,27 @@ export const FESTIVE_BANNERS: BannerSlide[] = [
     image: "/images/banners/dwali.jpg.jpeg",
     href: "/occasions",
     accent: "#d97706"
+  },
+  {
+    id: "new-year",
+    title: "New Year Offer",
+    subtitle: "Welcome the New Year with Floral Celebrations",
+    image: "/images/banners/NEW YEAR.jpeg",
+    href: "/occasions",
+    accent: "#d97706"
+  },
+  {
+    id: "mothers-day",
+    title: "Mother's Day Special",
+    subtitle: "Celebrate Mom with Heartfelt Blooms & Gifts",
+    image: "/images/banners/mothers day.jpg.jpeg",
+    href: "/occasions",
+    accent: "#ec4899"
   }
 ];
 
 export default function JoyfulGiftsBanner() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
   const touchStartXRef = useRef<number | null>(null);
   const touchEndXRef = useRef<number | null>(null);
 
@@ -48,19 +63,14 @@ export default function JoyfulGiftsBanner() {
     setCurrentIndex((prev) => (prev - 1 + total) % total);
   }, [total]);
 
-  const goToSlide = (idx: number) => {
-    setCurrentIndex(idx);
-  };
-
-  // Auto animation timer (advances every 4 seconds unless hovered/touched)
+  // Continuous automatic scrolling every 3.5 seconds
   useEffect(() => {
-    if (isPaused) return;
     const timer = setInterval(() => {
       goToNext();
-    }, 4000);
+    }, 3500);
 
     return () => clearInterval(timer);
-  }, [isPaused, goToNext]);
+  }, [goToNext]);
 
   // Touch swipe support for mobile
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -89,8 +99,6 @@ export default function JoyfulGiftsBanner() {
     <section
       className={styles.sectionWrapper}
       aria-label="Festive Celebration Promotional Banners"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -112,7 +120,7 @@ export default function JoyfulGiftsBanner() {
             >
               {FESTIVE_BANNERS.map((slide, idx) => (
                 <Link
-                  key={slide.id}
+                  key={`${slide.id}-${idx}`}
                   href={slide.href}
                   className={styles.slideLink}
                   aria-label={`${slide.title} - ${slide.subtitle}`}
@@ -127,56 +135,6 @@ export default function JoyfulGiftsBanner() {
                 </Link>
               ))}
             </div>
-
-            {/* Navigation Arrows */}
-            <button
-              type="button"
-              className={`${styles.navButton} ${styles.prevButton}`}
-              onClick={(e) => {
-                e.preventDefault();
-                goToPrev();
-              }}
-              aria-label="Previous festive banner"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="15 18 9 12 15 6"></polyline>
-              </svg>
-            </button>
-
-            <button
-              type="button"
-              className={`${styles.navButton} ${styles.nextButton}`}
-              onClick={(e) => {
-                e.preventDefault();
-                goToNext();
-              }}
-              aria-label="Next festive banner"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="9 18 15 12 9 6"></polyline>
-              </svg>
-            </button>
-          </div>
-
-          {/* Dots Navigation */}
-          <div className={styles.dotsWrapper} role="tablist" aria-label="Festive banner indicators">
-            {FESTIVE_BANNERS.map((slide, idx) => {
-              const isActive = idx === currentIndex;
-              return (
-                <button
-                  key={slide.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={isActive}
-                  aria-label={`Go to slide ${idx + 1}: ${slide.title}`}
-                  className={`${styles.dot} ${isActive ? styles.activeDot : ""}`}
-                  style={{
-                    backgroundColor: isActive ? slide.accent : undefined
-                  }}
-                  onClick={() => goToSlide(idx)}
-                />
-              );
-            })}
           </div>
         </div>
       </div>

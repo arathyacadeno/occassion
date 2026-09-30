@@ -1,278 +1,113 @@
-/* ================= FOOTER WRAPPER (FIXED FLORAL BACKGROUND) ================= */
+/* ==========================================================================
+   OCCASIONS FOOTER — Floating White Card on Floral Background
+   Exact 5-column arrangement matching design reference
+   ========================================================================== */
 
 .footerWrapper {
   position: relative;
   width: 100%;
-  padding: 70px 24px 40px;
+  padding: 56px 24px 38px;
   overflow: hidden;
+  box-sizing: border-box;
 
-  /* Fixed floral background: pinned to viewport only within footer bounds */
-  background-image: url("/images/footer-floral-bg.jpg");
+  /* Floral meadow background */
+  background-image: url("/images/footer-section.svg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
 
-/* Soft overlay over floral background */
-.footerWrapper::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-
-  background: rgba(255, 250, 252, 0.72);
-
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* ================= FOOTER CARD ================= */
-
+/* ================= FLOATING WHITE CARD ================= */
 .footerCard {
   position: relative;
   z-index: 2;
-
   width: 100%;
-  max-width: 1320px;
+  max-width: 1300px;
   margin: 0 auto;
-
   background: #ffffff;
-  border-radius: 28px;
-  padding: 42px 46px 30px;
-
-  box-shadow:
-    0 15px 50px rgba(0, 0, 0, 0.06),
-    0 2px 10px rgba(0, 0, 0, 0.02);
+  border-radius: 40px;
+  padding: 50px 54px 34px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.07);
+  box-sizing: border-box;
 }
 
-/* ================= TOP HEADER ================= */
-
-.cardHeader {
+/* ================= MAIN 5-COLUMN GRID ================= */
+.mainGrid {
   display: grid;
-  grid-template-columns: 1.2fr 1fr 1.2fr auto;
-  align-items: center;
-  gap: 30px;
-  padding-bottom: 32px;
+  grid-template-columns: 1.35fr 1fr 1fr 1.25fr 1.35fr;
+  gap: 36px;
+  align-items: flex-start;
+  margin-bottom: 34px;
 }
 
-.headerLogo {
+/* ── Column 1: Brand & Socials ── */
+.brandCol {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+}
+
+.logoLink {
+  display: inline-block;
+  margin-bottom: 18px;
+  text-decoration: none;
 }
 
 .logoImg {
   height: 48px;
   width: auto;
   object-fit: contain;
+  display: block;
 }
 
-/* ================= CONTACT ================= */
-
-.contactItem {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  white-space: nowrap;
-  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 16px;
+.brandQuote {
+  font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: #374151;
+  margin: 0 0 22px;
+  max-width: 250px;
+  letter-spacing: -0.01em;
 }
 
-.contactLabel {
-  color: #4b5563;
-  font-weight: 500;
-}
-
-.contactValue {
-  color: #ef5a3c;
-  font-weight: 500;
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-.contactValue:hover {
-  color: #db2777;
-}
-
-/* ================= SOCIAL ================= */
-
-.socialFollow {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 14px;
-  white-space: nowrap;
-}
-
-.followLabel {
-  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 16px;
-  color: #4b5563;
-}
-
-.socialIcons {
+.socialRow {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.socialLink {
-  width: 30px;
-  height: 30px;
+.socialBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #eef2ff;
+  color: #111827;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #4b5563;
   text-decoration: none;
-  transition: color 0.25s ease, transform 0.25s ease;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
-.socialLink:hover {
-  color: #ec4899;
+.socialBtn:hover {
+  background: #e0e7ff;
+  color: #ff4770;
   transform: translateY(-2px);
 }
 
-/* ================= DIVIDER ================= */
-
-.cardDivider {
-  width: 100%;
-  height: 1px;
-  background: #eeeeee;
-  margin-bottom: 48px;
-}
-
-/* ================= MAIN BODY ================= */
-
-.cardBody {
-  display: grid;
-  grid-template-columns: 1.15fr 1.85fr;
-  gap: 70px;
-  margin-bottom: 45px;
-}
-
-/* ================= NEWSLETTER ================= */
-
-.newsletterCol {
-  display: flex;
-  flex-direction: column;
-}
-
-.newsletterTitle {
-  margin: 0 0 16px;
-  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 32px;
-  font-weight: 500;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
-  color: #111827;
-}
-
-.newsletterDesc {
-  max-width: 470px;
-  margin: 0 0 26px;
-  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 1.65;
-  color: #4b5563;
-}
-
-/* ================= NEWSLETTER FORM ================= */
-
-.newsletterForm {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  max-width: 550px;
-  padding: 6px 7px 6px 22px;
-  background: #faf6ea;
-  border: 1px solid #f5eedf;
-  border-radius: 50px;
-  transition: border-color 0.25s ease, box-shadow 0.25s ease;
-}
-
-.newsletterForm:focus-within {
-  border-color: #f2b6c9;
-  box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.08);
-}
-
-.newsletterInput {
-  flex: 1;
-  min-width: 0;
-  background: transparent;
-  border: none;
-  outline: none;
-  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 15px;
-  color: #111827;
-}
-
-.newsletterInput::placeholder {
-  color: #9ca3af;
-}
-
-.newsletterBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 13px 26px;
-  border: none;
-  border-radius: 50px;
-  background: #f45b2a;
-  color: #ffffff;
-  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+/* ── Common Column Headings ── */
+.colTitle {
+  font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
   font-size: 15px;
   font-weight: 600;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  color: #ff5277;
+  margin: 0 0 20px;
+  letter-spacing: -0.01em;
 }
 
-.newsletterBtn:hover {
-  background: #df4c20;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(244, 91, 42, 0.25);
-}
-
-/* ================= CERTIFICATE ================= */
-
-.certBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  width: fit-content;
-  margin-top: 24px;
-  padding: 7px 14px;
-  background: #fff0f5;
-  border: 1px solid #fce7f3;
-  border-radius: 50px;
-  color: #db2777;
-  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-/* ================= LINKS GRID ================= */
-
-.linksGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 45px;
-}
-
-.linkColumn {
+/* ── Columns 2 & 3: Navigation Links ── */
+.linksCol {
   min-width: 0;
-}
-
-.colHeading {
-  margin: 0 0 22px;
-  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.4;
-  color: #8a8a8a;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
 }
 
 .linksList {
@@ -281,245 +116,197 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 13px;
 }
 
-.linkItem {
-  margin: 0;
-  padding: 0;
-}
-
-.linkItem a {
-  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 16px;
+.navLink {
+  font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  font-size: 14px;
   font-weight: 400;
-  line-height: 1.4;
-  color: #374151;
-  text-decoration: none;
-  transition: color 0.2s ease, padding-left 0.2s ease;
-}
-
-.linkItem a:hover {
-  color: #ec4899;
-  padding-left: 3px;
-}
-
-/* ================= CONTACT INFO ================= */
-
-.contactInfo {
-  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 15px;
-  font-weight: 400;
-  line-height: 1.7;
-  color: #374151;
-}
-
-.contactInfo p {
-  margin: 0;
-}
-
-.contactBlock {
-  margin-top: 10px !important;
-}
-
-.contactInfo strong {
-  font-weight: 600;
-  color: #374151;
-}
-
-.phoneLink {
-  color: #374151;
+  color: #262626;
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
-.phoneLink:hover {
-  color: #ec4899;
+.navLink:hover {
+  color: #ff5277;
 }
 
-/* ================= BOTTOM BAR ================= */
+/* ── Column 4: Address ── */
+.addressCol {
+  min-width: 0;
+}
 
-.bottomBar {
+.addressContent {
+  font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  font-size: 14px;
+  line-height: 1.6;
+  color: #262626;
+}
+
+.addressText {
+  margin: 0 0 16px;
+  color: #262626;
+}
+
+.helpText {
+  margin: 0;
+  color: #262626;
+  white-space: nowrap;
+}
+
+.phoneLink {
+  color: #262626;
+  text-decoration: none;
+  margin-left: 4px;
+  transition: color 0.2s ease;
+}
+
+.phoneLink:hover {
+  color: #ff5277;
+}
+
+/* ── Column 5: Newsletter ── */
+.newsletterCol {
+  min-width: 0;
+}
+
+.newsletterForm {
+  background: #f0f4ff;
+  border-radius: 14px;
+  padding: 5px 6px 5px 18px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding-top: 22px;
-  border-top: 1px solid #eeeeee;
-  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.5;
-  color: #8a8a8a;
+  width: 100%;
+  max-width: 290px;
+  box-sizing: border-box;
+  transition: box-shadow 0.2s ease;
 }
 
-/* =====================================================
-   TABLET
-===================================================== */
+.newsletterForm:focus-within {
+  box-shadow: 0 0 0 2px rgba(255, 82, 119, 0.25);
+}
 
+.newsletterInput {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  font-size: 13.5px;
+  color: #111827;
+}
+
+.newsletterInput::placeholder {
+  color: #94a3b8;
+}
+
+.sendBtn {
+  width: 52px;
+  height: 38px;
+  border-radius: 10px;
+  background: #ff4770;
+  color: #ffffff;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 12px rgba(255, 71, 112, 0.28);
+}
+
+.sendBtn:hover {
+  background: #e63960;
+  transform: scale(1.03);
+}
+
+/* ================= COPYRIGHT ================= */
+.copyrightRow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-top: 10px;
+}
+
+.copyrightText {
+  font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  font-size: 12.5px;
+  color: #262626;
+  margin: 0;
+  text-align: right;
+  letter-spacing: -0.01em;
+}
+
+/* ================= RESPONSIVE ================= */
+
+/* Medium screen: 1100px */
 @media (max-width: 1100px) {
   .footerCard {
-    padding: 38px 36px 28px;
+    padding: 42px 38px 28px;
+    border-radius: 32px;
   }
-
-  .cardHeader {
-    grid-template-columns: 1fr 1fr;
+  .mainGrid {
+    grid-template-columns: 1.2fr 1fr 1fr 1.2fr 1.3fr;
     gap: 24px;
   }
-
-  .socialFollow {
-    justify-content: flex-start;
-  }
-
-  .cardBody {
-    grid-template-columns: 1fr;
-    gap: 45px;
-  }
-
-  .newsletterDesc {
-    max-width: 600px;
-  }
-
-  .newsletterForm {
-    max-width: 600px;
+  .helpText {
+    white-space: normal;
   }
 }
 
-/* =====================================================
-   TABLET / SMALL LAPTOP
-===================================================== */
-
-@media (max-width: 900px) {
+/* Tablet screen: 880px */
+@media (max-width: 880px) {
   .footerWrapper {
-    padding: 55px 20px 30px;
+    padding: 44px 18px 30px;
   }
-
   .footerCard {
-    padding: 34px 28px 26px;
-    border-radius: 24px;
+    padding: 38px 30px 26px;
+    border-radius: 28px;
   }
-
-  .linksGrid {
-    gap: 30px;
+  .mainGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+  }
+  .brandCol {
+    grid-column: 1 / -1;
+  }
+  .brandQuote {
+    max-width: 480px;
+  }
+  .copyrightRow {
+    justify-content: center;
+    text-align: center;
+  }
+  .copyrightText {
+    text-align: center;
   }
 }
 
-/* =====================================================
-   MOBILE
-===================================================== */
-
-@media (max-width: 768px) {
+/* Mobile screen: 580px */
+@media (max-width: 580px) {
   .footerWrapper {
-    padding: 45px 16px 25px;
+    padding: 36px 14px 24px;
     background-attachment: scroll;
   }
-
   .footerCard {
-    padding: 32px 22px 25px;
-    border-radius: 22px;
+    padding: 32px 20px 22px;
+    border-radius: 24px;
   }
-
-  .cardHeader {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 20px;
-    padding-bottom: 25px;
-  }
-
-  .headerContacts {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    width: 100%;
-  }
-
-  .contactItem {
-    white-space: normal;
-    flex-wrap: wrap;
-  }
-
-  .socialFollow {
-    justify-content: flex-start;
-  }
-
-  .cardDivider {
-    margin-bottom: 35px;
-  }
-
-  .cardBody {
+  .mainGrid {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: 28px;
   }
-
-  .newsletterTitle {
-    font-size: 28px;
-  }
-
-  .newsletterDesc {
-    font-size: 15px;
-  }
-
   .newsletterForm {
     max-width: 100%;
   }
-
-  .linksGrid {
-    grid-template-columns: 1fr;
-    gap: 30px;
+  .copyrightRow {
+    justify-content: center;
   }
-
-  .bottomBar {
-    flex-direction: column;
+  .copyrightText {
+    font-size: 11.5px;
     text-align: center;
-    gap: 10px;
-  }
-}
-
-/* =====================================================
-   SMALL MOBILE
-===================================================== */
-
-@media (max-width: 480px) {
-  .footerWrapper {
-    padding-inline: 10px;
-  }
-
-  .footerCard {
-    padding: 28px 18px 22px;
-  }
-
-  .logoImg {
-    height: 42px;
-  }
-
-  .newsletterTitle {
-    font-size: 26px;
-  }
-
-  .newsletterForm {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 8px;
-    border-radius: 20px;
-  }
-
-  .newsletterInput {
-    padding: 12px;
-  }
-
-  .newsletterBtn {
-    width: 100%;
-    padding: 12px 20px;
-  }
-
-  .certBadge {
-    font-size: 11px;
-    max-width: 100%;
-  }
-
-  .bottomBar {
-    font-size: 11px;
   }
 }
