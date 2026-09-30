@@ -106,7 +106,19 @@ export default function Header({
     };
   }, []);
 
-  // Flowers is active only on the home page and flower / table-arrangement pages
+  // Category active states for Next.js navigation
+  const isBouquetsActive =
+    pathname === "/bouquets" ||
+    !!pathname?.startsWith("/bouquets") ||
+    !!pathname?.startsWith("/flower-bouquets");
+  const isCakesActive =
+    pathname === "/cakes" || !!pathname?.startsWith("/cakes");
+  const isFlowerBasketsActive =
+    pathname === "/flower-baskets" || !!pathname?.startsWith("/flower-baskets");
+  const isChurchActive =
+    pathname === "/church-arrangements" ||
+    !!pathname?.startsWith("/church-arrangements");
+
   const isFlowersActive =
     pathname === "/" ||
     !!pathname?.startsWith("/flowers") ||
@@ -241,92 +253,40 @@ export default function Header({
 
           {/* Center: navigation */}
           <nav className={styles.centerNav} aria-label="Main Navigation">
-            <div
-              className={styles.flowersNavWrapper}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
+            <Link
+              href="/bouquets"
+              className={`${styles.centerNavLink} ${
+                isBouquetsActive ? styles.activeNavLink : ""
+              }`}
             >
-              <Link
-                href="/flowers/roses"
-                className={`${styles.centerNavLink} ${isFlowersActive || flowersHovered ? styles.activeNavLink : ""
-                  }`}
-                aria-expanded={flowersHovered}
-                aria-haspopup="true"
-              >
-                <span>Flowers</span>
-              </Link>
+              Bouquet
+            </Link>
 
-              {flowersHovered && (
-                <div
-                  className={styles.shopFlowersDropdown}
-                  role="region"
-                  aria-label="Shop Flowers Dropdown"
-                >
-                  <div className={styles.shopFlowersGrid}>
-                    {FLOWER_COLUMNS.map((col) => (
-                      <div key={col.title} className={styles.shopFlowersCol}>
-                        <h4 className={styles.shopFlowersColTitle}>{col.title}</h4>
-                        <div className={styles.shopFlowersDivider} />
-                        <ul className={styles.shopFlowersList}>
-                          {col.items.map((item) => {
-                            const color = "color" in item ? item.color : undefined;
-                            return (
-                              <li key={item.href}>
-                                <Link
-                                  href={item.href}
-                                  className={styles.shopFlowersItem}
-                                  onClick={() => setFlowersHovered(false)}
-                                >
-                                  <item.Icon
-                                    size={color ? 15 : 16}
-                                    strokeWidth={color ? 2 : 1.75}
-                                    className={`${styles.itemIcon} ${color ? styles[color] : ""}`}
-                                  />
-                                  <span>{item.label}</span>
-                                </Link>
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className={styles.shopFlowersFooter}>
-                    <Link
-                      href="/flowers/all"
-                      className={styles.shopFlowersViewAllBtn}
-                      onClick={() => setFlowersHovered(false)}
-                    >
-                      <span>View All Flowers</span>
-                      <ArrowRight size={14} strokeWidth={2} />
-                    </Link>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <a
-              href="https://wa.me/918606464700?text=Hello%20Occassions,%20I%20would%20like%20to%20order%20a%20fresh%20celebration%20cake."
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.centerNavLink}
+            <Link
+              href="/cakes"
+              className={`${styles.centerNavLink} ${
+                isCakesActive ? styles.activeNavLink : ""
+              }`}
             >
               Cakes
-            </a>
+            </Link>
+
+            <Link
+              href="/flower-baskets"
+              className={`${styles.centerNavLink} ${
+                isFlowerBasketsActive ? styles.activeNavLink : ""
+              }`}
+            >
+              Flower Baskets &amp; Garlands
+            </Link>
+
             <Link
               href="/church-arrangements"
-              className={`${styles.centerNavLink} ${pathname?.startsWith("/church-arrangements") ? styles.activeNavLink : ""
-                }`}
+              className={`${styles.centerNavLink} ${
+                isChurchActive ? styles.activeNavLink : ""
+              }`}
             >
-              Special occasions
-            </Link>
-            <Link
-              href="/#highlights"
-              onClick={handleHighlightsClick}
-              className={styles.centerNavLink}
-            >
-              Our highlights
+              Church Arrangements
             </Link>
           </nav>
 
@@ -634,43 +594,38 @@ export default function Header({
           <ul className={styles.drawerNavList}>
             <li>
               <Link
-                href="/table-arrangements"
-                className={styles.drawerNavLink}
+                href="/bouquets"
+                className={`${styles.drawerNavLink} ${isBouquetsActive ? styles.activeNavLink : ""}`}
                 onClick={() => setDrawerOpen(false)}
               >
-                Flowers
+                Bouquet
               </Link>
             </li>
             <li>
-              <a
-                href="https://wa.me/918606464700?text=Hello%20Occassions,%20I%20would%20like%20to%20order%20a%20fresh%20celebration%20cake."
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.drawerNavLink}
+              <Link
+                href="/cakes"
+                className={`${styles.drawerNavLink} ${isCakesActive ? styles.activeNavLink : ""}`}
                 onClick={() => setDrawerOpen(false)}
               >
                 Cakes
-              </a>
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/flower-baskets"
+                className={`${styles.drawerNavLink} ${isFlowerBasketsActive ? styles.activeNavLink : ""}`}
+                onClick={() => setDrawerOpen(false)}
+              >
+                Flower Baskets &amp; Garlands
+              </Link>
             </li>
             <li>
               <Link
                 href="/church-arrangements"
-                className={styles.drawerNavLink}
+                className={`${styles.drawerNavLink} ${isChurchActive ? styles.activeNavLink : ""}`}
                 onClick={() => setDrawerOpen(false)}
               >
-                Special occasions
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/#highlights"
-                className={styles.drawerNavLink}
-                onClick={(e) => {
-                  handleHighlightsClick(e);
-                  setDrawerOpen(false);
-                }}
-              >
-                Our highlights
+                Church Arrangements
               </Link>
             </li>
           </ul>
