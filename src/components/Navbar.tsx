@@ -68,7 +68,7 @@ export default function Navbar() {
               isOccasionActive ? styles.activeNavLink : ""
             }`}
           >
-            Occasion
+            Special Occasions
           </Link>
           <Link
             href="/#highlights"
@@ -144,7 +144,7 @@ export default function Navbar() {
             }`}
             onClick={() => setMobileOpen(false)}
           >
-            Occasion
+            Special Occasions
           </Link>
           <Link
             href="/#highlights"

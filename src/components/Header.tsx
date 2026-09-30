@@ -277,7 +277,7 @@ export default function Header({
                 isOccasionActive ? styles.activeNavLink : ""
               }`}
             >
-              Occasion
+              Special Occasions
             </Link>
 
             <Link
@@ -615,7 +615,7 @@ export default function Header({
                 className={`${styles.drawerNavLink} ${isOccasionActive ? styles.activeNavLink : ""}`}
                 onClick={() => setDrawerOpen(false)}
               >
-                Occasion
+                Special Occasions
               </Link>
             </li>
             <li>
