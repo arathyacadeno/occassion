@@ -1,0 +1,178 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { useCheckout, CompletedOrder } from "@/context/CheckoutContext";
+import {
+  Package,
+  Calendar,
+  CreditCard,
+  CheckCircle2,
+  ArrowRight,
+  ShoppingBag,
+  Clock,
+  Sparkles,
+} from "lucide-react";
+import styles from "./orders.module.css";
+
+export default function OrdersPage() {
+  const { orders, viewOrder } = useCheckout();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
+  return (
+    <div className={styles.pageWrapper}>
+      <Navbar />
+
+      <main className={styles.mainContainer}>
+        {/* Header */}
+        <div className={styles.headerRow}>
+          <div>
+            <h1 className={styles.pageTitle}>My Orders</h1>
+            <p className={styles.pageSubtitle}>
+              {orders.length > 0
+                ? `You have placed ${orders.length} ${
+                    orders.length === 1 ? "order" : "orders"
+                  } with Occassions Florist.`
+                : "Track your past and active flower deliveries."}
+            </p>
+          </div>
+
+          <Link href="/flower" className={styles.exploreLink}>
+            <ShoppingBag size={16} />
+            <span>Order New Flowers</span>
+          </Link>
+        </div>
+
+        {/* Orders List */}
+        {orders.length > 0 ? (
+          <div className={styles.ordersList}>
+            {orders.map((order) => {
+              const formattedDate = new Date(order.createdAt).toLocaleDateString(
+                "en-IN",
+                {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                }
+              );
+
+              const isConfirmed = order.orderStatus === "confirmed";
+
+              return (
+                <article key={order.orderId} className={styles.orderCard}>
+                  {/* Card Header */}
+                  <div className={styles.cardHeader}>
+                    <div className={styles.headerLeft}>
+                      <span className={styles.orderIdBadge}>
+                        <Package size={17} color="#686b2e" />
+                        #{order.orderId}
+                      </span>
+                      <span className={styles.orderDateText}>
+                        <Calendar size={14} />
+                        Placed on {formattedDate}
+                      </span>
+                    </div>
+
+                    <div className={styles.headerRight}>
+                      {isConfirmed ? (
+                        <span className={styles.statusConfirmed}>
+                          <Clock size={13} /> Active / Confirmed
+                        </span>
+                      ) : (
+                        <span className={styles.statusDelivered}>
+                          <CheckCircle2 size={13} /> Delivered
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Card Body */}
+                  <div className={styles.cardBody}>
+                    <div className={styles.productInfoBlock}>
+                      <img
+                        src={order.productImage}
+                        alt={order.productName}
+                        className={styles.productImage}
+                      />
+                      <div className={styles.detailsCol}>
+                        <span className={styles.productCategoryTag}>
+                          {order.productCategory || "Fresh Flowers"}
+                        </span>
+                        <h3 className={styles.productTitle}>
+                          {order.productName}
+                        </h3>
+                        <p className={styles.itemSubtext}>
+                          Quantity: {order.quantity || 1} &bull; Same-Day Express Delivery
+                        </p>
+                        <span className={styles.paymentTag}>
+                          <CreditCard size={13} />
+                          Paid via {order.paymentMethod}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Price and Actions */}
+                    <div className={styles.cardPriceAndActions}>
+                      <div className={styles.priceBlock}>
+                        <span className={styles.priceLabel}>Total Amount</span>
+                        <span className={styles.priceValue}>
+                          ₹{order.price.toLocaleString("en-IN")}
+                        </span>
+                      </div>
+
+                      <div className={styles.actionsGroup}>
+                        <button
+                          type="button"
+                          onClick={() => viewOrder(order)}
+                          className={styles.viewDetailsBtn}
+                          title="View receipt and order details"
+                        >
+                          <span>View Details</span>
+                          <ArrowRight size={15} />
+                        </button>
+
+                        <Link href="/flower" className={styles.reorderBtn}>
+                          Reorder
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        ) : (
+          /* Empty State */
+          <div className={styles.emptyStateCard}>
+            <img
+              src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=600&q=80"
+              alt="Empty orders"
+              className={styles.emptyFloralImg}
+            />
+            <h2 className={styles.emptyTitle}>No Orders Yet</h2>
+            <p className={styles.emptyDesc}>
+              Looks like your flower journey hasn&apos;t started yet. Brighten someone&apos;s
+              day with our handcrafted bouquets.
+            </p>
+            <Link href="/flower" className={styles.startShoppingBtn}>
+              <Sparkles size={16} />
+              <span>Explore Flowers</span>
+            </Link>
+          </div>
+        )}
+      </main>
+
+      <Footer />
+    </div>
+  );
+}

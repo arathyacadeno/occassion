@@ -23,6 +23,7 @@ import {
   Gift,
   PartyPopper,
   Circle,
+  Package,
 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
@@ -83,6 +84,9 @@ export default function Header({
   const [flowersHovered, setFlowersHovered] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  const [profileHovered, setProfileHovered] = useState(false);
+  const profileTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const handleMouseEnter = () => {
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current);
@@ -97,14 +101,30 @@ export default function Header({
     }, 180);
   };
 
-  // Close mega menu on page change
+  const handleProfileEnter = () => {
+    if (profileTimeoutRef.current) {
+      clearTimeout(profileTimeoutRef.current);
+      profileTimeoutRef.current = null;
+    }
+    setProfileHovered(true);
+  };
+
+  const handleProfileLeave = () => {
+    profileTimeoutRef.current = setTimeout(() => {
+      setProfileHovered(false);
+    }, 180);
+  };
+
+  // Close menus on page change
   useEffect(() => {
     setFlowersHovered(false);
+    setProfileHovered(false);
   }, [pathname]);
 
   useEffect(() => {
     return () => {
       if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+      if (profileTimeoutRef.current) clearTimeout(profileTimeoutRef.current);
     };
   }, []);
 
@@ -373,15 +393,65 @@ export default function Header({
               >
                 <Menu size={22} strokeWidth={1.8} />
               </button>
-              <button
-                className={styles.iconBtn}
-                onClick={() => setActiveModal("signin")}
-                type="button"
-                aria-label="Profile Account"
-                title="Profile / Account"
+              <div
+                className={styles.profileWrapper}
+                onMouseEnter={handleProfileEnter}
+                onMouseLeave={handleProfileLeave}
               >
-                <User size={21} strokeWidth={1.8} />
-              </button>
+                <button
+                  className={`${styles.iconBtn} ${
+                    profileHovered ? styles.activeProfileBtn : ""
+                  }`}
+                  onClick={() => setProfileHovered((prev) => !prev)}
+                  type="button"
+                  aria-label="Profile Account"
+                  title="Profile / Account"
+                  aria-expanded={profileHovered}
+                >
+                  <User size={21} strokeWidth={1.8} />
+                </button>
+
+                {profileHovered && (
+                  <div className={styles.profileDropdown} role="menu">
+                    <div className={styles.profileDropdownHeader}>
+                      <div className={styles.profileAvatarIcon}>
+                        <User size={16} />
+                      </div>
+                      <div className={styles.profileHeaderText}>
+                        <span className={styles.profileWelcomeLabel}>Welcome</span>
+                        <span className={styles.profileUserLabel}>Flower Boutique</span>
+                      </div>
+                    </div>
+
+                    <div className={styles.profileDivider} />
+
+                    <div className={styles.profileMenuList}>
+                      <Link
+                        href="/orders"
+                        className={styles.profileMenuItem}
+                        onClick={() => setProfileHovered(false)}
+                        role="menuitem"
+                      >
+                        <Package size={17} className={styles.profileMenuIcon} />
+                        <span>My Orders</span>
+                      </Link>
+
+                      <button
+                        type="button"
+                        className={styles.profileMenuItem}
+                        onClick={() => {
+                          setProfileHovered(false);
+                          setActiveModal("signin");
+                        }}
+                        role="menuitem"
+                      >
+                        <User size={17} className={styles.profileMenuIcon} />
+                        <span>Profile</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

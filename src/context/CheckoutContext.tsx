@@ -27,11 +27,48 @@ export interface CompletedOrder {
   mobileNumber: string;
   paymentMethod: string;
   paymentStatus: "success";
-  orderStatus: "confirmed";
+  orderStatus: "confirmed" | "delivered";
   createdAt: string;
   estimatedDelivery: string;
   items?: CheckoutItem[];
 }
+
+const INITIAL_DEMO_ORDERS: CompletedOrder[] = [
+  {
+    orderId: "ORD893120",
+    productId: "birthday-flower-basket",
+    productName: "Birthday Flower Basket",
+    productImage:
+      "https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=800&q=80",
+    productCategory: "Flower",
+    quantity: 1,
+    price: 999,
+    unitPrice: 999,
+    mobileNumber: "+91 9876543210",
+    paymentMethod: "UPI",
+    paymentStatus: "success",
+    orderStatus: "confirmed",
+    createdAt: new Date(Date.now() - 2 * 86400000).toISOString(),
+    estimatedDelivery: "Delivered to Calicut",
+  },
+  {
+    orderId: "ORD652419",
+    productId: "pink-rose-delight",
+    productName: "Pink Rose Delight Basket",
+    productImage:
+      "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=800&q=80",
+    productCategory: "Flower",
+    quantity: 1,
+    price: 1299,
+    unitPrice: 1299,
+    mobileNumber: "+91 9876543210",
+    paymentMethod: "Credit / Debit Card",
+    paymentStatus: "success",
+    orderStatus: "delivered",
+    createdAt: new Date(Date.now() - 9 * 86400000).toISOString(),
+    estimatedDelivery: "Delivered to Calicut",
+  },
+];
 
 interface CheckoutContextType {
   checkoutItem: CheckoutItem | null;
@@ -39,11 +76,13 @@ interface CheckoutContextType {
   totalAmount: number;
   mobileNumber: string;
   completedOrder: CompletedOrder | null;
+  orders: CompletedOrder[];
   startBuyNow: (item: CheckoutItem) => void;
   startCartCheckout: (items: CheckoutItem[]) => void;
   setMobile: (mobile: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   completeOrder: (paymentMethod: string) => CompletedOrder | null;
+  viewOrder: (order: CompletedOrder) => void;
   resetCheckout: () => void;
 }
 
@@ -54,6 +93,7 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
   const [checkoutItems, setCheckoutItems] = useState<CheckoutItem[]>([]);
   const [mobileNumber, setMobileNumber] = useState<string>("");
   const [completedOrder, setCompletedOrder] = useState<CompletedOrder | null>(null);
+  const [orders, setOrders] = useState<CompletedOrder[]>(INITIAL_DEMO_ORDERS);
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Load state from localStorage on initial render
@@ -77,6 +117,17 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
       const storedOrder = localStorage.getItem("occassions_latest_order");
       if (storedOrder) {
         setCompletedOrder(JSON.parse(storedOrder));
+      }
+
+      const storedOrders = localStorage.getItem("occassions_order_history");
+      if (storedOrders) {
+        const parsed = JSON.parse(storedOrders);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setOrders(parsed);
+        }
+      } else if (storedOrder) {
+        const parsed = JSON.parse(storedOrder);
+        setOrders([parsed, ...INITIAL_DEMO_ORDERS]);
       }
     } catch (e) {
       console.error("Failed to load checkout state:", e);
@@ -123,6 +174,18 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
       console.error("Failed to persist order:", e);
     }
   }, [completedOrder, isLoaded]);
+
+  // Save orders history to localStorage
+  useEffect(() => {
+    if (!isLoaded) return;
+    try {
+      if (orders.length > 0) {
+        localStorage.setItem("occassions_order_history", JSON.stringify(orders));
+      }
+    } catch (e) {
+      console.error("Failed to persist order history:", e);
+    }
+  }, [orders, isLoaded]);
 
   const startBuyNow = (item: CheckoutItem) => {
     setCheckoutItems([item]);
@@ -199,6 +262,16 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
     };
 
     setCompletedOrder(newOrder);
+    setOrders((prev) => {
+      const next = [newOrder, ...prev.filter((o) => o.orderId !== newOrder.orderId)];
+      try {
+        localStorage.setItem("occassions_order_history", JSON.stringify(next));
+      } catch (e) {
+        console.error(e);
+      }
+      return next;
+    });
+
     try {
       localStorage.setItem("occassions_latest_order", JSON.stringify(newOrder));
       localStorage.removeItem("occassions_checkout_items");
@@ -209,6 +282,16 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
     }
 
     return newOrder;
+  };
+
+  const viewOrder = (order: CompletedOrder) => {
+    setCompletedOrder(order);
+    try {
+      localStorage.setItem("occassions_latest_order", JSON.stringify(order));
+    } catch (e) {
+      console.error(e);
+    }
+    router.push("/thank-you");
   };
 
   const resetCheckout = () => {
@@ -231,11 +314,13 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
         totalAmount,
         mobileNumber,
         completedOrder,
+        orders,
         startBuyNow,
         startCartCheckout,
         setMobile,
         updateQuantity,
         completeOrder,
+        viewOrder,
         resetCheckout,
       }}
     >
