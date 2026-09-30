@@ -8,12 +8,7 @@
   padding: 84px 0 110px 0;
   position: relative;
   overflow: hidden;
-  font-family: var(--font-sans);
-  background-color: #fff9fb;
-  background-image: url('/images/occasion-floral-bg.png');
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
+  background-color: #ffffff;
 }
 
 .sectionWrapper * {
