@@ -1,0 +1,68 @@
+.pageWrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #FFEDF1;
+}
+
+.mainContent {
+  flex: 1;
+  background-color: #FFEDF1;
+}
+
+/* Category Filter Pills (Exact Match from Reference Image) */
+.filterTabsRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0 24px 36px 24px;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.filterPill {
+  background-color: rgba(255, 255, 255, 0.75);
+  color: #374151;
+  border: 1px solid rgba(219, 39, 119, 0.18);
+  font-family: var(--font-sans, -apple-system, sans-serif);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 20px;
+  border-radius: 9999px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.filterPill:hover {
+  background-color: #ffffff;
+  color: #db2777;
+  border-color: #db2777;
+  transform: translateY(-1px);
+}
+
+.filterPillActive {
+  background-color: #e11d48 !important;
+  color: #ffffff !important;
+  border-color: #e11d48 !important;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.25);
+}
+
+@media (max-width: 640px) {
+  .filterTabsRow {
+    gap: 8px;
+    padding: 0 16px 24px 16px;
+    justify-content: flex-start;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  .filterPill {
+    padding: 7px 16px;
+    font-size: 12px;
+  }
+}

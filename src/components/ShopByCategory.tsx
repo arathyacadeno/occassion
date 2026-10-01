@@ -182,6 +182,7 @@ function CategoryItem({
 
   return (
     <div
+      id={item.id}
       className={`${styles.itemContainer} ${isVisible ? styles.itemVisible : ""
         }`}
       style={

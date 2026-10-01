@@ -1,8 +1,9 @@
 /* ================= PRODUCT CARD (REFERENCE WAVE DESIGN) =================
-   Matches user's exact specification:
-   - Rounded white card container (border-radius: 26px)
+   Matches user's exact specification from reference images:
+   - Rounded white card container (border-radius: 24px)
    - Image with signature bottom wave scoop cutout
-   - Product title
+   - Floating circular white wishlist heart button
+   - Clean product title
    - Green rating pill (★ 4.5)
    - Price row with current price, strikethrough, discount, and Free Delivery badge
 ========================================================================== */
@@ -11,29 +12,28 @@
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
-  border: 1px solid rgba(241, 245, 249, 0.95);
-  border-radius: 26px;
+  border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.05),
-              0 2px 6px rgba(15, 23, 42, 0.02);
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(244, 114, 182, 0.15);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   width: 100%;
   height: 100%;
 }
 
 .card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 18px 36px -4px rgba(219, 39, 119, 0.15),
-              0 6px 14px rgba(15, 23, 42, 0.04);
+  transform: translateY(-5px);
+  box-shadow: 0 16px 32px rgba(219, 39, 119, 0.12),
+              0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 /* ================= IMAGE CONTAINER WITH WAVE CUTOUT ================= */
 .imageContainer {
   position: relative;
   width: 100%;
-  aspect-ratio: 1 / 0.95;
+  aspect-ratio: 1 / 1.05;
   background-color: #ffffff;
   overflow: hidden;
   isolation: isolate;
@@ -55,64 +55,45 @@
 }
 
 .card:hover .productImage {
-  transform: scale(1.05);
+  transform: scale(1.04);
 }
 
-/* The signature smooth wave SVG cutout */
+/* Characteristic Smooth Wave SVG Cutout */
 .waveDivider {
   position: absolute;
-  bottom: -3px;
-  left: -2px;
-  right: -2px;
-  width: calc(100% + 4px);
-  height: 42px;
+  bottom: -1px;
+  left: -1px;
+  right: -1px;
+  width: calc(100% + 2px);
+  height: 48px;
   pointer-events: none;
   z-index: 3;
   display: block;
 }
 
-/* Floating Bestseller / Category Badge */
-.badgeTag {
-  position: absolute;
-  top: 14px;
-  left: 14px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(6px);
-  color: #db2777;
-  font-family: var(--font-sans, -apple-system, sans-serif);
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 4px 10px;
-  border-radius: 9999px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  z-index: 3;
-}
 
-/* Floating Wishlist Button */
+/* Floating White Circle Wishlist Button (Exact Match) */
 .wishlistBtn {
   position: absolute;
   top: 12px;
   right: 12px;
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(6px);
+  background: #ffffff;
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 3;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  z-index: 4;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .wishlistBtn:hover {
-  transform: scale(1.12);
-  background: #ffffff;
+  transform: scale(1.1);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.12);
 }
 
 .wishlistActive {
@@ -121,8 +102,7 @@
 
 /* ================= CARD BODY ================= */
 .cardBody {
-  padding: 14px 20px 22px 20px;
-  margin-top: -3px;
+  padding: 12px 18px 20px 18px;
   position: relative;
   z-index: 2;
   display: flex;
@@ -136,10 +116,10 @@
 /* Product Title */
 .productTitle {
   font-family: var(--font-sans, -apple-system, sans-serif);
-  font-size: 1.15rem;
+  font-size: 15px;
   font-weight: 500;
   color: #111827;
-  line-height: 1.32;
+  line-height: 1.35;
   margin: 0 0 10px 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -157,7 +137,7 @@
   color: #db2777;
 }
 
-/* Green Rating Pill Badge */
+/* Green Rating Pill Badge (★ 4.5) */
 .ratingBadge {
   display: inline-flex;
   align-items: center;
@@ -165,13 +145,12 @@
   background-color: #2e7d32;
   color: #ffffff;
   font-family: var(--font-sans, -apple-system, sans-serif);
-  font-size: 0.78rem;
+  font-size: 11px;
   font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 6px;
-  margin-bottom: 14px;
+  padding: 2.5px 7px;
+  border-radius: 4px;
+  margin-bottom: 12px;
   letter-spacing: 0.02em;
-  box-shadow: 0 2px 4px rgba(46, 125, 50, 0.18);
 }
 
 /* Price & Delivery Row */
@@ -181,11 +160,12 @@
   gap: 8px;
   flex-wrap: wrap;
   margin-top: auto;
+  width: 100%;
 }
 
 .currentPrice {
   font-family: var(--font-sans, -apple-system, sans-serif);
-  font-size: 1.35rem;
+  font-size: 18px;
   font-weight: 700;
   color: #111827;
   letter-spacing: -0.02em;
@@ -193,25 +173,25 @@
 
 .originalPrice {
   font-family: var(--font-sans, -apple-system, sans-serif);
-  font-size: 0.85rem;
+  font-size: 12px;
   color: #9ca3af;
   text-decoration: line-through;
 }
 
 .discountBadge {
   font-family: var(--font-sans, -apple-system, sans-serif);
-  font-size: 0.82rem;
+  font-size: 12px;
   font-weight: 500;
-  color: #111827;
+  color: #4b5563;
 }
 
-/* Free Delivery Badge with cute truck */
+/* Free Delivery Badge with Green Truck */
 .freeDeliveryBadge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   font-family: var(--font-sans, -apple-system, sans-serif);
-  font-size: 0.78rem;
+  font-size: 11px;
   font-weight: 600;
   color: #15803d;
   margin-left: 2px;
@@ -225,17 +205,17 @@
 /* ================= RESPONSIVE ================= */
 @media (max-width: 640px) {
   .card {
-    border-radius: 22px;
+    border-radius: 20px;
   }
   .cardBody {
-    padding: 12px 16px 18px 16px;
+    padding: 10px 14px 16px 14px;
   }
   .productTitle {
-    font-size: 1.02rem;
+    font-size: 14px;
     margin-bottom: 8px;
   }
   .currentPrice {
-    font-size: 1.18rem;
+    font-size: 16px;
   }
   .waveDivider {
     height: 30px;

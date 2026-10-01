@@ -2,7 +2,7 @@
   max-width: 1280px;
   width: 100%;
   margin: 0 auto;
-  padding: 0 36px 120px 36px;
+  padding: 0 36px 100px 36px;
   box-sizing: border-box;
   background-color: #FFEDF1;
 }
@@ -10,28 +10,36 @@
 .productGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 60px 28px;
+  gap: 36px 24px;
   width: 100%;
 }
 
-@media (max-width: 1080px) {
+@media (max-width: 1180px) {
   .productGrid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 48px 24px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px 20px;
   }
-
   .gridContainer {
-    padding: 0 28px 90px 28px;
+    padding: 0 28px 80px 28px;
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 860px) {
   .productGrid {
-    grid-template-columns: 1fr;
-    gap: 36px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px 16px;
   }
-
   .gridContainer {
     padding: 0 20px 70px 20px;
+  }
+}
+
+@media (max-width: 540px) {
+  .productGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px 12px;
+  }
+  .gridContainer {
+    padding: 0 14px 60px 14px;
   }
 }

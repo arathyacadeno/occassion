@@ -46,12 +46,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           />
         </Link>
 
-        {/* Badge */}
-        {product.badge && (
-          <span className={styles.badgeTag}>{product.badge}</span>
-        )}
-
-        {/* Floating Wishlist Button */}
+        {/* Floating Wishlist Button (White Circle with Thin Black Outline Heart) */}
         <button
           type="button"
           onClick={toggleWishlist}
@@ -65,21 +60,21 @@ export default function ProductCard({ product }: ProductCardProps) {
         >
           <Heart
             size={18}
-            strokeWidth={1.8}
+            strokeWidth={1.5}
             fill={isWishlisted ? "#db2777" : "none"}
-            color={isWishlisted ? "#db2777" : "#4b5563"}
+            color={isWishlisted ? "#db2777" : "#1a1a1a"}
           />
         </button>
 
-        {/* Characteristic Smooth Wave SVG Cutout at bottom of image */}
+        {/* Signature Chamfered Ramp Cutout at bottom of image */}
         <svg
           className={styles.waveDivider}
-          viewBox="0 0 300 36"
+          viewBox="0 0 300 48"
           preserveAspectRatio="none"
           aria-hidden="true"
         >
           <path
-            d="M -4,0 C 100,0 180,36 304,36 L 304,48 L -4,48 Z"
+            d="M -2,52 L -2,18 Q -2,0 16,0 L 202,0 C 224,0 234,34 258,34 L 304,34 L 304,52 Z"
             fill="#ffffff"
           />
         </svg>
@@ -94,12 +89,12 @@ export default function ProductCard({ product }: ProductCardProps) {
           </Link>
         </h3>
 
-        {/* Green Rating Pill Badge */}
+        {/* Green Rating Pill Badge (★ 4.5) */}
         <div
           className={styles.ratingBadge}
-          aria-label={`Rated ${product.rating || 4.5} out of 5 stars`}
+          aria-label={`Rated ${(product.rating || 4.5).toFixed(1)} out of 5 stars`}
         >
-          <Star size={11} fill="#ffffff" color="#ffffff" strokeWidth={0} />
+          <Star size={10} fill="#ffffff" color="#ffffff" strokeWidth={0} />
           <span>{(product.rating || 4.5).toFixed(1)}</span>
         </div>
 
@@ -117,12 +112,12 @@ export default function ProductCard({ product }: ProductCardProps) {
 
           {discountPercent ? (
             <span className={styles.discountBadge}>{discountPercent}% off</span>
-          ) : null}
-
-          <span className={styles.freeDeliveryBadge}>
-            Free Delivery
-            <Truck size={13} className={styles.truckIcon} />
-          </span>
+          ) : (
+            <span className={styles.freeDeliveryBadge}>
+              Free Delivery
+              <Truck size={12} className={styles.truckIcon} />
+            </span>
+          )}
         </div>
       </div>
     </article>

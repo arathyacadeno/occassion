@@ -128,26 +128,100 @@ export default function Header({
     };
   }, []);
 
-  // Category active states for Next.js navigation
-  const isFlowerActive =
-    pathname === "/flower" ||
-    !!pathname?.startsWith("/flower/") ||
-    pathname === "/flower-baskets" ||
-    pathname === "/bouquets";
-  const isCakesActive =
-    pathname === "/cakes" || !!pathname?.startsWith("/cakes/");
-  const isSpecialOccasionsActive =
-    pathname === "/special-occasions" ||
-    !!pathname?.startsWith("/special-occasions/") ||
-    pathname === "/church-arrangements";
-  const isHighlightsActive =
-    pathname === "/our-highlights" ||
-    !!pathname?.startsWith("/our-highlights/");
+  // Section active states: active ONLY when on the Home page and viewing/clicking the section
+  const [activeSection, setActiveSection] = useState<string | null>(null);
 
-  const isFlowersActive =
-    pathname === "/" ||
-    !!pathname?.startsWith("/flowers") ||
-    !!pathname?.startsWith("/table-arrangements");
+  // Smooth scroll to a home page section
+  const handleSectionNav = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    targetId: string,
+    sectionKey?: string
+  ) => {
+    if (pathname === "/") {
+      e.preventDefault();
+      const el = document.getElementById(targetId);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+        window.history.pushState(null, "", `/#${targetId}`);
+        if (sectionKey) {
+          setActiveSection(sectionKey);
+        }
+      }
+    }
+  };
+
+  // If landing on "/" from another page with a hash in URL (e.g. /#highlights), scroll to it
+  useEffect(() => {
+    if (pathname === "/" && typeof window !== "undefined" && window.location.hash) {
+      const hashId = window.location.hash.replace("#", "");
+      const targetEl = document.getElementById(hashId);
+      if (targetEl) {
+        const timer = setTimeout(() => {
+          targetEl.scrollIntoView({ behavior: "smooth" });
+          if (hashId === "shop-by-flowers" || hashId === "flower") setActiveSection("flower");
+          else if (hashId === "cakes" || hashId === "categories") setActiveSection("cakes");
+          else if (hashId === "occasions") setActiveSection("occasions");
+          else if (hashId === "highlights") setActiveSection("highlights");
+        }, 120);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [pathname]);
+
+  // Scroll spy: tracks active section ONLY when on the Home page
+  useEffect(() => {
+    if (pathname !== "/") {
+      setActiveSection(null);
+      return;
+    }
+
+    const sections = [
+      { id: "cakes", key: "cakes", fallbackId: "categories" },
+      { id: "occasions", key: "occasions" },
+      { id: "shop-by-flowers", key: "flower" },
+      { id: "highlights", key: "highlights" },
+    ];
+
+    const handleScroll = () => {
+      // If at top of page (hero), no navbar item is highlighted
+      if (window.scrollY < 200) {
+        setActiveSection(null);
+        return;
+      }
+
+      const scrollAnchor = window.scrollY + window.innerHeight * 0.35;
+      let matchedSection: string | null = null;
+
+      for (const section of sections) {
+        const el = document.getElementById(section.id) || (section.fallbackId ? document.getElementById(section.fallbackId) : null);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          const top = rect.top + window.scrollY;
+          const height = rect.height;
+          if (scrollAnchor >= top && scrollAnchor < top + height) {
+            matchedSection = section.key;
+            break;
+          }
+        }
+      }
+
+      setActiveSection(matchedSection);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [pathname]);
+
+  // Active flags: ONLY true when on the home page ('/') and corresponding section is active
+  const isHomePage = pathname === "/";
+  const isFlowerActive = isHomePage && activeSection === "flower";
+  const isCakesActive = isHomePage && activeSection === "cakes";
+  const isSpecialOccasionsActive = isHomePage && activeSection === "occasions";
+  const isHighlightsActive = isHomePage && activeSection === "highlights";
 
   const isDrawerOpen =
     controlledDrawerOpen !== undefined ? controlledDrawerOpen : internalDrawerOpen;
@@ -279,7 +353,8 @@ export default function Header({
           {/* Center: navigation */}
           <nav className={styles.centerNav} aria-label="Main Navigation">
             <Link
-              href="/flower"
+              href="/#shop-by-flowers"
+              onClick={(e) => handleSectionNav(e, "shop-by-flowers", "flower")}
               className={`${styles.centerNavLink} ${
                 isFlowerActive ? styles.activeNavLink : ""
               }`}
@@ -288,7 +363,8 @@ export default function Header({
             </Link>
 
             <Link
-              href="/cakes"
+              href="/#cakes"
+              onClick={(e) => handleSectionNav(e, "cakes", "cakes")}
               className={`${styles.centerNavLink} ${
                 isCakesActive ? styles.activeNavLink : ""
               }`}
@@ -297,7 +373,8 @@ export default function Header({
             </Link>
 
             <Link
-              href="/special-occasions"
+              href="/#occasions"
+              onClick={(e) => handleSectionNav(e, "occasions", "occasions")}
               className={`${styles.centerNavLink} ${
                 isSpecialOccasionsActive ? styles.activeNavLink : ""
               }`}
@@ -306,7 +383,8 @@ export default function Header({
             </Link>
 
             <Link
-              href="/our-highlights"
+              href="/#highlights"
+              onClick={(e) => handleSectionNav(e, "highlights", "highlights")}
               className={`${styles.centerNavLink} ${
                 isHighlightsActive ? styles.activeNavLink : ""
               }`}
@@ -674,36 +752,48 @@ export default function Header({
           <ul className={styles.drawerNavList}>
             <li>
               <Link
-                href="/flower"
+                href="/#shop-by-flowers"
                 className={`${styles.drawerNavLink} ${isFlowerActive ? styles.activeNavLink : ""}`}
-                onClick={() => setDrawerOpen(false)}
+                onClick={(e) => {
+                  handleSectionNav(e, "shop-by-flowers", "flower");
+                  setDrawerOpen(false);
+                }}
               >
                 Flower
               </Link>
             </li>
             <li>
               <Link
-                href="/cakes"
+                href="/#cakes"
                 className={`${styles.drawerNavLink} ${isCakesActive ? styles.activeNavLink : ""}`}
-                onClick={() => setDrawerOpen(false)}
+                onClick={(e) => {
+                  handleSectionNav(e, "cakes", "cakes");
+                  setDrawerOpen(false);
+                }}
               >
                 Cakes
               </Link>
             </li>
             <li>
               <Link
-                href="/special-occasions"
+                href="/#occasions"
                 className={`${styles.drawerNavLink} ${isSpecialOccasionsActive ? styles.activeNavLink : ""}`}
-                onClick={() => setDrawerOpen(false)}
+                onClick={(e) => {
+                  handleSectionNav(e, "occasions", "occasions");
+                  setDrawerOpen(false);
+                }}
               >
                 Special Occasions
               </Link>
             </li>
             <li>
               <Link
-                href="/our-highlights"
+                href="/#highlights"
                 className={`${styles.drawerNavLink} ${isHighlightsActive ? styles.activeNavLink : ""}`}
-                onClick={() => setDrawerOpen(false)}
+                onClick={(e) => {
+                  handleSectionNav(e, "highlights", "highlights");
+                  setDrawerOpen(false);
+                }}
               >
                 Our highlights
               </Link>

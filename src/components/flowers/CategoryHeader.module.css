@@ -1,6 +1,9 @@
 .header {
   margin-bottom: 36px;
-  text-align: left;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .title {
@@ -10,66 +13,72 @@
   letter-spacing: -0.025em;
   margin: 0 0 10px 0;
   line-height: 1.15;
+  text-align: center;
 }
 
 .headline {
-  font-size: 1.15rem;
-  font-weight: 500;
-  color: #475569;
-  margin: 0 0 8px 0;
-  max-width: 800px;
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: #334155;
+  margin: 0 auto 12px;
+  max-width: 680px;
   line-height: 1.5;
+  text-align: center;
 }
 
 .description {
   font-size: 0.95rem;
   color: #64748b;
-  margin: 0 0 28px 0;
-  max-width: 850px;
+  margin: 0 auto 28px;
+  max-width: 750px;
   line-height: 1.6;
+  text-align: center;
 }
 
 .tabsWrapper {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   flex-wrap: wrap;
   gap: 16px;
-  padding-top: 20px;
-  border-top: 1px solid #f1f5f9;
+  padding-top: 10px;
+  width: 100%;
 }
 
 .tabsList {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
 .tabItem {
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   font-weight: 500;
-  color: #475569;
-  background-color: #f8fafc;
-  padding: 7px 16px;
+  color: #334155;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 8px 18px;
   border-radius: 9999px;
   text-decoration: none;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(4px);
   transition: all 0.2s ease;
 }
 
 .tabItem:hover {
-  background-color: #fdf2f8;
-  color: #db2777;
-  border-color: #fce7f3;
+  background-color: #ffffff;
+  color: #e11d48;
+  border-color: #fecdd3;
+  transform: translateY(-1px);
 }
 
 .tabActive {
-  background-color: #db2777;
+  background-color: #e11d48 !important;
   color: #ffffff !important;
-  border-color: #db2777 !important;
+  border-color: #e11d48 !important;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(219, 39, 119, 0.25);
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.25);
 }
 
 .countInfo {

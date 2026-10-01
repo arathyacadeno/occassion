@@ -2,9 +2,8 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { Star, Heart, Truck } from "lucide-react";
 import { FlowerProduct } from "@/types";
-import { useCart } from "@/context/CartContext";
-import { Star, Heart, ShoppingBag, ArrowRight, Check, Truck } from "lucide-react";
 import styles from "./ProductCard.module.css";
 
 interface ProductCardProps {
@@ -12,33 +11,31 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const { addItem } = useCart();
   const [isWishlisted, setIsWishlisted] = useState(false);
-  const [justAdded, setJustAdded] = useState(false);
-
   const productUrl = `/flowers/${product.category}/${product.slug}`;
 
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    addItem(product, "Signature", false);
-    setJustAdded(true);
-    setTimeout(() => {
-      setJustAdded(false);
-    }, 2000);
-  };
-
-  const handleWishlistToggle = (e: React.MouseEvent) => {
+  const toggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsWishlisted(!isWishlisted);
   };
 
+  const discountPercent =
+    product.originalPrice && product.originalPrice > product.price
+      ? Math.round(
+          ((product.originalPrice - product.price) / product.originalPrice) * 100
+        )
+      : null;
+
   return (
     <article className={styles.card}>
-      {/* Image Wrap */}
+      {/* Top Image Container with Wave Scoop Cutout */}
       <div className={styles.imageContainer}>
-        <Link href={productUrl} className={styles.imageLink} aria-label={`View ${product.name}`}>
+        <Link
+          href={productUrl}
+          className={styles.imageLink}
+          aria-label={product.name}
+        >
           <img
             src={product.image}
             alt={product.name}
@@ -47,87 +44,78 @@ export default function ProductCard({ product }: ProductCardProps) {
           />
         </Link>
 
-        {/* Badge */}
-        {product.badge && (
-          <span className={styles.badge}>{product.badge}</span>
-        )}
-
-        {/* Wishlist Button */}
+        {/* Floating Wishlist Button */}
         <button
           type="button"
-          className={`${styles.wishlistBtn} ${isWishlisted ? styles.wishlistActive : ""}`}
-          onClick={handleWishlistToggle}
-          aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          onClick={toggleWishlist}
+          className={`${styles.wishlistBtn} ${
+            isWishlisted ? styles.wishlistActive : ""
+          }`}
+          aria-label={
+            isWishlisted ? "Remove from wishlist" : "Add to wishlist"
+          }
+          title={isWishlisted ? "In Wishlist" : "Add to Wishlist"}
         >
-          <Heart size={17} strokeWidth={2} fill={isWishlisted ? "#db2777" : "none"} />
+          <Heart
+            size={18}
+            strokeWidth={1.5}
+            fill={isWishlisted ? "#db2777" : "none"}
+            color={isWishlisted ? "#db2777" : "#1a1a1a"}
+          />
         </button>
 
         {/* Characteristic Smooth Wave SVG Cutout at bottom of image */}
         <svg
           className={styles.waveDivider}
-          viewBox="0 0 300 36"
+          viewBox="0 0 300 48"
           preserveAspectRatio="none"
           aria-hidden="true"
         >
           <path
-            d="M -4,0 C 100,0 180,36 304,36 L 304,48 L -4,48 Z"
+            d="M -2,52 L -2,18 Q -2,0 16,0 L 202,0 C 224,0 234,34 258,34 L 304,34 L 304,52 Z"
             fill="#ffffff"
           />
         </svg>
       </div>
 
-      {/* Content */}
-      <div className={styles.content}>
-        {/* Title */}
+      {/* Card Info Section */}
+      <div className={styles.cardBody}>
+        {/* Product Title */}
         <h3 className={styles.productTitle}>
           <Link href={productUrl} className={styles.titleLink}>
             {product.name}
           </Link>
         </h3>
 
-        {/* Green Rating Pill Badge */}
+        {/* Green Rating Pill Badge (★ 4.5) */}
         <div
           className={styles.ratingBadge}
-          aria-label={`Rated ${product.rating} out of 5 stars`}
+          aria-label={`Rated ${(product.rating || 4.5).toFixed(1)} out of 5 stars`}
         >
-          <Star size={11} fill="#ffffff" color="#ffffff" strokeWidth={0} />
-          <span>{product.rating.toFixed(1)}</span>
+          <Star size={10} fill="#ffffff" color="#ffffff" strokeWidth={0} />
+          <span>{(product.rating || 4.5).toFixed(1)}</span>
         </div>
 
-        {/* Price & Delivery */}
-        <div className={styles.footerRow}>
-          <div className={styles.priceGroup}>
-            <span className={styles.price}>₹{product.price.toLocaleString("en-IN")}</span>
-            {product.originalPrice && (
-              <span className={styles.originalPrice}>
-                ₹{product.originalPrice.toLocaleString("en-IN")}
-              </span>
-            )}
+        {/* Price & Delivery Row */}
+        <div className={styles.priceRow}>
+          <span className={styles.currentPrice}>
+            ₹{product.price.toLocaleString("en-IN")}
+          </span>
+
+          {product.originalPrice && (
+            <span className={styles.originalPrice}>
+              ₹{product.originalPrice.toLocaleString("en-IN")}
+            </span>
+          )}
+
+          {discountPercent ? (
+            <span className={styles.discountBadge}>{discountPercent}% off</span>
+          ) : (
             <span className={styles.freeDeliveryBadge}>
               Free Delivery
-              <Truck size={13} className={styles.truckIcon} />
+              <Truck size={12} className={styles.truckIcon} />
             </span>
-          </div>
-
-          <div className={styles.actions}>
-            <button
-              type="button"
-              className={`${styles.cartBtn} ${justAdded ? styles.cartBtnAdded : ""}`}
-              onClick={handleAddToCart}
-              aria-label={`Add ${product.name} to cart`}
-            >
-              {justAdded ? (
-                <Check size={15} strokeWidth={2.4} />
-              ) : (
-                <ShoppingBag size={15} strokeWidth={1.8} />
-              )}
-              <span>{justAdded ? "Added" : "Add"}</span>
-            </button>
-
-            <Link href={productUrl} className={styles.viewBtn} aria-label={`View ${product.name}`}>
-              <ArrowRight size={15} />
-            </Link>
-          </div>
+          )}
         </div>
       </div>
     </article>
