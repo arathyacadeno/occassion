@@ -19,71 +19,7 @@
   grid-template-columns: 1fr 1fr;
   gap: 36px;
   align-items: flex-start;
-  margin-bottom: 20px;
-}
-
-/* Action Buttons below Recommended Addons - aligned to the left under cards */
-.bottomActionsRow {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 14px;
-  max-width: 440px;
-  margin: 12px 0 60px 0;
-  width: 100%;
-}
-
-.addToCartBtn {
-  flex: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background-color: #ffffff;
-  color: #686b2e;
-  border: 1.5px solid #686b2e;
-  border-radius: 8px;
-  height: 46px;
-  padding: 0 20px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-}
-
-.addToCartBtn:hover {
-  background-color: #f7f8f2;
-}
-
-.addedSuccess {
-  background-color: #15803d !important;
-  color: #ffffff !important;
-  border-color: #15803d !important;
-}
-
-.buyNowBtn {
-  flex: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background-color: #686b2e;
-  color: #ffffff;
-  border: 1.5px solid #686b2e;
-  border-radius: 8px;
-  height: 46px;
-  padding: 0 20px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(104, 107, 46, 0.25);
-}
-
-.buyNowBtn:hover {
-  background-color: #555823;
-  border-color: #555823;
+  margin-bottom: 28px;
 }
 
 .relatedSection {
@@ -109,10 +45,5 @@
 
   .mainContainer {
     padding: 18px 16px 50px 16px;
-  }
-
-  .bottomActionsRow {
-    max-width: 100%;
-    margin-bottom: 40px;
   }
 }

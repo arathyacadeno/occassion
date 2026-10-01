@@ -8,8 +8,12 @@ import {
   MapPin,
   X,
   Truck,
+  ShoppingCart,
+  Check,
 } from "lucide-react";
 import { Product } from "@/data/catalog";
+import { useCart } from "@/context/CartContext";
+import { useCheckout } from "@/context/CheckoutContext";
 import styles from "./ProductInfo.module.css";
 
 interface ProductInfoProps {
@@ -17,8 +21,12 @@ interface ProductInfoProps {
 }
 
 export default function ProductInfo({ product }: ProductInfoProps) {
+  const { addItem } = useCart();
+  const { startBuyNow } = useCheckout();
+
   const [location, setLocation] = useState("673602, Kozhikode, Kerala");
   const [deliveryDate] = useState("Monday Oct 4");
+  const [addedFeedback, setAddedFeedback] = useState(false);
 
   // 3 independent accordion states (default closed matching design)
   const [openAccordions, setOpenAccordions] = useState<{
@@ -36,6 +44,48 @@ export default function ProductInfo({ product }: ProductInfoProps) {
       ...prev,
       [key]: !prev[key],
     }));
+  };
+
+  const handleAddToCart = () => {
+    addItem(
+      {
+        id: product.id,
+        name: product.name,
+        subtitle: product.categoryLabel,
+        price: product.price,
+        originalPrice: product.originalPrice,
+        image: product.image,
+        occasion: "celebration",
+        rating: product.rating,
+        reviewsCount: product.reviewsCount,
+        stems: product.includes || [],
+        description: product.description,
+        flowerCount: `${product.includes?.length || 12} items`,
+        scent: "Fresh & Green",
+        badge: product.badge,
+        dimensions: "45cm H × 35cm W",
+      },
+      "Signature",
+      false
+    );
+
+    setAddedFeedback(true);
+    setTimeout(() => {
+      setAddedFeedback(false);
+    }, 2200);
+  };
+
+  const handleBuyNow = () => {
+    startBuyNow({
+      id: product.id,
+      slug: product.slug,
+      name: product.name,
+      category: product.category,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      image: product.image,
+      quantity: 1,
+    });
   };
 
   return (
@@ -226,6 +276,38 @@ export default function ProductInfo({ product }: ProductInfoProps) {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Action Buttons: [ Add To Cart ] [ Buy Now ] */}
+      <div className={styles.actionButtonsRow}>
+        <button
+          type="button"
+          onClick={handleAddToCart}
+          className={`${styles.addToCartBtn} ${
+            addedFeedback ? styles.addedSuccess : ""
+          }`}
+        >
+          {addedFeedback ? (
+            <>
+              <Check size={18} strokeWidth={2.5} />
+              <span>Added to Cart!</span>
+            </>
+          ) : (
+            <>
+              <ShoppingCart size={18} strokeWidth={1.8} />
+              <span>Add To Cart</span>
+            </>
+          )}
+        </button>
+
+        <button
+          type="button"
+          onClick={handleBuyNow}
+          className={styles.buyNowBtn}
+        >
+          <ShoppingCart size={18} strokeWidth={1.8} />
+          <span>Buy Now</span>
+        </button>
       </div>
     </div>
   );
