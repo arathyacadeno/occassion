@@ -302,25 +302,6 @@
   color: #dc2626;
 }
 
-.buyNowActionBtn {
-  background: none;
-  border: none;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #d97706;
-  cursor: pointer;
-  letter-spacing: 0.04em;
-  padding: 0;
-  transition: color 0.15s ease;
-}
-
-.buyNowActionBtn:hover {
-  color: #b45309;
-}
-
 /* ========================================================
    RIGHT COLUMN: PRICE DETAILS CARD
    ======================================================== */
