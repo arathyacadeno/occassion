@@ -24,6 +24,14 @@ export interface FlowerProduct extends Bouquet {
   colorTag?: 'pink' | 'white' | 'red' | 'purple' | 'yellow';
   occasionsList?: string[];
   details?: string[];
+  variants?: {
+    id: string;
+    name: string;
+    price: number;
+    originalPrice?: number;
+    image: string;
+  }[];
+  ratingsCount?: number;
 }
 
 export interface CategoryInfo {

@@ -17,10 +17,69 @@ export interface Product {
   badge?: string;
   shortDescription?: string;
   deliveryText?: string;
+  variants?: {
+    id: string;
+    name: string;
+    price: number;
+    originalPrice?: number;
+    image: string;
+  }[];
+  ratingsCount?: number;
 }
 
 export const CATALOG_PRODUCTS: Product[] = [
   // ==================== FLOWER PRODUCTS (/flower) ====================
+  {
+    id: "flower-lily-celestial-daisy",
+    slug: "lily-and-the-celestial-daisy",
+    name: "Lily and the Celestial Daisy",
+    price: 2245,
+    originalPrice: 2514,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/lily-celestial-daisy.jpg",
+    images: [
+      "/images/lily-celestial-daisy.jpg",
+      "/images/lily-10-bouquet.jpg",
+      "/images/purple-lily-lavender-bouquet.jpg",
+      "/images/flower-basket-pink-lilies.jpg",
+    ],
+    rating: 4.9,
+    ratingsCount: 35,
+    reviewsCount: 34,
+    description:
+      "A radiant ensemble of multi-bloom Stargazer and Oriental pink lilies intertwined with delicate celestial daisies and verdant greenery. Presented in an elegant glass vase with sheer organza bow.",
+    deliveryInfo: "Delivered fresh from Calicut gardens within 3 hours.",
+    offers: [
+      "11% OFF instant discount applied",
+      "Free personalized greeting card with wax seal",
+      "Complimentary floral nutrition sachet",
+    ],
+    includes: [
+      "Multi-Bloom Pink Oriental Lilies",
+      "Celestial Daisy Chrysanthemums",
+      "Fresh Italian Ruscus & Glossy Greenery",
+      "Clear Glass Cylindrical Keepsake Vase",
+      "Sheer Organza Ribbon Bow",
+    ],
+    badge: "Trending Gift",
+    variants: [
+      {
+        id: "classic",
+        name: "Classic",
+        price: 2245,
+        originalPrice: 2514,
+        image: "/images/lily-celestial-daisy.jpg",
+      },
+      {
+        id: "10-lilies",
+        name: "10 Lilies",
+        price: 5145,
+        originalPrice: 5799,
+        image: "/images/lily-10-bouquet.jpg",
+      },
+    ],
+  },
   {
     id: "flower-3",
     slug: "wildflower-basket",
@@ -255,6 +314,38 @@ export const CATALOG_PRODUCTS: Product[] = [
 
   // ==================== BOUQUET PRODUCTS (/flower-bouquets) ====================
   {
+    id: "bouquet-9",
+    slug: "royal-purple-tulip-lavender-bouquet",
+    name: "Royal Purple Tulip & Lavender Bouquet",
+    price: 2499,
+    originalPrice: 2999,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/royal-purple-tulip-bouquet.jpg",
+    images: [
+      "/images/royal-purple-tulip-bouquet.jpg",
+      "/images/purple-tulip-lavender-bouquet.jpg",
+      "/images/flower-pink-tulips.jpg",
+    ],
+    rating: 5.0,
+    reviewsCount: 74,
+    description:
+      "An enchanting bridal and celebration bouquet showcasing lush royal purple Dutch tulips mingled with soothing English lavender sprays and delicate lilac blossoms. Handcrafted by master florists and tied with a cascading royal purple satin bow.",
+    deliveryInfo: "Same-day express delivery across Calicut within 3 hours.",
+    offers: [
+      "Free personalized greeting card with wax seal",
+      "Flat 10% off with code OCCASIONS10",
+    ],
+    includes: [
+      "Dutch Royal Purple Tulips",
+      "Fragrant English Lavender Sprigs",
+      "Lilac Blossom Florets",
+      "Silver Dollar Eucalyptus",
+      "Cascading Royal Purple Satin Ribbon",
+    ],
+    badge: "Trending Bouquet",
+  },
+  {
     id: "bouquet-1",
     slug: "red-rose-bouquet",
     name: "Red Rose Bouquet",
@@ -317,38 +408,6 @@ export const CATALOG_PRODUCTS: Product[] = [
       "French Silk Ribbon",
     ],
     badge: "Bridal Favorite",
-  },
-  {
-    id: "bouquet-3",
-    slug: "celebration-floral-and-cake-hamper",
-    name: "Celebration Floral & Cake Hamper",
-    price: 1499,
-    originalPrice: 1799,
-    category: "flower",
-    categoryLabel: "Flowers",
-    image: "/images/bouquet-2.jpg",
-    images: [
-      "/images/bouquet-2.jpg",
-      "/images/cat-birthday.jpg",
-      "/images/bouquet-3.jpg",
-    ],
-    rating: 4.9,
-    reviewsCount: 82,
-    description:
-      "Lush hand-tied celebration bouquet of sunny gerberas and yellow lilies paired with a gourmet fresh cream truffle birthday cake. Ideal for unforgettable birthday celebrations.",
-    deliveryInfo: "Delivered fresh from Calicut bakery & gardens.",
-    offers: [
-      "Free celebration candle & knife included",
-      "Flat 10% off with code OCCASIONS10",
-    ],
-    includes: [
-      "Bright Gerberas & Carnations",
-      "Yellow Asiatic Lilies",
-      "Chamomile Blooms",
-      "500g Fresh Cream Truffle Cake",
-      "Personalized Greeting Card",
-    ],
-    badge: "Birthday Special",
   },
   {
     id: "bouquet-4",
@@ -508,6 +567,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     ],
     badge: "Romantic Choice",
   },
+
 
   // ==================== CAKES PRODUCTS (/cakes) ====================
   {

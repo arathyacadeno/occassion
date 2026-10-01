@@ -10,19 +10,73 @@ import {
   Truck,
   ShoppingCart,
   Check,
+  Info,
 } from "lucide-react";
 import { Product } from "@/data/catalog";
 import { useCart } from "@/context/CartContext";
 import { useCheckout } from "@/context/CheckoutContext";
 import styles from "./ProductInfo.module.css";
 
-interface ProductInfoProps {
-  product: Product;
+interface ProductVariant {
+  id: string;
+  name: string;
+  price: number;
+  originalPrice?: number;
+  image: string;
 }
 
-export default function ProductInfo({ product }: ProductInfoProps) {
+interface ProductInfoProps {
+  product: Product;
+  onVariantChange?: (variant: ProductVariant) => void;
+}
+
+export default function ProductInfo({ product, onVariantChange }: ProductInfoProps) {
   const { addItem } = useCart();
   const { startBuyNow } = useCheckout();
+
+  // Resolve variants if explicitly defined or for lily products
+  const variants: ProductVariant[] | null =
+    product.variants && product.variants.length > 0
+      ? product.variants
+      : product.name.toLowerCase().includes("lily") ||
+        product.name.toLowerCase().includes("lilies")
+      ? [
+          {
+            id: "classic",
+            name: "Classic",
+            price: product.price,
+            originalPrice: product.originalPrice,
+            image: product.image,
+          },
+          {
+            id: "10-lilies",
+            name: "10 Lilies",
+            price: Math.round(product.price * 2.29),
+            originalPrice: Math.round(
+              (product.originalPrice || product.price * 1.15) * 2.3
+            ),
+            image: product.images?.[1] || product.image,
+          },
+        ]
+      : null;
+
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
+    variants ? variants[0] : null
+  );
+
+  const handleSelectVariant = (v: ProductVariant) => {
+    setSelectedVariant(v);
+    onVariantChange?.(v);
+  };
+
+  const activePrice = selectedVariant ? selectedVariant.price : product.price;
+  const activeOriginalPrice = selectedVariant
+    ? selectedVariant.originalPrice
+    : product.originalPrice;
+  const discountPercent =
+    activeOriginalPrice && activeOriginalPrice > activePrice
+      ? Math.round(((activeOriginalPrice - activePrice) / activeOriginalPrice) * 100)
+      : 0;
 
   const [location, setLocation] = useState("673602, Kozhikode, Kerala");
   const [deliveryDate] = useState("Monday Oct 4");
@@ -51,10 +105,10 @@ export default function ProductInfo({ product }: ProductInfoProps) {
       {
         id: product.id,
         name: product.name,
-        subtitle: product.categoryLabel,
-        price: product.price,
-        originalPrice: product.originalPrice,
-        image: product.image,
+        subtitle: selectedVariant ? `${selectedVariant.name} Arrangement` : product.categoryLabel,
+        price: activePrice,
+        originalPrice: activeOriginalPrice,
+        image: selectedVariant ? selectedVariant.image : product.image,
         occasion: "celebration",
         rating: product.rating,
         reviewsCount: product.reviewsCount,
@@ -81,9 +135,9 @@ export default function ProductInfo({ product }: ProductInfoProps) {
       slug: product.slug,
       name: product.name,
       category: product.category,
-      price: product.price,
-      originalPrice: product.originalPrice,
-      image: product.image,
+      price: activePrice,
+      originalPrice: activeOriginalPrice,
+      image: selectedVariant ? selectedVariant.image : product.image,
       quantity: 1,
     });
   };
@@ -93,30 +147,84 @@ export default function ProductInfo({ product }: ProductInfoProps) {
       {/* Title */}
       <h1 className={styles.productName}>{product.name}</h1>
 
-      {/* Rating & Free Delivery Row matching reference: ★ 4.4  Free Delivery 🚚 */}
+      {/* Rating & Reviews Row matching reference: ★ 4.9 • 35 Ratings • 34 Reviews */}
       <div className={styles.ratingDeliveryRow}>
         <div className={styles.greenRatingBadge}>
           <Star size={11} className={styles.whiteStarIcon} />
-          <span>{product.rating.toFixed(1)}</span>
+          <span>{(product.rating || 4.9).toFixed(1)}</span>
         </div>
 
-        <div className={styles.freeDeliveryBadge}>
-          <span>Free Delivery</span>
-          <Truck size={14} className={styles.freeDeliveryTruck} />
-        </div>
+        <span className={styles.ratingSeparator}>•</span>
+        <span className={styles.ratingsCountText}>
+          {product.ratingsCount || 35} Ratings
+        </span>
+
+        <span className={styles.ratingSeparator}>•</span>
+        <a href="#reviews" className={styles.reviewsLinkText}>
+          {product.reviewsCount || 34} Reviews
+        </a>
       </div>
 
-      {/* Pricing Row: ₹549  ₹649 */}
+      {/* Pricing Row: ₹ 2245  ₹ 2514  11% OFF  (i) */}
       <div className={styles.pricingRow}>
         <span className={styles.currentPrice}>
-          ₹{product.price.toLocaleString("en-IN")}
+          ₹ {activePrice.toLocaleString("en-IN")}
         </span>
-        {product.originalPrice && (
+        {activeOriginalPrice && (
           <span className={styles.originalPrice}>
-            ₹{product.originalPrice.toLocaleString("en-IN")}
+            ₹ {activeOriginalPrice.toLocaleString("en-IN")}
           </span>
         )}
+        {discountPercent > 0 && (
+          <span className={styles.discountPercentBadge}>
+            {discountPercent}% OFF
+          </span>
+        )}
+        <button
+          type="button"
+          className={styles.infoCircleBtn}
+          title="Price inclusive of applicable discounts and taxes"
+          aria-label="Price details"
+        >
+          <Info size={18} strokeWidth={2} />
+        </button>
       </div>
+
+      {/* Make this gift extra special section */}
+      {variants && variants.length > 0 && (
+        <div className={styles.giftExtraSection}>
+          <h3 className={styles.giftExtraTitle}>Make this gift extra special</h3>
+          <div className={styles.giftVariantCards}>
+            {variants.map((v) => {
+              const isSelected = selectedVariant?.id === v.id;
+              return (
+                <button
+                  key={v.id}
+                  type="button"
+                  onClick={() => handleSelectVariant(v)}
+                  className={`${styles.giftVariantCard} ${
+                    isSelected ? styles.giftVariantCardSelected : ""
+                  }`}
+                >
+                  <div className={styles.giftCardThumbWrap}>
+                    <img
+                      src={v.image}
+                      alt={v.name}
+                      className={styles.giftCardThumbImg}
+                    />
+                  </div>
+                  <div className={styles.giftCardInfo}>
+                    <span className={styles.giftCardName}>{v.name}</span>
+                    <span className={styles.giftCardPrice}>
+                      ₹ {v.price.toLocaleString("en-IN")}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Choose Delivery Preference */}
       <div className={styles.preferenceSection}>

@@ -10,12 +10,14 @@ interface ProductGalleryProps {
   images: string[];
   productName: string;
   product?: Product;
+  selectedImageOverride?: string | null;
 }
 
 export default function ProductGallery({
   images,
   productName,
   product,
+  selectedImageOverride,
 }: ProductGalleryProps) {
   // Ensure we have valid images and slice exactly 4 thumbnails
   let displayImages =
@@ -27,6 +29,16 @@ export default function ProductGallery({
 
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isZoomOpen, setIsZoomOpen] = useState(false);
+
+  // Synchronize when variant changes
+  React.useEffect(() => {
+    if (selectedImageOverride) {
+      const idx = thumbnails.findIndex((img) => img === selectedImageOverride);
+      if (idx !== -1) {
+        setSelectedIndex(idx);
+      }
+    }
+  }, [selectedImageOverride]);
 
   // Global Wishlist Context
   const { isInWishlist, toggleItem } = useWishlist();

@@ -532,6 +532,44 @@ export const FLOWER_PRODUCTS: FlowerProduct[] = [
       "Tied with hand-torn raw-edge chiffon ribbon",
     ],
   },
+  {
+    id: "bouquets-royal-purple-tulip-lavender",
+    slug: "royal-purple-tulip-lavender-bouquet",
+    category: "bouquets",
+    name: "Royal Purple Tulip & Lavender Bouquet",
+    subtitle: "Dutch Purple Tulips, English Lavender & Silk Bow",
+    price: 2499,
+    originalPrice: 2999,
+    rating: 5.0,
+    reviewsCount: 74,
+    image: "/images/royal-purple-tulip-bouquet.jpg",
+    images: [
+      "/images/royal-purple-tulip-bouquet.jpg",
+      "/images/purple-tulip-lavender-bouquet.jpg",
+    ],
+    occasion: "wedding",
+    colorTag: "purple",
+    occasionsList: ["wedding", "anniversary", "birthday", "congratulations"],
+    stems: [
+      "Dutch Royal Purple Tulips",
+      "Aromatic English Lavender Sprigs",
+      "Lilac Blossom Florets",
+      "Silver Dollar Eucalyptus",
+      "Pure Silk Purple Satin Ribbon",
+    ],
+    description:
+      "An enchanting bridal and celebration bouquet showcasing lush royal purple Dutch tulips mingled with soothing English lavender sprays and delicate lilac blossoms. Handcrafted by master florists and tied with a cascading royal purple satin bow.",
+    flowerCount: "30-35 Premium Hand-Tied Stems",
+    scent: "Fresh & Green",
+    badge: "Bestseller Bouquet",
+    dimensions: "46cm H × 38cm W",
+    colors: ["Royal Purple", "Lilac Violet"],
+    details: [
+      "Expertly hand-tied spiral bouquet with satin stem wrap",
+      "Sourced directly from cold-climate highland flower farms",
+      "Long-lasting vase life with natural lavender fragrance",
+    ],
+  },
 
   // ==================== TULIPS ====================
   {
@@ -788,6 +826,62 @@ export const FLOWER_PRODUCTS: FlowerProduct[] = [
   },
 
   // ==================== LILIES ====================
+  {
+    id: "lilies-lily-and-the-celestial-daisy",
+    slug: "lily-and-the-celestial-daisy",
+    category: "lilies",
+    name: "Lily and the Celestial Daisy",
+    subtitle: "Pink Oriental Lilies & Celestial Daisy Vase Arrangement",
+    price: 2245,
+    originalPrice: 2514,
+    rating: 4.9,
+    ratingsCount: 35,
+    reviewsCount: 34,
+    image: "/images/lily-celestial-daisy.jpg",
+    images: [
+      "/images/lily-celestial-daisy.jpg",
+      "/images/lily-10-bouquet.jpg",
+      "/images/purple-lily-lavender-bouquet.jpg",
+      "/images/flower-white-lilies.jpg",
+    ],
+    occasion: "romantic",
+    colorTag: "pink",
+    occasionsList: ["anniversary", "birthday", "mothers-day", "congratulations"],
+    stems: [
+      "Pink Oriental Lilies",
+      "Celestial Daisy Sprays",
+      "Eucalyptus & Broad Ruscus Foliage",
+      "Keepsake Glass Vase",
+      "Sheer Organza Ribbon Bow",
+    ],
+    description:
+      "A radiant ensemble of multi-bloom Stargazer and Oriental pink lilies intertwined with delicate celestial daisies and verdant greenery. Presented in an elegant glass vase with sheer organza bow.",
+    flowerCount: "Classic: 8 Stems / 10 Lilies: 10 Stems",
+    scent: "Subtle & Sweet",
+    badge: "Trending Gift",
+    dimensions: "52cm H × 38cm W",
+    colors: ["Blush Pink", "Celestial Daisy"],
+    details: [
+      "Artisanal glass vase with freshwater reservoir",
+      "Buds open continuously for up to 12 days",
+    ],
+    variants: [
+      {
+        id: "classic",
+        name: "Classic",
+        price: 2245,
+        originalPrice: 2514,
+        image: "/images/lily-celestial-daisy.jpg",
+      },
+      {
+        id: "10-lilies",
+        name: "10 Lilies",
+        price: 5145,
+        originalPrice: 5799,
+        image: "/images/lily-10-bouquet.jpg",
+      },
+    ],
+  },
   {
     id: "lilies-pure-white-oriental-lilies",
     slug: "pure-white-oriental-lilies",

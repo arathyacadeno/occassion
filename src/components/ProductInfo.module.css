@@ -51,30 +51,56 @@
   margin: 0;
 }
 
-/* Rating and Free Delivery Row: ★ 4.4  Free Delivery 🚚 */
+/* Rating and Free Delivery Row matching reference: ★ 4.9 • 35 Ratings • 34 Reviews */
 .ratingDeliveryRow {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   margin-top: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
 }
 
 .greenRatingBadge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background-color: #16a34a;
+  background-color: #22c55e;
   color: #ffffff;
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  padding: 2px 7px;
+  padding: 3px 8px;
   border-radius: 4px;
 }
 
 .whiteStarIcon {
   fill: #ffffff;
   color: #ffffff;
+}
+
+.ratingSeparator {
+  color: #9ca3af;
+  font-size: 0.85rem;
+}
+
+.ratingsCountText {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.reviewsLinkText {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #0284c7;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.reviewsLinkText:hover {
+  color: #0369a1;
 }
 
 .freeDeliveryBadge {
@@ -93,36 +119,129 @@
 /* 4. Pricing Row */
 .pricingRow {
   display: flex;
-  align-items: baseline;
-  gap: 10px;
-  margin-bottom: 8px;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
 }
 
 .currentPrice {
-  font-size: 1.7rem;
+  font-size: 1.85rem;
   font-weight: 700;
   color: #111827;
   letter-spacing: -0.02em;
 }
 
 .originalPrice {
-  font-size: 1.05rem;
-  color: #9ca3af;
+  font-size: 1.15rem;
+  color: #94a3b8;
   text-decoration: line-through;
+  font-weight: 500;
 }
 
-.infoIconBtn {
+.discountPercentBadge {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ea580c;
+  letter-spacing: -0.01em;
+}
+
+.infoCircleBtn {
   background: none;
   border: none;
-  color: #9ca3af;
+  color: #64748b;
   cursor: pointer;
   padding: 2px;
   display: flex;
   align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease;
 }
 
-.infoIconBtn:hover {
-  color: #4b5563;
+.infoCircleBtn:hover {
+  color: #1e293b;
+}
+
+/* Make this gift extra special section */
+.giftExtraSection {
+  margin-top: 4px;
+  margin-bottom: 22px;
+}
+
+.giftExtraTitle {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #334155;
+  margin: 0 0 12px 0;
+  letter-spacing: -0.01em;
+}
+
+.giftVariantCards {
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.giftVariantCard {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  width: 130px;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  text-align: left;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.giftVariantCard:hover {
+  border-color: #0284c7;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(2, 132, 199, 0.12);
+}
+
+.giftVariantCardSelected {
+  border: 2px solid #0087a8;
+  box-shadow: 0 0 0 1px #0087a8, 0 4px 12px rgba(0, 135, 168, 0.16);
+}
+
+.giftCardThumbWrap {
+  width: 100%;
+  height: 120px;
+  background-color: #f8fafc;
+  overflow: hidden;
+  position: relative;
+}
+
+.giftCardThumbImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.giftCardInfo {
+  padding: 10px 10px 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #ffffff;
+}
+
+.giftCardName {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #475569;
+}
+
+.giftCardPrice {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 /* 5. Social Proof */

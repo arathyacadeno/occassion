@@ -87,11 +87,20 @@ export default function ProductDetails({
     }
   };
 
-  // Price adjustment based on size
+  // Price adjustment based on size or variant
+  const variants = product.variants;
+  const [selectedVariant, setSelectedVariant] = useState(
+    variants && variants.length > 0 ? variants[0] : null
+  );
+
   const priceMultiplier =
     selectedSize === "Petite" ? 0.75 : selectedSize === "Grand Deluxe" ? 1.45 : 1;
-  const currentPrice = Math.round(product.price * priceMultiplier);
-  const currentOriginalPrice = product.originalPrice
+  const currentPrice = selectedVariant
+    ? selectedVariant.price
+    : Math.round(product.price * priceMultiplier);
+  const currentOriginalPrice = selectedVariant
+    ? selectedVariant.originalPrice
+    : product.originalPrice
     ? Math.round(product.originalPrice * priceMultiplier)
     : undefined;
 
@@ -99,9 +108,19 @@ export default function ProductDetails({
     product.images && product.images.length > 0 ? product.images : [product.image];
 
   const handleAddToCart = () => {
+    const itemToAdd = selectedVariant
+      ? {
+          ...product,
+          price: selectedVariant.price,
+          originalPrice: selectedVariant.originalPrice,
+          image: selectedVariant.image,
+          subtitle: `${selectedVariant.name} Arrangement`,
+        }
+      : product;
+
     // Add item to cart with quantity
     for (let i = 0; i < quantity; i++) {
-      addItem(product, selectedSize, false);
+      addItem(itemToAdd, selectedSize, false);
     }
     setAddedToast(true);
     setTimeout(() => {
@@ -110,8 +129,18 @@ export default function ProductDetails({
   };
 
   const handleBuyNow = () => {
+    const itemToAdd = selectedVariant
+      ? {
+          ...product,
+          price: selectedVariant.price,
+          originalPrice: selectedVariant.originalPrice,
+          image: selectedVariant.image,
+          subtitle: `${selectedVariant.name} Arrangement`,
+        }
+      : product;
+
     for (let i = 0; i < quantity; i++) {
-      addItem(product, selectedSize, false);
+      addItem(itemToAdd, selectedSize, false);
     }
     router.push("/cart");
   };
@@ -251,27 +280,67 @@ export default function ProductDetails({
                 </div>
               )}
 
-              {/* Size Selector */}
-              <div className={styles.selectorSection}>
-                <label className={styles.selectorLabel}>
-                  Bouquet Size: <strong>{selectedSize}</strong>
-                </label>
-                <div className={styles.sizeOptions}>
-                  {(["Petite", "Signature", "Grand Deluxe"] as const).map((s) => (
-                    <button
-                      key={s}
-                      type="button"
-                      className={`${styles.sizeOption} ${selectedSize === s ? styles.sizeActive : ""}`}
-                      onClick={() => setSelectedSize(s)}
-                    >
-                      <span className={styles.sizeName}>{s}</span>
-                      <span className={styles.sizeNote}>
-                        {s === "Petite" ? "12-16 stems" : s === "Signature" ? "20-25 stems" : "32+ stems"}
-                      </span>
-                    </button>
-                  ))}
+              {/* Make this gift extra special or Size Selector */}
+              {variants && variants.length > 0 ? (
+                <div className={styles.selectorSection}>
+                  <label className={styles.selectorLabel}>
+                    Make this gift extra special
+                  </label>
+                  <div className={styles.giftVariantCards}>
+                    {variants.map((v) => {
+                      const isSelected = selectedVariant?.id === v.id;
+                      return (
+                        <button
+                          key={v.id}
+                          type="button"
+                          className={`${styles.giftVariantCard} ${
+                            isSelected ? styles.giftVariantCardSelected : ""
+                          }`}
+                          onClick={() => {
+                            setSelectedVariant(v);
+                            setSelectedImage(v.image);
+                          }}
+                        >
+                          <div className={styles.giftCardThumbWrap}>
+                            <img
+                              src={v.image}
+                              alt={v.name}
+                              className={styles.giftCardThumbImg}
+                            />
+                          </div>
+                          <div className={styles.giftCardInfo}>
+                            <span className={styles.giftCardName}>{v.name}</span>
+                            <span className={styles.giftCardPrice}>
+                              ₹{v.price.toLocaleString("en-IN")}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className={styles.selectorSection}>
+                  <label className={styles.selectorLabel}>
+                    Bouquet Size: <strong>{selectedSize}</strong>
+                  </label>
+                  <div className={styles.sizeOptions}>
+                    {(["Petite", "Signature", "Grand Deluxe"] as const).map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        className={`${styles.sizeOption} ${selectedSize === s ? styles.sizeActive : ""}`}
+                        onClick={() => setSelectedSize(s)}
+                      >
+                        <span className={styles.sizeName}>{s}</span>
+                        <span className={styles.sizeNote}>
+                          {s === "Petite" ? "12-16 stems" : s === "Signature" ? "20-25 stems" : "32+ stems"}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Quantity Selector & Add to Cart */}
               <div className={styles.purchaseControls}>

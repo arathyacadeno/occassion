@@ -14,6 +14,7 @@ interface CategoryPageProps {
   description: string;
   products: Product[];
   filterTabs?: { id: string; label: string }[];
+  showBreadcrumb?: boolean;
 }
 
 const DEFAULT_FILTER_TABS = [
@@ -29,6 +30,7 @@ export default function CategoryPage({
   description,
   products,
   filterTabs,
+  showBreadcrumb = false,
 }: CategoryPageProps) {
   const [activeFilter, setActiveFilter] = useState("all");
   const tabs = filterTabs && filterTabs.length > 0 ? filterTabs : DEFAULT_FILTER_TABS;
@@ -78,8 +80,8 @@ export default function CategoryPage({
       <Navbar />
 
       <main className={styles.mainContent}>
-        {/* Breadcrumb Navigation: Home > Category Title */}
-        <Breadcrumb items={[{ label: title }]} />
+        {/* Optional Breadcrumb Navigation */}
+        {showBreadcrumb && <Breadcrumb items={[{ label: title }]} />}
 
         {/* Category Header */}
         <CategoryHeader title={title} description={description} />
