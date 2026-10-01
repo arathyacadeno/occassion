@@ -10,21 +10,85 @@
   max-width: 1280px;
   width: 100%;
   margin: 0 auto;
-  padding: 48px 36px 90px 36px;
+  padding: 20px 36px 60px 36px;
   box-sizing: border-box;
 }
 
 .productLayout {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 56px;
+  gap: 36px;
   align-items: flex-start;
-  margin-bottom: 80px;
+  margin-bottom: 20px;
+}
+
+/* Action Buttons below Recommended Addons - aligned to the left under cards */
+.bottomActionsRow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 14px;
+  max-width: 440px;
+  margin: 12px 0 60px 0;
+  width: 100%;
+}
+
+.addToCartBtn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: #ffffff;
+  color: #686b2e;
+  border: 1.5px solid #686b2e;
+  border-radius: 8px;
+  height: 46px;
+  padding: 0 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.addToCartBtn:hover {
+  background-color: #f7f8f2;
+}
+
+.addedSuccess {
+  background-color: #15803d !important;
+  color: #ffffff !important;
+  border-color: #15803d !important;
+}
+
+.buyNowBtn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: #686b2e;
+  color: #ffffff;
+  border: 1.5px solid #686b2e;
+  border-radius: 8px;
+  height: 46px;
+  padding: 0 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(104, 107, 46, 0.25);
+}
+
+.buyNowBtn:hover {
+  background-color: #555823;
+  border-color: #555823;
 }
 
 .relatedSection {
   border-top: 1px solid #f1f5f9;
-  padding-top: 60px;
+  padding-top: 50px;
 }
 
 .relatedHeading {
@@ -32,17 +96,23 @@
   font-weight: 600;
   color: #111827;
   text-align: center;
-  margin: 0 0 36px 0;
+  margin: 0 0 32px 0;
   letter-spacing: -0.01em;
 }
 
 @media (max-width: 960px) {
   .productLayout {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: 30px;
+    margin-bottom: 24px;
   }
 
   .mainContainer {
-    padding: 28px 20px 60px 20px;
+    padding: 18px 16px 50px 16px;
+  }
+
+  .bottomActionsRow {
+    max-width: 100%;
+    margin-bottom: 40px;
   }
 }

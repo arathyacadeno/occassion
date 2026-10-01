@@ -51,58 +51,43 @@
   margin: 0;
 }
 
-.ratingBadgePill {
+/* Rating and Free Delivery Row: ★ 4.4  Free Delivery 🚚 */
+.ratingDeliveryRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+
+.greenRatingBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #16a34a;
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.whiteStarIcon {
+  fill: #ffffff;
+  color: #ffffff;
+}
+
+.freeDeliveryBadge {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  padding: 3px 8px;
-  flex-shrink: 0;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  color: #16a34a;
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
-.starIconFilled {
-  color: #f59e0b;
-  fill: #f59e0b;
-}
-
-.ratingValue {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #1f2937;
-}
-
-.ratingPipe {
-  color: #d1d5db;
-  font-size: 0.75rem;
-}
-
-.ratingCount {
-  font-size: 0.8rem;
-  color: #6b7280;
-  font-weight: 500;
-}
-
-/* 3. FREE DELIVERY Badge */
-.deliveryBadgeTag {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background-color: #e8f8ed;
-  color: #15803d;
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  padding: 3px 8px;
-  border-radius: 4px;
-  margin-bottom: 14px;
-  width: fit-content;
-}
-
-.truckIcon {
-  color: #15803d;
+.freeDeliveryTruck {
+  color: #16a34a;
 }
 
 /* 4. Pricing Row */
@@ -157,15 +142,15 @@
 
 /* 6. Choose Delivery Preference */
 .preferenceSection {
-  margin-top: 14px;
-  margin-bottom: 24px;
+  margin-top: 10px;
+  margin-bottom: 14px;
 }
 
 .sectionHeading {
-  font-size: 0.98rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: #1e293b;
-  margin: 0 0 10px 0;
+  margin: 0 0 6px 0;
   letter-spacing: -0.01em;
 }
 
@@ -173,9 +158,9 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: #64748b;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .pinIcon {
@@ -189,9 +174,9 @@
   align-items: center;
   background-color: #ffffff;
   border: 1.5px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 12px 18px;
-  margin-bottom: 12px;
+  border-radius: 10px;
+  padding: 9px 14px;
+  margin-bottom: 8px;
   width: 100%;
   box-sizing: border-box;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -262,14 +247,14 @@
 .accordionContainer {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 28px;
+  gap: 8px;
+  margin-bottom: 0px;
 }
 
 .accordionCard {
   background-color: #ffffff;
   border: 1.5px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: 10px;
   overflow: hidden;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -283,7 +268,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
+  padding: 11px 16px;
   background: none;
   border: none;
   cursor: pointer;
@@ -292,7 +277,7 @@
 }
 
 .accordionTitle {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: #1e293b;
 }

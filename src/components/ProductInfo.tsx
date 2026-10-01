@@ -6,14 +6,10 @@ import {
   ChevronDown,
   ChevronUp,
   MapPin,
-  Info,
-  Check,
   X,
-  ShoppingCart,
+  Truck,
 } from "lucide-react";
 import { Product } from "@/data/catalog";
-import { useCart } from "@/context/CartContext";
-import { useCheckout } from "@/context/CheckoutContext";
 import styles from "./ProductInfo.module.css";
 
 interface ProductInfoProps {
@@ -21,12 +17,8 @@ interface ProductInfoProps {
 }
 
 export default function ProductInfo({ product }: ProductInfoProps) {
-  const { addItem } = useCart();
-  const { startBuyNow } = useCheckout();
-
   const [location, setLocation] = useState("673602, Kozhikode, Kerala");
   const [deliveryDate] = useState("Monday Oct 4");
-  const [addedFeedback, setAddedFeedback] = useState(false);
 
   // 3 independent accordion states (default closed matching design)
   const [openAccordions, setOpenAccordions] = useState<{
@@ -46,63 +38,25 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     }));
   };
 
-  const handleAddToCart = () => {
-    addItem(
-      {
-        id: product.id,
-        name: product.name,
-        subtitle: product.categoryLabel,
-        price: product.price,
-        originalPrice: product.originalPrice,
-        image: product.image,
-        occasion: "celebration",
-        rating: product.rating,
-        reviewsCount: product.reviewsCount,
-        stems: product.includes || [],
-        description: product.description,
-        flowerCount: `${product.includes?.length || 12} items`,
-        scent: "Fresh & Green",
-        badge: product.badge,
-        dimensions: "45cm H × 35cm W",
-      },
-      "Signature",
-      false
-    );
-
-    setAddedFeedback(true);
-    setTimeout(() => {
-      setAddedFeedback(false);
-    }, 2200);
-  };
-
-  const handleBuyNow = () => {
-    startBuyNow({
-      id: product.id,
-      slug: product.slug,
-      name: product.name,
-      category: product.category,
-      price: product.price,
-      originalPrice: product.originalPrice,
-      image: product.image,
-      quantity: 1,
-    });
-  };
-
   return (
     <div className={styles.infoWrapper}>
-      {/* Title & Rating Badge Pill */}
-      <div className={styles.titleRatingRow}>
-        <h1 className={styles.productName}>{product.name}</h1>
+      {/* Title */}
+      <h1 className={styles.productName}>{product.name}</h1>
 
-        <div className={styles.ratingBadgePill}>
-          <Star size={13} className={styles.starIconFilled} />
-          <span className={styles.ratingValue}>{product.rating}</span>
-          <span className={styles.ratingPipe}>|</span>
-          <span className={styles.ratingCount}>{product.reviewsCount}</span>
+      {/* Rating & Free Delivery Row matching reference: ★ 4.4  Free Delivery 🚚 */}
+      <div className={styles.ratingDeliveryRow}>
+        <div className={styles.greenRatingBadge}>
+          <Star size={11} className={styles.whiteStarIcon} />
+          <span>{product.rating.toFixed(1)}</span>
+        </div>
+
+        <div className={styles.freeDeliveryBadge}>
+          <span>Free Delivery</span>
+          <Truck size={14} className={styles.freeDeliveryTruck} />
         </div>
       </div>
 
-      {/* Pricing Row: ₹999  ₹1,149  ⓘ */}
+      {/* Pricing Row: ₹549  ₹649 */}
       <div className={styles.pricingRow}>
         <span className={styles.currentPrice}>
           ₹{product.price.toLocaleString("en-IN")}
@@ -112,14 +66,6 @@ export default function ProductInfo({ product }: ProductInfoProps) {
             ₹{product.originalPrice.toLocaleString("en-IN")}
           </span>
         )}
-        <button
-          type="button"
-          className={styles.infoIconBtn}
-          title="Inclusive of all taxes"
-          aria-label="Price information"
-        >
-          <Info size={15} />
-        </button>
       </div>
 
       {/* Choose Delivery Preference */}
@@ -280,38 +226,6 @@ export default function ProductInfo({ product }: ProductInfoProps) {
             </div>
           )}
         </div>
-      </div>
-
-      {/* Action Buttons: [ Add To Cart ] [ Buy Now ] */}
-      <div className={styles.actionButtonsRow}>
-        <button
-          type="button"
-          onClick={handleAddToCart}
-          className={`${styles.addToCartBtn} ${
-            addedFeedback ? styles.addedSuccess : ""
-          }`}
-        >
-          {addedFeedback ? (
-            <>
-              <Check size={18} strokeWidth={2.5} />
-              <span>Added to Cart!</span>
-            </>
-          ) : (
-            <>
-              <ShoppingCart size={18} strokeWidth={1.8} />
-              <span>Add To Cart</span>
-            </>
-          )}
-        </button>
-
-        <button
-          type="button"
-          onClick={handleBuyNow}
-          className={styles.buyNowBtn}
-        >
-          <ShoppingCart size={18} strokeWidth={1.8} />
-          <span>Buy Now</span>
-        </button>
       </div>
     </div>
   );
