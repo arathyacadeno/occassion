@@ -61,15 +61,18 @@ const TESTIMONIALS_DATA: TestimonialItem[] = [
 
 function QuoteMarks({ className }: { className?: string; flip?: boolean }) {
   return (
-    <svg
-      viewBox="0 0 64 56"
-      fill="currentColor"
-      className={className}
-      aria-hidden="true"
-    >
-      <path d="M22 6 C28.627 6 34 11.373 34 18 C34 23.36 30.47 27.89 25.6 29.4 C25.1 34.6 21.8 41.5 14.2 47.8 C13.3 48.5 12 48.4 11.2 47.5 C10.5 46.6 10.6 45.3 11.5 44.6 C17.8 39.4 20.3 33.7 20.7 29.1 C14.6 27.8 10 23.4 10 18 C10 11.373 15.373 6 22 6 Z" />
-      <path d="M50 6 C56.627 6 62 11.373 62 18 C62 23.36 58.47 27.89 53.6 29.4 C53.1 34.6 49.8 41.5 42.2 47.8 C41.3 48.5 40 48.4 39.2 47.5 C38.5 46.6 38.6 45.3 39.5 44.6 C45.8 39.4 48.3 33.7 48.7 29.1 C42.6 27.8 38 23.4 38 18 C38 11.373 43.373 6 50 6 Z" />
-    </svg>
+    <div className={className} aria-hidden="true">
+      <img
+        src="/images/quote-mark.png"
+        alt=""
+        className={styles.quoteImg}
+      />
+      <img
+        src="/images/quote-mark.png"
+        alt=""
+        className={styles.quoteImg}
+      />
+    </div>
   );
 }
 
