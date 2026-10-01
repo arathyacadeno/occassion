@@ -145,10 +145,10 @@ export const CAKE_PRODUCTS: CategoryProduct[] = [
   {
     id: "cake-1",
     title: "Pastel Ombre Butterfly Celebration Cake",
-    image: "/images/cake-pink-butterfly-birthday.png",
+    image: "/images/cake-ombre-butterfly-birthday.jpg",
     price: "₹2,650",
     tag: "Signature Birthday",
-    description: "Delicate pink-to-cream textured ombre buttercream with gilded golden butterfly accents and pearls.",
+    description: "Delicate textured ombre buttercream with butterfly accent, chocolate pearls, and celebration candle.",
   },
   {
     id: "cake-2",
