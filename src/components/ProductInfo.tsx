@@ -141,12 +141,6 @@ export default function ProductInfo({ product }: ProductInfoProps) {
         </div>
       </div>
 
-      {/* 3. FREE DELIVERY Badge */}
-      <div className={styles.deliveryBadgeTag}>
-        <span>FREE DELIVERY</span>
-        <Truck size={14} className={styles.truckIcon} />
-      </div>
-
       {/* 4. Pricing Row: ₹999  ₹1,149  ⓘ */}
       <div className={styles.pricingRow}>
         <span className={styles.currentPrice}>
