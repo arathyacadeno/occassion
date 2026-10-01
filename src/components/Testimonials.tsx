@@ -2,187 +2,215 @@
 
 import React, { useState, useEffect } from "react";
 import styles from "./Testimonials.module.css";
-import { Star } from "lucide-react";
+import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 
 export interface TestimonialItem {
   id: number;
+  headline?: string;
   quote: string;
   name: string;
-  role: string;
-  avatar: string;
   rating: number;
+  quotePosition?: "left" | "right";
 }
 
 const TESTIMONIALS_DATA: TestimonialItem[] = [
   {
     id: 1,
     quote:
-      "“I Had Such A Wonderful Experience At This Flower Shop. The Flowers Were Fresh, Beautifully Arranged, And Lasted Much Longer Than I Expected! The Staff Was Friendly, Attentive, And Helped Me Choose The Perfect Bouquet. I'll Definitely Come Back Again For Future Occasions!”",
-    name: "James Anderson",
-    role: "Architect",
-    avatar: "/images/avatar-1.jpg",
-    rating: 5,
+      "The quality was amazing. The colors were soft and beautiful, and the arrangement looked very premium. Everything arrived safely and exactly as shown.",
+    name: "MEERA S.",
+    rating: 4,
+    quotePosition: "left",
   },
   {
     id: 2,
+    headline: "“Absolutely beautiful flowers!”",
     quote:
-      "“I Recently Bought Flowers From This Shop And Was Amazed By The Quality. The Bouquets Were Fresh, Beautifully Arranged, And Lasted Much Longer Than I Expected! The Staff Was Friendly, Helpful, And Truly Cared About Making Sure I Found The Perfect Flowers...”",
-    name: "Oliver Watkins",
-    role: "Architect",
-    avatar: "/images/avatar-2.jpg",
-    rating: 5,
+      "The bouquet was even more beautiful in person. Every flower looked fresh and carefully arranged. The packaging was elegant, and the delivery was right on time. It made the birthday celebration extra special.",
+    name: "ANANYA R.",
+    rating: 4,
+    quotePosition: "right",
   },
   {
     id: 3,
     quote:
-      "“The Bouquets Here Are Always Fresh, Elegant, And Artfully Arranged For Every Occasion. I Really Appreciated The Friendly Service And The Expert Advice Provided By The Staff. I Will Definitely Be Coming Back And Recommending This Place To All My Friends!”",
-    name: "John McGinn",
-    role: "Architect",
-    avatar: "/images/avatar-1.jpg",
+      "I ordered these for our anniversary and couldn't have been happier. The flowers were fresh, vibrant, and arranged beautifully. My wife absolutely loved them!",
+    name: "RAHUL M.",
+    rating: 4,
+    quotePosition: "right",
+  },
+  {
+    id: 4,
+    headline: "“Breathtaking bridal arrangements”",
+    quote:
+      "Occassions made our wedding day magical. The bridal bouquet was so fresh and fragrant, and the custom orchids lasted for days after the event. Truly unmatched florist artistry in Kozhikode.",
+    name: "PRIYA K.",
     rating: 5,
+    quotePosition: "right",
+  },
+  {
+    id: 5,
+    headline: "“Prompt delivery & fresh blooms”",
+    quote:
+      "Ordered a morning birthday surprise hamper and it was delivered right on time. The chocolate cake was delectable and the flowers smelled divine. Superb service!",
+    name: "ARJUN K.",
+    rating: 5,
+    quotePosition: "right",
   },
 ];
 
+function QuoteMarks({ className, flip = false }: { className?: string; flip?: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 44 34"
+      fill="currentColor"
+      className={className}
+      style={flip ? { transform: "scaleX(-1)" } : undefined}
+      aria-hidden="true"
+    >
+      <path d="M13.2 0C5.9 0 0 5.8 0 13c0 4.4 2.2 8.3 5.6 10.6L1.8 34h8.2l4.8-9.4c2.5-.7 4.5-2.8 5-5.5.2-.9.4-1.8.4-2.7C20.2 6.9 17.1 0 13.2 0zm22.4 0C28.3 0 22.4 5.8 22.4 13c0 4.4 2.2 8.3 5.6 10.6L24.2 34h8.2l4.8-9.4c2.5-.7 4.5-2.8 5-5.5.2-.9.4-1.8.4-2.7C42.6 6.9 39.5 0 35.6 0z" />
+    </svg>
+  );
+}
+
 export default function Testimonials() {
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [fadeState, setFadeState] = useState<"in" | "out">("in");
+  const [currentIndex, setCurrentIndex] = useState<number>(1);
   const [isPaused, setIsPaused] = useState<boolean>(false);
 
   const total = TESTIMONIALS_DATA.length;
 
-  // Automatically transition testimonials every 4.5 seconds with smooth animation
+  const handlePrev = () => {
+    setCurrentIndex((prev) => (prev - 1 + total) % total);
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % total);
+  };
+
+  // Subtle auto-rotate every 6.5 seconds when not interacting
   useEffect(() => {
     if (isPaused) return;
-
     const timer = setInterval(() => {
-      setFadeState("out");
-      setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % total);
-        setFadeState("in");
-      }, 350);
-    }, 4500);
-
+      handleNext();
+    }, 6500);
     return () => clearInterval(timer);
   }, [isPaused, total]);
 
-  const current = TESTIMONIALS_DATA[currentIndex];
+  const leftIndex = (currentIndex - 1 + total) % total;
+  const centerIndex = currentIndex;
+  const rightIndex = (currentIndex + 1) % total;
+
+  const leftItem = TESTIMONIALS_DATA[leftIndex];
+  const centerItem = TESTIMONIALS_DATA[centerIndex];
+  const rightItem = TESTIMONIALS_DATA[rightIndex];
+
+  const renderStars = (rating: number, isCenter: boolean) => (
+    <div className={styles.starsRow} aria-label={`${rating} out of 5 stars`}>
+      {[...Array(5)].map((_, i) => {
+        const isFilled = i < rating;
+        return (
+          <Star
+            key={i}
+            size={18}
+            className={`${styles.starIcon} ${
+              isFilled
+                ? isCenter
+                  ? styles.starCenterFilled
+                  : styles.starSideFilled
+                : styles.starEmpty
+            }`}
+          />
+        );
+      })}
+    </div>
+  );
 
   return (
     <section className={styles.sectionWrapper} id="testimonials">
-      {/* Vertical meadow wildflowers along the left flank */}
-      <div className={styles.meadowBgLeft} aria-hidden="true" />
-
       <div className={styles.container}>
-        {/* Section Header */}
+        {/* Section Header matching Image 2 */}
         <div className={styles.sectionHeader}>
-          <span className={styles.subtitle}>Kind Words</span>
-          <h2 className={styles.mainTitle}>Testimonials</h2>
-
-          {/* Decorative floral icon with thin horizontal lines */}
-          <div className={styles.floralDivider} aria-hidden="true">
-            <span className={styles.dividerLine} />
-            <span className={styles.dividerIcon}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="2.2" fill="#db2777" />
-                <path
-                  d="M12 4.5C12 4.5 10 7.5 10 9.5C10 10.6 10.9 11.5 12 11.5C13.1 11.5 14 10.6 14 9.5C14 7.5 12 4.5 12 4.5Z"
-                  fill="#fbcfe8"
-                  stroke="#db2777"
-                  strokeWidth="0.8"
-                />
-                <path
-                  d="M12 19.5C12 19.5 10 16.5 10 14.5C10 13.4 10.9 12.5 12 12.5C13.1 12.5 14 13.4 14 14.5C14 16.5 12 19.5 12 19.5Z"
-                  fill="#fbcfe8"
-                  stroke="#db2777"
-                  strokeWidth="0.8"
-                />
-                <path
-                  d="M4.5 12C4.5 12 7.5 10 9.5 10C10.6 10 11.5 10.9 11.5 12C11.5 13.1 10.6 14 9.5 14C7.5 14 4.5 12 4.5 12Z"
-                  fill="#fbcfe8"
-                  stroke="#db2777"
-                  strokeWidth="0.8"
-                />
-                <path
-                  d="M19.5 12C19.5 12 16.5 10 14.5 10C13.4 10 12.5 10.9 12.5 12C12.5 13.1 13.4 14 14.5 14C16.5 14 19.5 12 19.5 12Z"
-                  fill="#fbcfe8"
-                  stroke="#db2777"
-                  strokeWidth="0.8"
-                />
-              </svg>
-            </span>
-            <span className={styles.dividerLine} />
-          </div>
+          <h2 className={styles.mainTitle}>Loved in Every Bloom</h2>
+          <p className={styles.subtitle}>
+            Real words from the people who received a little more happiness through our flowers.
+          </p>
         </div>
 
+        {/* 3-Card Carousel Container */}
         <div
-          className={styles.showcaseLayout}
+          className={styles.carouselContainer}
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
-          {/* ================= CENTRAL OVAL CARD ================= */}
-          <div className={styles.ovalCard}>
-            {/* Watermark Quote Icon */}
-            <span className={styles.quoteMarkWatermark} aria-hidden="true">
-              “
-            </span>
+          {/* Navigation Prev Button */}
+          <button
+            type="button"
+            className={`${styles.navBtn} ${styles.navBtnLeft}`}
+            onClick={handlePrev}
+            aria-label="Previous testimonial"
+          >
+            <ChevronLeft size={22} strokeWidth={2.4} />
+          </button>
 
-            {/* Active Testimonial Slide with Automatic Smooth Fade Animation */}
+          {/* Cards Track */}
+          <div className={styles.cardsTrack}>
+            {/* Left Card */}
             <div
-              className={`${styles.slideWrapper} ${
-                fadeState === "in" ? styles.slideFadeIn : styles.slideFadeOut
-              }`}
+              className={`${styles.card} ${styles.sideCard} ${styles.leftCard}`}
+              onClick={handlePrev}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") handlePrev();
+              }}
+              aria-label={`View testimonial from ${leftItem.name}`}
             >
-              <p className={styles.quoteText}>{current.quote}</p>
-
-              {/* Avatar with Gold Border */}
-              <div className={styles.avatarWrap}>
-                <img
-                  src={current.avatar}
-                  alt={current.name}
-                  className={styles.avatarImg}
-                />
-              </div>
-
-              {/* 5 Golden Amber Stars */}
-              <div className={styles.starsRow} aria-label={`${current.rating} out of 5 stars`}>
-                {[...Array(current.rating)].map((_, i) => (
-                  <Star
-                    key={i}
-                    size={14}
-                    className={styles.starIcon}
-                  />
-                ))}
-              </div>
-
-              {/* Author Name and Designation */}
-              <div className={styles.authorMeta}>
-                <span className={styles.authorName}>{current.name}</span>
-                <span className={styles.authorDivider}>–</span>
-                <span className={styles.authorRole}>{current.role}</span>
-              </div>
+              {renderStars(leftItem.rating, false)}
+              <p className={styles.cardQuote}>{leftItem.quote}</p>
+              <div className={styles.authorName}>{leftItem.name}</div>
+              <QuoteMarks className={`${styles.quoteMark} ${styles.quoteMarkLeft}`} />
             </div>
 
-            {/* Automatic Progress Indicator Dots */}
-            <div className={styles.autoIndicators} aria-label="Testimonial progress indicator">
-              {TESTIMONIALS_DATA.map((_, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => {
-                    setFadeState("out");
-                    setTimeout(() => {
-                      setCurrentIndex(idx);
-                      setFadeState("in");
-                    }, 350);
-                  }}
-                  className={`${styles.indicatorDot} ${
-                    idx === currentIndex ? styles.indicatorActive : ""
-                  }`}
-                  aria-label={`Go to testimonial ${idx + 1}`}
-                />
-              ))}
+            {/* Center Card */}
+            <div className={`${styles.card} ${styles.centerCard}`}>
+              {renderStars(centerItem.rating, true)}
+              {centerItem.headline && (
+                <h3 className={styles.cardHeadline}>{centerItem.headline}</h3>
+              )}
+              <p className={styles.cardQuote}>{centerItem.quote}</p>
+              <div className={styles.authorName}>{centerItem.name}</div>
+              <QuoteMarks
+                className={`${styles.quoteMark} ${styles.quoteMarkRight} ${styles.quoteMarkCenter}`}
+              />
+            </div>
+
+            {/* Right Card */}
+            <div
+              className={`${styles.card} ${styles.sideCard} ${styles.rightCard}`}
+              onClick={handleNext}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") handleNext();
+              }}
+              aria-label={`View testimonial from ${rightItem.name}`}
+            >
+              {renderStars(rightItem.rating, false)}
+              <p className={styles.cardQuote}>{rightItem.quote}</p>
+              <div className={styles.authorName}>{rightItem.name}</div>
+              <QuoteMarks className={`${styles.quoteMark} ${styles.quoteMarkRight}`} />
             </div>
           </div>
+
+          {/* Navigation Next Button */}
+          <button
+            type="button"
+            className={`${styles.navBtn} ${styles.navBtnRight}`}
+            onClick={handleNext}
+            aria-label="Next testimonial"
+          >
+            <ChevronRight size={22} strokeWidth={2.4} />
+          </button>
         </div>
       </div>
     </section>

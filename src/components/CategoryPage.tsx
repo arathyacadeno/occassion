@@ -4,7 +4,6 @@ import React, { useState, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import CategoryHeader from "@/components/CategoryHeader";
 import ProductGrid from "@/components/ProductGrid";
-import CategoryQuotes from "@/components/CategoryQuotes";
 import Footer from "@/components/Footer";
 import { Product } from "@/data/catalog";
 import styles from "./CategoryPage.module.css";
@@ -89,9 +88,6 @@ export default function CategoryPage({
           products={filteredProducts.length > 0 ? filteredProducts : products}
           ariaLabel={`${title} Collection`}
         />
-
-        {/* Customer Quotes */}
-        <CategoryQuotes />
       </main>
 
       <Footer />

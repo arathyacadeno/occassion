@@ -620,9 +620,6 @@ export default function GarlandsAndBasketsPage() {
             </div>
           </div>
         </div>
-
-        {/* Customer Quotes Section */}
-        <CategoryQuotes />
       </main>
 
       {/* Cart Toast Notification */}

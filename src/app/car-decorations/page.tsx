@@ -646,9 +646,6 @@ export default function CarDecorationsPage() {
             </div>
           </div>
         </div>
-
-        {/* Customer Quotes Section */}
-        <CategoryQuotes />
       </main>
 
       {/* Cart Toast Notification */}

@@ -6,7 +6,6 @@ import Footer from "@/components/Footer";
 import Breadcrumb from "./Breadcrumb";
 import CategoryHeader from "./CategoryHeader";
 import ProductGrid from "./ProductGrid";
-import CategoryQuotes from "@/components/CategoryQuotes";
 import { CategoryInfo, FlowerProduct } from "@/types";
 import styles from "./FlowerCategoryPage.module.css";
 
@@ -31,9 +30,6 @@ export default function FlowerCategoryPage({ category, products }: FlowerCategor
           {/* Product Grid */}
           <ProductGrid products={products} />
         </div>
-
-        {/* Customer Quotes Section */}
-        <CategoryQuotes />
       </main>
 
       <Footer />
