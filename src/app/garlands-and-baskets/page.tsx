@@ -5,7 +5,6 @@ import Link from "next/link";
 import styles from "./garlands-and-baskets.module.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import CategoryQuotes from "@/components/CategoryQuotes";
 import { useCart } from "@/context/CartContext";
 import { Bouquet } from "@/types";
 import {

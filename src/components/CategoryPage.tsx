@@ -12,9 +12,10 @@ interface CategoryPageProps {
   title: string;
   description: string;
   products: Product[];
+  filterTabs?: { id: string; label: string }[];
 }
 
-const FILTER_TABS = [
+const DEFAULT_FILTER_TABS = [
   { id: "all", label: "All Items" },
   { id: "birthday", label: "Birthday" },
   { id: "anniversary", label: "Anniversary" },
@@ -26,8 +27,10 @@ export default function CategoryPage({
   title,
   description,
   products,
+  filterTabs,
 }: CategoryPageProps) {
   const [activeFilter, setActiveFilter] = useState("all");
+  const tabs = filterTabs && filterTabs.length > 0 ? filterTabs : DEFAULT_FILTER_TABS;
 
   const filteredProducts = useMemo(() => {
     if (activeFilter === "all") return products;
@@ -44,11 +47,20 @@ export default function CategoryPage({
       if (activeFilter === "anniversary") {
         return text.includes("anniversary") || text.includes("rose") || text.includes("romance");
       }
-      if (activeFilter === "boxes") {
+      if (activeFilter === "boxes" || activeFilter === "baskets") {
         return text.includes("basket") || text.includes("box") || text.includes("crate") || text.includes("uruli");
       }
       if (activeFilter === "bouquets") {
         return text.includes("bouquet") || text.includes("cone") || text.includes("tied");
+      }
+      if (activeFilter === "roses") {
+        return text.includes("rose");
+      }
+      if (activeFilter === "tulips") {
+        return text.includes("tulip");
+      }
+      if (activeFilter === "lilies") {
+        return text.includes("lily") || text.includes("lilies");
       }
       return true;
     });
@@ -64,7 +76,7 @@ export default function CategoryPage({
 
         {/* Filter Pills Navigation (Matching Reference Image) */}
         <div className={styles.filterTabsRow} role="tablist" aria-label="Category Filters">
-          {FILTER_TABS.map((tab) => {
+          {tabs.map((tab) => {
             const isActive = activeFilter === tab.id;
             return (
               <button
@@ -85,7 +97,7 @@ export default function CategoryPage({
 
         {/* Product Grid with Signature Wave Cutout Cards */}
         <ProductGrid
-          products={filteredProducts.length > 0 ? filteredProducts : products}
+          products={filteredProducts}
           ariaLabel={`${title} Collection`}
         />
       </main>

@@ -1,671 +1,367 @@
 /* =========================================================
    OCCASIONS FOOTER
-   FIXED BACKGROUND + SCROLLING WHITE CARD
+   Exact Figma Specification:
+   - Fixed background image (center bottom) with scrolling white card
+   - Card dimensions: 1670px × 456px with 40px border-radius
+   - Padding: top 125px, bottom 150px, inline 29px on wrapper
+   - Card inner padding: top 110px, left/right 60px, bottom 40px
+   - CSS Grid columns: 300px 230px 215px 350px 1fr
+   - Absolute copyright at right: 60px; bottom: 40px
    ========================================================= */
 
-.footerWrapper {
-  position: relative;
-
-  width: 100%;
-
-  min-height: 700px;
-
-  padding: 90px 0;
-
+/* ================= 5. RESETS & FONTS ================= */
+.footerWrapper,
+.footerWrapper * {
   box-sizing: border-box;
-
-  overflow: hidden;
-
-  /*
-    BACKGROUND IMAGE
-  */
-  background-image: url("/images/footer-section.svg");
-
-  /*
-    IMPORTANT:
-    Fixed means the background stays in the same position
-    when the page is scrolling.
-  */
-  background-attachment: fixed;
-
-  /*
-    Shows the background across the complete section.
-  */
-  background-size: cover;
-
-  background-position: center center;
-
-  background-repeat: no-repeat;
-
-  display: flex;
-
-  justify-content: center;
-
-  align-items: center;
 }
 
+.footerWrapper p,
+.footerWrapper ul,
+.footerWrapper li,
+.footerWrapper h4 {
+  margin: 0;
+  padding: 0;
+}
 
-/* =========================================================
-   WHITE CARD
-   THIS CARD SCROLLS WITH THE PAGE
-   ========================================================= */
+/* ================= 1. BACKGROUND IMAGE (FIXED) ================= */
+.footerWrapper {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  /* Wrapper padding: sky above (~125px), river below (~150px) */
+  padding-top: 125px;
+  padding-bottom: 150px;
+  padding-inline: 29px;
+  overflow: hidden;
 
+  /* Flower/river background image */
+  background-image: url("/images/footer-section.svg");
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: var(
+    --font-sans,
+    "Plus Jakarta Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif
+  );
+}
+
+/* Mobile fallback for iOS Safari and mobile devices */
+@media (max-width: 1024px) {
+  .footerWrapper {
+    background-attachment: scroll;
+    padding-top: 80px;
+    padding-bottom: 80px;
+    padding-inline: 18px;
+  }
+}
+
+/* ================= 2. WHITE CARD ================= */
 .footerCard {
   position: relative;
-
   z-index: 2;
-
-  width: 96%;
-
-  max-width: 1500px;
-
-  /*
-    Slightly longer card
-  */
-  height: 350px;
-
-  min-height: 350px;
-
-  max-height: 350px;
-
+  width: 100%;
+  max-width: 1670px;
+  height: 456px;
+  min-height: 456px;
   margin: 0 auto;
 
-  padding: 42px 52px 22px;
-
+  /* Inner padding matching Figma: top ~110px, left/right ~60px, bottom ~40px */
+  padding: 110px 60px 40px 60px;
   box-sizing: border-box;
 
   background: #ffffff;
-
-  border-radius: 34px;
-
-  box-shadow:
-    0 14px 40px rgba(0, 0, 0, 0.09);
+  border-radius: 40px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
 
   display: flex;
-
   flex-direction: column;
-
-  justify-content: space-between;
-
-  /*
-    IMPORTANT:
-    Card itself is NOT fixed.
-    Therefore it scrolls normally.
-  */
-  overflow: hidden;
 }
 
-
-/* =========================================================
-   MAIN GRID
-   ========================================================= */
-
+/* ================= 3. COLUMNS (CSS GRID) ================= */
 .mainGrid {
   width: 100%;
-
   display: grid;
-
-  grid-template-columns:
-    1.5fr
-    1fr
-    1fr
-    1.25fr
-    1.2fr;
-
-  column-gap: 40px;
-
+  grid-template-columns: 300px 230px 215px 350px 1fr;
   align-items: start;
-
-  flex: 1;
+  box-sizing: border-box;
 }
 
-
-/* =========================================================
-   BRAND
-   ========================================================= */
-
+/* ================= BRAND COLUMN ================= */
 .brandCol {
   display: flex;
-
   flex-direction: column;
-
   align-items: flex-start;
-
   text-align: left;
-
-  min-width: 0;
+  max-width: 290px;
 }
-
 
 .logoLink {
   display: inline-flex;
-
-  margin-bottom: 14px;
-
+  margin-bottom: 18px;
   text-decoration: none;
 }
-
 
 .logoImg {
   width: auto;
-
-  height: 45px;
-
+  height: 44px;
   object-fit: contain;
-
   display: block;
 }
 
-
+/* Brand quote wraps into exactly 3 lines with max-width ~290px */
 .brandQuote {
-  font-family:
-    var(
-      --font-sans,
-      -apple-system,
-      BlinkMacSystemFont,
-      "Segoe UI",
-      Roboto,
-      sans-serif
-    );
-
-  font-size: 12.5px;
-
+  font-family: inherit;
+  font-size: 13px;
   line-height: 1.55;
-
-  color: #374151;
-
-  margin: 0 0 18px;
-
-  max-width: 275px;
-
+  color: #262626;
+  max-width: 290px;
   text-align: left;
-
   letter-spacing: -0.01em;
 }
 
-
-/* =========================================================
-   SOCIAL
-   ========================================================= */
-
+/* Social media buttons row */
 .socialRow {
   display: flex;
-
   align-items: center;
-
   gap: 10px;
+  margin-top: 22px;
 }
-
 
 .socialBtn {
-  width: 33px;
-
-  height: 33px;
-
+  width: 36px;
+  height: 36px;
   border-radius: 9px;
-
-  background: #eef2ff;
-
+  background: #f1f4ff;
   color: #111827;
-
   display: inline-flex;
-
   align-items: center;
-
   justify-content: center;
-
   text-decoration: none;
-
-  transition:
-    background 0.2s ease,
-    color 0.2s ease,
-    transform 0.2s ease;
+  transition: all 0.2s ease;
 }
-
 
 .socialBtn:hover {
   background: #e0e7ff;
-
   color: #ff4770;
-
   transform: translateY(-2px);
 }
 
-
 .socialBtn svg {
-  width: 14px;
-
-  height: 14px;
+  width: 15px;
+  height: 15px;
 }
 
-
-/* =========================================================
-   COLUMN TITLES
-   ========================================================= */
-
+/* ================= COLUMN HEADINGS ================= */
 .colTitle {
-  font-family:
-    var(
-      --font-sans,
-      -apple-system,
-      BlinkMacSystemFont,
-      "Segoe UI",
-      Roboto,
-      sans-serif
-    );
-
+  font-family: inherit;
   font-size: 14px;
-
-  font-weight: 600;
-
+  font-weight: 400;
   color: #ff5277;
-
-  margin: 0 0 21px;
-
+  margin: 0 0 26px 0;
   text-align: left;
-
-  letter-spacing: -0.01em;
+  line-height: 1.2;
 }
 
-
-/* =========================================================
-   LINKS
-   ========================================================= */
-
+/* ================= LINKS COLUMNS (OUR SERVICES, CONNECT) ================= */
 .linksCol {
   display: flex;
-
   flex-direction: column;
-
   align-items: flex-start;
-
   text-align: left;
-
-  min-width: 0;
 }
-
 
 .linksList {
   list-style: none;
-
   padding: 0;
-
   margin: 0;
-
   display: flex;
-
   flex-direction: column;
-
   align-items: flex-start;
-
-  gap: 14px;
+  gap: 18px; /* With ~20px line-height, top-to-top row spacing is ~38-40px */
 }
-
 
 .navLink {
-  font-family:
-    var(
-      --font-sans,
-      -apple-system,
-      BlinkMacSystemFont,
-      "Segoe UI",
-      Roboto,
-      sans-serif
-    );
-
-  font-size: 13px;
-
+  font-family: inherit;
+  font-size: 14px;
   font-weight: 400;
-
   color: #262626;
-
   text-decoration: none;
-
-  line-height: 1.3;
-
+  line-height: 1.4;
   transition: color 0.2s ease;
 }
-
 
 .navLink:hover {
   color: #ff5277;
 }
 
-
-/* =========================================================
-   ADDRESS
-   ========================================================= */
-
+/* ================= ADDRESS COLUMN ================= */
 .addressCol {
   display: flex;
-
   flex-direction: column;
-
   align-items: flex-start;
-
   text-align: left;
-
-  min-width: 0;
 }
-
 
 .addressContent {
-  font-family:
-    var(
-      --font-sans,
-      -apple-system,
-      BlinkMacSystemFont,
-      "Segoe UI",
-      Roboto,
-      sans-serif
-    );
-
-  font-size: 13px;
-
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
   line-height: 1.55;
-
   color: #262626;
-
   text-align: left;
 }
-
 
 .addressText {
-  margin: 0 0 18px;
-
+  margin: 0 0 24px 0;
   color: #262626;
-
   text-align: left;
 }
-
 
 .helpText {
   margin: 0;
-
   color: #262626;
-
   white-space: nowrap;
-
   text-align: left;
 }
 
-
 .phoneLink {
   color: #262626;
-
   text-decoration: none;
-
   margin-left: 4px;
-
   transition: color 0.2s ease;
 }
-
 
 .phoneLink:hover {
   color: #ff5277;
 }
 
-
-/* =========================================================
-   NEWSLETTER
-   ========================================================= */
-
+/* ================= NEWSLETTER COLUMN ================= */
 .newsletterCol {
   display: flex;
-
   flex-direction: column;
-
   align-items: flex-start;
-
   text-align: left;
-
-  min-width: 0;
+  justify-self: end;
+  width: 100%;
+  max-width: 297px;
 }
-
 
 .newsletterForm {
   width: 100%;
-
-  max-width: 280px;
-
-  height: 46px;
-
-  background: #f0f4ff;
-
+  max-width: 297px;
+  height: 48px;
+  background: #f1f2ff;
   border-radius: 14px;
-
-  padding: 4px 5px 4px 14px;
-
+  padding: 5px 6px 5px 16px;
   display: flex;
-
   align-items: center;
-
   box-sizing: border-box;
-
   transition: box-shadow 0.2s ease;
 }
 
-
 .newsletterForm:focus-within {
-  box-shadow:
-    0 0 0 2px rgba(255, 82, 119, 0.2);
+  box-shadow: 0 0 0 2px rgba(255, 82, 119, 0.25);
 }
-
 
 .newsletterInput {
   flex: 1;
-
   min-width: 0;
-
   height: 100%;
-
   border: none;
-
   outline: none;
-
   background: transparent;
-
-  font-family:
-    var(
-      --font-sans,
-      -apple-system,
-      BlinkMacSystemFont,
-      "Segoe UI",
-      Roboto,
-      sans-serif
-    );
-
-  font-size: 12px;
-
+  font-family: inherit;
+  font-size: 13px;
   color: #111827;
 }
 
-
 .newsletterInput::placeholder {
-  color: #94a3b8;
+  color: #555555;
 }
-
 
 .sendBtn {
-  width: 43px;
-
-  height: 35px;
-
-  border-radius: 11px;
-
+  width: 48px;
+  height: 38px;
+  border-radius: 10px;
   background: #ff4770;
-
   color: #ffffff;
-
   border: none;
-
   display: inline-flex;
-
   align-items: center;
-
   justify-content: center;
-
   cursor: pointer;
-
   flex-shrink: 0;
-
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease;
+  transition: all 0.2s ease;
 }
-
 
 .sendBtn:hover {
   background: #e63960;
-
   transform: scale(1.03);
 }
 
-
 .sendBtn svg {
-  width: 15px;
-
-  height: 15px;
+  width: 16px;
+  height: 16px;
 }
 
-
-/* =========================================================
-   COPYRIGHT
-   ========================================================= */
-
+/* ================= 4. COPYRIGHT ================= */
 .copyrightRow {
-  width: 100%;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: flex-end;
-
-  margin-top: auto;
-
-  padding-top: 12px;
+  position: absolute;
+  right: 60px;
+  bottom: 40px;
+  margin: 0;
+  padding: 0;
 }
-
 
 .copyrightText {
-  font-family:
-    var(
-      --font-sans,
-      -apple-system,
-      BlinkMacSystemFont,
-      "Segoe UI",
-      Roboto,
-      sans-serif
-    );
-
-  font-size: 11px;
-
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 400;
   color: #262626;
-
   margin: 0;
-
   text-align: right;
-
   letter-spacing: -0.01em;
 }
 
-
-/* =========================================================
-   LARGE DESKTOP
-   ========================================================= */
-
-@media (min-width: 1400px) {
-  .footerCard {
-    width: 94%;
-
-    max-width: 1500px;
-  }
-}
-
-
-/* =========================================================
-   MEDIUM DESKTOP
-   ========================================================= */
-
-@media (max-width: 1100px) {
-
-  .footerWrapper {
-    min-height: 500px;
-
-    padding: 75px 0;
-  }
-
-  .footerCard {
-    width: 95%;
-
-    padding: 36px 34px 22px;
-  }
-
+/* ================= RESPONSIVE ADAPTATIONS ================= */
+@media (max-width: 1400px) {
   .mainGrid {
-    column-gap: 24px;
-  }
-
-  .helpText {
-    white-space: normal;
+    grid-template-columns: 280px 190px 180px 290px 1fr;
   }
 }
 
-
-/* =========================================================
-   TABLET
-   ========================================================= */
-
-@media (max-width: 880px) {
-
-  .footerWrapper {
-    min-height: auto;
-
-    padding: 60px 16px;
-
-    /*
-      Keep background fixed.
-    */
-    background-attachment: fixed;
-
-    background-size: cover;
-
-    background-position: center center;
-  }
-
+@media (max-width: 1200px) {
   .footerCard {
-    width: 95%;
-
     height: auto;
-
-    min-height: 450px;
-
-    max-height: none;
-
-    padding: 32px 28px 22px;
-
-    border-radius: 28px;
+    min-height: auto;
+    padding: 70px 40px 90px 40px;
   }
 
   .mainGrid {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
-
-    gap: 28px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px 30px;
   }
 
-  .brandCol {
-    grid-column: 1 / -1;
-  }
-
-  .brandQuote {
-    max-width: 430px;
+  .newsletterCol {
+    justify-self: start;
   }
 
   .copyrightRow {
+    position: static;
+    margin-top: 40px;
+    display: flex;
     justify-content: center;
-
-    padding-top: 20px;
+    width: 100%;
   }
 
   .copyrightText {
@@ -673,95 +369,23 @@
   }
 }
 
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
-@media (max-width: 580px) {
-
-  .footerWrapper {
-    min-height: auto;
-
-    padding: 45px 12px;
-
-    /*
-      Keep fixed background.
-    */
-    background-attachment: fixed;
-
-    background-size: cover;
-
-    background-position: center center;
-  }
-
+@media (max-width: 768px) {
   .footerCard {
-    width: 96%;
-
-    height: auto;
-
-    min-height: 680px;
-
-    max-height: none;
-
-    padding: 28px 20px 20px;
-
-    border-radius: 24px;
+    border-radius: 28px;
+    padding: 44px 24px 70px 24px;
   }
 
   .mainGrid {
     grid-template-columns: 1fr;
-
-    gap: 24px;
+    gap: 32px;
   }
 
-  .brandCol {
-    grid-column: auto;
+  .brandCol,
+  .newsletterCol {
+    max-width: 100%;
   }
 
   .newsletterForm {
     max-width: 100%;
-  }
-
-  .copyrightRow {
-    justify-content: center;
-
-    padding-top: 20px;
-  }
-
-  .copyrightText {
-    font-size: 10px;
-
-    text-align: center;
-  }
-}
-
-
-/* =========================================================
-   SMALL MOBILE
-   ========================================================= */
-
-@media (max-width: 400px) {
-
-  .footerCard {
-    padding: 24px 16px 18px;
-
-    border-radius: 20px;
-  }
-
-  .logoImg {
-    height: 38px;
-  }
-
-  .brandQuote {
-    font-size: 11.5px;
-  }
-
-  .colTitle {
-    font-size: 13px;
-  }
-
-  .navLink {
-    font-size: 12px;
   }
 }

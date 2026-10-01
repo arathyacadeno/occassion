@@ -62,13 +62,13 @@ const TESTIMONIALS_DATA: TestimonialItem[] = [
 function QuoteMarks({ className, flip = false }: { className?: string; flip?: boolean }) {
   return (
     <svg
-      viewBox="0 0 44 34"
+      viewBox="0 0 54 46"
       fill="currentColor"
       className={className}
       style={flip ? { transform: "scaleX(-1)" } : undefined}
       aria-hidden="true"
     >
-      <path d="M13.2 0C5.9 0 0 5.8 0 13c0 4.4 2.2 8.3 5.6 10.6L1.8 34h8.2l4.8-9.4c2.5-.7 4.5-2.8 5-5.5.2-.9.4-1.8.4-2.7C20.2 6.9 17.1 0 13.2 0zm22.4 0C28.3 0 22.4 5.8 22.4 13c0 4.4 2.2 8.3 5.6 10.6L24.2 34h8.2l4.8-9.4c2.5-.7 4.5-2.8 5-5.5.2-.9.4-1.8.4-2.7C42.6 6.9 39.5 0 35.6 0z" />
+      <path d="M15.5 2C7.5 2 1 8.5 1 16.5c0 5.4 3 10.1 7.4 12.6L3.8 41.2c-.6 1.4.5 3 2 3h4.6c1.1 0 2.2-.6 2.8-1.6l5.4-11.2c3-.9 5.3-3.4 6-6.6.3-1.4.4-2.8.4-4.3C25 8.5 20.7 2 15.5 2zm26 0c-8 0-14.5 6.5-14.5 14.5 0 5.4 3 10.1 7.4 12.6L29.8 41.2c-.6 1.4.5 3 2 3h4.6c1.1 0 2.2-.6 2.8-1.6l5.4-11.2c3-.9 5.3-3.4 6-6.6.3-1.4.4-2.8.4-4.3C51 8.5 46.7 2 41.5 2z" />
     </svg>
   );
 }

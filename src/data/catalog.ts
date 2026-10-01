@@ -253,6 +253,262 @@ export const CATALOG_PRODUCTS: Product[] = [
     badge: "Exotic Grandeur",
   },
 
+  // ==================== BOUQUET PRODUCTS (/flower-bouquets) ====================
+  {
+    id: "bouquet-1",
+    slug: "red-rose-bouquet",
+    name: "Red Rose Bouquet",
+    price: 1899,
+    originalPrice: 2399,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/red-rose-bouquet.jpg",
+    images: [
+      "/images/red-rose-bouquet.jpg",
+      "/images/flower-pink-roses.jpg",
+      "/images/flower-white-roses.jpg",
+    ],
+    rating: 5.0,
+    reviewsCount: 84,
+    description:
+      "Our premier bouquet of two dozen rich velvet Dutch red roses hand-tied by master florists with matte blush packaging and cascading silk ribbon. Perfect for romantic anniversaries, proposals, and heartfelt gestures.",
+    deliveryInfo: "Same-day boutique delivery guaranteed in Calicut.",
+    offers: [
+      "Flat 10% off with code OCCASIONS10",
+      "Free personalized greeting card with wax seal",
+    ],
+    includes: [
+      "24 Imported Dutch Red Roses",
+      "Silver Dollar Eucalyptus",
+      "Gypsophila Baby's Breath",
+      "Matte Blush Paper Wrap",
+      "Silk Satin Ribbon",
+    ],
+    badge: "Bestseller",
+  },
+  {
+    id: "bouquet-2",
+    slug: "classic-calicut-bridal-bouquet",
+    name: "Classic Calicut Bridal Bouquet",
+    price: 1899,
+    originalPrice: 2299,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/bouquet-1.jpg",
+    images: [
+      "/images/bouquet-1.jpg",
+      "/images/flower-pink-roses.jpg",
+      "/images/flower-white-roses.jpg",
+    ],
+    rating: 5.0,
+    reviewsCount: 56,
+    description:
+      "Hand-tied bridal bouquet specially designed for wedding ceremonies and receptions in Calicut. Features velvety blush roses paired with delicate gypsophila, fragrant jasmine, and trailing French silk ribbon.",
+    deliveryInfo: "Fresh morning delivery within 3 hours across Calicut.",
+    offers: [
+      "Complimentary silk boutonnière",
+      "Free personalized handwritten note card",
+    ],
+    includes: [
+      "Dutch Pink Roses",
+      "White Gypsophila (Baby's Breath)",
+      "Madurai Jasmine Sprays",
+      "Silver Dollar Eucalyptus",
+      "French Silk Ribbon",
+    ],
+    badge: "Bridal Favorite",
+  },
+  {
+    id: "bouquet-3",
+    slug: "celebration-floral-and-cake-hamper",
+    name: "Celebration Floral & Cake Hamper",
+    price: 1499,
+    originalPrice: 1799,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/bouquet-2.jpg",
+    images: [
+      "/images/bouquet-2.jpg",
+      "/images/cat-birthday.jpg",
+      "/images/bouquet-3.jpg",
+    ],
+    rating: 4.9,
+    reviewsCount: 82,
+    description:
+      "Lush hand-tied celebration bouquet of sunny gerberas and yellow lilies paired with a gourmet fresh cream truffle birthday cake. Ideal for unforgettable birthday celebrations.",
+    deliveryInfo: "Delivered fresh from Calicut bakery & gardens.",
+    offers: [
+      "Free celebration candle & knife included",
+      "Flat 10% off with code OCCASIONS10",
+    ],
+    includes: [
+      "Bright Gerberas & Carnations",
+      "Yellow Asiatic Lilies",
+      "Chamomile Blooms",
+      "500g Fresh Cream Truffle Cake",
+      "Personalized Greeting Card",
+    ],
+    badge: "Birthday Special",
+  },
+  {
+    id: "bouquet-4",
+    slug: "pink-rose-bouquet",
+    name: "Pink Rose Bouquet",
+    price: 1699,
+    originalPrice: 2099,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/flower-pink-roses.jpg",
+    images: [
+      "/images/flower-pink-roses.jpg",
+      "/images/red-rose-bouquet.jpg",
+      "/images/flower-white-roses.jpg",
+    ],
+    rating: 4.9,
+    reviewsCount: 62,
+    description:
+      "Radiating sweet gentleness, this hand-tied bouquet features 20 lush blush pink roses complemented by fragrant jasmine sprays and dusty rose velvet ribbon. Suited for birthdays and milestone anniversaries.",
+    deliveryInfo: "Delivered fresh within 3 hours across Calicut.",
+    offers: [
+      "Flat ₹100 instant off with code ROSE100",
+      "Complimentary floral hydration pack",
+    ],
+    includes: [
+      "20 Avalanche Soft Pink Roses",
+      "Sweet Madurai Jasmine Buds",
+      "Silver Leaf Foliage",
+      "Cream Designer Wrapping",
+      "Dusty Rose Velvet Ribbon",
+    ],
+    badge: "Most Loved",
+  },
+  {
+    id: "bouquet-5",
+    slug: "golden-sunshine-sunflower-bouquet",
+    name: "Golden Sunshine Sunflower Bouquet",
+    price: 1599,
+    originalPrice: 1899,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/sunflower-bouquet.jpg",
+    images: [
+      "/images/sunflower-bouquet.jpg",
+      "/images/bouquet-sunflower-kraft.png",
+      "/images/cat-flower-bouquet-luxe.jpg",
+    ],
+    rating: 4.9,
+    reviewsCount: 48,
+    description:
+      "Radiant golden sunflowers that bring warmth, happiness, and bright energy. Bold petals paired with delicate chamomile and fresh silver eucalyptus in rustic kraft wrapping.",
+    deliveryInfo: "Guaranteed fresh morning delivery across Kozhikode.",
+    offers: [
+      "Free floral nutrition sachet",
+      "Free custom photo print card",
+    ],
+    includes: [
+      "5 Jumbo Golden Sunflowers",
+      "Wild Chamomile Accents",
+      "Silver Dollar Eucalyptus",
+      "Eco-Friendly Textured Kraft Wrap",
+      "Natural Jute Twine Bow",
+    ],
+    badge: "Sunshine Special",
+  },
+  {
+    id: "bouquet-6",
+    slug: "pastel-dutch-tulip-bouquet",
+    name: "Pastel Dutch Tulip Bouquet",
+    price: 2199,
+    originalPrice: 2699,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/flower-pink-tulips.jpg",
+    images: [
+      "/images/flower-pink-tulips.jpg",
+      "/images/bouquet-pink-tulips.png",
+      "/images/bouquet-pastel-luxe.png",
+    ],
+    rating: 4.8,
+    reviewsCount: 39,
+    description:
+      "Crisp, vibrant Holland tulips curated for modern elegance. Graceful stems and silky blush petals hand-tied in minimalist luxury wrapping.",
+    deliveryInfo: "Cold-chain express delivery across Calicut.",
+    offers: [
+      "Flat 10% off with code OCCASIONS10",
+      "Complimentary boutique carry bag",
+    ],
+    includes: [
+      "20 Premium Dutch Holland Tulips",
+      "Delicate Waxflower Sprigs",
+      "Frosted Luxe Paper Wrap",
+      "Bespoke Satin Organza Ribbon",
+    ],
+    badge: "Imported Luxury",
+  },
+  {
+    id: "bouquet-7",
+    slug: "oriental-casablanca-lily-bouquet",
+    name: "Oriental Casablanca Lily Bouquet",
+    price: 2299,
+    originalPrice: 2799,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/flower-white-lilies.jpg",
+    images: [
+      "/images/flower-white-lilies.jpg",
+      "/images/flower-white-roses.jpg",
+      "/images/bouquet-3.jpg",
+    ],
+    rating: 4.9,
+    reviewsCount: 51,
+    description:
+      "Unmatched in aromatic luxury, multi-bloom Casablanca white lilies create a lavish statement, paired with Avalanche white roses and cascading Italian ruscus.",
+    deliveryInfo: "Delivered fresh from botanical farms in insulated vans.",
+    offers: [
+      "Free Delivery Included",
+      "Complimentary flower care guide",
+    ],
+    includes: [
+      "Casablanca Fragrant White Lilies",
+      "Avalanche Dutch Roses",
+      "Fresh Italian Ruscus Greenery",
+      "Embossed Textured Wrap",
+      "Champagne Gold Ribbon",
+    ],
+    badge: "Fragrant Luxury",
+  },
+  {
+    id: "bouquet-8",
+    slug: "velvet-scarlet-rose-gypsophila-bouquet",
+    name: "Velvet Scarlet Rose & Gypsophila Bouquet",
+    price: 1999,
+    originalPrice: 2499,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/bouquet-red-roses-silk.jpg",
+    images: [
+      "/images/bouquet-red-roses-silk.jpg",
+      "/images/red-rose-bouquet.jpg",
+      "/images/bouquet-1.jpg",
+    ],
+    rating: 5.0,
+    reviewsCount: 73,
+    description:
+      "Passionate crimson roses enveloped in clouds of starry gypsophila baby's breath and finished with a bespoke crimson silk ribbon. A dramatic expression of timeless devotion.",
+    deliveryInfo: "Hand-delivered by our uniformed boutique florists.",
+    offers: [
+      "Flat ₹150 off with code LOVE150",
+      "Complimentary scented greeting card",
+    ],
+    includes: [
+      "24 Scarlet Dutch Roses",
+      "Starry White Gypsophila",
+      "Luxury Matte Black & Gold Wrap",
+      "Double-Faced Crimson Silk Ribbon",
+    ],
+    badge: "Romantic Choice",
+  },
+
   // ==================== CAKES PRODUCTS (/cakes) ====================
   {
     id: "cake-1",
@@ -928,6 +1184,27 @@ export function getProductsByCategory(
   return CATALOG_PRODUCTS.filter((p) => p.category === category);
 }
 
+export function getFlowerBaskets(): Product[] {
+  return CATALOG_PRODUCTS.filter(
+    (p) =>
+      p.category === "flower" &&
+      (p.name.toLowerCase().includes("basket") ||
+        p.name.toLowerCase().includes("box") ||
+        p.description.toLowerCase().includes("basket") ||
+        p.description.toLowerCase().includes("hat box"))
+  );
+}
+
+export function getFlowerBouquets(): Product[] {
+  return CATALOG_PRODUCTS.filter(
+    (p) =>
+      p.category === "flower" &&
+      (p.name.toLowerCase().includes("bouquet") ||
+        p.description.toLowerCase().includes("bouquet") ||
+        p.description.toLowerCase().includes("hand-tied"))
+  );
+}
+
 export function getProductBySlug(
   category: string,
   slug: string
@@ -940,3 +1217,4 @@ export function getProductBySlug(
 export function getAllProducts(): Product[] {
   return CATALOG_PRODUCTS;
 }
+
