@@ -10,16 +10,18 @@
   background-color: #FFEDF1;
 }
 
-/* Category Filter Pills (Exact Match from Reference Image) */
+/* Category Filter Pills (Aligned to the left side matching cards) */
 .filterTabsRow {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 12px;
-  padding: 0 24px 36px 24px;
+  padding: 0 36px 32px 36px;
   flex-wrap: wrap;
-  max-width: 1200px;
+  max-width: 1280px;
+  width: 100%;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .filterPill {
@@ -52,10 +54,22 @@
   box-shadow: 0 4px 12px rgba(225, 29, 72, 0.25);
 }
 
+@media (max-width: 1180px) {
+  .filterTabsRow {
+    padding: 0 28px 28px 28px;
+  }
+}
+
+@media (max-width: 860px) {
+  .filterTabsRow {
+    padding: 0 20px 24px 20px;
+  }
+}
+
 @media (max-width: 640px) {
   .filterTabsRow {
     gap: 8px;
-    padding: 0 16px 24px 16px;
+    padding: 0 14px 20px 14px;
     justify-content: flex-start;
     overflow-x: auto;
     flex-wrap: nowrap;
