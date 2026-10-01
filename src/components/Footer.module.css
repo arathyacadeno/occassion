@@ -1,15 +1,15 @@
 /* =========================================================
    OCCASIONS FOOTER
-   Exact Figma Specification:
-   - Fixed background image (center bottom) with scrolling white card
-   - Card dimensions: 1670px × 456px with 40px border-radius
-   - Padding: top 125px, bottom 150px, inline 29px on wrapper
-   - Card inner padding: top 110px, left/right 60px, bottom 40px
-   - CSS Grid columns: 300px 230px 215px 350px 1fr
-   - Absolute copyright at right: 60px; bottom: 40px
+   Exact Figma Specification (1728px frame):
+   - Fixed background image with scrolling white card
+   - Card dimensions: max-width 1670px, min-height ~440px with 40px border-radius
+   - Wrapper padding: top ~125px, bottom ~145px, inline 29px
+   - Card inner padding: top ~108px, right 30px, bottom ~36px, left 52px
+   - CSS Grid columns: 478px 222px 207px 339px 1fr; column-gap: 0
+   - Absolute copyright at right: 30px; bottom: 36px
    ========================================================= */
 
-/* ================= 5. RESETS & FONTS ================= */
+/* ================= 5. RESETS ================= */
 .footerWrapper,
 .footerWrapper * {
   box-sizing: border-box;
@@ -21,6 +21,7 @@
 .footerWrapper h4 {
   margin: 0;
   padding: 0;
+  list-style: none;
 }
 
 /* ================= 1. BACKGROUND IMAGE (FIXED) ================= */
@@ -28,9 +29,9 @@
   position: relative;
   width: 100%;
   box-sizing: border-box;
-  /* Wrapper padding: sky above (~125px), river below (~150px) */
+  /* Wrapper padding: sky above (~125px), river below (~145px) */
   padding-top: 125px;
-  padding-bottom: 150px;
+  padding-bottom: 145px;
   padding-inline: 29px;
   overflow: hidden;
 
@@ -55,28 +56,18 @@
   );
 }
 
-/* Mobile fallback for iOS Safari and mobile devices */
-@media (max-width: 1024px) {
-  .footerWrapper {
-    background-attachment: scroll;
-    padding-top: 80px;
-    padding-bottom: 80px;
-    padding-inline: 18px;
-  }
-}
-
-/* ================= 2. WHITE CARD ================= */
+/* ================= 4. CARD SIZE AND COPYRIGHT ================= */
 .footerCard {
   position: relative;
   z-index: 2;
   width: 100%;
   max-width: 1670px;
-  height: 456px;
-  min-height: 456px;
+  min-height: 440px;
+  height: auto;
   margin: 0 auto;
 
-  /* Inner padding matching Figma: top ~110px, left/right ~60px, bottom ~40px */
-  padding: 110px 60px 40px 60px;
+  /* Card inner padding: left 52px, right 30px, top ~108px, bottom ~36px */
+  padding: 108px 30px 36px 52px;
   box-sizing: border-box;
 
   background: #ffffff;
@@ -87,34 +78,43 @@
   flex-direction: column;
 }
 
-/* ================= 3. COLUMNS (CSS GRID) ================= */
+/* ================= 1. COLUMNS (CSS GRID) ================= */
 .mainGrid {
   width: 100%;
   display: grid;
-  grid-template-columns: 300px 230px 215px 350px 1fr;
+  grid-template-columns: 2.15fr 1fr 0.95fr 1.55fr 1.35fr;
+  column-gap: 0;
+  row-gap: 0;
   align-items: start;
   box-sizing: border-box;
 }
 
-/* ================= BRAND COLUMN ================= */
+@media (min-width: 1680px) {
+  .mainGrid {
+    grid-template-columns: 478px 222px 207px 339px 1fr;
+  }
+}
+
+/* ================= 2. BRAND COLUMN ================= */
 .brandCol {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
-  max-width: 290px;
+  max-width: 100%;
 }
 
 .logoLink {
   display: inline-flex;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
   text-decoration: none;
 }
 
+/* Logo width ~120px */
 .logoImg {
-  width: auto;
-  height: 100px;
-  max-width: 240px;
+  width: 120px;
+  height: auto;
+  max-width: 120px;
   object-fit: contain;
   display: block;
   transition: transform 0.25s ease;
@@ -124,28 +124,28 @@
   transform: scale(1.03);
 }
 
-/* Brand quote wraps into exactly 3 lines with max-width ~290px */
+/* Quote: max-width ~380px, line-height ~23px wrapping into 3 lines */
 .brandQuote {
   font-family: inherit;
   font-size: 13px;
-  line-height: 1.55;
+  line-height: 23px;
   color: #262626;
-  max-width: 290px;
+  max-width: 380px;
   text-align: left;
   letter-spacing: -0.01em;
 }
 
-/* Social media buttons row */
+/* Social icons: 40px boxes, gap 16px, margin-top ~20px */
 .socialRow {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 22px;
+  gap: 16px;
+  margin-top: 20px;
 }
 
 .socialBtn {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 9px;
   background: #f1f4ff;
   color: #111827;
@@ -163,22 +163,23 @@
 }
 
 .socialBtn svg {
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
 }
 
-/* ================= COLUMN HEADINGS ================= */
+/* ================= 3. HEADINGS AND LINKS ================= */
+/* Heading (pink): margin-bottom ~28px so first link sits ~45px below it */
 .colTitle {
   font-family: inherit;
   font-size: 14px;
   font-weight: 400;
   color: #ff5277;
-  margin: 0 0 26px 0;
+  margin-bottom: 28px;
   text-align: left;
   line-height: 1.2;
 }
 
-/* ================= LINKS COLUMNS (OUR SERVICES, CONNECT) ================= */
+/* Links Columns (Our Services, Connect) */
 .linksCol {
   display: flex;
   flex-direction: column;
@@ -186,6 +187,7 @@
   text-align: left;
 }
 
+/* Links: row spacing ~39px (gap: 16px with line-height 23px = 39px) */
 .linksList {
   list-style: none;
   padding: 0;
@@ -193,7 +195,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 18px; /* With ~20px line-height, top-to-top row spacing is ~38-40px */
+  gap: 16px;
 }
 
 .navLink {
@@ -202,7 +204,7 @@
   font-weight: 400;
   color: #262626;
   text-decoration: none;
-  line-height: 1.4;
+  line-height: 23px;
   transition: color 0.2s ease;
 }
 
@@ -210,7 +212,7 @@
   color: #ff5277;
 }
 
-/* ================= ADDRESS COLUMN ================= */
+/* Address Column: same top gap as links, 2 lines line-height 23px, ~22px space, help support */
 .addressCol {
   display: flex;
   flex-direction: column;
@@ -222,19 +224,20 @@
   font-family: inherit;
   font-size: 14px;
   font-weight: 400;
-  line-height: 1.55;
   color: #262626;
   text-align: left;
 }
 
 .addressText {
-  margin: 0 0 24px 0;
+  margin-bottom: 22px;
+  line-height: 23px;
   color: #262626;
   text-align: left;
 }
 
 .helpText {
   margin: 0;
+  line-height: 23px;
   color: #262626;
   white-space: nowrap;
   text-align: left;
@@ -251,20 +254,20 @@
   color: #ff5277;
 }
 
-/* ================= NEWSLETTER COLUMN ================= */
+/* Newsletter Column: positioned right after Address, completely inside the card */
 .newsletterCol {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
-  justify-self: end;
+  justify-self: start;
   width: 100%;
-  max-width: 297px;
+  max-width: 290px;
 }
 
 .newsletterForm {
   width: 100%;
-  max-width: 297px;
+  max-width: 290px;
   height: 48px;
   background: #f1f2ff;
   border-radius: 14px;
@@ -323,8 +326,8 @@
 /* ================= 4. COPYRIGHT ================= */
 .copyrightRow {
   position: absolute;
-  right: 60px;
-  bottom: 40px;
+  right: 30px;
+  bottom: 36px;
   margin: 0;
   padding: 0;
 }
@@ -340,26 +343,29 @@
 }
 
 /* ================= RESPONSIVE ADAPTATIONS ================= */
-@media (max-width: 1400px) {
-  .mainGrid {
-    grid-template-columns: 280px 190px 180px 290px 1fr;
+/* Below 1024px switch to 2 columns & static copyright */
+@media (max-width: 1024px) {
+  .footerWrapper {
+    background-attachment: scroll;
+    padding-top: 80px;
+    padding-bottom: 80px;
+    padding-inline: 18px;
   }
-}
 
-@media (max-width: 1200px) {
   .footerCard {
     height: auto;
     min-height: auto;
-    padding: 70px 40px 90px 40px;
+    padding: 60px 30px 40px 30px;
   }
 
   .mainGrid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 40px 30px;
   }
 
   .newsletterCol {
     justify-self: start;
+    max-width: 100%;
   }
 
   .copyrightRow {
@@ -375,15 +381,11 @@
   }
 }
 
-@media (max-width: 768px) {
+/* Below 640px switch to 1 column & static copyright */
+@media (max-width: 640px) {
   .footerCard {
     border-radius: 28px;
-    padding: 44px 24px 70px 24px;
-  }
-
-  .logoImg {
-    height: 80px;
-    max-width: 200px;
+    padding: 44px 20px 36px 20px;
   }
 
   .mainGrid {
@@ -398,5 +400,17 @@
 
   .newsletterForm {
     max-width: 100%;
+  }
+
+  .copyrightRow {
+    position: static;
+    margin-top: 32px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .copyrightText {
+    text-align: center;
   }
 }
