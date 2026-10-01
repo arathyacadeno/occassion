@@ -1,9 +1,11 @@
 .sectionWrapper {
   width: 100%;
   background-color: #FFEDF1;
-  padding: 70px 0 100px 0;
+  padding: 80px 0 100px 0;
   position: relative;
   overflow: hidden;
+  /* Gentle gradient blend transition from pinned hero release */
+  background: linear-gradient(to bottom, #FFE8EE 0%, #FFEDF1 60px, #FFEDF1 100%);
 }
 
 .container {

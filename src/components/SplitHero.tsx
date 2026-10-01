@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styles from "./SplitHero.module.css";
 
 interface SplitHeroProps {
@@ -15,45 +15,14 @@ export default function SplitHero({
   onSlideChange,
 }: SplitHeroProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isLocked, setIsLocked] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const currentSlideRef = useRef(0);
-  const isLockedRef = useRef(false);
-  const touchStartY = useRef<number | null>(null);
-  const heroRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
   const totalSlides = 3;
 
-  useEffect(() => {
-    currentSlideRef.current = currentSlide;
-  }, [currentSlide]);
-
-  useEffect(() => {
-    isLockedRef.current = isLocked;
-  }, [isLocked]);
-
-  // Video element ref to guarantee browser autoplay with muted sound
-  const handleVideoRef = (el: HTMLVideoElement | null) => {
-    if (el) {
-      el.muted = true;
-      el.defaultMuted = true;
-      const playPromise = el.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {});
-      }
-    }
-  };
-
-  // Scroll smoothly to highlights on Explore More
-  const handleExploreClick = () => {
-    const highlightEl = document.getElementById("highlights");
-    if (highlightEl) {
-      highlightEl.scrollIntoView({ behavior: "smooth" });
-    } else if (onOpenMenu) {
-      onOpenMenu();
-    }
-  };
-
+  // Slide content data
   const slidesData = [
     {
       id: 0,
@@ -111,305 +80,176 @@ export default function SplitHero({
     },
   ];
 
-  // Navigate to slide with 1000ms animation lock
-  const goToSlide = useCallback((index: number) => {
-    if (index < 0 || index >= totalSlides) return;
-    setIsLocked(true);
-    isLockedRef.current = true;
-    setCurrentSlide(index);
-    currentSlideRef.current = index;
-    onSlideChange?.(index);
-    setTimeout(() => {
-      setIsLocked(false);
-      isLockedRef.current = false;
-    }, 1000);
-  }, [totalSlides, onSlideChange]);
+  // Right panels arranged in reverse order [slide2, slide1, slide0]
+  const reversedRightPanels = [
+    slidesData[2].right,
+    slidesData[1].right,
+    slidesData[0].right,
+  ];
 
-  useEffect(() => {
-    if (targetSlide !== undefined && targetSlide >= 0 && targetSlide < totalSlides) {
-      goToSlide(targetSlide);
+  // Scroll smoothly to shop section on Explore More
+  const handleExploreClick = () => {
+    const nextEl =
+      document.getElementById("category-section") ||
+      document.getElementById("highlights");
+    if (nextEl) {
+      nextEl.scrollIntoView({ behavior: "smooth" });
+    } else if (onOpenMenu) {
+      onOpenMenu();
     }
-  }, [targetSlide, goToSlide, totalSlides]);
+  };
 
-  // Auto-play slideshow animation every 4.5 seconds (pauses on user hover)
+  // Video playback management: play active video, pause others, preload next
   useEffect(() => {
-    if (isHovered) return;
-
-    const timer = setInterval(() => {
-      if (!isLockedRef.current && typeof window !== "undefined" && window.scrollY <= 40) {
-        const next = (currentSlideRef.current + 1) % totalSlides;
-        goToSlide(next);
-      }
-    }, 4500);
-
-    return () => clearInterval(timer);
-  }, [isHovered, goToSlide, totalSlides]);
-
-  // Handle Wheel Events: Strictly locks scroll in hero until all slides are fully animated
-  useEffect(() => {
-    const handleWheel = (e: WheelEvent) => {
-      const scrollY = window.scrollY;
-
-      // When the user is at the top of the page (in the hero view)
-      if (scrollY <= 15) {
-        // User is scrolling DOWN
-        if (e.deltaY > 0) {
-          // If we haven't reached the final slide (Slide 0 or Slide 1):
-          // Always prevent default native scroll so the hero cannot be bypassed!
-          if (currentSlideRef.current < totalSlides - 1) {
-            e.preventDefault();
-            if (!isLockedRef.current && e.deltaY >= 8) {
-              goToSlide(currentSlideRef.current + 1);
-            }
-            return;
-          }
-
-          // If we ARE on the final slide (Slide 2):
-          // While the final slide is still animating in, keep scroll locked!
-          if (isLockedRef.current) {
-            e.preventDefault();
-            return;
-          }
-
-          // Final slide is now FULLY ANIMATED!
-          // Only now does scrolling down smoothly transition to the next section
-          if (e.deltaY >= 12) {
-            const highlightEl = document.getElementById("highlights");
-            if (highlightEl) {
-              e.preventDefault();
-              highlightEl.scrollIntoView({ behavior: "smooth" });
-            }
-          }
-          return;
-        }
-
-        // User is scrolling UP while in hero view
-        if (e.deltaY < 0) {
-          if (currentSlideRef.current > 0) {
-            e.preventDefault();
-            if (!isLockedRef.current && e.deltaY <= -8) {
-              goToSlide(currentSlideRef.current - 1);
-            }
-          } else {
-            // Already at slide 0, allow natural behavior
-          }
-          return;
+    videoRefs.current.forEach((vid, idx) => {
+      if (!vid) return;
+      if (idx === currentSlide) {
+        vid.muted = true;
+        vid.defaultMuted = true;
+        const playPromise = vid.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {});
         }
       } else {
-        // User is further down the page (in highlights or footer)
-        // If user scrolls UP and arrives back at the top:
-        if (scrollY <= 25 && e.deltaY < -20 && !isLockedRef.current) {
-          if (currentSlideRef.current > 0) {
-            e.preventDefault();
-            window.scrollTo({ top: 0, behavior: "smooth" });
-            setTimeout(() => {
-              goToSlide(currentSlideRef.current - 1);
-            }, 300);
-          }
-        }
+        vid.pause();
       }
-    };
+    });
+  }, [currentSlide]);
 
-    window.addEventListener("wheel", handleWheel, { passive: false });
-    return () => window.removeEventListener("wheel", handleWheel);
-  }, [goToSlide, totalSlides]);
-
-  // Touch Swipe Handling for Mobile / Tablet with non-passive touchmove listener
+  // Passive native scroll handling with requestAnimationFrame
   useEffect(() => {
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartY.current = e.touches[0].clientY;
-    };
+    let rafId: number | null = null;
 
-    const handleTouchMove = (e: TouchEvent) => {
-      if (touchStartY.current === null) return;
-      const currentY = e.touches[0].clientY;
-      const diffY = touchStartY.current - currentY; // positive = swipe up (scroll down)
+    const handleScroll = () => {
+      if (!wrapperRef.current) return;
 
-      if (window.scrollY <= 15) {
-        // Lock native scroll if not on last slide or currently animating
-        if (currentSlideRef.current < totalSlides - 1 || isLockedRef.current) {
-          if (e.cancelable) e.preventDefault();
-        } else if (diffY < 0 && currentSlideRef.current > 0) {
-          if (e.cancelable) e.preventDefault();
-        }
+      const rect = wrapperRef.current.getBoundingClientRect();
+      const windowH = window.innerHeight;
+      const totalScrollable = rect.height - windowH;
+
+      if (totalScrollable <= 0) return;
+
+      // Scrolled distance inside the wrapper
+      const scrolled = -rect.top;
+      const progress = Math.max(0, Math.min(1, scrolled / totalScrollable));
+      setScrollProgress(progress);
+
+      // Finish 3rd video at ~90% progress so the last 10% is a calm release
+      const effectiveProgress = Math.min(1, progress / 0.9);
+      const activeIndex = Math.min(
+        totalSlides - 1,
+        Math.floor(effectiveProgress * totalSlides)
+      );
+
+      if (activeIndex !== currentSlideRef.current) {
+        currentSlideRef.current = activeIndex;
+        setCurrentSlide(activeIndex);
+        onSlideChange?.(activeIndex);
       }
     };
 
-    const handleTouchEnd = (e: TouchEvent) => {
-      if (touchStartY.current === null || window.scrollY > 15 || isLockedRef.current) {
-        touchStartY.current = null;
-        return;
-      }
-      const touchEndY = e.changedTouches[0].clientY;
-      const diffY = touchStartY.current - touchEndY;
-      touchStartY.current = null;
-
-      if (diffY > 40) {
-        // Swipe Up (Scroll Down)
-        if (currentSlideRef.current < totalSlides - 1) {
-          goToSlide(currentSlideRef.current + 1);
-        } else {
-          // Fully animated on last slide -> smoothly go to next section
-          const highlightEl = document.getElementById("highlights");
-          highlightEl?.scrollIntoView({ behavior: "smooth" });
-        }
-      } else if (diffY < -40) {
-        // Swipe Down (Scroll Up)
-        if (currentSlideRef.current > 0) {
-          goToSlide(currentSlideRef.current - 1);
-        }
-      }
+    const onScroll = () => {
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(() => {
+        handleScroll();
+        rafId = null;
+      });
     };
 
-    window.addEventListener("touchstart", handleTouchStart, { passive: true });
-    window.addEventListener("touchmove", handleTouchMove, { passive: false });
-    window.addEventListener("touchend", handleTouchEnd, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    handleScroll();
 
     return () => {
-      window.removeEventListener("touchstart", handleTouchStart);
-      window.removeEventListener("touchmove", handleTouchMove);
-      window.removeEventListener("touchend", handleTouchEnd);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (rafId !== null) cancelAnimationFrame(rafId);
     };
-  }, [goToSlide, totalSlides]);
+  }, [onSlideChange, totalSlides]);
 
-  // Keyboard navigation
+  // Dot navigation: scrolls natively into the corresponding progress point
+  const handleDotClick = (index: number) => {
+    if (!wrapperRef.current) return;
+    const rect = wrapperRef.current.getBoundingClientRect();
+    const wrapperTop = window.scrollY + rect.top;
+    const totalScroll = rect.height - window.innerHeight;
+
+    // Progress target for slide index (centered inside its third of 0-90%)
+    const targetProgress = ((index + 0.5) / totalSlides) * 0.9;
+    const targetY = wrapperTop + targetProgress * totalScroll;
+    window.scrollTo({ top: targetY, behavior: "smooth" });
+  };
+
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (window.scrollY > 15) return;
-
-      if (e.key === "ArrowDown" || e.key === "PageDown") {
-        if (currentSlideRef.current < totalSlides - 1) {
-          e.preventDefault();
-          if (!isLockedRef.current) goToSlide(currentSlideRef.current + 1);
-        } else if (isLockedRef.current) {
-          e.preventDefault();
-        } else {
-          // Fully animated on last slide
-          const highlightEl = document.getElementById("highlights");
-          if (highlightEl) {
-            e.preventDefault();
-            highlightEl.scrollIntoView({ behavior: "smooth" });
-          }
-        }
-      } else if (e.key === "ArrowUp" || e.key === "PageUp") {
-        if (currentSlideRef.current > 0) {
-          e.preventDefault();
-          if (!isLockedRef.current) goToSlide(currentSlideRef.current - 1);
-        }
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [goToSlide, totalSlides]);
-
-  // If page loads already scrolled down (e.g. on page refresh or anchor link),
-  // sync current slide with the final slide so hero doesn't lock or misalign
-  useEffect(() => {
-    if (typeof window !== "undefined" && window.scrollY > 80) {
-      setCurrentSlide(totalSlides - 1);
+    if (
+      targetSlide !== undefined &&
+      targetSlide >= 0 &&
+      targetSlide < totalSlides
+    ) {
+      handleDotClick(targetSlide);
     }
-  }, [totalSlides]);
+  }, [targetSlide]);
 
-  // MultiScroll Counter-sliding Calculations:
-  const leftTransform = `translateY(calc(-${currentSlide} * var(--slide-h, calc(100vh - 100px))))`;
-  const rightTransform = `translateY(calc(-${totalSlides - 1 - currentSlide} * var(--slide-h, calc(100vh - 100px))))`;
+  // Smooth exit at 90-100% progress: calm release into next section
+  const exitFactor = Math.max(0, Math.min(1, (scrollProgress - 0.9) / 0.1));
+  const exitStyle: React.CSSProperties = {
+    opacity: 1 - exitFactor * 0.1,
+    transform: `scale(${1 - exitFactor * 0.02})`,
+    transformOrigin: "center bottom",
+    transition: "opacity 0.2s ease-out, transform 0.2s ease-out",
+  };
 
-  // Right panels arranged in reverse order [slide2, slide1, slide0] so index 2 is slide0, index 1 is slide1, index 0 is slide2
-  const reversedRightPanels = [slidesData[2].right, slidesData[1].right, slidesData[0].right];
+  // Transform tracks
+  const leftTransform = `translateY(calc(-${currentSlide} * var(--slide-h, calc(100svh - 72px))))`;
+  const rightTransform = `translateY(calc(-${
+    totalSlides - 1 - currentSlide
+  } * var(--slide-h, calc(100svh - 72px))))`;
 
   return (
     <section
-      ref={heroRef}
-      className={styles.heroWrapper}
+      ref={wrapperRef}
+      className={styles.heroScrollWrapper}
       id="hero-slider"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
-      <div className={styles.splitContainer}>
-        {/* Left Half (Slides UP) */}
-        <div className={styles.leftColumn}>
-          <div
-            className={styles.leftTrack}
-            style={{ transform: leftTransform }}
-          >
-            {slidesData.map((slide, idx) => (
-              <div
-                key={`left-${slide.id}`}
-                className={`${styles.slidePanel} ${
-                  currentSlide === idx ? styles.activeSlide : ""
-                } ${slide.left.type === "image" ? styles.imagePanel : styles.textPanel}`}
-              >
-                {slide.left.type === "image" ? (
-                  <>
-                    {slide.left.video && (
-                      <video
-                        ref={handleVideoRef}
-                        className={styles.slideVideo}
-                        src={slide.left.video}
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        preload="auto"
-                      />
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <div
-                      className={styles.bgIllustration}
-                      style={{
-                        backgroundImage: `url(${slide.left.bgIllustration})`,
-                      }}
-                    />
-                    <div className={styles.textContent}>
-                      <h2 className={styles.title}>{slide.left.title}</h2>
-                      <p className={styles.description}>
-                        {slide.left.description}
-                      </p>
-                    </div>
-                  </>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Right Half (Slides DOWN - Counter Direction MultiScroll) */}
-        <div className={styles.rightColumn}>
-          <div
-            className={styles.rightTrack}
-            style={{ transform: rightTransform }}
-          >
-            {reversedRightPanels.map((panel, revIdx) => {
-              // Map reverse index back to original slide index:
-              // revIdx 0 -> slide 2
-              // revIdx 1 -> slide 1
-              // revIdx 2 -> slide 0
-              const originalSlideIdx = totalSlides - 1 - revIdx;
-              const isActive = currentSlide === originalSlideIdx;
-
-              return (
+      <div className={styles.heroSticky} style={exitStyle}>
+        <div className={styles.splitContainer}>
+          {/* Left Half */}
+          <div className={styles.leftColumn}>
+            <div
+              className={styles.leftTrack}
+              style={{ transform: leftTransform }}
+            >
+              {slidesData.map((slide, idx) => (
                 <div
-                  key={`right-${revIdx}`}
+                  key={`left-${slide.id}`}
                   className={`${styles.slidePanel} ${
-                    isActive ? styles.activeSlide : ""
-                  } ${panel.type === "image" ? styles.imagePanel : styles.textPanel}`}
+                    currentSlide === idx ? styles.activeSlide : ""
+                  } ${
+                    slide.left.type === "image"
+                      ? styles.imagePanel
+                      : styles.textPanel
+                  }`}
                 >
-                  {panel.type === "image" ? (
+                  {slide.left.type === "image" ? (
                     <>
-                      {panel.video && (
+                      {slide.left.video && (
                         <video
-                          ref={handleVideoRef}
+                          ref={(el) => {
+                            videoRefs.current[idx] = el;
+                          }}
                           className={styles.slideVideo}
-                          src={panel.video}
-                          autoPlay
+                          src={slide.left.video}
                           muted
                           loop
                           playsInline
                           preload="auto"
                         />
+                      )}
+                      <div className={styles.imageOverlayGradient} />
+                      {slide.left.cursiveOverlay && (
+                        <span className={styles.cursiveOverlay}>
+                          {slide.left.cursiveOverlay}
+                        </span>
                       )}
                     </>
                   ) : (
@@ -417,41 +257,122 @@ export default function SplitHero({
                       <div
                         className={styles.bgIllustration}
                         style={{
-                          backgroundImage: `url(${panel.bgIllustration})`,
+                          backgroundImage: `url(${slide.left.bgIllustration})`,
                         }}
                       />
                       <div className={styles.textContent}>
-                        <h2 className={styles.title}>{panel.title}</h2>
+                        <h2 className={styles.title}>{slide.left.title}</h2>
                         <p className={styles.description}>
-                          {panel.description}
+                          {slide.left.description}
                         </p>
+                        <div className={styles.buttonWrapper}>
+                          <button
+                            className={styles.readMoreBtn}
+                            onClick={handleExploreClick}
+                          >
+                            {slide.left.btnText}
+                          </button>
+                        </div>
                       </div>
                     </>
                   )}
                 </div>
-              );
-            })}
+              ))}
+            </div>
+          </div>
+
+          {/* Right Half */}
+          <div className={styles.rightColumn}>
+            <div
+              className={styles.rightTrack}
+              style={{ transform: rightTransform }}
+            >
+              {reversedRightPanels.map((panel, revIdx) => {
+                const originalSlideIdx = totalSlides - 1 - revIdx;
+                const isActive = currentSlide === originalSlideIdx;
+
+                return (
+                  <div
+                    key={`right-${revIdx}`}
+                    className={`${styles.slidePanel} ${
+                      isActive ? styles.activeSlide : ""
+                    } ${
+                      panel.type === "image"
+                        ? styles.imagePanel
+                        : styles.textPanel
+                    }`}
+                  >
+                    {panel.type === "image" ? (
+                      <>
+                        {panel.video && (
+                          <video
+                            ref={(el) => {
+                              videoRefs.current[originalSlideIdx] = el;
+                            }}
+                            className={styles.slideVideo}
+                            src={panel.video}
+                            muted
+                            loop
+                            playsInline
+                            preload="auto"
+                          />
+                        )}
+                        <div className={styles.imageOverlayGradient} />
+                        {panel.cursiveOverlay && (
+                          <span className={styles.cursiveOverlay}>
+                            {panel.cursiveOverlay}
+                          </span>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <div
+                          className={styles.bgIllustration}
+                          style={{
+                            backgroundImage: `url(${panel.bgIllustration})`,
+                          }}
+                        />
+                        <div className={styles.textContent}>
+                          <h2 className={styles.title}>{panel.title}</h2>
+                          <p className={styles.description}>
+                            {panel.description}
+                          </p>
+                          <div className={styles.buttonWrapper}>
+                            <button
+                              className={styles.readMoreBtn}
+                              onClick={handleExploreClick}
+                            >
+                              {panel.btnText}
+                            </button>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Vertical Pagination Dots (Matches Rosebud) */}
-      <div className={styles.paginationHolder} aria-label="Slider Pagination">
-        {slidesData.map((s, idx) => (
-          <button
-            key={`dot-${s.id}`}
-            className={`${styles.dotButton} ${
-              currentSlide === idx ? styles.dotActive : ""
-            }`}
-            onClick={() => goToSlide(idx)}
-            aria-label={`Go to slide ${idx + 1}`}
-          >
-            <span className={styles.dotCircle} />
-            <span className={styles.dotTooltip}>
-              0{idx + 1} {s.left.type === "text" ? s.left.title : s.right.title}
-            </span>
-          </button>
-        ))}
+        {/* Vertical Pagination Dots */}
+        <div className={styles.paginationHolder} aria-label="Slider Pagination">
+          {slidesData.map((s, idx) => (
+            <button
+              key={`dot-${s.id}`}
+              className={`${styles.dotButton} ${
+                currentSlide === idx ? styles.dotActive : ""
+              }`}
+              onClick={() => handleDotClick(idx)}
+              aria-label={`Go to slide ${idx + 1}`}
+            >
+              <span className={styles.dotCircle} />
+              <span className={styles.dotTooltip}>
+                0{idx + 1} {s.left.type === "text" ? s.left.title : s.right.title}
+              </span>
+            </button>
+          ))}
+        </div>
       </div>
     </section>
   );
