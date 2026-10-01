@@ -193,29 +193,22 @@
   z-index: 10;
 }
 
-.quoteMarkLeft {
-  left: -16px;
-  bottom: -26px;
-  width: 52px;
-  height: 42px;
-  color: #ffccd5;
-}
-
+.quoteMarkLeft,
 .quoteMarkRight {
-  right: -16px;
-  bottom: -26px;
-  width: 52px;
+  right: 28px;
+  bottom: -22px;
+  width: 48px;
   height: 42px;
-  color: #ffccd5;
+  color: #fbcfe8;
 }
 
 .quoteMarkCenter {
-  color: #ff2d6c;
-  width: 66px;
-  height: 54px;
-  bottom: -32px;
-  right: -20px;
-  filter: drop-shadow(0 4px 12px rgba(255, 45, 108, 0.28));
+  color: #ff0055;
+  width: 58px;
+  height: 50px;
+  bottom: -25px;
+  right: 28px;
+  filter: drop-shadow(0 4px 12px rgba(255, 0, 85, 0.22));
 }
 
 /* ================= NAVIGATION BUTTONS ================= */

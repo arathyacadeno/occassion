@@ -7,6 +7,14 @@ export const metadata: Metadata = {
   description: "Deliciously crafted cakes made to make every celebration sweeter.",
 };
 
+const CAKE_TABS = [
+  { id: "all", label: "All Items" },
+  { id: "birthday", label: "Birthday" },
+  { id: "anniversary", label: "Anniversary" },
+  { id: "chocolate", label: "Chocolate Cakes" },
+  { id: "fruit", label: "Fruit & Berry" },
+];
+
 export default function CakesCategoryPage() {
   const cakeProducts = getProductsByCategory("cakes");
 
@@ -15,6 +23,7 @@ export default function CakesCategoryPage() {
       title="Cakes"
       description="Deliciously crafted cakes made to make every celebration sweeter."
       products={cakeProducts}
+      filterTabs={CAKE_TABS}
     />
   );
 }

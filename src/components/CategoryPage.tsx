@@ -62,6 +62,12 @@ export default function CategoryPage({
       if (activeFilter === "lilies") {
         return text.includes("lily") || text.includes("lilies");
       }
+      if (activeFilter === "chocolate") {
+        return text.includes("chocolate") || text.includes("truffle") || text.includes("espresso") || text.includes("biscoff");
+      }
+      if (activeFilter === "fruit" || activeFilter === "vanilla") {
+        return text.includes("berry") || text.includes("vanilla") || text.includes("mango") || text.includes("forest") || text.includes("butterscotch");
+      }
       return true;
     });
   }, [products, activeFilter]);

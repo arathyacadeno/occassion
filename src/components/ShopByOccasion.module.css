@@ -155,47 +155,47 @@
   transform: translateY(-50%) scale(0.96);
 }
 
-/* ================= 3-CARD STAGGERED MASONRY GRID ================= */
-.gridContainer {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 32px;
-  align-items: start;
+/* Disabled Nav Button */
+.navBtnDisabled {
+  opacity: 0.35 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  box-shadow: none !important;
+}
+
+/* ================= 1-CARD SMOOTH CONTINUOUS TRACK ================= */
+.viewport {
   width: 100%;
-  padding-bottom: 58px; /* Room for lower center overlapping pill */
+  overflow: hidden;
+  padding-top: 16px;
+  padding-bottom: 64px; /* Room for card shadow & hanging pill labels without clipping */
+  margin: 0 auto;
+  touch-action: pan-y;
+  user-select: none;
 }
 
-/* Smooth Slide Transition Animation */
-.slideTransition {
-  animation: slideCrossFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+.track {
+  --gap: 40px;
+  --visible-count: 3;
+  display: flex;
+  gap: var(--gap, 40px);
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
 }
 
-@keyframes slideCrossFade {
-  0% {
-    opacity: 0.25;
-    transform: translateY(10px) scale(0.985);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+.cardWrapper {
+  flex: 0 0 calc((100% - (var(--visible-count, 3) - 1) * var(--gap, 40px)) / var(--visible-count, 3));
+  min-width: 0;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
 }
 
-/* Staggered arrangement matching reference image:
-   - Left card: standard height (margin-top: 0)
-   - Center card: positioned 48px lower
-   - Right card: standard height (margin-top: 0)
-*/
-.staggerLeft {
-  margin-top: 0px;
+.staggerSide {
+  transform: translateY(0px);
 }
 
 .staggerCenter {
-  margin-top: 48px;
-}
-
-.staggerRight {
-  margin-top: 0px;
+  transform: translateY(48px);
 }
 
 /* ================= CARD LINK & ARTICLE ================= */
@@ -350,35 +350,28 @@
     max-width: 860px;
   }
   .prevBtn {
-    left: -58px;
-  }
-  .nextBtn {
-    right: -58px;
-  }
-}
-
-/* Tablet */
-@media (max-width: 860px) {
-  .carouselContainer {
-    max-width: 680px;
-  }
-  .prevBtn {
     left: -54px;
   }
   .nextBtn {
     right: -54px;
   }
+}
 
-  .gridContainer {
-    gap: 18px;
+/* Tablet (2 cards visible) */
+@media (max-width: 960px) {
+  .carouselContainer {
+    max-width: 700px;
   }
-
+  .track {
+    --gap: 24px;
+    --visible-count: 2;
+  }
   .staggerCenter {
-    margin-top: 32px;
+    transform: translateY(28px);
   }
 }
 
-/* Mobile: Single-column cards */
+/* Mobile (1 card visible) */
 @media (max-width: 640px) {
   .sectionWrapper {
     padding: 60px 0 80px 0;
@@ -393,27 +386,26 @@
   }
 
   .prevBtn {
-    left: -12px;
+    left: -16px;
     top: 48%;
   }
 
   .nextBtn {
-    right: -12px;
+    right: -16px;
     top: 48%;
   }
 
-  .gridContainer {
-    grid-template-columns: 1fr;
-    gap: 46px;
-    max-width: 320px;
-    margin: 0 auto;
-    padding-bottom: 24px;
+  .track {
+    --gap: 16px;
+    --visible-count: 1;
   }
 
-  .staggerLeft,
-  .staggerCenter,
-  .staggerRight {
-    margin-top: 0px;
+  .staggerCenter {
+    transform: translateY(0px);
+  }
+
+  .viewport {
+    padding-bottom: 48px;
   }
 
   .imageFrame {

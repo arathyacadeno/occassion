@@ -9,86 +9,95 @@ interface OccasionCardItem {
   name: string;
   image: string;
   href: string;
-  staggerClass: string;
-  delay: string;
   whatsappMessage: string;
 }
 
-const OCCASIONS_SLIDES: OccasionCardItem[][] = [
-  // Slide 1 (3 cards featuring uploaded images)
-  [
-    {
-      id: "birthday",
-      name: "Birthday",
-      image: "/images/occasion-birthday.jpg",
-      href: "/flower-bouquets?occasion=birthday",
-      staggerClass: styles.staggerLeft,
-      delay: "0.06s",
-      whatsappMessage:
-        "Hello Occassions Florist Calicut, I would like to order fresh flowers for a Birthday celebration.",
-    },
-    {
-      id: "anniversary",
-      name: "Anniversary",
-      image: "/images/occasion-anniversary.jpg",
-      href: "/flower-bouquets?occasion=anniversary",
-      staggerClass: styles.staggerCenter,
-      delay: "0.18s",
-      whatsappMessage:
-        "Hello Occassions Florist Calicut, I would like to explore luxury flowers for an Anniversary.",
-    },
-    {
-      id: "best-wishes",
-      name: "Best Wishes",
-      image: "/images/occasion-best-wishes.jpg",
-      href: "/flower-bouquets?occasion=best-wishes",
-      staggerClass: styles.staggerRight,
-      delay: "0.3s",
-      whatsappMessage:
-        "Hello Occassions Florist Calicut, I would like to order cheerful Best Wishes flowers.",
-    },
-  ],
-  // Slide 2 (3 cards)
-  [
-    {
-      id: "thank-you",
-      name: "Thank You",
-      image: "/images/occasion-thank-you.jpg",
-      href: "/flower-bouquets?occasion=thank-you",
-      staggerClass: styles.staggerLeft,
-      delay: "0.06s",
-      whatsappMessage:
-        "Hello Occassions Florist Calicut, I would like to send a Thank You flower arrangement.",
-    },
-    {
-      id: "wedding",
-      name: "Wedding",
-      image: "/images/occasion-wedding.jpg",
-      href: "/flower-bouquets?occasion=wedding",
-      staggerClass: styles.staggerCenter,
-      delay: "0.18s",
-      whatsappMessage:
-        "Hello Occassions Florist Calicut, I would like to inquire about Wedding floral decor and bridal bouquets.",
-    },
-    {
-      id: "congratulations",
-      name: "Congratulations",
-      image: "/images/occasion-congratulations.png",
-      href: "/flower-bouquets?occasion=congratulations",
-      staggerClass: styles.staggerRight,
-      delay: "0.3s",
-      whatsappMessage:
-        "Hello Occassions Florist Calicut, I would like to send Congratulations flower bouquets.",
-    },
-  ],
+const OCCASIONS_ITEMS: OccasionCardItem[] = [
+  {
+    id: "birthday",
+    name: "Birthday",
+    image: "/images/occasion-birthday.jpg",
+    href: "/flower-bouquets?occasion=birthday",
+    whatsappMessage:
+      "Hello Occassions Florist Calicut, I would like to order fresh flowers for a Birthday celebration.",
+  },
+  {
+    id: "anniversary",
+    name: "Anniversary",
+    image: "/images/occasion-anniversary.jpg",
+    href: "/flower-bouquets?occasion=anniversary",
+    whatsappMessage:
+      "Hello Occassions Florist Calicut, I would like to explore luxury flowers for an Anniversary.",
+  },
+  {
+    id: "best-wishes",
+    name: "Best Wishes",
+    image: "/images/occasion-best-wishes.jpg",
+    href: "/flower-bouquets?occasion=best-wishes",
+    whatsappMessage:
+      "Hello Occassions Florist Calicut, I would like to order cheerful Best Wishes flowers.",
+  },
+  {
+    id: "thank-you",
+    name: "Thank You",
+    image: "/images/occasion-thank-you.jpg",
+    href: "/flower-bouquets?occasion=thank-you",
+    whatsappMessage:
+      "Hello Occassions Florist Calicut, I would like to send a Thank You flower arrangement.",
+  },
+  {
+    id: "wedding",
+    name: "Wedding",
+    image: "/images/occasion-wedding.jpg",
+    href: "/flower-bouquets?occasion=wedding",
+    whatsappMessage:
+      "Hello Occassions Florist Calicut, I would like to inquire about Wedding floral decor and bridal bouquets.",
+  },
+  {
+    id: "congratulations",
+    name: "Congratulations",
+    image: "/images/occasion-congratulations.png",
+    href: "/flower-bouquets?occasion=congratulations",
+    whatsappMessage:
+      "Hello Occassions Florist Calicut, I would like to send Congratulations flower bouquets.",
+  },
 ];
 
 export default function ShopByOccasion() {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [index, setIndex] = useState(0);
+  const [visibleCount, setVisibleCount] = useState(3);
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement | null>(null);
 
+  const pointerStartX = useRef<number | null>(null);
+  const isPointerDown = useRef(false);
+
+  // Update visible count based on responsive breakpoints
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        setVisibleCount(1);
+      } else if (window.innerWidth < 960) {
+        setVisibleCount(2);
+      } else {
+        setVisibleCount(3);
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const total = OCCASIONS_ITEMS.length;
+  const maxIndex = Math.max(0, total - visibleCount);
+
+  // Keep index within bounds if window resizes
+  useEffect(() => {
+    setIndex((prev) => Math.min(prev, maxIndex));
+  }, [maxIndex]);
+
+  // Observer for fade-in on scroll
   useEffect(() => {
     const target = sectionRef.current;
     if (!target) return;
@@ -110,24 +119,36 @@ export default function ShopByOccasion() {
     return () => observer.disconnect();
   }, []);
 
-  const handleSlideChange = (nextIndex: number) => {
-    if (isTransitioning || nextIndex === currentSlide) return;
-    setIsTransitioning(true);
-    setCurrentSlide(nextIndex);
-    setTimeout(() => {
-      setIsTransitioning(false);
-    }, 400);
+  // Move slider exactly ONE card at a time
+  const handlePrev = () => {
+    setIndex((i) => Math.max(i - 1, 0));
   };
 
   const handleNext = () => {
-    handleSlideChange((currentSlide + 1) % OCCASIONS_SLIDES.length);
+    setIndex((i) => Math.min(i + 1, maxIndex));
   };
 
-  const handlePrev = () => {
-    handleSlideChange(
-      (currentSlide - 1 + OCCASIONS_SLIDES.length) % OCCASIONS_SLIDES.length
-    );
+  // Pointer / Touch Swipe Events
+  const handlePointerDown = (e: React.PointerEvent) => {
+    pointerStartX.current = e.clientX;
+    isPointerDown.current = true;
   };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (!isPointerDown.current || pointerStartX.current === null) return;
+    const diff = pointerStartX.current - e.clientX;
+    isPointerDown.current = false;
+    pointerStartX.current = null;
+
+    if (diff > 45) {
+      handleNext();
+    } else if (diff < -45) {
+      handlePrev();
+    }
+  };
+
+  const isPrevDisabled = index === 0;
+  const isNextDisabled = index >= maxIndex;
 
   return (
     <section
@@ -137,7 +158,7 @@ export default function ShopByOccasion() {
       aria-label="Shop by Occasion"
     >
       <div className={styles.container}>
-        {/* Section Header with Floral Divider Structure */}
+        {/* Section Header with Floral Divider */}
         <div
           className={`${styles.sectionHeader} ${
             isVisible ? styles.headerInView : ""
@@ -146,7 +167,6 @@ export default function ShopByOccasion() {
           <span className={styles.subtitle}>Special Moments</span>
           <h2 className={styles.mainTitle}>Shop By Occasion</h2>
 
-          {/* Decorative floral icon with thin horizontal lines */}
           <div className={styles.floralDivider} aria-hidden="true">
             <span className={styles.dividerLine} />
             <span className={styles.dividerIcon}>
@@ -182,42 +202,70 @@ export default function ShopByOccasion() {
           </div>
         </div>
 
-        {/* 3-Card Carousel Container */}
+        {/* Carousel Container with Arrows and 1-Card Shift Track */}
         <div className={styles.carouselContainer}>
           {/* Previous Button */}
           <button
             type="button"
-            className={`${styles.navBtn} ${styles.prevBtn}`}
+            className={`${styles.navBtn} ${styles.prevBtn} ${
+              isPrevDisabled ? styles.navBtnDisabled : ""
+            }`}
             onClick={handlePrev}
+            disabled={isPrevDisabled}
             aria-label="Previous occasion cards"
           >
             <ChevronLeft size={22} strokeWidth={2} />
           </button>
 
-          {/* Exactly 3 Cards Grid */}
+          {/* Viewport with padding so pill labels and shadows are never clipped */}
           <div
-            className={`${styles.gridContainer} ${
-              isTransitioning ? styles.slideTransition : ""
-            }`}
-            key={currentSlide}
+            className={styles.viewport}
+            onPointerDown={handlePointerDown}
+            onPointerUp={handlePointerUp}
           >
-            {OCCASIONS_SLIDES[currentSlide].map((item) => (
-              <OccasionCard key={item.id} item={item} isVisible={isVisible} />
-            ))}
+            <div
+              className={styles.track}
+              style={
+                {
+                  "--index": index,
+                  "--visible-count": visibleCount,
+                  transform: `translateX(calc(-1 * ${index} * ((100% + var(--gap, 40px)) / var(--visible-count, 3))))`,
+                } as React.CSSProperties
+              }
+            >
+              {OCCASIONS_ITEMS.map((item, cardIdx) => {
+                // Determine stagger based on current visible position:
+                // When 3 cards visible, relative position 1 (center) is lowered
+                const visiblePos = cardIdx - index;
+                const isCenter = visibleCount === 3 && visiblePos === 1;
+
+                return (
+                  <div
+                    key={item.id}
+                    className={`${styles.cardWrapper} ${
+                      isCenter ? styles.staggerCenter : styles.staggerSide
+                    }`}
+                  >
+                    <OccasionCard item={item} isVisible={isVisible} />
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
           {/* Next Button */}
           <button
             type="button"
-            className={`${styles.navBtn} ${styles.nextBtn}`}
+            className={`${styles.navBtn} ${styles.nextBtn} ${
+              isNextDisabled ? styles.navBtnDisabled : ""
+            }`}
             onClick={handleNext}
+            disabled={isNextDisabled}
             aria-label="Next occasion cards"
           >
             <ChevronRight size={22} strokeWidth={2} />
           </button>
         </div>
-
-
       </div>
     </section>
   );
@@ -239,12 +287,11 @@ function OccasionCard({
       href={whatsappUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className={`${styles.cardLink} ${item.staggerClass}`}
+      className={styles.cardLink}
       aria-label={`Shop flowers for ${item.name}`}
     >
       <article
         className={`${styles.card} ${isVisible ? styles.cardVisible : ""}`}
-        style={{ "--anim-delay": item.delay } as React.CSSProperties}
       >
         {/* Large Rounded Image Frame */}
         <div className={styles.imageFrame}>
@@ -256,7 +303,7 @@ function OccasionCard({
           />
         </div>
 
-        {/* Gold/Mustard Pill Label with Dotted Rounded Outline */}
+        {/* Gold / Pink Pill Label with Dotted Rounded Outline */}
         <div className={styles.pillContainer}>
           <div className={styles.pillDottedOuter}>
             <span className={styles.pillSolidInner}>{item.name}</span>
