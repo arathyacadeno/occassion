@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import {
   Star,
   Truck,
@@ -130,19 +129,6 @@ export default function ProductInfo({ product }: ProductInfoProps) {
 
   return (
     <div className={styles.infoWrapper}>
-      {/* 1. Breadcrumbs: Home / Flower / Birthday Sunflower Dream Bouquet */}
-      <nav className={styles.breadcrumb} aria-label="Breadcrumb">
-        <Link href="/" className={styles.breadcrumbLink}>
-          Home
-        </Link>
-        <span className={styles.breadcrumbSep}>/</span>
-        <Link href={`/${product.category}`} className={styles.breadcrumbLink}>
-          {product.categoryLabel}
-        </Link>
-        <span className={styles.breadcrumbSep}>/</span>
-        <span className={styles.breadcrumbCurrent}>{product.name}</span>
-      </nav>
-
       {/* 2. Title & Rating Badge Pill */}
       <div className={styles.titleRatingRow}>
         <h1 className={styles.productName}>{product.name}</h1>
