@@ -7,28 +7,31 @@
 }
 
 .innerContainer {
-  max-width: 560px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
 .title {
-  font-family: var(--font-sans, "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
-  font-size: 26px;
-  font-weight: 500;
-  letter-spacing: -0.02em;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 40px;
+  line-height: 100%;
+  letter-spacing: 0.05em; /* 5% */
   color: #111827;
-  margin: 0 0 10px 0;
-  line-height: 1.25;
+  margin: 30px 0 16px 0;
 }
 
 .description {
-  font-family: var(--font-sans, "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
-  font-size: 14px;
-  line-height: 1.6;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 20px;
+  line-height: 140%;
+  letter-spacing: 0.05em; /* 5% */
   color: #4b5563;
   margin: 0 auto;
-  max-width: 560px;
-  font-weight: 400;
+  max-width: 880px;
   white-space: pre-line;
 }
 
@@ -38,10 +41,14 @@
   }
 
   .title {
-    font-size: 22px;
+    font-size: 28px;
+    line-height: 1.15;
+    letter-spacing: 0.02em;
   }
 
   .description {
-    font-size: 13.5px;
+    font-size: 16px;
+    line-height: 130%;
+    letter-spacing: 0.02em;
   }
 }

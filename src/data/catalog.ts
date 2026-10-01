@@ -85,33 +85,6 @@ export const CATALOG_PRODUCTS: Product[] = [
     badge: "Free Delivery",
   },
   {
-    id: "flower-7",
-    slug: "fragrant-casablanca-lily-cascade",
-    name: "Fragrant Casablanca Lily Cascade",
-    price: 1599,
-    originalPrice: 1899,
-    category: "flower",
-    categoryLabel: "Flowers",
-    image: "/images/flower-white-lilies.jpg",
-    images: [
-      "/images/flower-white-lilies.jpg",
-      "/images/flower-white-roses.jpg",
-      "/images/bouquet-pastel-luxe.png",
-    ],
-    rating: 5.0,
-    reviewsCount: 110,
-    description:
-      "Stunning star-shaped Oriental Casablanca lilies celebrated for pure fragrance and dramatic sculptured blooms. Hand-tied with Italian ruscus.",
-    deliveryInfo: "Carefully packaged with bud guards for maximum vase life.",
-    offers: ["Free glass vase on orders above ₹2000"],
-    includes: [
-      "8 Multi-Bloom Casablanca Stems",
-      "Broad Italian Ruscus Foliage",
-      "Luxury Korean Flower Wrap",
-    ],
-    badge: "Aromatic Luxury",
-  },
-  {
     id: "flower-8",
     slug: "crimson-blush-ribbon-basket",
     name: "Crimson & Blush Ribbon Basket",

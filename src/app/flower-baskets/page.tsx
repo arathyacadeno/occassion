@@ -14,7 +14,7 @@ export default function FlowerBasketsPage() {
   return (
     <CategoryPage
       title="Flowers for Every Moment"
-      description="Artisanal hand-woven baskets brimming with fresh roses, peonies, baby's breath & fragrant greenery."
+      description={"Artisanal hand-woven baskets brimming with\nfresh roses, peonies, baby's breath & fragrant greenery."}
       products={flowerProducts}
     />
   );
