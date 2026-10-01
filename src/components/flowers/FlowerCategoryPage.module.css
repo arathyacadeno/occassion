@@ -2,12 +2,13 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #ffffff;
+  background-color: #FFEDF1;
 }
 
 .mainContent {
   flex: 1;
   padding: 0 32px 80px;
+  background-color: #FFEDF1;
 }
 
 .contentInner {

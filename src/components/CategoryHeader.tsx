@@ -9,8 +9,10 @@ interface CategoryHeaderProps {
 export default function CategoryHeader({ title, description }: CategoryHeaderProps) {
   return (
     <section className={styles.headerWrapper} aria-label={`${title} Category Header`}>
-      <h1 className={styles.title}>{title}</h1>
-      <p className={styles.description}>{description}</p>
+      <div className={styles.innerContainer}>
+        <h1 className={styles.title}>{title}</h1>
+        <p className={styles.description}>{description}</p>
+      </div>
     </section>
   );
 }

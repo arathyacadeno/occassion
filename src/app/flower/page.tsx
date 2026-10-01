@@ -3,8 +3,9 @@ import CategoryPage from "@/components/CategoryPage";
 import { getProductsByCategory } from "@/data/catalog";
 
 export const metadata: Metadata = {
-  title: "Flowers | Occassions Florist Calicut",
-  description: "Beautifully crafted floral arrangements for every special moment.",
+  title: "Flowers for Every Moment | Occassions Florist Calicut",
+  description:
+    "Artisanal hand-woven baskets brimming with fresh roses, peonies, baby's breath & fragrant greenery.",
 };
 
 export default function FlowerCategoryPage() {
@@ -12,8 +13,8 @@ export default function FlowerCategoryPage() {
 
   return (
     <CategoryPage
-      title="Flowers"
-      description="Beautifully crafted floral arrangements for every special moment."
+      title="Flowers for Every Moment"
+      description="Artisanal hand-woven baskets brimming with fresh roses, peonies, baby's breath & fragrant greenery."
       products={flowerProducts}
     />
   );

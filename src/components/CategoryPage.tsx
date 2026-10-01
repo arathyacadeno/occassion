@@ -23,11 +23,11 @@ export default function CategoryPage({
         minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
-        backgroundColor: "#ffffff",
+        backgroundColor: "#FFEDF1",
       }}
     >
       <Navbar />
-      <main style={{ flex: 1 }}>
+      <main style={{ flex: 1, backgroundColor: "#FFEDF1" }}>
         <CategoryHeader title={title} description={description} />
         <ProductGrid products={products} ariaLabel={`${title} Collection`} />
         <CategoryQuotes />
