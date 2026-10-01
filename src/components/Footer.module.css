@@ -113,9 +113,15 @@
 
 .logoImg {
   width: auto;
-  height: 44px;
+  height: 100px;
+  max-width: 240px;
   object-fit: contain;
   display: block;
+  transition: transform 0.25s ease;
+}
+
+.logoLink:hover .logoImg {
+  transform: scale(1.03);
 }
 
 /* Brand quote wraps into exactly 3 lines with max-width ~290px */
@@ -373,6 +379,11 @@
   .footerCard {
     border-radius: 28px;
     padding: 44px 24px 70px 24px;
+  }
+
+  .logoImg {
+    height: 80px;
+    max-width: 200px;
   }
 
   .mainGrid {
