@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import { Minus, Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import React, { useState } from "react";
+import { Minus, Plus } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import styles from "./RecommendedAddons.module.css";
 
@@ -42,55 +42,15 @@ export const ADDON_PRODUCTS: AddonProduct[] = [
     image: "/images/addons/soft-toys.jpg",
     category: "Gifts",
   },
-  {
-    id: "addon-red-velvet",
-    name: "Red Velvet Cake",
-    price: 80,
-    image: "/images/addons/red-velvet.jpg",
-    category: "Cakes",
-  },
-  {
-    id: "addon-heart-balloons",
-    name: "Heart Foil Balloons",
-    price: 80,
-    image: "/images/addons/heart-balloons.jpg",
-    category: "Gifts",
-  },
 ];
 
 export default function RecommendedAddons() {
   const { addItem } = useCart();
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
 
   // Initialized with Cadbury Silk at 4 to match reference image, others at 0
   const [quantities, setQuantities] = useState<Record<string, number>>({
     "addon-cadbury-silk": 4,
   });
-
-  const checkScroll = () => {
-    if (carouselRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
-      setCanScrollLeft(scrollLeft > 10);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
-    }
-  };
-
-  useEffect(() => {
-    checkScroll();
-    window.addEventListener("resize", checkScroll);
-    return () => window.removeEventListener("resize", checkScroll);
-  }, []);
-
-  const scroll = (direction: "left" | "right") => {
-    if (carouselRef.current) {
-      const cardWidth = 204; // 190px card + 14px gap
-      const scrollAmount = direction === "left" ? -cardWidth * 2 : cardWidth * 2;
-      carouselRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
-      setTimeout(checkScroll, 350);
-    }
-  };
 
   const handleIncrement = (id: string) => {
     setQuantities((prev) => {
@@ -147,42 +107,10 @@ export default function RecommendedAddons() {
 
   return (
     <section className={styles.addonsSection} aria-label="Recommended Addon Products">
-      {/* Header Row: Title on Left, Carousel Navigation Arrows on Right */}
-      <div className={styles.headerRow}>
-        <h2 className={styles.sectionTitle}>Recommended Addon Products</h2>
+      <h2 className={styles.sectionTitle}>Recommended Addon Products</h2>
 
-        <div className={styles.carouselControls}>
-          <button
-            type="button"
-            onClick={() => scroll("left")}
-            disabled={!canScrollLeft}
-            className={`${styles.carouselArrowBtn} ${
-              !canScrollLeft ? styles.disabledArrow : ""
-            }`}
-            aria-label="Previous addon products"
-          >
-            <ChevronLeft size={20} strokeWidth={2.2} />
-          </button>
-          <button
-            type="button"
-            onClick={() => scroll("right")}
-            disabled={!canScrollRight}
-            className={`${styles.carouselArrowBtn} ${
-              !canScrollRight ? styles.disabledArrow : ""
-            }`}
-            aria-label="Next addon products"
-          >
-            <ChevronRight size={20} strokeWidth={2.2} />
-          </button>
-        </div>
-      </div>
-
-      {/* Smooth Horizontal Carousel Track */}
-      <div
-        ref={carouselRef}
-        onScroll={checkScroll}
-        className={styles.carouselTrack}
-      >
+      {/* Cards Row - Aligned to Left */}
+      <div className={styles.addonsTrack}>
         {ADDON_PRODUCTS.map((product) => {
           const qty = quantities[product.id] || 0;
 
