@@ -314,6 +314,37 @@ export const CATALOG_PRODUCTS: Product[] = [
 
   // ==================== BOUQUET PRODUCTS (/flower-bouquets) ====================
   {
+    id: "bouquet-purple-lily-lavender",
+    slug: "royal-purple-lily-lavender-bouquet",
+    name: "Royal Purple Lily & Lavender Bouquet",
+    price: 2499,
+    originalPrice: 2999,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/purple-lily-lavender-bouquet.jpg",
+    images: [
+      "/images/purple-lily-lavender-bouquet.jpg",
+      "/images/lily-celestial-daisy.jpg",
+      "/images/flower-white-lilies.jpg",
+    ],
+    rating: 5.0,
+    reviewsCount: 68,
+    description:
+      "Bespoke hand-tied bouquet featuring enchanting purple lilies, heirloom lavender garden roses, English lavender stalks, and delicate lilac blossoms finished with a pure silk ribbon bow.",
+    deliveryInfo: "Same-day express delivery across Calicut within 3 hours.",
+    offers: [
+      "Free personalized greeting card with wax seal",
+      "Flat 10% off with code OCCASIONS10",
+    ],
+    includes: [
+      "Exotic Purple Lilies & Roses",
+      "English Lavender Sprigs",
+      "Lilac & Hydrangea Accents",
+      "Pure White Silk Ribbon Bow",
+    ],
+    badge: "New Arrival",
+  },
+  {
     id: "bouquet-9",
     slug: "royal-purple-tulip-lavender-bouquet",
     name: "Royal Purple Tulip & Lavender Bouquet",
@@ -1259,9 +1290,13 @@ export function getFlowerBouquets(): Product[] {
   return CATALOG_PRODUCTS.filter(
     (p) =>
       p.category === "flower" &&
+      !p.name.toLowerCase().includes("basket") &&
+      !p.name.toLowerCase().includes("box") &&
       (p.name.toLowerCase().includes("bouquet") ||
         p.description.toLowerCase().includes("bouquet") ||
-        p.description.toLowerCase().includes("hand-tied"))
+        p.description.toLowerCase().includes("hand-tied") ||
+        p.id.startsWith("bouquet-") ||
+        p.id === "flower-lily-celestial-daisy")
   );
 }
 

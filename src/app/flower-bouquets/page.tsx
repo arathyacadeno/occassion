@@ -10,9 +10,10 @@ export const metadata: Metadata = {
 
 const BOUQUET_TABS = [
   { id: "all", label: "All Items" },
+  { id: "lilies", label: "Lilies" },
+  { id: "roses", label: "Roses" },
   { id: "birthday", label: "Birthday" },
   { id: "anniversary", label: "Anniversary" },
-  { id: "roses", label: "Roses" },
   { id: "bouquets", label: "Signature Bouquets" },
 ];
 
