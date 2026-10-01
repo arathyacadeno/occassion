@@ -1,43 +1,56 @@
 /* ================= PRODUCT GALLERY =================
-   Vertical thumbnail column on left + Large hero image with expand icon
+   Matches reference layout:
+   - 4 thumbnails on left with flex: 1 matching main image height exactly
+   - 12px gaps between thumbnails, align-items: stretch
+   - Light pink background, 14px thumbnail radius, 20px main image radius
+   - White circle wishlist icon button in top-right corner
+   - Mobile responsive: main image on top, 4 thumbnails in row below
 ==================================================== */
+
 .galleryWrapper {
   display: flex;
   gap: 16px;
+  align-items: stretch;
   width: 100%;
-  align-items: flex-start;
+  background-color: #FFEDF1;
+  padding: 16px;
+  border-radius: 28px;
+  box-sizing: border-box;
 }
 
-/* Vertical thumbnail rail (6 thumbnails) */
+/* Left thumbnail column (exactly 4 thumbnails, flex: 1 each) */
 .thumbnailList {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  width: 68px;
+  gap: 12px;
+  width: 90px;
   flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .thumbnailBtn {
-  width: 68px;
-  height: 68px;
-  border-radius: 8px;
-  border: 1.5px solid #e2e8f0;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  border-radius: 14px;
+  border: 2px solid transparent;
   padding: 0;
   background-color: #ffffff;
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: border-color 0.2s ease, transform 0.2s ease;
   outline: none;
+  box-sizing: border-box;
+  display: block;
 }
 
 .thumbnailBtn:hover {
-  border-color: #94a3b8;
+  transform: scale(1.02);
 }
 
 .thumbnailActive {
   border-color: #111827;
   border-width: 2px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 .thumbnailImg {
@@ -51,12 +64,11 @@
 .mainImageContainer {
   flex: 1;
   position: relative;
-  background-color: #fbfbfb;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 1px solid #ededed;
   aspect-ratio: 1 / 1.05;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  border-radius: 20px;
+  overflow: hidden;
+  background-color: #ffffff;
+  box-sizing: border-box;
   cursor: zoom-in;
 }
 
@@ -65,40 +77,57 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.4s ease;
+  transition: transform 0.35s ease;
 }
 
 .mainImageContainer:hover .mainImage {
   transform: scale(1.02);
 }
 
-/* Expand / Zoom button in bottom right */
-.expandBtn {
+/* White Circle Heart / Wishlist Button (Top-Right) */
+.wishlistBtn {
   position: absolute;
-  bottom: 12px;
-  right: 12px;
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(6px);
-  border: 1px solid #e2e8f0;
+  top: 18px;
+  right: 18px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #1e293b;
   cursor: pointer;
-  transition: all 0.2s ease;
-  z-index: 5;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  color: #111827;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  z-index: 10;
+  padding: 0;
 }
 
-.expandBtn:hover {
-  background: #ffffff;
-  transform: scale(1.06);
+.wishlistBtn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
 }
 
-/* Fullscreen Lightbox Modal */
+.heartIcon {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  transition: fill 0.2s ease, stroke 0.2s ease, transform 0.2s ease;
+}
+
+.wishlistActive {
+  color: #ec4899;
+}
+
+.wishlistActive .heartIcon {
+  fill: #ec4899;
+  stroke: #ec4899;
+}
+
+/* Fullscreen Zoom Lightbox Modal */
 .modalBackdrop {
   position: fixed;
   inset: 0;
@@ -147,21 +176,48 @@
   transform: scale(1.15);
 }
 
-@media (max-width: 768px) {
+/* Mobile Responsive (< 640px):
+   Main image on top, 4 thumbnails in horizontal row below, each equal width */
+@media (max-width: 640px) {
   .galleryWrapper {
-    flex-direction: column-reverse;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 20px;
+  }
+
+  .mainImageContainer {
+    width: 100%;
+    aspect-ratio: 1 / 1.05;
+    border-radius: 16px;
   }
 
   .thumbnailList {
     flex-direction: row;
     width: 100%;
-    overflow-x: auto;
-    padding-bottom: 6px;
+    height: auto;
+    gap: 10px;
   }
 
   .thumbnailBtn {
-    width: 60px;
-    height: 60px;
-    flex-shrink: 0;
+    flex: 1;
+    width: auto;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    min-height: 0;
+    min-width: 0;
+    border-radius: 10px;
+  }
+
+  .wishlistBtn {
+    top: 12px;
+    right: 12px;
+    width: 38px;
+    height: 38px;
+  }
+
+  .heartIcon {
+    width: 18px;
+    height: 18px;
   }
 }

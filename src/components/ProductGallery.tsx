@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Maximize2, X } from "lucide-react";
+import { Heart, X } from "lucide-react";
 import styles from "./ProductGallery.module.css";
 
 interface ProductGalleryProps {
@@ -13,25 +13,28 @@ export default function ProductGallery({
   images,
   productName,
 }: ProductGalleryProps) {
-  // Ensure at least 6 thumbnails to match the reference layout
-  let displayImages = images.length > 0 ? [...images] : ["/images/sunflower-bouquet.jpg"];
-  while (displayImages.length < 6) {
-    displayImages = [...displayImages, ...images].slice(0, 6);
+  // Ensure we have valid images and slice exactly 4 thumbnails
+  let displayImages =
+    images && images.length > 0 ? [...images] : ["/images/sunflower-bouquet.jpg"];
+  while (displayImages.length < 4) {
+    displayImages = [...displayImages, ...displayImages];
   }
+  const thumbnails = displayImages.slice(0, 4);
 
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isZoomOpen, setIsZoomOpen] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(false);
 
   return (
     <>
       <div className={styles.galleryWrapper}>
-        {/* Vertical 6-thumbnail column on the left */}
+        {/* Left thumbnail column: exactly 4 thumbnails */}
         <div
           className={styles.thumbnailList}
           role="tablist"
           aria-label="Product thumbnails"
         >
-          {displayImages.slice(0, 6).map((img, idx) => (
+          {thumbnails.map((img, idx) => (
             <button
               key={idx}
               type="button"
@@ -44,31 +47,35 @@ export default function ProductGallery({
             >
               <img
                 src={img}
-                alt={`${productName} view ${idx + 1}`}
+                alt={`${productName} thumbnail ${idx + 1}`}
                 className={styles.thumbnailImg}
               />
             </button>
           ))}
         </div>
 
-        {/* Large Main Product Hero Image */}
+        {/* Right side: large main image */}
         <div className={styles.mainImageContainer}>
           <img
-            src={displayImages[selectedIndex]}
+            src={thumbnails[selectedIndex] || displayImages[selectedIndex]}
             alt={productName}
             className={styles.mainImage}
             onClick={() => setIsZoomOpen(true)}
           />
 
-          {/* Bottom Right Expand / Zoom Icon */}
+          {/* Heart / Wishlist icon button in top-right corner (white circle) */}
           <button
             type="button"
-            onClick={() => setIsZoomOpen(true)}
-            className={styles.expandBtn}
-            aria-label="Zoom image preview"
-            title="Full size preview"
+            className={`${styles.wishlistBtn} ${
+              isWishlisted ? styles.wishlistActive : ""
+            }`}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsWishlisted((prev) => !prev);
+            }}
+            aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
           >
-            <Maximize2 size={16} strokeWidth={2} />
+            <Heart size={20} strokeWidth={1.8} className={styles.heartIcon} />
           </button>
         </div>
       </div>
@@ -92,7 +99,7 @@ export default function ProductGallery({
               <X size={24} />
             </button>
             <img
-              src={displayImages[selectedIndex]}
+              src={thumbnails[selectedIndex] || displayImages[selectedIndex]}
               alt={productName}
               className={styles.modalImage}
             />
