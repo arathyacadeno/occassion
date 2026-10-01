@@ -7,6 +7,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Breadcrumb from "./Breadcrumb";
 import ProductCard from "./ProductCard";
+import RecommendedAddons from "@/components/RecommendedAddons";
 import { FlowerProduct } from "@/types";
 import { useCart } from "@/context/CartContext";
 import {
@@ -383,6 +384,9 @@ export default function ProductDetails({
               </div>
             </div>
           </div>
+
+          {/* Recommended Addon Products */}
+          <RecommendedAddons />
 
           {/* Related Products Section */}
           {relatedProducts.length > 0 && (

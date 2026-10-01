@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import ProductGallery from "@/components/ProductGallery";
 import ProductInfo from "@/components/ProductInfo";
 import ProductGrid from "@/components/ProductGrid";
+import RecommendedAddons from "@/components/RecommendedAddons";
 import { Product, getProductsByCategory } from "@/data/catalog";
 import styles from "./ProductDetailView.module.css";
 
@@ -30,6 +31,9 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
 
           <ProductInfo product={product} />
         </section>
+
+        {/* Recommended Addon Products */}
+        <RecommendedAddons />
 
         {/* You May Also Like */}
         {relatedProducts.length > 0 && (
