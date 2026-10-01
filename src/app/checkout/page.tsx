@@ -7,7 +7,6 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCheckout } from "@/context/CheckoutContext";
 import {
-  Phone,
   ShieldCheck,
   Truck,
   ArrowRight,
@@ -221,22 +220,6 @@ export default function CheckoutPage() {
                 <span className={styles.sideTotalAmount}>
                   ₹{finalTotal.toLocaleString("en-IN")}
                 </span>
-              </div>
-
-              {/* Trust Badges */}
-              <div className={styles.trustBadgesBox}>
-                <div className={styles.trustItem}>
-                  <ShieldCheck size={18} className={styles.trustIcon} />
-                  <span>100% Fresh Flower Guarantee</span>
-                </div>
-                <div className={styles.trustItem}>
-                  <Truck size={18} className={styles.trustIcon} />
-                  <span>Calicut Same-Day Delivery in 2–4 Hours</span>
-                </div>
-                <div className={styles.trustItem}>
-                  <Phone size={18} className={styles.trustIcon} />
-                  <span>Real-Time WhatsApp & SMS Order Updates</span>
-                </div>
               </div>
             </div>
           </div>
