@@ -1,14 +1,15 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
 import ProductGallery from "@/components/ProductGallery";
 import ProductInfo from "@/components/ProductInfo";
-import ProductGrid from "@/components/ProductGrid";
 import RecommendedAddons from "@/components/RecommendedAddons";
-import { Product, getProductsByCategory } from "@/data/catalog";
+import { Product, getProductsByCategory, CATALOG_PRODUCTS } from "@/data/catalog";
+import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 import styles from "./ProductDetailView.module.css";
 
 interface ProductDetailViewProps {
@@ -16,9 +17,25 @@ interface ProductDetailViewProps {
 }
 
 export default function ProductDetailView({ product }: ProductDetailViewProps) {
-  const relatedProducts = getProductsByCategory(product.category)
-    .filter((p) => p.id !== product.id)
-    .slice(0, 4);
+  const similarScrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollSimilar = (direction: "left" | "right") => {
+    if (similarScrollRef.current) {
+      const scrollAmount = direction === "left" ? -420 : 420;
+      similarScrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    }
+  };
+
+  // Similar products (up to 6 items matching reference design)
+  const categoryProducts = getProductsByCategory(product.category).filter(
+    (p) => p.id !== product.id
+  );
+  const fallbackProducts = CATALOG_PRODUCTS.filter((p) => p.id !== product.id);
+  const similarProducts = (
+    categoryProducts.length >= 6
+      ? categoryProducts
+      : [...categoryProducts, ...fallbackProducts]
+  ).slice(0, 6);
 
   const categoryLabel =
     product.category === "cakes"
@@ -56,6 +73,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
           <ProductGallery
             images={product.images}
             productName={product.name}
+            product={product}
           />
 
           <ProductInfo product={product} />
@@ -64,13 +82,109 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
         {/* Recommended Addon Products */}
         <RecommendedAddons />
 
-        {/* You May Also Like */}
-        {relatedProducts.length > 0 && (
-          <section className={styles.relatedSection}>
-            <h2 className={styles.relatedHeading}>You May Also Like</h2>
-            <ProductGrid products={relatedProducts} ariaLabel="Related Products" />
-          </section>
-        )}
+        {/* ================= RATINGS AND REVIEWS SECTION ================= */}
+        <section className={styles.reviewsSection} aria-label="Ratings and Reviews">
+          <h2 className={styles.sectionHeading}>Ratings and Reviews</h2>
+
+          {/* Rating Summary Row */}
+          <div className={styles.ratingSummaryRow}>
+            <div className={styles.starsGroup}>
+              {[...Array(4)].map((_, i) => (
+                <Star key={i} size={18} className={styles.starFilledGreen} />
+              ))}
+              <Star size={18} className={styles.starHalfGreen} />
+            </div>
+            <span className={styles.ratingScore}>{product.rating || 4.2}</span>
+            <span className={styles.ratingTagline}>Beautiful &amp; Elegant Gift</span>
+          </div>
+
+          {/* Featured Review Card */}
+          <div className={styles.reviewItemCard}>
+            <img
+              src={product.image || "/images/basket-gerberas.jpg"}
+              alt="Customer Review Photo"
+              className={styles.reviewerImg}
+            />
+            <div className={styles.reviewContent}>
+              <h3 className={styles.reviewerName}>Ashna</h3>
+              <p className={styles.reviewText}>
+                The {product.name} was absolutely beautiful. The roses were
+                fresh, neatly arranged, and the presentation looked elegant and
+                premium. A perfect choice for gifting and making any occasion
+                special.
+              </p>
+              <div className={styles.reviewMeta}>
+                Anniversary · Oct 3 · Calicut
+              </div>
+            </div>
+          </div>
+
+          <hr className={styles.sectionDivider} />
+        </section>
+
+        {/* ================= SIMILAR PRODUCT SECTION ================= */}
+        <section className={styles.similarSection} aria-label="Similar Products">
+          <div className={styles.similarHeaderRow}>
+            <h2 className={styles.sectionHeading}>Similar Product</h2>
+            <div className={styles.scrollButtons}>
+              <button
+                type="button"
+                onClick={() => scrollSimilar("left")}
+                className={styles.scrollBtn}
+                aria-label="Scroll left"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollSimilar("right")}
+                className={styles.scrollBtn}
+                aria-label="Scroll right"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+          </div>
+
+          <div ref={similarScrollRef} className={styles.similarScrollRow}>
+            {similarProducts.map((p) => {
+              const origPrice = p.originalPrice || Math.round(p.price * 1.25);
+              return (
+                <Link
+                  key={p.id}
+                  href={`/${p.category}/${p.slug}`}
+                  className={styles.similarCard}
+                >
+                  <div className={styles.similarImageWrap}>
+                    <img
+                      src={p.image}
+                      alt={p.name}
+                      className={styles.similarImage}
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className={styles.similarContent}>
+                    <h3 className={styles.similarTitle}>{p.name}</h3>
+                    <div className={styles.similarRatingBadge}>
+                      <Star size={10} fill="#ffffff" color="#ffffff" />
+                      <span>{p.rating || 4.2}</span>
+                    </div>
+                    <div className={styles.similarPriceRow}>
+                      <span className={styles.similarPrice}>
+                        ₹{p.price.toLocaleString("en-IN")}
+                      </span>
+                      {origPrice > p.price && (
+                        <span className={styles.similarOriginalPrice}>
+                          ₹{origPrice.toLocaleString("en-IN")}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
       </main>
 
       <Footer />

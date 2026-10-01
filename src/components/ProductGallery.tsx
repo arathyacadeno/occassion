@@ -2,16 +2,20 @@
 
 import React, { useState } from "react";
 import { Heart, X } from "lucide-react";
+import { useWishlist } from "@/context/WishlistContext";
+import { Product } from "@/data/catalog";
 import styles from "./ProductGallery.module.css";
 
 interface ProductGalleryProps {
   images: string[];
   productName: string;
+  product?: Product;
 }
 
 export default function ProductGallery({
   images,
   productName,
+  product,
 }: ProductGalleryProps) {
   // Ensure we have valid images and slice exactly 4 thumbnails
   let displayImages =
@@ -23,7 +27,20 @@ export default function ProductGallery({
 
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isZoomOpen, setIsZoomOpen] = useState(false);
-  const [isWishlisted, setIsWishlisted] = useState(false);
+
+  // Global Wishlist Context
+  const { isInWishlist, toggleItem } = useWishlist();
+  const [localWishlisted, setLocalWishlisted] = useState(false);
+  const isWishlisted = product ? isInWishlist(product.id) : localWishlisted;
+
+  const handleToggleWishlist = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (product) {
+      toggleItem(product);
+    } else {
+      setLocalWishlisted((prev) => !prev);
+    }
+  };
 
   return (
     <>
@@ -69,11 +86,9 @@ export default function ProductGallery({
             className={`${styles.wishlistBtn} ${
               isWishlisted ? styles.wishlistActive : ""
             }`}
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsWishlisted((prev) => !prev);
-            }}
+            onClick={handleToggleWishlist}
             aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+            title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
           >
             <Heart size={20} strokeWidth={1.8} className={styles.heartIcon} />
           </button>

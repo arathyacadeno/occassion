@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
@@ -10,6 +10,8 @@ import ProductCard from "./ProductCard";
 import RecommendedAddons from "@/components/RecommendedAddons";
 import { FlowerProduct } from "@/types";
 import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
+import { Product } from "@/data/catalog";
 import {
   Star,
   Heart,
@@ -19,6 +21,7 @@ import {
   Sparkles,
   Clock,
   Check,
+  ChevronLeft,
   ChevronRight,
   Info,
   Droplets,
@@ -47,9 +50,42 @@ export default function ProductDetails({
     product.colors && product.colors.length > 0 ? product.colors[0] : "Standard"
   );
   const [quantity, setQuantity] = useState<number>(1);
-  const [isWishlisted, setIsWishlisted] = useState<boolean>(false);
+  const { isInWishlist, toggleItem } = useWishlist();
+  const isWishlisted = isInWishlist(product.id);
+
+  const handleToggleWishlist = () => {
+    const catalogProduct: Product = {
+      id: product.id,
+      slug: product.slug,
+      name: product.name,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      category: "flower",
+      categoryLabel: "Flowers",
+      image: product.image,
+      images: product.images || [product.image],
+      rating: product.rating,
+      reviewsCount: product.reviewsCount,
+      description: product.description,
+      deliveryInfo: "Same-day delivery in Calicut",
+      offers: [],
+      includes: product.stems || [],
+      badge: product.badge,
+    };
+    toggleItem(catalogProduct);
+  };
+
   const [addedToast, setAddedToast] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<"details" | "care" | "delivery">("details");
+
+  const similarScrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollSimilar = (direction: "left" | "right") => {
+    if (similarScrollRef.current) {
+      const scrollAmount = direction === "left" ? -420 : 420;
+      similarScrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    }
+  };
 
   // Price adjustment based on size
   const priceMultiplier =
@@ -112,8 +148,9 @@ export default function ProductDetails({
                   className={`${styles.wishlistFloatBtn} ${
                     isWishlisted ? styles.wishlistFloatActive : ""
                   }`}
-                  onClick={() => setIsWishlisted(!isWishlisted)}
+                  onClick={handleToggleWishlist}
                   aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                  title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
                 >
                   <Heart size={20} strokeWidth={2} fill={isWishlisted ? "#db2777" : "none"} />
                 </button>
@@ -388,27 +425,109 @@ export default function ProductDetails({
           {/* Recommended Addon Products */}
           <RecommendedAddons />
 
-          {/* Related Products Section */}
-          {relatedProducts.length > 0 && (
-            <section className={styles.relatedSection}>
-              <div className={styles.relatedHeader}>
-                <div>
-                  <span className={styles.relatedBadge}>Handpicked Suggestions</span>
-                  <h2 className={styles.relatedTitle}>Related {categoryName} Collections</h2>
-                </div>
-                <Link href={`/flowers/${product.category}`} className={styles.viewCategoryLink}>
-                  <span>Explore all {categoryName}</span>
-                  <ChevronRight size={16} />
-                </Link>
-              </div>
+          {/* ================= RATINGS AND REVIEWS SECTION ================= */}
+          <section className={styles.reviewsSection} aria-label="Ratings and Reviews">
+            <h2 className={styles.sectionHeading}>Ratings and Reviews</h2>
 
-              <div className={styles.relatedGrid}>
-                {relatedProducts.slice(0, 3).map((rel) => (
-                  <ProductCard key={rel.id} product={rel} />
+            {/* Rating Summary Row */}
+            <div className={styles.ratingSummaryRow}>
+              <div className={styles.starsGroup}>
+                {[...Array(4)].map((_, i) => (
+                  <Star key={i} size={18} className={styles.starFilledGreen} />
                 ))}
+                <Star size={18} className={styles.starHalfGreen} />
               </div>
-            </section>
-          )}
+              <span className={styles.ratingScore}>{product.rating || 4.2}</span>
+              <span className={styles.ratingTagline}>Beautiful &amp; Elegant Gift</span>
+            </div>
+
+            {/* Featured Review Card */}
+            <div className={styles.reviewItemCard}>
+              <img
+                src={product.image || "/images/basket-gerberas.jpg"}
+                alt="Customer Review Photo"
+                className={styles.reviewerImg}
+              />
+              <div className={styles.reviewContent}>
+                <h3 className={styles.reviewerName}>Ashna</h3>
+                <p className={styles.reviewText}>
+                  The {product.name} was absolutely beautiful. The roses were
+                  fresh, neatly arranged, and the presentation looked elegant and
+                  premium. A perfect choice for gifting and making any occasion
+                  special.
+                </p>
+                <div className={styles.reviewMeta}>
+                  Anniversary · Oct 3 · Calicut
+                </div>
+              </div>
+            </div>
+
+            <hr className={styles.sectionDivider} />
+          </section>
+
+          {/* ================= SIMILAR PRODUCT SECTION ================= */}
+          <section className={styles.similarSection} aria-label="Similar Products">
+            <div className={styles.similarHeaderRow}>
+              <h2 className={styles.sectionHeading}>Similar Product</h2>
+              <div className={styles.scrollButtons}>
+                <button
+                  type="button"
+                  onClick={() => scrollSimilar("left")}
+                  className={styles.scrollBtn}
+                  aria-label="Scroll left"
+                >
+                  <ChevronLeft size={18} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => scrollSimilar("right")}
+                  className={styles.scrollBtn}
+                  aria-label="Scroll right"
+                >
+                  <ChevronRight size={18} />
+                </button>
+              </div>
+            </div>
+
+            <div ref={similarScrollRef} className={styles.similarScrollRow}>
+              {relatedProducts.slice(0, 6).map((p) => {
+                const origPrice = p.originalPrice || Math.round(p.price * 1.25);
+                return (
+                  <Link
+                    key={p.id}
+                    href={`/flowers/${p.category}/${p.slug}`}
+                    className={styles.similarCard}
+                  >
+                    <div className={styles.similarImageWrap}>
+                      <img
+                        src={p.image}
+                        alt={p.name}
+                        className={styles.similarImage}
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className={styles.similarContent}>
+                      <h3 className={styles.similarTitle}>{p.name}</h3>
+                      <div className={styles.similarRatingBadge}>
+                        <Star size={10} fill="#ffffff" color="#ffffff" />
+                        <span>{p.rating || 4.2}</span>
+                      </div>
+                      <div className={styles.similarPriceRow}>
+                        <span className={styles.similarPrice}>
+                          ₹{p.price.toLocaleString("en-IN")}
+                        </span>
+                        {origPrice > p.price && (
+                          <span className={styles.similarOriginalPrice}>
+                            ₹{origPrice.toLocaleString("en-IN")}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
         </div>
       </main>
 

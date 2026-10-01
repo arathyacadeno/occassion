@@ -47,62 +47,57 @@ export const ADDON_PRODUCTS: AddonProduct[] = [
 export default function RecommendedAddons() {
   const { addItem } = useCart();
 
-  // Initialized with Cadbury Silk at 4 to match reference image, others at 0
-  const [quantities, setQuantities] = useState<Record<string, number>>({
-    "addon-cadbury-silk": 4,
-  });
+  // Default all addons to 0 (ADD button)
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
 
   const handleIncrement = (id: string) => {
-    setQuantities((prev) => {
-      const current = prev[id] || 0;
-      const next = current + 1;
+    const current = quantities[id] || 0;
+    const next = current + 1;
 
-      // Add to cart on initial addition
-      if (current === 0) {
-        const addon = ADDON_PRODUCTS.find((p) => p.id === id);
-        if (addon) {
-          addItem(
-            {
-              id: addon.id,
-              name: addon.name,
-              subtitle: "Recommended Addon",
-              price: addon.price,
-              image: addon.image,
-              occasion: "celebration",
-              rating: 5.0,
-              reviewsCount: 42,
-              stems: [],
-              flowerCount: "1 item",
-              description: addon.name,
-              scent: "Fresh & Green",
-              dimensions: "Standard",
-            },
-            "Signature",
-            false
-          );
-        }
-      }
+    setQuantities((prev) => ({
+      ...prev,
+      [id]: next,
+    }));
 
-      return {
-        ...prev,
-        [id]: next,
-      };
-    });
+    // Add to cart safely outside state updater
+    const addon = ADDON_PRODUCTS.find((p) => p.id === id);
+    if (addon) {
+      addItem(
+        {
+          id: addon.id,
+          name: addon.name,
+          subtitle: "Recommended Addon",
+          price: addon.price,
+          image: addon.image,
+          occasion: "celebration",
+          rating: 5.0,
+          reviewsCount: 42,
+          stems: [],
+          flowerCount: "1 item",
+          description: addon.name,
+          scent: "Fresh & Green",
+          dimensions: "Standard",
+        },
+        "Signature",
+        false
+      );
+    }
   };
 
   const handleDecrement = (id: string) => {
-    setQuantities((prev) => {
-      const current = prev[id] || 0;
-      if (current <= 1) {
+    const current = quantities[id] || 0;
+    if (current <= 1) {
+      setQuantities((prev) => {
         const copy = { ...prev };
         delete copy[id];
         return copy;
-      }
-      return {
+      });
+    } else {
+      setQuantities((prev) => ({
         ...prev,
         [id]: current - 1,
-      };
-    });
+      }));
+    }
   };
 
   return (
