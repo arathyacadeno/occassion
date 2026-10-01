@@ -63,16 +63,28 @@ const OCCASIONS_ITEMS: OccasionCardItem[] = [
   },
 ];
 
+const ORIGINAL_COUNT = OCCASIONS_ITEMS.length; // 6
+const START_INDEX = ORIGINAL_COUNT; // 6
+
+// Create 3 sets (pre-clones, original, post-clones) for seamless infinite loop
+const EXTENDED_ITEMS = [
+  ...OCCASIONS_ITEMS.map((item, idx) => ({ ...item, uniqueKey: `pre-${idx}` })),
+  ...OCCASIONS_ITEMS.map((item, idx) => ({ ...item, uniqueKey: `orig-${idx}` })),
+  ...OCCASIONS_ITEMS.map((item, idx) => ({ ...item, uniqueKey: `post-${idx}` })),
+];
+
 export default function ShopByOccasion() {
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(START_INDEX);
+  const [withTransition, setWithTransition] = useState(true);
   const [visibleCount, setVisibleCount] = useState(3);
   const [isVisible, setIsVisible] = useState(false);
-  const sectionRef = useRef<HTMLElement | null>(null);
 
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const isTransitioningRef = useRef(false);
   const pointerStartX = useRef<number | null>(null);
   const isPointerDown = useRef(false);
 
-  // Update visible count based on responsive breakpoints
+  // Responsive visible count
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 640) {
@@ -89,15 +101,7 @@ export default function ShopByOccasion() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const total = OCCASIONS_ITEMS.length;
-  const maxIndex = Math.max(0, total - visibleCount);
-
-  // Keep index within bounds if window resizes
-  useEffect(() => {
-    setIndex((prev) => Math.min(prev, maxIndex));
-  }, [maxIndex]);
-
-  // Observer for fade-in on scroll
+  // Intersection observer for section entrance animation
   useEffect(() => {
     const target = sectionRef.current;
     if (!target) return;
@@ -119,14 +123,49 @@ export default function ShopByOccasion() {
     return () => observer.disconnect();
   }, []);
 
-  // Move slider exactly ONE card at a time
-  const handlePrev = () => {
-    setIndex((i) => Math.max(i - 1, 0));
+  // Infinite Navigation: Next
+  const handleNext = () => {
+    if (isTransitioningRef.current) return;
+    isTransitioningRef.current = true;
+    setWithTransition(true);
+    setIndex((prev) => prev + 1);
   };
 
-  const handleNext = () => {
-    setIndex((i) => Math.min(i + 1, maxIndex));
+  // Infinite Navigation: Prev
+  const handlePrev = () => {
+    if (isTransitioningRef.current) return;
+    isTransitioningRef.current = true;
+    setWithTransition(true);
+    setIndex((prev) => prev - 1);
   };
+
+  // Handle loop wrap-around on transition end without visual jump
+  const handleTransitionEnd = (e: React.TransitionEvent<HTMLDivElement>) => {
+    if (e.target !== e.currentTarget) return;
+    isTransitioningRef.current = false;
+
+    if (index >= START_INDEX + ORIGINAL_COUNT) {
+      // Reached post clones: teleport back by 6 items instantly
+      setWithTransition(false);
+      setIndex((prev) => prev - ORIGINAL_COUNT);
+    } else if (index < START_INDEX) {
+      // Reached pre clones: teleport forward by 6 items instantly
+      setWithTransition(false);
+      setIndex((prev) => prev + ORIGINAL_COUNT);
+    }
+  };
+
+  // Re-enable transition after teleporting
+  useEffect(() => {
+    if (!withTransition) {
+      const id = requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setWithTransition(true);
+        });
+      });
+      return () => cancelAnimationFrame(id);
+    }
+  }, [withTransition]);
 
   // Pointer / Touch Swipe Events
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -146,9 +185,6 @@ export default function ShopByOccasion() {
       handlePrev();
     }
   };
-
-  const isPrevDisabled = index === 0;
-  const isNextDisabled = index >= maxIndex;
 
   return (
     <section
@@ -202,22 +238,19 @@ export default function ShopByOccasion() {
           </div>
         </div>
 
-        {/* Carousel Container with Arrows and 1-Card Shift Track */}
+        {/* Carousel Container with Always-Active Infinite Arrows */}
         <div className={styles.carouselContainer}>
-          {/* Previous Button */}
+          {/* Previous Button (Always Active in Infinite Loop) */}
           <button
             type="button"
-            className={`${styles.navBtn} ${styles.prevBtn} ${
-              isPrevDisabled ? styles.navBtnDisabled : ""
-            }`}
+            className={`${styles.navBtn} ${styles.prevBtn}`}
             onClick={handlePrev}
-            disabled={isPrevDisabled}
             aria-label="Previous occasion cards"
           >
             <ChevronLeft size={22} strokeWidth={2} />
           </button>
 
-          {/* Viewport with padding so pill labels and shadows are never clipped */}
+          {/* Viewport with generous padding so pill labels & shadows are never clipped */}
           <div
             className={styles.viewport}
             onPointerDown={handlePointerDown}
@@ -225,23 +258,27 @@ export default function ShopByOccasion() {
           >
             <div
               className={styles.track}
+              onTransitionEnd={handleTransitionEnd}
               style={
                 {
                   "--index": index,
                   "--visible-count": visibleCount,
                   transform: `translateX(calc(-1 * ${index} * ((100% + var(--gap, 40px)) / var(--visible-count, 3))))`,
+                  transition: withTransition
+                    ? "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)"
+                    : "none",
                 } as React.CSSProperties
               }
             >
-              {OCCASIONS_ITEMS.map((item, cardIdx) => {
+              {EXTENDED_ITEMS.map((item, cardIdx) => {
                 // Determine stagger based on current visible position:
-                // When 3 cards visible, relative position 1 (center) is lowered
+                // When 3 cards are visible, the center card (visiblePos === 1) is lowered
                 const visiblePos = cardIdx - index;
                 const isCenter = visibleCount === 3 && visiblePos === 1;
 
                 return (
                   <div
-                    key={item.id}
+                    key={item.uniqueKey}
                     className={`${styles.cardWrapper} ${
                       isCenter ? styles.staggerCenter : styles.staggerSide
                     }`}
@@ -253,14 +290,11 @@ export default function ShopByOccasion() {
             </div>
           </div>
 
-          {/* Next Button */}
+          {/* Next Button (Always Active in Infinite Loop) */}
           <button
             type="button"
-            className={`${styles.navBtn} ${styles.nextBtn} ${
-              isNextDisabled ? styles.navBtnDisabled : ""
-            }`}
+            className={`${styles.navBtn} ${styles.nextBtn}`}
             onClick={handleNext}
-            disabled={isNextDisabled}
             aria-label="Next occasion cards"
           >
             <ChevronRight size={22} strokeWidth={2} />
