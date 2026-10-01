@@ -2,484 +2,677 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCheckout } from "@/context/CheckoutContext";
 import { useCart } from "@/context/CartContext";
 import {
+  Smartphone,
   CreditCard,
-  QrCode,
   Building2,
-  Banknote,
-  ShieldCheck,
+  Star,
   Lock,
-  ArrowLeft,
-  CheckCircle2,
-  Sparkles,
 } from "lucide-react";
 import styles from "./payment.module.css";
 
-type PaymentMethodType = "upi" | "card" | "netbanking" | "cod";
+type PaymentTabType = "upi" | "card" | "netbanking";
 
-export default function PaymentPage() {
+const KERALA_CITIES = [
+  "Kozhikode (Calicut)",
+  "Kochi (Cochin)",
+  "Thiruvananthapuram",
+  "Thrissur",
+  "Kannur",
+  "Kollam",
+  "Palakkad",
+  "Alappuzha",
+  "Malappuram",
+  "Kottayam",
+  "Wayanad",
+];
+
+const POPULAR_BANKS = [
+  "HDFC Bank",
+  "State Bank of India (SBI)",
+  "ICICI Bank",
+  "Axis Bank",
+  "Kotak Mahindra Bank",
+  "Federal Bank",
+  "Punjab National Bank",
+  "Bank of Baroda",
+];
+
+export default function SinglePageCheckoutPayment() {
   const router = useRouter();
   const { clearCart } = useCart();
   const {
     checkoutItem,
     checkoutItems,
-    totalAmount,
-    mobileNumber,
     completeOrder,
   } = useCheckout();
 
-  const [selectedMethod, setSelectedMethod] = useState<PaymentMethodType>("upi");
-  const [upiId, setUpiId] = useState("");
+  const [mounted, setMounted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Delivery Form State
+  const [fullName, setFullName] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
+  const [emailAddress, setEmailAddress] = useState("");
+  const [houseBuilding, setHouseBuilding] = useState("");
+  const [streetArea, setStreetArea] = useState("");
+  const [city, setCity] = useState("Kozhikode (Calicut)");
+  const [state, setState] = useState("Kerala");
+  const [pinCode, setPinCode] = useState("673602");
+
+  // Payment Method State
+  const [activeTab, setActiveTab] = useState<PaymentTabType>("card");
+  const [cardHolder, setCardHolder] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const [cardExpiry, setCardExpiry] = useState("");
   const [cardCvv, setCardCvv] = useState("");
+  const [upiId, setUpiId] = useState("");
   const [selectedBank, setSelectedBank] = useState("HDFC Bank");
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [mounted, setMounted] = useState(false);
 
-  const displayItems =
+  // Coupon State
+  const [couponCode, setCouponCode] = useState("");
+  const [couponApplied, setCouponApplied] = useState(true);
+  const [appliedCouponCode, setAppliedCouponCode] = useState("OCCASIONS");
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [couponSuccess, setCouponSuccess] = useState<string | null>(
+    "Default discount ₹100.00 applied!"
+  );
+
+  // Load cart / product items or fallback to mockup reference
+  const primaryItem =
     checkoutItems.length > 0
-      ? checkoutItems
-      : checkoutItem
-      ? [checkoutItem]
-      : [];
+      ? checkoutItems[0]
+      : checkoutItem || {
+          id: "sunshine-rose-basket",
+          name: "Sunshine Golden Rose Basket",
+          subtitle: "Premium Preserved Roses · Limited Edition",
+          price: 649,
+          originalPrice: 749,
+          image: "/images/artisanal-flower-basket.jpg",
+          quantity: 1,
+        };
+
+  const quantity = primaryItem.quantity || 1;
+  const unitPrice = primaryItem.price;
+  const subtotal = unitPrice * quantity;
+
+  // Compute discount and final total
+  const discountAmount = couponApplied ? 100 : 0;
+  const deliveryCharge = 0; // Free delivery
+  const finalTotal = Math.max(0, subtotal - discountAmount + deliveryCharge);
 
   useEffect(() => {
     setMounted(true);
-    // Guard: If no checkout item or mobile number, redirect to checkout
-    if (displayItems.length === 0 || !mobileNumber) {
-      router.replace("/checkout");
+  }, []);
+
+  // Format Card Number into groups of 4
+  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/\D/g, "").slice(0, 16);
+    const formatted = raw.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
+    setCardNumber(formatted);
+  };
+
+  // Format Expiry as MM/YY
+  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let raw = e.target.value.replace(/\D/g, "").slice(0, 4);
+    if (raw.length >= 3) {
+      raw = `${raw.slice(0, 2)}/${raw.slice(2)}`;
     }
-  }, [displayItems.length, mobileNumber, router]);
+    setCardExpiry(raw);
+  };
 
-  if (!mounted || displayItems.length === 0) {
-    return null;
-  }
-
-  const finalTotal =
-    totalAmount > 0
-      ? totalAmount
-      : displayItems.reduce(
-          (acc, item) => acc + item.price * (item.quantity || 1),
-          0
-        );
-
-  // Simulate payment processing flow
-  const handlePayment = (e: React.FormEvent) => {
+  // Apply Coupon Logic
+  const handleApplyCoupon = (e: React.MouseEvent) => {
     e.preventDefault();
-    setIsProcessing(true);
+    const clean = couponCode.trim().toUpperCase();
 
-    const methodNames: Record<PaymentMethodType, string> = {
-      upi: "UPI",
-      card: "Credit / Debit Card",
-      netbanking: `Net Banking (${selectedBank})`,
-      cod: "Cash on Delivery",
+    if (!clean) {
+      setCouponError("Please enter a coupon code.");
+      setCouponSuccess(null);
+      return;
+    }
+
+    if (
+      clean === "OCCASIONS" ||
+      clean === "OCCASIONS10" ||
+      clean === "SAVE100" ||
+      clean === "WELCOME" ||
+      clean === "FLOWER10"
+    ) {
+      setCouponApplied(true);
+      setAppliedCouponCode(clean);
+      setCouponError(null);
+      setCouponSuccess(`Coupon '${clean}' applied successfully!`);
+    } else {
+      setCouponError("Invalid coupon code. Try 'OCCASIONS' or 'SAVE100'.");
+      setCouponSuccess(null);
+    }
+  };
+
+  // Master Form Submission (Delivery + Payment)
+  const handleSubmitOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Specific payment validations
+    if (activeTab === "upi" && !upiId.trim()) {
+      alert("Please enter your UPI ID.");
+      return;
+    }
+    if (activeTab === "card") {
+      const cleanDigits = cardNumber.replace(/\D/g, "");
+      if (cleanDigits.length < 15) {
+        alert("Please enter a valid 16-digit card number.");
+        return;
+      }
+      if (!cardExpiry.includes("/") || cardExpiry.length < 5) {
+        alert("Please enter a valid card expiry date (MM/YY).");
+        return;
+      }
+      if (cardCvv.length < 3) {
+        alert("Please enter a valid 3-digit CVV.");
+        return;
+      }
+    }
+
+    setIsSubmitting(true);
+
+    const deliveryPayload = {
+      fullName,
+      mobile: `+91 ${mobileNumber}`,
+      email: emailAddress,
+      houseBuilding,
+      streetArea,
+      city,
+      state,
+      pinCode,
     };
 
-    // Simulate gateway handoff & verification (1.8s)
-    setTimeout(() => {
-      const order = completeOrder(methodNames[selectedMethod]);
+    const paymentPayload = {
+      type: activeTab,
+      bank: activeTab === "netbanking" ? selectedBank : undefined,
+      upiId: activeTab === "upi" ? upiId : undefined,
+      cardholder: activeTab === "card" ? cardHolder : undefined,
+      cardLast4:
+        activeTab === "card"
+          ? cardNumber.replace(/\s/g, "").slice(-4)
+          : undefined,
+    };
+
+    try {
+      // POST to /api/orders
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          delivery: deliveryPayload,
+          paymentMethod: paymentPayload,
+          coupon: couponApplied ? appliedCouponCode : null,
+          total: finalTotal,
+          items: [primaryItem],
+        }),
+      });
+
+      const data = await response.json();
+
+      // Trigger Context completion
+      const paymentMethodTitle =
+        activeTab === "upi"
+          ? "UPI"
+          : activeTab === "card"
+          ? "Credit / Debit Card"
+          : `Net Banking (${selectedBank})`;
+
+      completeOrder(paymentMethodTitle);
       clearCart();
-      if (order) {
+
+      // Simulated Razorpay Gateway Handoff (0.8s)
+      setTimeout(() => {
+        setIsSubmitting(false);
         router.push("/order-success");
-      }
-    }, 1800);
+      }, 800);
+    } catch (err) {
+      console.error("Order submission error:", err);
+      // Fallback completion even if fetch errors
+      completeOrder("Online Payment");
+      clearCart();
+      setIsSubmitting(false);
+      router.push("/order-success");
+    }
   };
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <div className={styles.pageWrapper}>
       <Navbar />
 
       <main className={styles.mainContainer}>
-        {/* Stepper */}
-        <div className={styles.stepperWrapper}>
-          <div className={`${styles.stepItem} ${styles.stepCompleted}`}>
-            <span className={styles.stepNum}>✓</span>
-            <span className={styles.stepLabel}>Details</span>
-          </div>
-          <div className={`${styles.stepDivider} ${styles.stepDividerActive}`} />
-          <div className={`${styles.stepItem} ${styles.stepActive}`}>
-            <span className={styles.stepNum}>2</span>
-            <span className={styles.stepLabel}>Payment</span>
-          </div>
-          <div className={styles.stepDivider} />
-          <div className={styles.stepItem}>
-            <span className={styles.stepNum}>3</span>
-            <span className={styles.stepLabel}>Confirmation</span>
-          </div>
+        {/* Centered Heading */}
+        <div className={styles.headerSection}>
+          <h1 className={styles.pageTitle}>Delivery Information</h1>
+          <p className={styles.pageSubtitle}>
+            Where should we deliver your golden roses?
+          </p>
         </div>
 
-        <div className={styles.contentLayout}>
-          {/* Main Payment Options Column */}
-          <div className={styles.mainPaymentColumn}>
-            <div className={styles.backLinkRow}>
-              <Link href="/checkout" className={styles.backLink}>
-                <ArrowLeft size={16} /> Back to details
-              </Link>
+        {/* Unified Checkout Form */}
+        <form onSubmit={handleSubmitOrder} className={styles.checkoutGrid}>
+          {/* ================= LEFT COLUMN ================= */}
+          <div className={styles.leftColumn}>
+            {/* Delivery Form Fields */}
+            <div className={styles.formRow}>
+              <div className={styles.fieldGroup}>
+                <label htmlFor="fullName" className={styles.fieldLabel}>
+                  Full Name
+                </label>
+                <input
+                  id="fullName"
+                  type="text"
+                  required
+                  placeholder="Enter your full name"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  className={styles.inputField}
+                />
+              </div>
             </div>
 
-            <div className={styles.headerBlock}>
-              <h1 className={styles.pageHeading}>Choose Payment Method</h1>
-              <p className={styles.pageSubheading}>
-                Select a trusted and secure payment method to complete your flower delivery.
-              </p>
-            </div>
-
-            <form onSubmit={handlePayment} className={styles.paymentMethodsList}>
-              {/* Option 1: UPI */}
-              <div
-                className={`${styles.paymentOptionCard} ${
-                  selectedMethod === "upi" ? styles.selectedCard : ""
-                }`}
-                onClick={() => setSelectedMethod("upi")}
-              >
-                <div className={styles.optionHeader}>
-                  <div className={styles.radioWrapper}>
-                    <input
-                      type="radio"
-                      id="method-upi"
-                      name="paymentMethod"
-                      value="upi"
-                      checked={selectedMethod === "upi"}
-                      onChange={() => setSelectedMethod("upi")}
-                      className={styles.radioInput}
-                    />
-                    <label htmlFor="method-upi" className={styles.radioLabel}>
-                      <span className={styles.optionTitle}>UPI</span>
-                      <span className={styles.optionSubtitle}>
-                        Google Pay, PhonePe, Paytm, BHIM
-                      </span>
-                    </label>
-                  </div>
-                  <QrCode size={22} className={styles.optionIcon} />
+            <div className={`${styles.formRow} ${styles.twoCols}`}>
+              <div className={styles.fieldGroup}>
+                <label htmlFor="mobileNumber" className={styles.fieldLabel}>
+                  Mobile Number
+                </label>
+                <div className={styles.phoneInputWrapper}>
+                  <span className={styles.phonePrefix}>+91</span>
+                  <input
+                    id="mobileNumber"
+                    type="tel"
+                    required
+                    maxLength={10}
+                    placeholder="10-digit mobile number"
+                    pattern="[6-9][0-9]{9}"
+                    title="Enter a valid 10-digit Indian mobile number"
+                    value={mobileNumber}
+                    onChange={(e) =>
+                      setMobileNumber(e.target.value.replace(/\D/g, ""))
+                    }
+                    className={styles.phoneInputField}
+                  />
                 </div>
-
-                {selectedMethod === "upi" && (
-                  <div
-                    className={styles.expandedDetails}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <label className={styles.inputLabel}>UPI ID</label>
-                    <div className={styles.upiInputRow}>
-                      <input
-                        type="text"
-                        placeholder="e.g. mobile@upi or username@okhdfcbank"
-                        value={upiId}
-                        onChange={(e) => setUpiId(e.target.value)}
-                        className={styles.textInput}
-                        required={selectedMethod === "upi"}
-                      />
-                    </div>
-                    <p className={styles.upiHint}>
-                      A payment request will be sent to your UPI app.
-                    </p>
-
-                    <button
-                      type="submit"
-                      disabled={isProcessing}
-                      className={styles.payNowBtn}
-                    >
-                      <Lock size={16} />
-                      <span>Pay ₹{finalTotal.toLocaleString("en-IN")}</span>
-                    </button>
-                  </div>
-                )}
               </div>
 
-              {/* Option 2: Credit / Debit Card */}
-              <div
-                className={`${styles.paymentOptionCard} ${
-                  selectedMethod === "card" ? styles.selectedCard : ""
-                }`}
-                onClick={() => setSelectedMethod("card")}
-              >
-                <div className={styles.optionHeader}>
-                  <div className={styles.radioWrapper}>
-                    <input
-                      type="radio"
-                      id="method-card"
-                      name="paymentMethod"
-                      value="card"
-                      checked={selectedMethod === "card"}
-                      onChange={() => setSelectedMethod("card")}
-                      className={styles.radioInput}
-                    />
-                    <label htmlFor="method-card" className={styles.radioLabel}>
-                      <span className={styles.optionTitle}>Credit / Debit Card</span>
-                      <span className={styles.optionSubtitle}>
-                        Visa, MasterCard, RuPay, Maestro
-                      </span>
-                    </label>
-                  </div>
-                  <CreditCard size={22} className={styles.optionIcon} />
-                </div>
+              <div className={styles.fieldGroup}>
+                <label htmlFor="emailAddress" className={styles.fieldLabel}>
+                  Email Address
+                </label>
+                <input
+                  id="emailAddress"
+                  type="email"
+                  required
+                  placeholder="your.email@example.com"
+                  value={emailAddress}
+                  onChange={(e) => setEmailAddress(e.target.value)}
+                  className={styles.inputField}
+                />
+              </div>
+            </div>
 
-                {selectedMethod === "card" && (
-                  <div
-                    className={styles.expandedDetails}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <div className={styles.cardForm}>
-                      <div className={styles.inputGroup}>
-                        <label className={styles.inputLabel}>Card Number</label>
+            <div className={`${styles.formRow} ${styles.twoCols}`}>
+              <div className={styles.fieldGroup}>
+                <label htmlFor="houseBuilding" className={styles.fieldLabel}>
+                  House / Building Name
+                </label>
+                <input
+                  id="houseBuilding"
+                  type="text"
+                  required
+                  placeholder="Flat, House no., Apartment name"
+                  value={houseBuilding}
+                  onChange={(e) => setHouseBuilding(e.target.value)}
+                  className={styles.inputField}
+                />
+              </div>
+
+              <div className={styles.fieldGroup}>
+                <label htmlFor="streetArea" className={styles.fieldLabel}>
+                  Street / Area
+                </label>
+                <input
+                  id="streetArea"
+                  type="text"
+                  required
+                  placeholder="Street, Landmark, Area name"
+                  value={streetArea}
+                  onChange={(e) => setStreetArea(e.target.value)}
+                  className={styles.inputField}
+                />
+              </div>
+            </div>
+
+            <div className={`${styles.formRow} ${styles.threeCols}`}>
+              <div className={styles.fieldGroup}>
+                <label htmlFor="city" className={styles.fieldLabel}>
+                  City
+                </label>
+                <select
+                  id="city"
+                  required
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  className={styles.selectField}
+                >
+                  {KERALA_CITIES.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className={styles.fieldGroup}>
+                <label htmlFor="state" className={styles.fieldLabel}>
+                  State
+                </label>
+                <input
+                  id="state"
+                  type="text"
+                  required
+                  value={state}
+                  onChange={(e) => setState(e.target.value)}
+                  className={styles.inputField}
+                />
+              </div>
+
+              <div className={styles.fieldGroup}>
+                <label htmlFor="pinCode" className={styles.fieldLabel}>
+                  PIN Code
+                </label>
+                <input
+                  id="pinCode"
+                  type="text"
+                  required
+                  maxLength={6}
+                  pattern="[0-9]{6}"
+                  title="Enter 6-digit postal PIN code"
+                  placeholder="6 digits"
+                  value={pinCode}
+                  onChange={(e) =>
+                    setPinCode(e.target.value.replace(/\D/g, ""))
+                  }
+                  className={styles.inputField}
+                />
+              </div>
+            </div>
+
+            {/* Payment Method Section */}
+            <div className={styles.paymentSection}>
+              <h2 className={styles.paymentHeading}>Payment Method</h2>
+              <p className={styles.paymentSubnote}>
+                All transactions are encrypted and secure.
+              </p>
+
+              {/* 3 Tabs: UPI, Card, Net Bank */}
+              <div className={styles.paymentTabsRow}>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("upi")}
+                  className={`${styles.paymentTabBtn} ${
+                    activeTab === "upi" ? styles.activeTabBtn : ""
+                  }`}
+                  aria-label="Pay with UPI"
+                >
+                  <Smartphone size={20} className={styles.tabIcon} />
+                  <span>UPI</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("card")}
+                  className={`${styles.paymentTabBtn} ${
+                    activeTab === "card" ? styles.activeTabBtn : ""
+                  }`}
+                  aria-label="Pay with Credit or Debit Card"
+                >
+                  <CreditCard size={20} className={styles.tabIcon} />
+                  <span>Card</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("netbanking")}
+                  className={`${styles.paymentTabBtn} ${
+                    activeTab === "netbanking" ? styles.activeTabBtn : ""
+                  }`}
+                  aria-label="Pay with Net Banking"
+                >
+                  <Building2 size={20} className={styles.tabIcon} />
+                  <span>Net Bank</span>
+                </button>
+              </div>
+
+              {/* White Rounded Card showing fields for active tab */}
+              <div className={styles.paymentCardBox}>
+                {activeTab === "card" && (
+                  <div>
+                    <h3 className={styles.cardBoxHeader}>Credit / Debit Card</h3>
+
+                    <div className={styles.formRow}>
+                      <div className={styles.fieldGroup}>
+                        <label className={styles.fieldLabel}>Cardholder Name</label>
                         <input
                           type="text"
-                          maxLength={19}
-                          placeholder="4532 •••• •••• 8892"
-                          value={cardNumber}
-                          onChange={(e) => setCardNumber(e.target.value)}
-                          className={styles.textInput}
-                          required={selectedMethod === "card"}
+                          required={activeTab === "card"}
+                          placeholder="Name printed on card"
+                          value={cardHolder}
+                          onChange={(e) => setCardHolder(e.target.value)}
+                          className={styles.inputField}
+                        />
+                      </div>
+                    </div>
+
+                    <div className={styles.formRow}>
+                      <div className={styles.fieldGroup}>
+                        <label className={styles.fieldLabel}>Card Number</label>
+                        <div className={styles.cardInputWithIcon}>
+                          <input
+                            type="text"
+                            required={activeTab === "card"}
+                            maxLength={19}
+                            placeholder="4532 •••• •••• 8892"
+                            value={cardNumber}
+                            onChange={handleCardNumberChange}
+                            className={styles.inputField}
+                          />
+                          <CreditCard size={18} className={styles.cardBrandIcon} />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className={`${styles.formRow} ${styles.twoCols}`}>
+                      <div className={styles.fieldGroup}>
+                        <label className={styles.fieldLabel}>Expiry</label>
+                        <input
+                          type="text"
+                          required={activeTab === "card"}
+                          maxLength={5}
+                          placeholder="MM/YY"
+                          value={cardExpiry}
+                          onChange={handleExpiryChange}
+                          className={styles.inputField}
                         />
                       </div>
 
-                      <div className={styles.cardMetaRow}>
-                        <div className={styles.inputGroup}>
-                          <label className={styles.inputLabel}>Expiry Date</label>
-                          <input
-                            type="text"
-                            maxLength={5}
-                            placeholder="MM / YY"
-                            value={cardExpiry}
-                            onChange={(e) => setCardExpiry(e.target.value)}
-                            className={styles.textInput}
-                            required={selectedMethod === "card"}
-                          />
-                        </div>
-
-                        <div className={styles.inputGroup}>
-                          <label className={styles.inputLabel}>CVV</label>
-                          <input
-                            type="password"
-                            maxLength={4}
-                            placeholder="•••"
-                            value={cardCvv}
-                            onChange={(e) => setCardCvv(e.target.value)}
-                            className={styles.textInput}
-                            required={selectedMethod === "card"}
-                          />
-                        </div>
+                      <div className={styles.fieldGroup}>
+                        <label className={styles.fieldLabel}>CVV</label>
+                        <input
+                          type="password"
+                          required={activeTab === "card"}
+                          maxLength={4}
+                          placeholder="•••"
+                          value={cardCvv}
+                          onChange={(e) =>
+                            setCardCvv(e.target.value.replace(/\D/g, ""))
+                          }
+                          className={styles.inputField}
+                        />
                       </div>
-
-                      <button
-                        type="submit"
-                        disabled={isProcessing}
-                        className={styles.payNowBtn}
-                      >
-                        <Lock size={16} />
-                        <span>Pay ₹{finalTotal.toLocaleString("en-IN")}</span>
-                      </button>
                     </div>
                   </div>
                 )}
-              </div>
 
-              {/* Option 3: Net Banking */}
-              <div
-                className={`${styles.paymentOptionCard} ${
-                  selectedMethod === "netbanking" ? styles.selectedCard : ""
-                }`}
-                onClick={() => setSelectedMethod("netbanking")}
-              >
-                <div className={styles.optionHeader}>
-                  <div className={styles.radioWrapper}>
-                    <input
-                      type="radio"
-                      id="method-netbanking"
-                      name="paymentMethod"
-                      value="netbanking"
-                      checked={selectedMethod === "netbanking"}
-                      onChange={() => setSelectedMethod("netbanking")}
-                      className={styles.radioInput}
-                    />
-                    <label htmlFor="method-netbanking" className={styles.radioLabel}>
-                      <span className={styles.optionTitle}>Net Banking</span>
-                      <span className={styles.optionSubtitle}>
-                        All major Indian banks supported
-                      </span>
-                    </label>
-                  </div>
-                  <Building2 size={22} className={styles.optionIcon} />
-                </div>
-
-                {selectedMethod === "netbanking" && (
-                  <div
-                    className={styles.expandedDetails}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <label className={styles.inputLabel}>Select Bank</label>
-                    <div className={styles.bankGrid}>
-                      {[
-                        "HDFC Bank",
-                        "State Bank of India",
-                        "ICICI Bank",
-                        "Axis Bank",
-                        "Kotak Bank",
-                        "Federal Bank",
-                      ].map((bank) => (
-                        <button
-                          key={bank}
-                          type="button"
-                          onClick={() => setSelectedBank(bank)}
-                          className={`${styles.bankBtn} ${
-                            selectedBank === bank ? styles.bankBtnActive : ""
-                          }`}
-                        >
-                          {bank}
-                        </button>
-                      ))}
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={isProcessing}
-                      className={styles.payNowBtn}
-                    >
-                      <Lock size={16} />
-                      <span>Pay ₹{finalTotal.toLocaleString("en-IN")}</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Option 4: Cash on Delivery */}
-              <div
-                className={`${styles.paymentOptionCard} ${
-                  selectedMethod === "cod" ? styles.selectedCard : ""
-                }`}
-                onClick={() => setSelectedMethod("cod")}
-              >
-                <div className={styles.optionHeader}>
-                  <div className={styles.radioWrapper}>
-                    <input
-                      type="radio"
-                      id="method-cod"
-                      name="paymentMethod"
-                      value="cod"
-                      checked={selectedMethod === "cod"}
-                      onChange={() => setSelectedMethod("cod")}
-                      className={styles.radioInput}
-                    />
-                    <label htmlFor="method-cod" className={styles.radioLabel}>
-                      <span className={styles.optionTitle}>Cash on Delivery</span>
-                      <span className={styles.optionSubtitle}>
-                        Pay with cash or UPI at the time of delivery
-                      </span>
-                    </label>
-                  </div>
-                  <Banknote size={22} className={styles.optionIcon} />
-                </div>
-
-                {selectedMethod === "cod" && (
-                  <div
-                    className={styles.expandedDetails}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <div className={styles.codMessageBox}>
-                      <CheckCircle2 size={18} className={styles.codIcon} />
-                      <p className={styles.codText}>
-                        Pay when your order is delivered to your doorstep in Calicut.
-                        Our delivery associate will bring change or a QR code.
+                {activeTab === "upi" && (
+                  <div>
+                    <h3 className={styles.cardBoxHeader}>UPI Payment</h3>
+                    <div className={styles.fieldGroup}>
+                      <label className={styles.fieldLabel}>UPI ID / VPA</label>
+                      <input
+                        type="text"
+                        required={activeTab === "upi"}
+                        placeholder="username@okhdfcbank or 9876543210@upi"
+                        value={upiId}
+                        onChange={(e) => setUpiId(e.target.value)}
+                        className={styles.inputField}
+                      />
+                      <p className={styles.upiHintText}>
+                        A payment request will be sent to your UPI app (Google Pay,
+                        PhonePe, Paytm, or BHIM).
                       </p>
                     </div>
+                  </div>
+                )}
 
-                    <button
-                      type="submit"
-                      disabled={isProcessing}
-                      className={styles.placeOrderBtn}
-                    >
-                      <Sparkles size={16} />
-                      <span>Pay ₹{finalTotal.toLocaleString("en-IN")} (COD)</span>
-                    </button>
+                {activeTab === "netbanking" && (
+                  <div>
+                    <h3 className={styles.cardBoxHeader}>Net Banking</h3>
+                    <div className={styles.fieldGroup}>
+                      <label className={styles.fieldLabel}>Select Bank</label>
+                      <select
+                        value={selectedBank}
+                        onChange={(e) => setSelectedBank(e.target.value)}
+                        className={styles.selectField}
+                      >
+                        {POPULAR_BANKS.map((b) => (
+                          <option key={b} value={b}>
+                            {b}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                 )}
               </div>
-            </form>
+            </div>
           </div>
 
-          {/* Right Column: Order Summary Sidebar */}
-          <div className={styles.sidebarColumn}>
-            <div className={styles.summaryBox}>
-              <h3 className={styles.summaryTitle}>Order Summary</h3>
+          {/* ================= RIGHT COLUMN: STICKY ORDER SUMMARY ================= */}
+          <aside className={styles.orderSummaryCard}>
+            <h2 className={styles.summaryTitle}>Order Summary</h2>
 
-              <div className={styles.productsList}>
-                {displayItems.map((item, index) => (
-                  <div key={item.id || index} className={styles.productRow}>
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className={styles.productImg}
+            {/* Product Thumbnail & Details */}
+            <div className={styles.productSnippet}>
+              <img
+                src={primaryItem.image}
+                alt={primaryItem.name}
+                className={styles.productThumbnail}
+              />
+              <div className={styles.productMeta}>
+                <h3 className={styles.productName}>{primaryItem.name}</h3>
+                <p className={styles.productSubtitle}>
+                  {primaryItem.subtitle || "Premium Preserved Roses · Limited Edition"}
+                </p>
+                <div className={styles.ratingRow}>
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      size={12}
+                      className={styles.starFilled}
                     />
-                    <div className={styles.productInfo}>
-                      <h4 className={styles.productName}>{item.name}</h4>
-                      <p className={styles.productSubtext}>
-                        Qty: {item.quantity || 1} × ₹{item.price.toLocaleString("en-IN")}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                  <span className={styles.reviewCount}>(126 reviews)</span>
+                </div>
               </div>
+            </div>
 
-              <div className={styles.divider} />
-
-              <div className={styles.costLine}>
-                <span>Subtotal</span>
-                <span>₹{finalTotal.toLocaleString("en-IN")}</span>
-              </div>
-              <div className={styles.costLine}>
-                <span>Delivery</span>
-                <span className={styles.greenCost}>FREE</span>
-              </div>
-
-              <div className={styles.divider} />
-
-              <div className={styles.totalLine}>
-                <span>Total</span>
-                <span className={styles.totalAmount}>
-                  ₹{finalTotal.toLocaleString("en-IN")}
+            {/* Breakdown Rows */}
+            <div className={styles.breakdownList}>
+              <div className={styles.breakdownRow}>
+                <span>Price</span>
+                <span className={styles.breakdownValue}>
+                  ₹{unitPrice.toFixed(2)}
                 </span>
               </div>
-
-              <div className={styles.mobileVerifiedBox}>
-                <span className={styles.mobileTag}>Updates sent to:</span>
-                <span className={styles.mobileNum}>+91 {mobileNumber}</span>
+              <div className={styles.breakdownRow}>
+                <span>Quantity</span>
+                <span className={styles.breakdownValue}>x {quantity}</span>
               </div>
-
-              <div className={styles.securityBox}>
-                <ShieldCheck size={20} className={styles.secShield} />
-                <span>256-bit SSL Encrypted &amp; PCI-DSS Compliant</span>
+              <div className={styles.breakdownRow}>
+                <span>Delivery Charge</span>
+                <span className={styles.breakdownValue}>Free</span>
+              </div>
+              <div className={styles.breakdownRow}>
+                <span>Subtotal</span>
+                <span className={styles.breakdownValue}>
+                  ₹{subtotal.toFixed(2)}
+                </span>
+              </div>
+              <div className={styles.breakdownRow}>
+                <span>Discount</span>
+                <span className={`${styles.breakdownValue} ${styles.greenDiscount}`}>
+                  - ₹{discountAmount.toFixed(2)}
+                </span>
               </div>
             </div>
-          </div>
-        </div>
+
+            <div className={styles.summaryDivider} />
+
+            {/* Total Row */}
+            <div className={styles.totalRow}>
+              <span className={styles.totalLabel}>Total</span>
+              <div className={styles.totalPriceBlock}>
+                <div className={styles.priceWithStrikethrough}>
+                  <span className={styles.strikethroughPrice}>
+                    ₹{subtotal.toFixed(2)}
+                  </span>
+                  <span className={styles.finalPriceBold}>
+                    ₹{finalTotal.toFixed(2)}
+                  </span>
+                </div>
+                {discountAmount > 0 && (
+                  <span className={styles.savingsBadge}>
+                    You save ₹{discountAmount.toFixed(2)}
+                  </span>
+                )}
+              </div>
+            </div>
+
+
+            {/* Master Place Order Button */}
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className={styles.placeOrderBtn}
+            >
+              {isSubmitting ? (
+                <>
+                  <div className={styles.spinner} />
+                  <span>Processing Payment...</span>
+                </>
+              ) : (
+                <>
+                  <Lock size={16} />
+                  <span>Place Order</span>
+                </>
+              )}
+            </button>
+          </aside>
+        </form>
       </main>
-
-      {/* Payment Processing Modal Animation */}
-      {isProcessing && (
-        <div className={styles.processingBackdrop}>
-          <div className={styles.processingCard}>
-            <div className={styles.spinnerWrapper}>
-              <div className={styles.spinnerRing} />
-              <Lock size={26} className={styles.spinnerCenterIcon} />
-            </div>
-
-            <h3 className={styles.processingTitle}>Processing Payment</h3>
-            <p className={styles.processingDesc}>
-              Please wait while we securely process your payment.
-            </p>
-
-            <div className={styles.processingPill}>
-              <ShieldCheck size={16} />
-              <span>Verifying payment with bank...</span>
-            </div>
-          </div>
-        </div>
-      )}
 
       <Footer />
     </div>
