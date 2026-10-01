@@ -1,0 +1,48 @@
+.breadcrumbNav {
+  display: flex;
+  align-items: center;
+  padding: 10px 0 16px 0;
+  width: 100%;
+}
+
+.breadcrumbList {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.4;
+  font-family: inherit;
+}
+
+.breadcrumbItem {
+  display: inline-flex;
+  align-items: center;
+}
+
+.breadcrumbLink {
+  color: #0284c7;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.15s ease, text-decoration 0.15s ease;
+}
+
+.breadcrumbLink:hover {
+  color: #0369a1;
+  text-decoration: underline;
+}
+
+.breadcrumbSep {
+  margin: 0 8px;
+  color: #1e293b;
+  font-size: 0.88rem;
+  font-weight: 400;
+  user-select: none;
+}
+
+.breadcrumbCurrent {
+  color: #0f172a;
+  font-weight: 500;
+}

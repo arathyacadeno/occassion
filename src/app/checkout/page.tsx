@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import Breadcrumb from "@/components/Breadcrumb";
 import { useCheckout } from "@/context/CheckoutContext";
 import {
   ShieldCheck,
@@ -85,6 +86,14 @@ export default function CheckoutPage() {
       <Navbar />
 
       <main className={styles.mainContainer}>
+        {/* Breadcrumb Navigation: Home > Flowers > Checkout */}
+        <Breadcrumb
+          items={[
+            { label: "Flowers", href: "/flower" },
+            { label: "Checkout" },
+          ]}
+        />
+
         <div className={styles.contentLayout}>
           {/* Left Column: Order Summary */}
           <div className={styles.leftColumn}>

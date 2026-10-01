@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import CategoryHeader from "@/components/CategoryHeader";
+import Breadcrumb from "@/components/Breadcrumb";
 import ProductGrid from "@/components/ProductGrid";
 import Footer from "@/components/Footer";
 import { Product } from "@/data/catalog";
@@ -77,6 +78,9 @@ export default function CategoryPage({
       <Navbar />
 
       <main className={styles.mainContent}>
+        {/* Breadcrumb Navigation: Home > Category Title */}
+        <Breadcrumb items={[{ label: title }]} />
+
         {/* Category Header */}
         <CategoryHeader title={title} description={description} />
 

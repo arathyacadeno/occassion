@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import Breadcrumb from "@/components/Breadcrumb";
 import { useCheckout } from "@/context/CheckoutContext";
 import { useCart } from "@/context/CartContext";
 import {
@@ -253,6 +254,14 @@ export default function SinglePageCheckoutPayment() {
       <Navbar />
 
       <main className={styles.mainContainer}>
+        {/* Breadcrumb Navigation: Home > Flowers > Delivery Information */}
+        <Breadcrumb
+          items={[
+            { label: "Flowers", href: "/flower" },
+            { label: "Delivery Information" },
+          ]}
+        />
+
         {/* Centered Heading */}
         <div className={styles.headerSection}>
           <h1 className={styles.pageTitle}>Delivery Information</h1>

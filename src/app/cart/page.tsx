@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import Breadcrumb from "@/components/Breadcrumb";
 import { useCart } from "@/context/CartContext";
 import { useCheckout } from "@/context/CheckoutContext";
 import { useWishlist } from "@/context/WishlistContext";
@@ -56,6 +57,14 @@ export default function CartPage() {
       <Navbar />
 
       <main className={styles.mainContainer}>
+        {/* Breadcrumb Navigation: Home > Flowers > Shopping Cart */}
+        <Breadcrumb
+          items={[
+            { label: "Flowers", href: "/flower" },
+            { label: "Shopping Cart" },
+          ]}
+        />
+
         {/* Page Title */}
         <div className={styles.headerBlock}>
           <h1 className={styles.pageTitle}>Shopping Cart</h1>
