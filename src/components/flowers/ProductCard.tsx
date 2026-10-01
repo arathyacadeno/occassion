@@ -67,12 +67,12 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Characteristic Smooth Wave SVG Cutout at bottom of image */}
         <svg
           className={styles.waveDivider}
-          viewBox="0 0 300 48"
+          viewBox="0 0 300 28"
           preserveAspectRatio="none"
           aria-hidden="true"
         >
           <path
-            d="M -2,52 L -2,18 Q -2,0 16,0 L 202,0 C 224,0 234,34 258,34 L 304,34 L 304,52 Z"
+            d="M -2,32 L -2,12 Q -2,0 16,0 L 185,0 C 208,0 216,20 242,20 L 304,20 L 304,32 Z"
             fill="#ffffff"
           />
         </svg>
@@ -92,19 +92,19 @@ export default function ProductCard({ product }: ProductCardProps) {
           className={styles.ratingBadge}
           aria-label={`Rated ${(product.rating || 4.5).toFixed(1)} out of 5 stars`}
         >
-          <Star size={10} fill="#ffffff" color="#ffffff" strokeWidth={0} />
+          <Star size={9.5} fill="#ffffff" color="#ffffff" strokeWidth={0} />
           <span>{(product.rating || 4.5).toFixed(1)}</span>
         </div>
 
         {/* Price & Delivery Row */}
         <div className={styles.priceRow}>
           <span className={styles.currentPrice}>
-            ₹{product.price.toLocaleString("en-IN")}
+            ₹{product.price}
           </span>
 
           {product.originalPrice && (
             <span className={styles.originalPrice}>
-              ₹{product.originalPrice.toLocaleString("en-IN")}
+              ₹{product.originalPrice}
             </span>
           )}
 
