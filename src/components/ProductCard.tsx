@@ -29,6 +29,15 @@ export default function ProductCard({ product }: ProductCardProps) {
         )
       : null;
 
+  const cardDescription = product.shortDescription;
+  const deliveryText =
+    product.deliveryText ||
+    (!discountPercent &&
+    (product.badge?.toLowerCase().includes("free delivery") ||
+      product.offers?.some((o) => o.toLowerCase().includes("free delivery")))
+      ? "Free Delivery"
+      : null);
+
   return (
     <article className={styles.card}>
       {/* Top Image Container with Wave Scoop Cutout */}
@@ -98,6 +107,13 @@ export default function ProductCard({ product }: ProductCardProps) {
           <span>{(product.rating || 4.5).toFixed(1)}</span>
         </div>
 
+        {/* Optional Description (max 2 lines) */}
+        {cardDescription && (
+          <p className={styles.productDescription} title={cardDescription}>
+            {cardDescription}
+          </p>
+        )}
+
         {/* Price & Delivery Row */}
         <div className={styles.priceRow}>
           <span className={styles.currentPrice}>
@@ -114,10 +130,14 @@ export default function ProductCard({ product }: ProductCardProps) {
             <span className={styles.discountBadge}>
               {product.id === "flower-3" ? "10% off" : `${discountPercent}% off`}
             </span>
-          ) : (
-            <span className={styles.freeDeliveryBadge}>
-              Free Delivery
-              <Truck size={12} className={styles.truckIcon} />
+          ) : null}
+
+          {deliveryText && (
+            <span className={styles.deliveryBadge}>
+              {deliveryText}
+              {deliveryText.toLowerCase().includes("free") && (
+                <Truck size={12} className={styles.truckIcon} />
+              )}
             </span>
           )}
         </div>

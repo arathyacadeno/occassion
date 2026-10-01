@@ -15,6 +15,8 @@ export interface Product {
   offers: string[];
   includes: string[];
   badge?: string;
+  shortDescription?: string;
+  deliveryText?: string;
 }
 
 export const CATALOG_PRODUCTS: Product[] = [

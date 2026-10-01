@@ -7,13 +7,19 @@
 
 .mainContent {
   flex: 1;
-  padding: 0 32px 80px;
+  padding: 0 60px 80px;
   background-color: #FFEDF1;
 }
 
 .contentInner {
-  max-width: 1320px;
+  max-width: 1440px;
   margin: 0 auto;
+}
+
+@media (max-width: 1024px) {
+  .mainContent {
+    padding: 0 32px 60px;
+  }
 }
 
 @media (max-width: 640px) {
