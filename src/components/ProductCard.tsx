@@ -2,19 +2,26 @@
 
 import React from "react";
 import Link from "next/link";
-import { Heart, Star, Truck } from "lucide-react";
+import { Heart, Star, Truck, Trash2 } from "lucide-react";
 import { Product } from "@/data/catalog";
 import { useWishlist } from "@/context/WishlistContext";
+import { AddToCartButton } from "@/components/Buttons";
 import styles from "./ProductCard.module.css";
 
 interface ProductCardProps {
   product: Product;
   compact?: boolean;
+  showDelete?: boolean;
+  onDelete?: () => void;
+  showAddToCart?: boolean;
 }
 
 export default function ProductCard({
   product,
   compact = false,
+  showDelete = false,
+  onDelete,
+  showAddToCart = false,
 }: ProductCardProps) {
   const { isInWishlist, toggleItem } = useWishlist();
   const isWishlisted = isInWishlist(product.id);
@@ -24,6 +31,16 @@ export default function ProductCard({
     e.preventDefault();
     e.stopPropagation();
     toggleItem(product);
+  };
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onDelete) {
+      onDelete();
+    } else {
+      toggleItem(product);
+    }
   };
 
   const discountPercent =
@@ -61,25 +78,41 @@ export default function ProductCard({
           />
         </Link>
 
-        {/* Floating Wishlist Button (White Circle with Thin Black Outline Heart) */}
-        <button
-          type="button"
-          onClick={toggleWishlist}
-          className={`${styles.wishlistBtn} ${
-            isWishlisted ? styles.wishlistActive : ""
-          }`}
-          aria-label={
-            isWishlisted ? "Remove from wishlist" : "Add to wishlist"
-          }
-          title={isWishlisted ? "In Wishlist" : "Add to Wishlist"}
-        >
-          <Heart
-            size={18}
-            strokeWidth={1.5}
-            fill={isWishlisted ? "#E40345" : "none"}
-            color={isWishlisted ? "#E40345" : "#1a1a1a"}
-          />
-        </button>
+        {/* Floating Action Button (Delete Button or Wishlist Heart) */}
+        {showDelete ? (
+          <button
+            type="button"
+            onClick={handleDelete}
+            className={`${styles.wishlistBtn} ${styles.deleteBtn}`}
+            aria-label="Remove from wishlist"
+            title="Remove from wishlist"
+          >
+            <Trash2
+              size={17}
+              strokeWidth={1.8}
+              className={styles.deleteIcon}
+            />
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={toggleWishlist}
+            className={`${styles.wishlistBtn} ${
+              isWishlisted ? styles.wishlistActive : ""
+            }`}
+            aria-label={
+              isWishlisted ? "Remove from wishlist" : "Add to wishlist"
+            }
+            title={isWishlisted ? "In Wishlist" : "Add to Wishlist"}
+          >
+            <Heart
+              size={18}
+              strokeWidth={1.5}
+              fill={isWishlisted ? "#E40345" : "none"}
+              color={isWishlisted ? "#E40345" : "#1a1a1a"}
+            />
+          </button>
+        )}
 
         {/* Signature Chamfered Ramp Cutout at bottom of image */}
         <svg
@@ -147,6 +180,13 @@ export default function ProductCard({
             </span>
           )}
         </div>
+
+        {/* Optional Add To Cart Button */}
+        {showAddToCart && (
+          <div className={styles.cartActionWrapper}>
+            <AddToCartButton product={product} />
+          </div>
+        )}
       </div>
     </article>
   );

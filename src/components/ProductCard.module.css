@@ -164,6 +164,22 @@
   color: #E40345 !important;
 }
 
+.deleteBtn {
+  color: #475569;
+}
+
+.deleteBtn:hover {
+  background-color: #fee2e2;
+  color: #E40345;
+  box-shadow: 0 4px 12px rgba(228, 3, 69, 0.2);
+}
+
+.deleteIcon {
+  color: inherit;
+  transition: color 0.2s ease;
+}
+
+
 /* ================= CARD BODY ================= */
 .cardBody {
   padding: 12px 6px 8px 6px;
@@ -276,6 +292,12 @@
 .truckIcon {
   color: #15803d;
   stroke-width: 2.2;
+}
+
+/* ================= CART ACTION ================= */
+.cartActionWrapper {
+  width: 100%;
+  margin-top: 14px;
 }
 
 @media (max-width: 640px) {

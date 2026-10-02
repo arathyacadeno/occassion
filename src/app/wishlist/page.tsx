@@ -10,7 +10,7 @@ import ProductCard from "@/components/ProductCard";
 import styles from "./wishlist.module.css";
 
 export default function WishlistPage() {
-  const { items, clearWishlist, wishlistCount } = useWishlist();
+  const { items, clearWishlist, wishlistCount, removeItem } = useWishlist();
 
   return (
     <div className={styles.pageWrapper}>
@@ -61,7 +61,13 @@ export default function WishlistPage() {
         ) : (
           <div className={styles.gridContainer}>
             {items.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                showDelete={true}
+                showAddToCart={true}
+                onDelete={() => removeItem(product.id)}
+              />
             ))}
           </div>
         )}
