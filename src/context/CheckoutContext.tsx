@@ -77,7 +77,7 @@ interface CheckoutContextType {
   mobileNumber: string;
   completedOrder: CompletedOrder | null;
   orders: CompletedOrder[];
-  startBuyNow: (item: CheckoutItem) => void;
+  startBuyNow: (item: CheckoutItem, additionalItems?: CheckoutItem[]) => void;
   startCartCheckout: (items: CheckoutItem[]) => void;
   setMobile: (mobile: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
@@ -187,10 +187,14 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
     }
   }, [orders, isLoaded]);
 
-  const startBuyNow = (item: CheckoutItem) => {
-    setCheckoutItems([item]);
+  const startBuyNow = (
+    item: CheckoutItem,
+    additionalItems: CheckoutItem[] = []
+  ) => {
+    const allItems = [item, ...additionalItems];
+    setCheckoutItems(allItems);
     try {
-      localStorage.setItem("occassions_checkout_items", JSON.stringify([item]));
+      localStorage.setItem("occassions_checkout_items", JSON.stringify(allItems));
       localStorage.setItem("occassions_checkout_item", JSON.stringify(item));
     } catch (e) {
       console.error(e);

@@ -14,7 +14,8 @@ import {
 } from "lucide-react";
 import { Product } from "@/data/catalog";
 import { useCart } from "@/context/CartContext";
-import { useCheckout } from "@/context/CheckoutContext";
+import { useCheckout, CheckoutItem } from "@/context/CheckoutContext";
+import { ADDON_PRODUCTS } from "@/components/RecommendedAddons";
 import styles from "./ProductInfo.module.css";
 
 interface ProductVariant {
@@ -28,9 +29,14 @@ interface ProductVariant {
 interface ProductInfoProps {
   product: Product;
   onVariantChange?: (variant: ProductVariant) => void;
+  selectedAddons?: Record<string, number>;
 }
 
-export default function ProductInfo({ product, onVariantChange }: ProductInfoProps) {
+export default function ProductInfo({
+  product,
+  onVariantChange,
+  selectedAddons,
+}: ProductInfoProps) {
   const { addItem } = useCart();
   const { startBuyNow } = useCheckout();
 
@@ -130,7 +136,7 @@ export default function ProductInfo({ product, onVariantChange }: ProductInfoPro
   };
 
   const handleBuyNow = () => {
-    startBuyNow({
+    const mainItem: CheckoutItem = {
       id: product.id,
       slug: product.slug,
       name: product.name,
@@ -139,7 +145,30 @@ export default function ProductInfo({ product, onVariantChange }: ProductInfoPro
       originalPrice: activeOriginalPrice,
       image: selectedVariant ? selectedVariant.image : product.image,
       quantity: 1,
-    });
+    };
+
+    const addonItems: CheckoutItem[] = [];
+    if (selectedAddons) {
+      Object.entries(selectedAddons).forEach(([addonId, qty]) => {
+        if (qty > 0) {
+          const addon = ADDON_PRODUCTS.find((p) => p.id === addonId);
+          if (addon) {
+            addonItems.push({
+              id: addon.id,
+              slug: addon.id,
+              name: addon.name,
+              category: addon.category,
+              price: addon.price,
+              image: addon.image,
+              quantity: qty,
+              subtitle: "Recommended Addon",
+            });
+          }
+        }
+      });
+    }
+
+    startBuyNow(mainItem, addonItems);
   };
 
   return (

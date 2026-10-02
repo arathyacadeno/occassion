@@ -44,20 +44,36 @@ export const ADDON_PRODUCTS: AddonProduct[] = [
   },
 ];
 
-export default function RecommendedAddons() {
+export interface RecommendedAddonsProps {
+  selectedAddons?: Record<string, number>;
+  onAddonChange?: (addons: Record<string, number>) => void;
+}
+
+export default function RecommendedAddons({
+  selectedAddons,
+  onAddonChange,
+}: RecommendedAddonsProps = {}) {
   const { addItem } = useCart();
 
-  // Default all addons to 0 (ADD button)
-  const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [localQuantities, setLocalQuantities] = useState<Record<string, number>>({});
+  const quantities = selectedAddons !== undefined ? selectedAddons : localQuantities;
+
+  const updateQuantities = (next: Record<string, number>) => {
+    if (onAddonChange) {
+      onAddonChange(next);
+    }
+    setLocalQuantities(next);
+  };
 
   const handleIncrement = (id: string) => {
     const current = quantities[id] || 0;
     const next = current + 1;
-
-    setQuantities((prev) => ({
-      ...prev,
+    const nextQuantities = {
+      ...quantities,
       [id]: next,
-    }));
+    };
+
+    updateQuantities(nextQuantities);
 
     // Add to cart safely outside state updater
     const addon = ADDON_PRODUCTS.find((p) => p.id === id);
@@ -86,18 +102,13 @@ export default function RecommendedAddons() {
 
   const handleDecrement = (id: string) => {
     const current = quantities[id] || 0;
+    const nextQuantities = { ...quantities };
     if (current <= 1) {
-      setQuantities((prev) => {
-        const copy = { ...prev };
-        delete copy[id];
-        return copy;
-      });
+      delete nextQuantities[id];
     } else {
-      setQuantities((prev) => ({
-        ...prev,
-        [id]: current - 1,
-      }));
+      nextQuantities[id] = current - 1;
     }
+    updateQuantities(nextQuantities);
   };
 
   return (

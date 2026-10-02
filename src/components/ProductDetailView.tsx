@@ -20,6 +20,7 @@ interface ProductDetailViewProps {
 export default function ProductDetailView({ product }: ProductDetailViewProps) {
   const similarScrollRef = useRef<HTMLDivElement>(null);
   const [selectedImageOverride, setSelectedImageOverride] = React.useState<string | null>(null);
+  const [selectedAddons, setSelectedAddons] = React.useState<Record<string, number>>({});
 
   const scrollSimilar = (direction: "left" | "right") => {
     if (similarScrollRef.current) {
@@ -82,11 +83,15 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
           <ProductInfo
             product={product}
             onVariantChange={(variant) => setSelectedImageOverride(variant.image)}
+            selectedAddons={selectedAddons}
           />
         </section>
 
         {/* Recommended Addon Products */}
-        <RecommendedAddons />
+        <RecommendedAddons
+          selectedAddons={selectedAddons}
+          onAddonChange={setSelectedAddons}
+        />
 
         {/* ================= RATINGS AND REVIEWS SECTION ================= */}
         <section className={styles.reviewsSection} aria-label="Ratings and Reviews">
