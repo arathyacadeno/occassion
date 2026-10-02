@@ -14,6 +14,8 @@ import {
   Star,
   Check,
   ArrowRight,
+  Minus,
+  Plus,
 } from "lucide-react";
 import styles from "./cart.module.css";
 
@@ -237,22 +239,25 @@ export default function CartPage() {
                           className={styles.productImage}
                         />
 
-                        <div className={styles.qtySelectWrap}>
-                          <select
-                            value={item.quantity}
-                            onChange={(e) => {
-                              const val = parseInt(e.target.value, 10);
-                              handleQuantityChange(idx, val);
-                            }}
-                            className={styles.qtySelect}
-                            aria-label={`Quantity for ${item.bouquet.name}`}
+                        <div className={styles.qtyStepperWrap}>
+                          <button
+                            type="button"
+                            onClick={() => handleQuantityChange(idx, Math.max(1, item.quantity - 1))}
+                            className={styles.qtyStepperBtn}
+                            disabled={item.quantity <= 1}
+                            aria-label={`Decrease quantity of ${item.bouquet.name}`}
                           >
-                            {[1, 2, 3, 4, 5, 6, 8, 10].map((q) => (
-                              <option key={q} value={q}>
-                                Qty: {q}
-                              </option>
-                            ))}
-                          </select>
+                            <Minus size={13} strokeWidth={2.4} />
+                          </button>
+                          <span className={styles.qtyValue}>{item.quantity}</span>
+                          <button
+                            type="button"
+                            onClick={() => handleQuantityChange(idx, item.quantity + 1)}
+                            className={styles.qtyStepperBtn}
+                            aria-label={`Increase quantity of ${item.bouquet.name}`}
+                          >
+                            <Plus size={13} strokeWidth={2.4} />
+                          </button>
                         </div>
                       </div>
 

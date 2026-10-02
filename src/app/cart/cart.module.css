@@ -156,27 +156,55 @@
   background-color: #fdf2f4;
 }
 
-.qtySelectWrap {
-  position: relative;
-  width: 100%;
+.qtyStepperWrap {
+  width: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 3px 6px;
+  box-sizing: border-box;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
-.qtySelect {
-  width: 100%;
-  appearance: none;
-  background-color: #ffffff;
-  border: 1px solid #d1d5db;
+.qtyStepperBtn {
+  width: 22px;
+  height: 22px;
   border-radius: 6px;
-  padding: 4px 22px 4px 10px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: #374151;
+  border: none;
+  background-color: #f1f5f9;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23374151' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 6px center;
-  background-size: 12px;
+  padding: 0;
+  transition: all 0.18s ease;
 }
+
+.qtyStepperBtn:hover:not(:disabled) {
+  background-color: #E40345;
+  color: #ffffff;
+}
+
+.qtyStepperBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  background-color: transparent;
+  color: #94a3b8;
+}
+
+.qtyValue {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #0f172a;
+  min-width: 20px;
+  text-align: center;
+  user-select: none;
+}
+
 
 .itemDetailsCol {
   flex: 1;
