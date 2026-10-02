@@ -355,9 +355,8 @@ export default function Header({
             <Link
               href="/#shop-by-flowers"
               onClick={(e) => handleSectionNav(e, "shop-by-flowers", "flower")}
-              className={`${styles.centerNavLink} ${
-                isFlowerActive ? styles.activeNavLink : ""
-              }`}
+              className={`${styles.centerNavLink} ${isFlowerActive ? styles.activeNavLink : ""
+                }`}
             >
               Flower
             </Link>
@@ -365,9 +364,8 @@ export default function Header({
             <Link
               href="/#cakes"
               onClick={(e) => handleSectionNav(e, "cakes", "cakes")}
-              className={`${styles.centerNavLink} ${
-                isCakesActive ? styles.activeNavLink : ""
-              }`}
+              className={`${styles.centerNavLink} ${isCakesActive ? styles.activeNavLink : ""
+                }`}
             >
               Cakes
             </Link>
@@ -375,9 +373,8 @@ export default function Header({
             <Link
               href="/#occasions"
               onClick={(e) => handleSectionNav(e, "occasions", "occasions")}
-              className={`${styles.centerNavLink} ${
-                isSpecialOccasionsActive ? styles.activeNavLink : ""
-              }`}
+              className={`${styles.centerNavLink} ${isSpecialOccasionsActive ? styles.activeNavLink : ""
+                }`}
             >
               Special Occasions
             </Link>
@@ -385,9 +382,8 @@ export default function Header({
             <Link
               href="/#highlights"
               onClick={(e) => handleSectionNav(e, "highlights", "highlights")}
-              className={`${styles.centerNavLink} ${
-                isHighlightsActive ? styles.activeNavLink : ""
-              }`}
+              className={`${styles.centerNavLink} ${isHighlightsActive ? styles.activeNavLink : ""
+                }`}
             >
               Our highlights
             </Link>
@@ -477,9 +473,8 @@ export default function Header({
                 onMouseLeave={handleProfileLeave}
               >
                 <button
-                  className={`${styles.iconBtn} ${
-                    profileHovered ? styles.activeProfileBtn : ""
-                  }`}
+                  className={`${styles.iconBtn} ${profileHovered ? styles.activeProfileBtn : ""
+                    }`}
                   onClick={() => setProfileHovered((prev) => !prev)}
                   type="button"
                   aria-label="Profile Account"
