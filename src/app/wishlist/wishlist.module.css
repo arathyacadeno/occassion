@@ -311,15 +311,15 @@
 }
 
 .addToCartBtn:hover {
-  background-color: #111827;
-  color: #ffffff;
+  border-color: #E40345;
+  color: #E40345;
 }
 
 .buyNowBtn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: #686b2e;
+  background-color: #E40345;
   border: none;
   color: #ffffff;
   padding: 10px 14px;
@@ -328,10 +328,12 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(228, 3, 69, 0.25);
 }
 
 .buyNowBtn:hover {
-  background-color: #555823;
+  background-color: #c7023c;
+  transform: translateY(-1px);
 }
 
 .removeBtn {

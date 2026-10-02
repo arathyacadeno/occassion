@@ -17,11 +17,11 @@
 }
 
 .addToCartBtn:hover {
-  background-color: #111827;
+  background-color: #E40345;
   color: #ffffff;
-  border-color: #111827;
+  border-color: #E40345;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(17, 24, 39, 0.15);
+  box-shadow: 0 4px 12px rgba(228, 3, 69, 0.25);
 }
 
 .addToCartBtn.addedState {
