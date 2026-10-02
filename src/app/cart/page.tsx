@@ -336,8 +336,7 @@ export default function CartPage() {
 
                 <div className={styles.summaryRows}>
                   <div className={styles.summaryRow}>
-                    <span className={styles.summaryLabel}>MRP</span>
-                    <span className={styles.offersPill}>Offers Available</span>
+                    <span className={styles.summaryLabel}>Product Price</span>
                     <span className={styles.summaryValue}>
                       ₹{totalMRP.toLocaleString("en-IN")}
                     </span>
