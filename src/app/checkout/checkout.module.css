@@ -52,8 +52,8 @@
 }
 
 .stepActive .stepNum {
-  background-color: #686b2e;
-  border-color: #686b2e;
+  background-color: #E40345;
+  border-color: #E40345;
   color: #ffffff;
 }
 
@@ -199,7 +199,7 @@
 }
 
 .continueBtn {
-  background-color: #686b2e;
+  background-color: #E40345;
   color: #ffffff;
   border: none;
   border-radius: 10px;
@@ -210,11 +210,11 @@
   cursor: pointer;
   transition: all 0.2s ease;
   align-self: flex-start;
-  box-shadow: 0 2px 8px rgba(104, 107, 46, 0.25);
+  box-shadow: 0 2px 8px rgba(228, 3, 69, 0.25);
 }
 
 .continueBtn:hover {
-  background-color: #555823;
+  background-color: #c7023c;
   transform: translateY(-1px);
 }
 
@@ -442,7 +442,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background-color: #686b2e;
+  background-color: #E40345;
   color: #ffffff;
   border: none;
   border-radius: 10px;
@@ -451,11 +451,11 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 14px rgba(104, 107, 46, 0.25);
+  box-shadow: 0 4px 14px rgba(228, 3, 69, 0.25);
 }
 
 .continueToPaymentBtn:hover {
-  background-color: #555823;
+  background-color: #c7023c;
   transform: translateY(-1px);
 }
 
