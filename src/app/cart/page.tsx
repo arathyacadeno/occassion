@@ -455,12 +455,12 @@ export default function CartPage() {
 
                           {discountPercent > 0 && (
                             <span className={styles.originalPrice}>
-                              ₹{origPrice.toLocaleString("en-IN")}
+                              ₹{(origPrice * item.quantity).toLocaleString("en-IN")}
                             </span>
                           )}
 
                           <span className={styles.currentPrice}>
-                            ₹{item.bouquet.price.toLocaleString("en-IN")}
+                            ₹{(item.bouquet.price * item.quantity).toLocaleString("en-IN")}
                           </span>
 
                           {discountPercent > 0 && (
@@ -587,11 +587,11 @@ export default function CartPage() {
                                   )}
                                   {addonDiscount > 0 && (
                                     <span className={styles.originalPrice}>
-                                      ₹{addonOrig.toLocaleString("en-IN")}
+                                      ₹{(addonOrig * addonItem.quantity).toLocaleString("en-IN")}
                                     </span>
                                   )}
                                   <span className={styles.currentPrice}>
-                                    ₹{addonItem.bouquet.price.toLocaleString("en-IN")}
+                                    ₹{(addonItem.bouquet.price * addonItem.quantity).toLocaleString("en-IN")}
                                   </span>
                                   <span className={styles.freeDeliveryText}>
                                     Free Delivery
