@@ -110,6 +110,8 @@ export default function ProductInfo({
     addItem(
       {
         id: product.id,
+        slug: product.slug,
+        category: product.category,
         name: product.name,
         subtitle: selectedVariant ? `${selectedVariant.name} Arrangement` : product.categoryLabel,
         price: activePrice,

@@ -30,6 +30,8 @@ export function AddToCartButton({
     addItem(
       {
         id: product.id,
+        slug: product.slug,
+        category: product.category,
         name: product.name,
         subtitle: product.categoryLabel,
         price: product.price,

@@ -1,5 +1,8 @@
 export interface Bouquet {
   id: string;
+  slug?: string;
+  category?: string;
+  href?: string;
   name: string;
   subtitle: string;
   price: number;

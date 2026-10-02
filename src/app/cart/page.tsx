@@ -9,6 +9,8 @@ import Breadcrumb from "@/components/Breadcrumb";
 import { useCart } from "@/context/CartContext";
 import { useCheckout } from "@/context/CheckoutContext";
 import { ADDON_PRODUCTS } from "@/components/RecommendedAddons";
+import { CATALOG_PRODUCTS } from "@/data/catalog";
+import { FLOWER_PRODUCTS } from "@/data/flowerProducts";
 import { CartItem } from "@/types";
 import {
   Trash2,
@@ -37,6 +39,88 @@ const isAddonProduct = (item: any) => {
   );
 };
 
+// Helper to resolve the product details page URL for any cart item
+const getItemHref = (bouquet: any): string => {
+  if (!bouquet) return "/flower";
+  if (bouquet.href) return bouquet.href;
+
+  // Direct category and slug match
+  if (bouquet.category && bouquet.slug) {
+    if (
+      ["flower", "cakes", "special-occasions", "our-highlights"].includes(
+        bouquet.category
+      )
+    ) {
+      return `/${bouquet.category}/${bouquet.slug}`;
+    }
+    return `/flowers/${bouquet.category}/${bouquet.slug}`;
+  }
+
+  const bId = (bouquet.id || "").toLowerCase().trim();
+  const bSlug = (bouquet.slug || "").toLowerCase().trim();
+  const bName = (bouquet.name || "").toLowerCase().trim();
+
+  // Find in CATALOG_PRODUCTS
+  const catalogMatch = CATALOG_PRODUCTS.find((p) => {
+    const pId = p.id.toLowerCase();
+    const pSlug = p.slug.toLowerCase();
+    const pName = p.name.toLowerCase().trim();
+    if (bId && (pId === bId || pSlug === bId)) return true;
+    if (bSlug && (pSlug === bSlug || pId === bSlug)) return true;
+    if (bName && (pName === bName || pName.includes(bName) || bName.includes(pName)))
+      return true;
+    return false;
+  });
+
+  if (catalogMatch) {
+    return `/${catalogMatch.category}/${catalogMatch.slug}`;
+  }
+
+  // Find in FLOWER_PRODUCTS
+  const flowerMatch = FLOWER_PRODUCTS.find((p) => {
+    const pId = p.id.toLowerCase();
+    const pSlug = p.slug.toLowerCase();
+    const pName = p.name.toLowerCase().trim();
+    if (bId && (pId === bId || pSlug === bId)) return true;
+    if (bSlug && (pSlug === bSlug || pId === bSlug)) return true;
+    if (bName && (pName === bName || pName.includes(bName) || bName.includes(pName)))
+      return true;
+    return false;
+  });
+
+  if (flowerMatch) {
+    return `/flowers/${flowerMatch.category}/${flowerMatch.slug}`;
+  }
+
+  if (bouquet.slug) {
+    return `/flower/${bouquet.slug}`;
+  }
+
+  if (
+    bId.includes("cake") ||
+    bName.includes("cake") ||
+    bName.includes("black forest")
+  ) {
+    return "/cakes";
+  }
+  if (bId.includes("table") || bName.includes("table")) {
+    return "/table-arrangements";
+  }
+  if (
+    bId.includes("garland") ||
+    bName.includes("garland") ||
+    bId.includes("basket") ||
+    bName.includes("basket")
+  ) {
+    return "/garlands-and-baskets";
+  }
+  if (bId.includes("car") || bName.includes("car")) {
+    return "/car-decorations";
+  }
+
+  return "/flower";
+};
+
 interface GroupedCartItem {
   mainItem: any;
   mainIndex: number;
@@ -46,11 +130,13 @@ interface GroupedCartItem {
   }[];
 }
 
-// Fallback demo items with valid high-res image paths
+// Fallback demo items with valid high-res image paths & detail page links
 const INITIAL_DEMO_ITEMS = [
   {
     bouquet: {
       id: "celebration-hamper",
+      slug: "celebration-cake-flower-hamper-luxe",
+      category: "our-highlights",
       name: "Celebration Floral & Cake Hamper",
       subtitle: "Fresh flower arrangement",
       price: 158,
@@ -64,6 +150,8 @@ const INITIAL_DEMO_ITEMS = [
   {
     bouquet: {
       id: "classic-calicut-bridal",
+      slug: "classic-calicut-bridal-bouquet",
+      category: "flower",
       name: "Classic Calicut Bridal Bouquet",
       subtitle: "Fresh flower arrangement",
       price: 2809,
@@ -303,11 +391,17 @@ export default function CartPage() {
                     <div className={styles.itemMainRow}>
                       {/* Left: Thumbnail & Quantity Stepper */}
                       <div className={styles.itemThumbCol}>
-                        <img
-                          src={item.bouquet.image}
-                          alt={item.bouquet.name}
-                          className={styles.productImage}
-                        />
+                        <Link
+                          href={getItemHref(item.bouquet)}
+                          className={styles.itemImageLink}
+                          title={`View details for ${item.bouquet.name}`}
+                        >
+                          <img
+                            src={item.bouquet.image}
+                            alt={item.bouquet.name}
+                            className={styles.productImage}
+                          />
+                        </Link>
 
                         <div className={styles.qtyStepperWrap}>
                           <button
@@ -334,9 +428,15 @@ export default function CartPage() {
                       {/* Right: Product Details */}
                       <div className={styles.itemDetailsCol}>
                         <div className={styles.itemTitleRow}>
-                          <h2 className={styles.productName}>
-                            {item.bouquet.name}
-                          </h2>
+                          <Link
+                            href={getItemHref(item.bouquet)}
+                            className={styles.itemTitleLink}
+                            title={`View details for ${item.bouquet.name}`}
+                          >
+                            <h2 className={styles.productName}>
+                              {item.bouquet.name}
+                            </h2>
+                          </Link>
                         </div>
 
                         {/* Star Rating Badge */}
@@ -405,11 +505,17 @@ export default function CartPage() {
                               className={styles.addonRow}
                             >
                               <div className={styles.addonThumbCol}>
-                                <img
-                                  src={addonItem.bouquet.image}
-                                  alt={addonItem.bouquet.name}
-                                  className={styles.addonImage}
-                                />
+                                <Link
+                                  href={getItemHref(addonItem.bouquet)}
+                                  className={styles.itemImageLink}
+                                  title={`View details for ${addonItem.bouquet.name}`}
+                                >
+                                  <img
+                                    src={addonItem.bouquet.image}
+                                    alt={addonItem.bouquet.name}
+                                    className={styles.addonImage}
+                                  />
+                                </Link>
 
                                 <div className={styles.qtyStepperWrap}>
                                   <button
@@ -447,9 +553,15 @@ export default function CartPage() {
 
                               <div className={styles.addonDetailsCol}>
                                 <div className={styles.addonTitleRow}>
-                                  <h3 className={styles.addonName}>
-                                    {addonItem.bouquet.name}
-                                  </h3>
+                                  <Link
+                                    href={getItemHref(addonItem.bouquet)}
+                                    className={styles.itemTitleLink}
+                                    title={`View details for ${addonItem.bouquet.name}`}
+                                  >
+                                    <h3 className={styles.addonName}>
+                                      {addonItem.bouquet.name}
+                                    </h3>
+                                  </Link>
                                   <button
                                     type="button"
                                     onClick={() => handleRemoveItem(addonIdx)}
