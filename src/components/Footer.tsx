@@ -215,7 +215,7 @@ export default function Footer() {
 
             <div className={styles.addressContent}>
               <p className={styles.addressText}>
-                Near CH Flyover, Kannur Road
+                Near YMCA Junction, Kannur Road
                 <br />
                 Calicut, Kerala, 673001
               </p>

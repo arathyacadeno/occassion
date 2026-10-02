@@ -35,12 +35,13 @@
   padding-inline: 29px;
   overflow: hidden;
 
-  /* Flower/river background image */
-  background-image: url("/images/footer-section.svg");
+  /* Floral background image (Ultra HD 2560x1440) */
+  background-image: url("/images/footer-carnations-hd.jpg");
   background-size: cover;
   background-position: center bottom;
   background-repeat: no-repeat;
   background-attachment: fixed;
+  image-rendering: -webkit-optimize-contrast;
 
   display: flex;
   justify-content: center;
