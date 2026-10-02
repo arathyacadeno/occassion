@@ -184,7 +184,7 @@ export default function ProductCard({
         {/* Optional Add To Cart Button */}
         {showAddToCart && (
           <div className={styles.cartActionWrapper}>
-            <AddToCartButton product={product} />
+            <AddToCartButton product={product} variant="pill" />
           </div>
         )}
       </div>

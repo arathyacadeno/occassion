@@ -30,6 +30,26 @@
   border-color: #15803d;
 }
 
+.pillBtn {
+  background-color: #E40345;
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  padding: 10px 20px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  box-shadow: 0 3px 12px rgba(228, 3, 69, 0.22);
+}
+
+.pillBtn:hover {
+  background-color: #c7023c;
+  color: #ffffff;
+  border-color: transparent;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(228, 3, 69, 0.32);
+}
+
+
 .largeBtn {
   padding: 14px 28px;
   font-size: 1rem;

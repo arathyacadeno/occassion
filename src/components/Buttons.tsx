@@ -10,12 +10,14 @@ interface AddToCartButtonProps {
   product: Product;
   className?: string;
   size?: "small" | "large";
+  variant?: "default" | "pill";
 }
 
 export function AddToCartButton({
   product,
   className = "",
   size = "small",
+  variant = "default",
 }: AddToCartButtonProps) {
   const { addItem } = useCart();
   const [added, setAdded] = useState(false);
@@ -58,8 +60,10 @@ export function AddToCartButton({
       type="button"
       onClick={handleClick}
       className={`${styles.addToCartBtn} ${
-        size === "large" ? styles.largeBtn : ""
-      } ${added ? styles.addedState : ""} ${className}`}
+        variant === "pill" ? styles.pillBtn : ""
+      } ${size === "large" ? styles.largeBtn : ""} ${
+        added ? styles.addedState : ""
+      } ${className}`}
       aria-label={`Add ${product.name} to cart`}
     >
       {added ? (
@@ -69,7 +73,7 @@ export function AddToCartButton({
         </>
       ) : (
         <>
-          <ShoppingBag size={16} strokeWidth={1.8} />
+          {variant !== "pill" && <ShoppingBag size={16} strokeWidth={1.8} />}
           <span>Add to Cart</span>
         </>
       )}
