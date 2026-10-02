@@ -262,15 +262,6 @@ export default function CartPage() {
                           <h2 className={styles.productName}>
                             {item.bouquet.name}
                           </h2>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              router.push(`/flower/${item.bouquet.id}`)
-                            }
-                            className={styles.aboutProductBtn}
-                          >
-                            About the product
-                          </button>
                         </div>
 
                         {/* Star Rating Badge */}
