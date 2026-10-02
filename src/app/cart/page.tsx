@@ -399,13 +399,13 @@ export default function CartPage() {
                 </div>
               </div>
 
-              {/* Master Check out button */}
+              {/* Master Checkout button */}
               <button
                 type="button"
                 onClick={handleProceedToCheckout}
                 className={styles.checkoutMasterBtn}
               >
-                Check out
+                Checkout
               </button>
             </aside>
           </div>
