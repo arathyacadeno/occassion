@@ -455,8 +455,8 @@
   justify-content: center;
   gap: 8px;
   background-color: #ffffff;
-  color: #686b2e;
-  border: 1px solid #686b2e;
+  color: #E40345;
+  border: 1.5px solid #E40345;
   border-radius: 8px;
   height: 48px;
   padding: 0 24px;
@@ -468,7 +468,9 @@
 }
 
 .addToCartBtn:hover {
-  background-color: #f7f8f2;
+  background-color: #fff0f4;
+  color: #c7023c;
+  border-color: #c7023c;
 }
 
 .addedSuccess {
@@ -483,9 +485,9 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background-color: #686b2e;
+  background-color: #E40345;
   color: #ffffff;
-  border: 1px solid #686b2e;
+  border: 1px solid #E40345;
   border-radius: 8px;
   height: 48px;
   padding: 0 24px;
@@ -493,12 +495,12 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 6px rgba(104, 107, 46, 0.25);
+  box-shadow: 0 2px 8px rgba(228, 3, 69, 0.25);
 }
 
 .buyNowBtn:hover {
-  background-color: #555823;
-  border-color: #555823;
+  background-color: #c7023c;
+  border-color: #c7023c;
 }
 
 @media (max-width: 640px) {

@@ -147,22 +147,12 @@ export default function ProductInfo({ product, onVariantChange }: ProductInfoPro
       {/* Title */}
       <h1 className={styles.productName}>{product.name}</h1>
 
-      {/* Rating & Reviews Row matching reference: ★ 4.9 • 35 Ratings • 34 Reviews */}
+      {/* Rating Badge */}
       <div className={styles.ratingDeliveryRow}>
         <div className={styles.greenRatingBadge}>
           <Star size={11} className={styles.whiteStarIcon} />
           <span>{(product.rating || 4.9).toFixed(1)}</span>
         </div>
-
-        <span className={styles.ratingSeparator}>•</span>
-        <span className={styles.ratingsCountText}>
-          {product.ratingsCount || 35} Ratings
-        </span>
-
-        <span className={styles.ratingSeparator}>•</span>
-        <a href="#reviews" className={styles.reviewsLinkText}>
-          {product.reviewsCount || 34} Reviews
-        </a>
       </div>
 
       {/* Pricing Row: ₹ 2245  ₹ 2514  11% OFF  (i) */}
