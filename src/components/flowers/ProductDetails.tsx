@@ -119,9 +119,7 @@ export default function ProductDetails({
       : product;
 
     // Add item to cart with quantity
-    for (let i = 0; i < quantity; i++) {
-      addItem(itemToAdd, selectedSize, false);
-    }
+    addItem(itemToAdd, selectedSize, false, undefined, quantity);
     setAddedToast(true);
     setTimeout(() => {
       setAddedToast(false);
@@ -343,47 +341,54 @@ export default function ProductDetails({
               )}
 
               {/* Quantity Selector & Add to Cart */}
-              <div className={styles.purchaseControls}>
-                <div className={styles.qtyControl}>
+              <div className={styles.purchaseControlsWrapper}>
+                <div className={styles.qtyAndCartRow}>
+                  <div className={styles.quantitySection}>
+                    <div className={styles.qtyControl}>
+                      <button
+                        type="button"
+                        className={styles.qtyBtn}
+                        onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                        disabled={quantity <= 1}
+                        aria-label="Decrease quantity"
+                      >
+                        -
+                      </button>
+                      <span className={styles.qtyVal}>{quantity}</span>
+                      <button
+                        type="button"
+                        className={styles.qtyBtn}
+                        onClick={() => setQuantity((q) => q + 1)}
+                        aria-label="Increase quantity"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+
                   <button
                     type="button"
-                    className={styles.qtyBtn}
-                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                    disabled={quantity <= 1}
+                    className={`${styles.addToCartBtn} ${addedToast ? styles.addedActive : ""}`}
+                    onClick={handleAddToCart}
                   >
-                    -
-                  </button>
-                  <span className={styles.qtyVal}>{quantity}</span>
-                  <button
-                    type="button"
-                    className={styles.qtyBtn}
-                    onClick={() => setQuantity((q) => q + 1)}
-                  >
-                    +
+                    {addedToast ? (
+                      <Check size={18} strokeWidth={2.4} />
+                    ) : (
+                      <ShoppingBag size={18} strokeWidth={2} />
+                    )}
+                    <span>
+                      {addedToast
+                        ? "Added to Basket!"
+                        : `Add to Cart • ₹${(currentPrice * quantity).toLocaleString("en-IN")}`}
+                    </span>
                   </button>
                 </div>
 
+                {/* Row 2: Buy Now Button */}
                 <button
                   type="button"
-                  className={`${styles.addToCartBtn} ${addedToast ? styles.addedActive : ""}`}
-                  onClick={handleAddToCart}
-                >
-                  {addedToast ? (
-                    <Check size={18} strokeWidth={2.4} />
-                  ) : (
-                    <ShoppingBag size={18} strokeWidth={2} />
-                  )}
-                  <span>
-                    {addedToast
-                      ? "Added to Basket!"
-                      : `Add to Cart • ₹${(currentPrice * quantity).toLocaleString("en-IN")}`}
-                  </span>
-                </button>
-
-                <button
-                  type="button"
-                  className={styles.buyNowBtn}
                   onClick={handleBuyNow}
+                  className={styles.buyNowBtn}
                 >
                   Buy Now
                 </button>

@@ -442,7 +442,7 @@ export default function CartPage() {
                         {/* Star Rating Badge */}
                         <div className={styles.ratingPill}>
                           <Star size={10} fill="#ffffff" color="#ffffff" />
-                          <span>{item.bouquet.rating || 4.4}</span>
+                          <span>{Number(item.bouquet.rating || 4.4).toFixed(1)}</span>
                         </div>
 
                         {/* Price Row */}
@@ -576,7 +576,7 @@ export default function CartPage() {
 
                                 <div className={styles.ratingPill}>
                                   <Star size={9} fill="#ffffff" color="#ffffff" />
-                                  <span>{addonItem.bouquet.rating || 5}</span>
+                                  <span>{Number(addonItem.bouquet.rating || 5).toFixed(1)}</span>
                                 </div>
 
                                 <div className={styles.priceRow}>
@@ -593,19 +593,6 @@ export default function CartPage() {
                                   <span className={styles.currentPrice}>
                                     ₹{(addonItem.bouquet.price * addonItem.quantity).toLocaleString("en-IN")}
                                   </span>
-                                  <span className={styles.freeDeliveryText}>
-                                    Free Delivery
-                                  </span>
-                                </div>
-
-                                <div className={styles.deliveryDate}>
-                                  Delivery by {new Date(
-                                    Date.now() + (addonIdx + 2) * 86400000
-                                  ).toLocaleDateString("en-US", {
-                                    month: "short",
-                                    day: "numeric",
-                                    weekday: "short",
-                                  })}
                                 </div>
                               </div>
                             </div>

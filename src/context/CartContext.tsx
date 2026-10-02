@@ -10,7 +10,8 @@ interface CartContextType {
     bouquet: Bouquet,
     size?: "Petite" | "Signature" | "Grand Deluxe",
     vaseOption?: boolean,
-    customNote?: string
+    customNote?: string,
+    qty?: number
   ) => void;
   updateQty: (index: number, newQty: number) => void;
   removeItem: (index: number) => void;
@@ -69,22 +70,24 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     bouquet: Bouquet,
     size: "Petite" | "Signature" | "Grand Deluxe" = "Signature",
     vaseOption: boolean = false,
-    customNote?: string
+    customNote?: string,
+    qty: number = 1
   ) => {
+    const addQuantity = Math.max(1, qty);
     setItems((prev) => {
       const existingIdx = prev.findIndex(
         (i) => i.bouquet.id === bouquet.id && i.selectedSize === size && i.vaseOption === vaseOption
       );
       if (existingIdx > -1) {
         const next = [...prev];
-        next[existingIdx].quantity += 1;
+        next[existingIdx].quantity += addQuantity;
         return next;
       }
       return [
         ...prev,
         {
           bouquet,
-          quantity: 1,
+          quantity: addQuantity,
           selectedSize: size,
           vaseOption,
           customNote,

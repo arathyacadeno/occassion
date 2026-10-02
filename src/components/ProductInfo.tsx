@@ -11,9 +11,13 @@ import {
   ShoppingCart,
   Check,
   Info,
+  Minus,
+  Plus,
+  Heart,
 } from "lucide-react";
 import { Product } from "@/data/catalog";
 import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 import { useCheckout, CheckoutItem } from "@/context/CheckoutContext";
 import { ADDON_PRODUCTS } from "@/components/RecommendedAddons";
 import styles from "./ProductInfo.module.css";
@@ -87,6 +91,14 @@ export default function ProductInfo({
   const [location, setLocation] = useState("673602, Kozhikode, Kerala");
   const [deliveryDate] = useState("Monday Oct 4");
   const [addedFeedback, setAddedFeedback] = useState(false);
+  const [quantity, setQuantity] = useState(1);
+
+  const { isInWishlist, toggleItem } = useWishlist();
+  const isWishlisted = isInWishlist(product.id);
+
+  const handleToggleWishlist = () => {
+    toggleItem(product);
+  };
 
   // 3 independent accordion states (default closed matching design)
   const [openAccordions, setOpenAccordions] = useState<{
@@ -128,7 +140,9 @@ export default function ProductInfo({
         dimensions: "45cm H × 35cm W",
       },
       "Signature",
-      false
+      false,
+      undefined,
+      quantity
     );
 
     setAddedFeedback(true);
@@ -146,7 +160,7 @@ export default function ProductInfo({
       price: activePrice,
       originalPrice: activeOriginalPrice,
       image: selectedVariant ? selectedVariant.image : product.image,
-      quantity: 1,
+      quantity: quantity,
     };
 
     const addonItems: CheckoutItem[] = [];
@@ -407,34 +421,59 @@ export default function ProductInfo({
         </div>
       </div>
 
-      {/* Action Buttons: [ Add To Cart ] [ Buy Now ] */}
-      <div className={styles.actionButtonsRow}>
-        <button
-          type="button"
-          onClick={handleAddToCart}
-          className={`${styles.addToCartBtn} ${
-            addedFeedback ? styles.addedSuccess : ""
-          }`}
-        >
-          {addedFeedback ? (
-            <>
-              <Check size={18} strokeWidth={2.5} />
-              <span>Added to Cart!</span>
-            </>
-          ) : (
-            <>
-              <ShoppingCart size={18} strokeWidth={1.8} />
-              <span>Add To Cart</span>
-            </>
-          )}
-        </button>
+      {/* Purchase Controls: Quantity Selector + Add to Cart (Row 1), Buy Now (Row 2) */}
+      <div className={styles.purchaseControlsWrapper}>
+        {/* Row 1: Quantity on Left + Add to Cart on Right */}
+        <div className={styles.qtyAndCartRow}>
+          <div className={styles.quantitySection}>
+            <div className={styles.quantityStepper}>
+              <button
+                type="button"
+                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                className={styles.qtyStepperBtn}
+                disabled={quantity <= 1}
+                aria-label="Decrease quantity"
+              >
+                <Minus size={15} strokeWidth={2.4} />
+              </button>
+              <span className={styles.qtyValue}>{quantity}</span>
+              <button
+                type="button"
+                onClick={() => setQuantity((q) => q + 1)}
+                className={styles.qtyStepperBtn}
+                aria-label="Increase quantity"
+              >
+                <Plus size={15} strokeWidth={2.4} />
+              </button>
+            </div>
+          </div>
 
+          <div className={styles.addToCartCol}>
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              className={`${styles.addToCartBtn} ${
+                addedFeedback ? styles.addedSuccess : ""
+              }`}
+            >
+              {addedFeedback ? (
+                <>
+                  <Check size={18} strokeWidth={2.5} />
+                  <span>Added to Cart!</span>
+                </>
+              ) : (
+                <span>Add to Cart</span>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Row 2: Buy Now Button */}
         <button
           type="button"
           onClick={handleBuyNow}
           className={styles.buyNowBtn}
         >
-          <ShoppingCart size={18} strokeWidth={1.8} />
           <span>Buy Now</span>
         </button>
       </div>
