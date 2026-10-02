@@ -62,21 +62,21 @@ export default function ProductInfo({
             name: "6 Stems",
             price: 695,
             originalPrice: 795,
-            image: product.image,
+            image: "/images/lily-6-stems.png",
           },
           {
             id: "12-stems",
             name: "12 Stems",
             price: 1195,
             originalPrice: 1395,
-            image: product.images?.[1] || product.image,
+            image: "/images/lily-12-stems.png",
           },
           {
             id: "custom",
             name: "Custom",
             price: 695,
             originalPrice: 795,
-            image: product.image,
+            image: "/images/lily-custom-stems.png",
           },
         ]
       : null;

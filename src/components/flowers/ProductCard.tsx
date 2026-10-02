@@ -46,6 +46,14 @@ export default function ProductCard({
       : Math.round(customStems * 100 * 1.15)
     : product.originalPrice;
 
+  const activeImage = isLily
+    ? selectedStem === "6"
+      ? "/images/lily-6-stems.png"
+      : selectedStem === "12"
+      ? "/images/lily-12-stems.png"
+      : "/images/lily-custom-stems.png"
+    : product.image;
+
   const toggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -78,7 +86,7 @@ export default function ProductCard({
           aria-label={product.name}
         >
           <img
-            src={product.image}
+            src={activeImage}
             alt={product.name}
             className={styles.productImage}
             loading="lazy"
@@ -259,6 +267,7 @@ export default function ProductCard({
                 ...(product as any),
                 price: activePrice,
                 originalPrice: activeOriginalPrice,
+                image: activeImage,
                 subtitle: isLily
                   ? `${
                       selectedStem === "custom"
