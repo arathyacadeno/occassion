@@ -10,9 +10,7 @@ import { useCart } from "@/context/CartContext";
 import { useCheckout } from "@/context/CheckoutContext";
 import {
   Trash2,
-  Copy,
   Star,
-  Check,
   ArrowRight,
   Minus,
   Plus,
@@ -55,7 +53,6 @@ export default function CartPage() {
   const { startCartCheckout } = useCheckout();
   const [mounted, setMounted] = useState(false);
   const [couponCode, setCouponCode] = useState("");
-  const [copied, setCopied] = useState(false);
 
   // Demo list state so fallback items can be removed interactively
   const [demoList, setDemoList] = useState(INITIAL_DEMO_ITEMS);
@@ -135,12 +132,6 @@ export default function CartPage() {
 
     startCartCheckout(checkoutPayload);
     router.push("/payment");
-  };
-
-  const handleCopyCoupon = () => {
-    setCouponCode("FLOWER10");
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -374,18 +365,6 @@ export default function CartPage() {
                     onChange={(e) => setCouponCode(e.target.value)}
                     className={styles.couponInput}
                   />
-                  <button
-                    type="button"
-                    onClick={handleCopyCoupon}
-                    title="Copy sample code FLOWER10"
-                    style={{ background: "none", border: "none", padding: 0 }}
-                  >
-                    {copied ? (
-                      <Check size={18} color="#16a34a" />
-                    ) : (
-                      <Copy size={18} className={styles.couponIcon} />
-                    )}
-                  </button>
                 </div>
 
                 <hr className={styles.solidDivider} />
