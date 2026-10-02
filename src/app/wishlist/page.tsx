@@ -19,7 +19,7 @@ export default function WishlistPage() {
       <main className={styles.mainContainer}>
         {/* Header Banner */}
         <div className={styles.headerRow}>
-          <div>
+          <div className={styles.headerTextContainer}>
             <h1 className={styles.pageTitle}>My Wishlist</h1>
             <p className={styles.pageSubtitle}>
               Handpicked flowers and gifts you&apos;ve saved for your special moments.
