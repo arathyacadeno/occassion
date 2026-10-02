@@ -331,6 +331,114 @@
 }
 
 /* ========================================================
+   NESTED ADD-ON PRODUCTS SECTION (INSIDE MAIN CARD)
+   ======================================================== */
+.addonSection {
+  margin-top: 18px;
+  padding: 16px;
+  background-color: #fff8f9;
+  border: 1px solid #ffdce3;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.addonSectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px dashed #fecdd3;
+  padding-bottom: 10px;
+}
+
+.addonHeaderTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #E40345;
+}
+
+.addonCountBadge {
+  background-color: #ffe2e8;
+  color: #E40345;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 9999px;
+}
+
+.addonRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.addonThumbCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.addonImage {
+  width: 76px;
+  height: 76px;
+  border-radius: 8px;
+  object-fit: cover;
+  background-color: #ffffff;
+  border: 1px solid #fed7df;
+}
+
+.addonDetailsCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.addonTitleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.addonName {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.addonRemoveBtn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.addonRemoveBtn:hover {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+/* ========================================================
    RIGHT COLUMN: PRICE DETAILS CARD
    ======================================================== */
 .summaryColumn {

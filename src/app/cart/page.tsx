@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
@@ -8,6 +8,8 @@ import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
 import { useCart } from "@/context/CartContext";
 import { useCheckout } from "@/context/CheckoutContext";
+import { ADDON_PRODUCTS } from "@/components/RecommendedAddons";
+import { CartItem } from "@/types";
 import {
   Trash2,
   Star,
@@ -16,6 +18,33 @@ import {
   Plus,
 } from "lucide-react";
 import styles from "./cart.module.css";
+
+// Helper to determine if an item is a recommended add-on product
+const isAddonProduct = (item: any) => {
+  const id = item.bouquet?.id || "";
+  const name = (item.bouquet?.name || "").toLowerCase();
+  const subtitle = (item.bouquet?.subtitle || "").toLowerCase();
+  return (
+    id.startsWith("addon") ||
+    subtitle.includes("addon") ||
+    name.includes("soft toy") ||
+    name.includes("ferrero") ||
+    name.includes("cadbury") ||
+    name.includes("black forest") ||
+    ADDON_PRODUCTS.some(
+      (a) => a.id === id || a.name.toLowerCase() === name
+    )
+  );
+};
+
+interface GroupedCartItem {
+  mainItem: any;
+  mainIndex: number;
+  addons: {
+    item: any;
+    originalIndex: number;
+  }[];
+}
 
 // Fallback demo items with valid high-res image paths
 const INITIAL_DEMO_ITEMS = [
@@ -73,11 +102,43 @@ export default function CartPage() {
     }
   }, [items]);
 
-  if (!mounted) return null;
-
   // Use actual cart items if available or if user loaded real cart; otherwise show demo list
   const isUsingRealCart = hasLoadedRealCart || items.length > 0;
   const displayItems = isUsingRealCart ? items : demoList;
+
+  // Group add-on items inside their preceding main product card
+  const groupedCartItems = useMemo(() => {
+    const groups: GroupedCartItem[] = [];
+    let currentGroup: GroupedCartItem | null = null;
+
+    displayItems.forEach((item, idx) => {
+      if (isAddonProduct(item)) {
+        if (currentGroup) {
+          currentGroup.addons.push({ item, originalIndex: idx });
+        } else if (groups.length > 0) {
+          groups[groups.length - 1].addons.push({ item, originalIndex: idx });
+        } else {
+          const group: GroupedCartItem = {
+            mainItem: item,
+            mainIndex: idx,
+            addons: [],
+          };
+          currentGroup = group;
+          groups.push(group);
+        }
+      } else {
+        const group: GroupedCartItem = {
+          mainItem: item,
+          mainIndex: idx,
+          addons: [],
+        };
+        currentGroup = group;
+        groups.push(group);
+      }
+    });
+
+    return groups;
+  }, [displayItems]);
 
   // Handle Remove Item
   const handleRemoveItem = (idx: number) => {
@@ -85,6 +146,19 @@ export default function CartPage() {
       removeItem(idx);
     } else {
       setDemoList((prev) => prev.filter((_, i) => i !== idx));
+    }
+  };
+
+  // Handle Remove Entire Group (Main item + attached add-ons)
+  const handleRemoveGroup = (group: GroupedCartItem) => {
+    const indicesToRemove = [group.mainIndex, ...group.addons.map((a) => a.originalIndex)].sort(
+      (a, b) => b - a
+    );
+
+    if (isUsingRealCart) {
+      indicesToRemove.forEach((idx) => removeItem(idx));
+    } else {
+      setDemoList((prev) => prev.filter((_, i) => !indicesToRemove.includes(i)));
     }
   };
 
@@ -133,6 +207,8 @@ export default function CartPage() {
     startCartCheckout(checkoutPayload);
     router.push("/payment");
   };
+
+  if (!mounted) return null;
 
   return (
     <div className={styles.pageWrapper}>
@@ -204,8 +280,10 @@ export default function CartPage() {
                 </button>
               </div>
 
-              {/* Cart Items List */}
-              {displayItems.map((item, idx) => {
+              {/* Cart Items List: Groups Main Product and its Add-ons */}
+              {groupedCartItems.map((group) => {
+                const item = group.mainItem;
+                const idx = group.mainIndex;
                 const origPrice =
                   item.bouquet.originalPrice ||
                   Math.round(item.bouquet.price * 1.45);
@@ -221,8 +299,9 @@ export default function CartPage() {
                     key={`${item.bouquet.id}-${idx}`}
                     className={styles.cartItemCard}
                   >
+                    {/* Main Product Row */}
                     <div className={styles.itemMainRow}>
-                      {/* Left: Thumbnail & Quantity Select */}
+                      {/* Left: Thumbnail & Quantity Stepper */}
                       <div className={styles.itemThumbCol}>
                         <img
                           src={item.bouquet.image}
@@ -306,12 +385,129 @@ export default function CartPage() {
                       </div>
                     </div>
 
-                    {/* Bottom Actions Row: REMOVE only (BUY THIS NOW removed) */}
+                    {/* Nested Add-on Products Section (rendered inside main card) */}
+                    {group.addons.length > 0 && (
+                      <div className={styles.addonSection}>
+                        {group.addons.map(({ item: addonItem, originalIndex: addonIdx }) => {
+                          const addonOrig =
+                            addonItem.bouquet.originalPrice ||
+                            Math.round(addonItem.bouquet.price * 1.45);
+                          const addonHasDiscount = addonOrig > addonItem.bouquet.price;
+                          const addonDiscount = addonHasDiscount
+                            ? Math.round(
+                                ((addonOrig - addonItem.bouquet.price) / addonOrig) * 100
+                              )
+                            : 0;
+
+                          return (
+                            <div
+                              key={`${addonItem.bouquet.id}-${addonIdx}`}
+                              className={styles.addonRow}
+                            >
+                              <div className={styles.addonThumbCol}>
+                                <img
+                                  src={addonItem.bouquet.image}
+                                  alt={addonItem.bouquet.name}
+                                  className={styles.addonImage}
+                                />
+
+                                <div className={styles.qtyStepperWrap}>
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleQuantityChange(
+                                        addonIdx,
+                                        Math.max(1, addonItem.quantity - 1)
+                                      )
+                                    }
+                                    className={styles.qtyStepperBtn}
+                                    disabled={addonItem.quantity <= 1}
+                                    aria-label={`Decrease quantity of ${addonItem.bouquet.name}`}
+                                  >
+                                    <Minus size={12} strokeWidth={2.4} />
+                                  </button>
+                                  <span className={styles.qtyValue}>
+                                    {addonItem.quantity}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleQuantityChange(
+                                        addonIdx,
+                                        addonItem.quantity + 1
+                                      )
+                                    }
+                                    className={styles.qtyStepperBtn}
+                                    aria-label={`Increase quantity of ${addonItem.bouquet.name}`}
+                                  >
+                                    <Plus size={12} strokeWidth={2.4} />
+                                  </button>
+                                </div>
+                              </div>
+
+                              <div className={styles.addonDetailsCol}>
+                                <div className={styles.addonTitleRow}>
+                                  <h3 className={styles.addonName}>
+                                    {addonItem.bouquet.name}
+                                  </h3>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRemoveItem(addonIdx)}
+                                    className={styles.addonRemoveBtn}
+                                    aria-label={`Remove add-on ${addonItem.bouquet.name}`}
+                                    title="Remove add-on"
+                                  >
+                                    <Trash2 size={13} />
+                                    <span>REMOVE</span>
+                                  </button>
+                                </div>
+
+                                <div className={styles.ratingPill}>
+                                  <Star size={9} fill="#ffffff" color="#ffffff" />
+                                  <span>{addonItem.bouquet.rating || 5}</span>
+                                </div>
+
+                                <div className={styles.priceRow}>
+                                  {addonDiscount > 0 && (
+                                    <span className={styles.discountBadge}>
+                                      ↓ {addonDiscount}%
+                                    </span>
+                                  )}
+                                  {addonDiscount > 0 && (
+                                    <span className={styles.originalPrice}>
+                                      ₹{addonOrig.toLocaleString("en-IN")}
+                                    </span>
+                                  )}
+                                  <span className={styles.currentPrice}>
+                                    ₹{addonItem.bouquet.price.toLocaleString("en-IN")}
+                                  </span>
+                                  <span className={styles.freeDeliveryText}>
+                                    Free Delivery
+                                  </span>
+                                </div>
+
+                                <div className={styles.deliveryDate}>
+                                  Delivery by {new Date(
+                                    Date.now() + (addonIdx + 2) * 86400000
+                                  ).toLocaleDateString("en-US", {
+                                    month: "short",
+                                    day: "numeric",
+                                    weekday: "short",
+                                  })}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {/* Bottom Actions Row: REMOVE for main item and its add-ons */}
                     <div className={styles.itemDivider}>
                       <div className={styles.itemActionsRow}>
                         <button
                           type="button"
-                          onClick={() => handleRemoveItem(idx)}
+                          onClick={() => handleRemoveGroup(group)}
                           className={styles.removeActionBtn}
                           aria-label={`Remove ${item.bouquet.name}`}
                         >
