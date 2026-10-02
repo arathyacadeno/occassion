@@ -9,6 +9,7 @@ import ProductGallery from "@/components/ProductGallery";
 import ProductInfo from "@/components/ProductInfo";
 import RecommendedAddons from "@/components/RecommendedAddons";
 import { Product, getProductsByCategory, CATALOG_PRODUCTS } from "@/data/catalog";
+import ProductCard from "@/components/ProductCard";
 import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 import styles from "./ProductDetailView.module.css";
 
@@ -152,42 +153,9 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
           </div>
 
           <div ref={similarScrollRef} className={styles.similarScrollRow}>
-            {similarProducts.map((p) => {
-              const origPrice = p.originalPrice || Math.round(p.price * 1.25);
-              return (
-                <Link
-                  key={p.id}
-                  href={`/${p.category}/${p.slug}`}
-                  className={styles.similarCard}
-                >
-                  <div className={styles.similarImageWrap}>
-                    <img
-                      src={p.image}
-                      alt={p.name}
-                      className={styles.similarImage}
-                      loading="lazy"
-                    />
-                  </div>
-                  <div className={styles.similarContent}>
-                    <h3 className={styles.similarTitle}>{p.name}</h3>
-                    <div className={styles.similarRatingBadge}>
-                      <Star size={10} fill="#ffffff" color="#ffffff" />
-                      <span>{p.rating || 4.2}</span>
-                    </div>
-                    <div className={styles.similarPriceRow}>
-                      <span className={styles.similarPrice}>
-                        ₹{p.price.toLocaleString("en-IN")}
-                      </span>
-                      {origPrice > p.price && (
-                        <span className={styles.similarOriginalPrice}>
-                          ₹{origPrice.toLocaleString("en-IN")}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
+            {similarProducts.map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
           </div>
         </section>
       </main>

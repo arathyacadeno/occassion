@@ -166,9 +166,9 @@
 
 .similarScrollRow {
   display: flex;
-  gap: 16px;
+  gap: 20px;
   overflow-x: auto;
-  padding-bottom: 8px;
+  padding: 6px 4px 16px 4px;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none; /* Firefox */
@@ -179,6 +179,10 @@
   display: none; /* Chrome, Safari, Opera */
   width: 0;
   height: 0;
+}
+
+.similarScrollRow > * {
+  flex-shrink: 0;
 }
 
 .similarCard {
