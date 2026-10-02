@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useWishlist } from "@/context/WishlistContext";
 import { useCart } from "@/context/CartContext";
-import { Heart, ShoppingBag, Trash2, ArrowRight, Sparkles } from "lucide-react";
+import { Heart, ShoppingBag, Trash2, ArrowRight } from "lucide-react";
 import styles from "./wishlist.module.css";
 
 export default function WishlistPage() {
@@ -52,10 +52,6 @@ export default function WishlistPage() {
         {/* Header Banner */}
         <div className={styles.headerRow}>
           <div>
-            <div className={styles.tagline}>
-              <Sparkles size={16} />
-              <span>Saved Favorites</span>
-            </div>
             <h1 className={styles.pageTitle}>
               My Wishlist{" "}
               {wishlistCount > 0 && (
@@ -124,9 +120,6 @@ export default function WishlistPage() {
                         alt={product.name}
                         className={styles.cardImg}
                       />
-                      {product.badge && (
-                        <span className={styles.badge}>{product.badge}</span>
-                      )}
                     </div>
                   </Link>
 
