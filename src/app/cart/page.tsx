@@ -437,6 +437,16 @@ export default function CartPage() {
                               {item.bouquet.name}
                             </h2>
                           </Link>
+
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveGroup(group)}
+                            className={styles.removeActionBtn}
+                            aria-label={`Remove ${item.bouquet.name}`}
+                          >
+                            <Trash2 size={15} />
+                            <span>REMOVE</span>
+                          </button>
                         </div>
 
                         {/* Star Rating Badge */}
@@ -601,20 +611,6 @@ export default function CartPage() {
                       </div>
                     )}
 
-                    {/* Bottom Actions Row: REMOVE for main item and its add-ons */}
-                    <div className={styles.itemDivider}>
-                      <div className={styles.itemActionsRow}>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveGroup(group)}
-                          className={styles.removeActionBtn}
-                          aria-label={`Remove ${item.bouquet.name}`}
-                        >
-                          <Trash2 size={15} />
-                          <span>REMOVE</span>
-                        </button>
-                      </div>
-                    </div>
                   </article>
                 );
               })}
