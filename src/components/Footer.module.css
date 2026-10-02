@@ -15,10 +15,10 @@
   box-sizing: border-box;
 }
 
-.footerWrapper p,
-.footerWrapper ul,
-.footerWrapper li,
-.footerWrapper h4 {
+:where(.footerWrapper) p,
+:where(.footerWrapper) ul,
+:where(.footerWrapper) li,
+:where(.footerWrapper) h4 {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -169,12 +169,13 @@
 }
 
 /* ================= 3. HEADINGS AND LINKS ================= */
-/* Heading (pink): margin-bottom ~28px so first link sits ~45px below it */
+h4.colTitle,
 .colTitle {
   font-family: inherit;
   font-size: 14px;
   font-weight: 400;
   color: #ff5277;
+  margin-top: 0;
   margin-bottom: 28px;
   text-align: left;
   line-height: 1.2;
