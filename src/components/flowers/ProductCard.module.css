@@ -284,6 +284,118 @@
   margin-top: 14px;
 }
 
+/* ================= LILY STEM SELECTOR ================= */
+.stemSelectorWrapper {
+  width: 100%;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stemPills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.stemPill {
+  flex: 1;
+  padding: 5px 4px;
+  font-family: var(--font-sans, "Plus Jakarta Sans", sans-serif);
+  font-size: 11.5px;
+  font-weight: 500;
+  border-radius: 999px;
+  border: 1px solid #fecdd3;
+  background-color: #fff1f2;
+  color: #4b5563;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.stemPill:hover {
+  background-color: #ffe4e6;
+  border-color: #fda4af;
+  color: #e11d48;
+}
+
+.stemPillActive {
+  background-color: #ff4770;
+  border-color: #ff4770;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(255, 71, 112, 0.25);
+}
+
+.stemPillActive:hover {
+  background-color: #e63960;
+  border-color: #e63960;
+  color: #ffffff;
+}
+
+.customStemControls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fdf2f8;
+  border: 1px dashed #f472b6;
+  border-radius: 12px;
+  padding: 4px 8px;
+  font-size: 11px;
+  color: #831843;
+}
+
+.customStemLabel {
+  font-weight: 600;
+}
+
+.customStepper {
+  display: inline-flex;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #fbcfe8;
+  border-radius: 999px;
+  padding: 1px 4px;
+  gap: 6px;
+}
+
+.customStepBtn {
+  background: none;
+  border: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13px;
+  color: #ff4770;
+  transition: background 0.15s ease;
+}
+
+.customStepBtn:hover {
+  background: #ffe4e6;
+}
+
+.customStepVal {
+  font-weight: 600;
+  font-size: 11px;
+  min-width: 24px;
+  text-align: center;
+  color: #1f2937;
+}
+
+.customRateHint {
+  font-size: 10px;
+  color: #9d174d;
+  font-weight: 500;
+}
+
 @media (max-width: 640px) {
   .card {
     width: 100%;

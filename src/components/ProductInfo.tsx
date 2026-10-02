@@ -44,28 +44,39 @@ export default function ProductInfo({
   const { addItem } = useCart();
   const { startBuyNow } = useCheckout();
 
+  const isLily =
+    (product.category as string) === "lilies" ||
+    product.name.toLowerCase().includes("lily") ||
+    product.name.toLowerCase().includes("lilies");
+
+  const [customStems, setCustomStems] = useState<number>(8);
+
   // Resolve variants if explicitly defined or for lily products
   const variants: ProductVariant[] | null =
     product.variants && product.variants.length > 0
       ? product.variants
-      : product.name.toLowerCase().includes("lily") ||
-        product.name.toLowerCase().includes("lilies")
+      : isLily
       ? [
           {
-            id: "classic",
-            name: "Classic",
-            price: product.price,
-            originalPrice: product.originalPrice,
+            id: "6-stems",
+            name: "6 Stems",
+            price: 695,
+            originalPrice: 795,
             image: product.image,
           },
           {
-            id: "10-lilies",
-            name: "10 Lilies",
-            price: Math.round(product.price * 2.29),
-            originalPrice: Math.round(
-              (product.originalPrice || product.price * 1.15) * 2.3
-            ),
+            id: "12-stems",
+            name: "12 Stems",
+            price: 1195,
+            originalPrice: 1395,
             image: product.images?.[1] || product.image,
+          },
+          {
+            id: "custom",
+            name: "Custom",
+            price: 695,
+            originalPrice: 795,
+            image: product.image,
           },
         ]
       : null;
@@ -79,10 +90,18 @@ export default function ProductInfo({
     onVariantChange?.(v);
   };
 
-  const activePrice = selectedVariant ? selectedVariant.price : product.price;
+  const activePrice = selectedVariant
+    ? selectedVariant.id === "custom"
+      ? customStems * 100
+      : selectedVariant.price
+    : product.price;
+
   const activeOriginalPrice = selectedVariant
-    ? selectedVariant.originalPrice
+    ? selectedVariant.id === "custom"
+      ? Math.round(customStems * 100 * 1.15)
+      : selectedVariant.originalPrice
     : product.originalPrice;
+
   const discountPercent =
     activeOriginalPrice && activeOriginalPrice > activePrice
       ? Math.round(((activeOriginalPrice - activePrice) / activeOriginalPrice) * 100)
@@ -125,7 +144,11 @@ export default function ProductInfo({
         slug: product.slug,
         category: product.category,
         name: product.name,
-        subtitle: selectedVariant ? `${selectedVariant.name} Arrangement` : product.categoryLabel,
+        subtitle: selectedVariant
+          ? selectedVariant.id === "custom"
+            ? `${customStems} Stems (Custom Arrangement)`
+            : `${selectedVariant.name} Arrangement`
+          : product.categoryLabel,
         price: activePrice,
         originalPrice: activeOriginalPrice,
         image: selectedVariant ? selectedVariant.image : product.image,
@@ -134,7 +157,11 @@ export default function ProductInfo({
         reviewsCount: product.reviewsCount,
         stems: product.includes || [],
         description: product.description,
-        flowerCount: `${product.includes?.length || 12} items`,
+        flowerCount: selectedVariant
+          ? selectedVariant.id === "custom"
+            ? `${customStems} Stems`
+            : `${selectedVariant.name}`
+          : `${product.includes?.length || 12} items`,
         scent: "Fresh & Green",
         badge: product.badge,
         dimensions: "45cm H × 35cm W",
@@ -228,10 +255,13 @@ export default function ProductInfo({
       {/* Make this gift extra special section */}
       {variants && variants.length > 0 && (
         <div className={styles.giftExtraSection}>
-          <h3 className={styles.giftExtraTitle}>Make this gift extra special</h3>
+          <h3 className={styles.giftExtraTitle}>
+            {isLily ? "Select Stems / Arrangement" : "Make this gift extra special"}
+          </h3>
           <div className={styles.giftVariantCards}>
             {variants.map((v) => {
               const isSelected = selectedVariant?.id === v.id;
+              const displayPrice = v.id === "custom" ? customStems * 100 : v.price;
               return (
                 <button
                   key={v.id}
@@ -251,13 +281,43 @@ export default function ProductInfo({
                   <div className={styles.giftCardInfo}>
                     <span className={styles.giftCardName}>{v.name}</span>
                     <span className={styles.giftCardPrice}>
-                      ₹ {v.price.toLocaleString("en-IN")}
+                      ₹ {displayPrice.toLocaleString("en-IN")}
                     </span>
                   </div>
                 </button>
               );
             })}
           </div>
+
+          {isLily && selectedVariant?.id === "custom" && (
+            <div style={{ marginTop: 12, padding: "12px 16px", background: "#fdf2f8", borderRadius: 14, border: "1px dashed #f472b6", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{ fontSize: 13.5, fontWeight: 600, color: "#831843" }}>Choose Stems:</span>
+                <div style={{ display: "inline-flex", alignItems: "center", background: "#ffffff", border: "1px solid #fbcfe8", borderRadius: 999, padding: "3px 8px", gap: 8 }}>
+                  <button
+                    type="button"
+                    onClick={() => setCustomStems((prev) => Math.max(3, prev - 1))}
+                    style={{ background: "none", border: "none", width: 22, height: 22, borderRadius: "50%", cursor: "pointer", fontWeight: 700, fontSize: 15, color: "#ff4770" }}
+                    aria-label="Decrease stem count"
+                  >
+                    -
+                  </button>
+                  <span style={{ fontWeight: 700, fontSize: 13, color: "#1f2937", minWidth: 26, textAlign: "center" }}>
+                    {customStems}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setCustomStems((prev) => prev + 1)}
+                    style={{ background: "none", border: "none", width: 22, height: 22, borderRadius: "50%", cursor: "pointer", fontWeight: 700, fontSize: 15, color: "#ff4770" }}
+                    aria-label="Increase stem count"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+              <span style={{ fontSize: 12, color: "#9d174d", fontWeight: 600 }}>₹100 per stem</span>
+            </div>
+          )}
         </div>
       )}
 

@@ -22,6 +22,30 @@ export default function ProductCard({
   const [isWishlisted, setIsWishlisted] = useState(false);
   const productUrl = `/flowers/${product.category}/${product.slug}`;
 
+  const isLily =
+    product.category === "lilies" ||
+    product.name.toLowerCase().includes("lily") ||
+    product.name.toLowerCase().includes("lilies");
+
+  const [selectedStem, setSelectedStem] = useState<"6" | "12" | "custom">("6");
+  const [customStems, setCustomStems] = useState<number>(8);
+
+  const activePrice = isLily
+    ? selectedStem === "6"
+      ? 695
+      : selectedStem === "12"
+      ? 1195
+      : customStems * 100
+    : product.price;
+
+  const activeOriginalPrice = isLily
+    ? selectedStem === "6"
+      ? 795
+      : selectedStem === "12"
+      ? 1395
+      : Math.round(customStems * 100 * 1.15)
+    : product.originalPrice;
+
   const toggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -29,9 +53,9 @@ export default function ProductCard({
   };
 
   const discountPercent =
-    product.originalPrice && product.originalPrice > product.price
+    activeOriginalPrice && activeOriginalPrice > activePrice
       ? Math.round(
-          ((product.originalPrice - product.price) / product.originalPrice) * 100
+          ((activeOriginalPrice - activePrice) / activeOriginalPrice) * 100
         )
       : null;
 
@@ -113,8 +137,89 @@ export default function ProductCard({
           <span>{(product.rating || 4.5).toFixed(1)}</span>
         </div>
 
+        {/* Lily Stem Pricing Selector */}
+        {isLily && (
+          <div className={styles.stemSelectorWrapper}>
+            <div className={styles.stemPills}>
+              <button
+                type="button"
+                className={`${styles.stemPill} ${
+                  selectedStem === "6" ? styles.stemPillActive : ""
+                }`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setSelectedStem("6");
+                }}
+              >
+                6 Stems
+              </button>
+              <button
+                type="button"
+                className={`${styles.stemPill} ${
+                  selectedStem === "12" ? styles.stemPillActive : ""
+                }`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setSelectedStem("12");
+                }}
+              >
+                12 Stems
+              </button>
+              <button
+                type="button"
+                className={`${styles.stemPill} ${
+                  selectedStem === "custom" ? styles.stemPillActive : ""
+                }`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setSelectedStem("custom");
+                }}
+              >
+                Custom
+              </button>
+            </div>
+
+            {selectedStem === "custom" && (
+              <div className={styles.customStemControls}>
+                <span className={styles.customStemLabel}>Stems:</span>
+                <div className={styles.customStepper}>
+                  <button
+                    type="button"
+                    className={styles.customStepBtn}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setCustomStems((prev) => Math.max(3, prev - 1));
+                    }}
+                    aria-label="Decrease stem count"
+                  >
+                    -
+                  </button>
+                  <span className={styles.customStepVal}>{customStems}</span>
+                  <button
+                    type="button"
+                    className={styles.customStepBtn}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setCustomStems((prev) => prev + 1);
+                    }}
+                    aria-label="Increase stem count"
+                  >
+                    +
+                  </button>
+                </div>
+                <span className={styles.customRateHint}>₹100/stem</span>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Optional Description (max 2 lines) */}
-        {cardDescription && (
+        {!isLily && cardDescription && (
           <p className={styles.productDescription} title={cardDescription}>
             {cardDescription}
           </p>
@@ -123,12 +228,12 @@ export default function ProductCard({
         {/* Price & Delivery Row */}
         <div className={styles.priceRow}>
           <span className={styles.currentPrice}>
-            ₹{product.price}
+            ₹{activePrice.toLocaleString("en-IN")}
           </span>
 
-          {product.originalPrice && (
+          {activeOriginalPrice && (
             <span className={styles.originalPrice}>
-              ₹{product.originalPrice}
+              ₹{activeOriginalPrice.toLocaleString("en-IN")}
             </span>
           )}
 
@@ -149,7 +254,28 @@ export default function ProductCard({
         {/* Add To Cart Button */}
         {shouldShowAddToCart && (
           <div className={styles.cartActionWrapper}>
-            <AddToCartButton product={product as any} variant="pill" />
+            <AddToCartButton
+              product={{
+                ...(product as any),
+                price: activePrice,
+                originalPrice: activeOriginalPrice,
+                subtitle: isLily
+                  ? `${
+                      selectedStem === "custom"
+                        ? `${customStems} Stems (Custom)`
+                        : `${selectedStem} Stems`
+                    } Arrangement`
+                  : (product as any).subtitle,
+                flowerCount: isLily
+                  ? `${
+                      selectedStem === "custom"
+                        ? customStems
+                        : selectedStem
+                    } Stems`
+                  : (product as any).flowerCount,
+              }}
+              variant="pill"
+            />
           </div>
         )}
       </div>
