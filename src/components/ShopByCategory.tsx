@@ -40,7 +40,7 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
   {
     id: "cakes",
     name: "Cakes",
-    image: "/images/cat-cakes-luxe.jpg",
+    image: "/images/cat-cakes-pedestal.jpg",
     link: "/cakes",
     delay: "0.28s",
     initTx: "0px",
@@ -170,7 +170,7 @@ function CategoryItem({
           src={item.image}
           alt={item.name}
           fill
-          quality={95}
+          unoptimized
           sizes="(max-width: 640px) 45vw, (max-width: 960px) 30vw, 220px"
           className={styles.categoryImage}
         />
