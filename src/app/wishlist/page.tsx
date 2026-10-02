@@ -52,12 +52,7 @@ export default function WishlistPage() {
         {/* Header Banner */}
         <div className={styles.headerRow}>
           <div>
-            <h1 className={styles.pageTitle}>
-              My Wishlist{" "}
-              {wishlistCount > 0 && (
-                <span className={styles.countBadge}>({wishlistCount})</span>
-              )}
-            </h1>
+            <h1 className={styles.pageTitle}>My Wishlist</h1>
             <p className={styles.pageSubtitle}>
               Handpicked flowers and gifts you&apos;ve saved for your special moments.
             </p>
