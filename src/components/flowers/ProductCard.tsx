@@ -4,17 +4,21 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Star, Heart, Truck } from "lucide-react";
 import { FlowerProduct } from "@/types";
+import { AddToCartButton } from "@/components/Buttons";
 import styles from "./ProductCard.module.css";
 
 interface ProductCardProps {
   product: FlowerProduct;
   compact?: boolean;
+  showAddToCart?: boolean;
 }
 
 export default function ProductCard({
   product,
   compact = false,
+  showAddToCart,
 }: ProductCardProps) {
+  const shouldShowAddToCart = showAddToCart ?? !compact;
   const [isWishlisted, setIsWishlisted] = useState(false);
   const productUrl = `/flowers/${product.category}/${product.slug}`;
 
@@ -141,6 +145,13 @@ export default function ProductCard({
             </span>
           )}
         </div>
+
+        {/* Add To Cart Button */}
+        {shouldShowAddToCart && (
+          <div className={styles.cartActionWrapper}>
+            <AddToCartButton product={product as any} variant="pill" />
+          </div>
+        )}
       </div>
     </article>
   );

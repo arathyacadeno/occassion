@@ -21,8 +21,9 @@ export default function ProductCard({
   compact = false,
   showDelete = false,
   onDelete,
-  showAddToCart = false,
+  showAddToCart,
 }: ProductCardProps) {
+  const shouldShowAddToCart = showAddToCart ?? !compact;
   const { isInWishlist, toggleItem } = useWishlist();
   const isWishlisted = isInWishlist(product.id);
   const productHref = `/${product.category}/${product.slug}`;
@@ -182,7 +183,7 @@ export default function ProductCard({
         </div>
 
         {/* Optional Add To Cart Button */}
-        {showAddToCart && (
+        {shouldShowAddToCart && (
           <div className={styles.cartActionWrapper}>
             <AddToCartButton product={product} variant="pill" />
           </div>
