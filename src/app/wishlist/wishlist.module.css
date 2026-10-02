@@ -144,7 +144,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background-color: #111827;
+  background-color: #E40345;
   color: #ffffff;
   padding: 12px 24px;
   border-radius: 9999px;
@@ -152,11 +152,13 @@
   font-weight: 600;
   text-decoration: none;
   transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(228, 3, 69, 0.25);
 }
 
 .exploreBtn:hover {
-  background-color: #db2777;
+  background-color: #c7023c;
   transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(228, 3, 69, 0.35);
 }
 
 .secondaryExploreBtn {
