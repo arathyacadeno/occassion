@@ -560,7 +560,7 @@ export default function ProductDetails({
 
             <div ref={similarScrollRef} className={styles.similarScrollRow}>
               {relatedProducts.slice(0, 6).map((p) => (
-                <ProductCard key={p.id} product={p} />
+                <ProductCard key={p.id} product={p} compact />
               ))}
             </div>
           </section>

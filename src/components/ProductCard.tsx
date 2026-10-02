@@ -9,9 +9,13 @@ import styles from "./ProductCard.module.css";
 
 interface ProductCardProps {
   product: Product;
+  compact?: boolean;
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({
+  product,
+  compact = false,
+}: ProductCardProps) {
   const { isInWishlist, toggleItem } = useWishlist();
   const isWishlisted = isInWishlist(product.id);
   const productHref = `/${product.category}/${product.slug}`;
@@ -39,7 +43,9 @@ export default function ProductCard({ product }: ProductCardProps) {
       : null);
 
   return (
-    <article className={styles.card}>
+    <article
+      className={`${styles.card} ${compact ? styles.compactCard : ""}`}
+    >
       {/* Top Image Container with Wave Scoop Cutout */}
       <div className={styles.imageContainer}>
         <Link

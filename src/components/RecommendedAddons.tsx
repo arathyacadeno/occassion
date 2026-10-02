@@ -111,7 +111,7 @@ export default function RecommendedAddons() {
 
           return (
             <div key={product.id} className={styles.addonCard}>
-              {/* Image with subtle organic wave cutout at bottom */}
+              {/* Image Container with signature chamfered ramp wave cutout */}
               <div className={styles.imageContainer}>
                 <img
                   src={product.image}
@@ -120,13 +120,13 @@ export default function RecommendedAddons() {
                   loading="lazy"
                 />
                 <svg
-                  viewBox="0 0 280 32"
+                  className={styles.waveDivider}
+                  viewBox="0 0 300 28"
                   preserveAspectRatio="none"
-                  className={styles.waveSvg}
                   aria-hidden="true"
                 >
                   <path
-                    d="M0,14 C50,-2 110,-2 155,14 C190,26 235,28 280,18 L280,32 L0,32 Z"
+                    d="M -2,32 L -2,12 Q -2,0 16,0 L 185,0 C 208,0 216,20 242,20 L 304,20 L 304,32 Z"
                     fill="#ffffff"
                   />
                 </svg>
@@ -134,7 +134,9 @@ export default function RecommendedAddons() {
 
               {/* Card Details */}
               <div className={styles.cardContent}>
-                <h3 className={styles.productName}>{product.name}</h3>
+                <h3 className={styles.productName} title={product.name}>
+                  {product.name}
+                </h3>
                 <div className={styles.productPrice}>
                   ₹ {product.price.toFixed(2)}
                 </div>
@@ -147,7 +149,7 @@ export default function RecommendedAddons() {
                       className={styles.qtyBtn}
                       aria-label={`Decrease ${product.name} quantity`}
                     >
-                      <Minus size={16} strokeWidth={2.8} />
+                      <Minus size={15} strokeWidth={2.8} />
                     </button>
                     <span className={styles.qtyValue}>
                       {String(qty).padStart(2, "0")}
@@ -158,7 +160,7 @@ export default function RecommendedAddons() {
                       className={styles.qtyBtn}
                       aria-label={`Increase ${product.name} quantity`}
                     >
-                      <Plus size={16} strokeWidth={2.8} />
+                      <Plus size={15} strokeWidth={2.8} />
                     </button>
                   </div>
                 ) : (

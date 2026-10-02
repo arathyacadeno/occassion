@@ -23,7 +23,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
 
   const scrollSimilar = (direction: "left" | "right") => {
     if (similarScrollRef.current) {
-      const scrollAmount = direction === "left" ? -420 : 420;
+      const scrollAmount = direction === "left" ? -460 : 460;
       similarScrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
     }
   };
@@ -154,7 +154,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
 
           <div ref={similarScrollRef} className={styles.similarScrollRow}>
             {similarProducts.map((p) => (
-              <ProductCard key={p.id} product={p} />
+              <ProductCard key={p.id} product={p} compact />
             ))}
           </div>
         </section>
