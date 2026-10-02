@@ -5,44 +5,12 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useWishlist } from "@/context/WishlistContext";
-import { useCart } from "@/context/CartContext";
-import { Heart, ShoppingBag, Trash2, ArrowRight } from "lucide-react";
+import { Heart, ArrowRight } from "lucide-react";
+import ProductCard from "@/components/ProductCard";
 import styles from "./wishlist.module.css";
 
 export default function WishlistPage() {
-  const { items, removeItem, clearWishlist, wishlistCount } = useWishlist();
-  const { addItem } = useCart();
-
-  const handleAddToCart = (product: (typeof items)[0]) => {
-    addItem(
-      {
-        id: product.id,
-        name: product.name,
-        subtitle: product.categoryLabel,
-        price: product.price,
-        originalPrice: product.originalPrice,
-        image: product.image,
-        occasion: "celebration",
-        rating: product.rating,
-        reviewsCount: product.reviewsCount,
-        stems: product.includes || [],
-        description: product.description,
-        flowerCount: `${product.includes?.length || 12} items`,
-        scent: "Fresh & Green",
-        badge: product.badge,
-        dimensions: "45cm H × 35cm W",
-      },
-      "Signature",
-      false
-    );
-  };
-
-  const handleBuyNow = (product: (typeof items)[0]) => {
-    handleAddToCart(product);
-    if (typeof window !== "undefined") {
-      window.location.href = "/cart";
-    }
-  };
+  const { items, clearWishlist, wishlistCount } = useWishlist();
 
   return (
     <div className={styles.pageWrapper}>
@@ -92,97 +60,9 @@ export default function WishlistPage() {
           </div>
         ) : (
           <div className={styles.gridContainer}>
-            {items.map((product) => {
-              const discountPercent =
-                product.originalPrice && product.originalPrice > product.price
-                  ? Math.round(
-                      ((product.originalPrice - product.price) /
-                        product.originalPrice) *
-                        100
-                    )
-                  : null;
-
-              return (
-                <div key={product.id} className={styles.wishlistCard}>
-                  {/* Image container */}
-                  <Link
-                    href={`/${product.category}/${product.slug}`}
-                    className={styles.cardImageLink}
-                  >
-                    <div className={styles.imageBox}>
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className={styles.cardImg}
-                      />
-                    </div>
-                  </Link>
-
-                  {/* Card Info */}
-                  <div className={styles.cardBody}>
-                    <div className={styles.categoryLabel}>
-                      {product.categoryLabel}
-                    </div>
-
-                    <Link
-                      href={`/${product.category}/${product.slug}`}
-                      className={styles.titleLink}
-                    >
-                      <h3 className={styles.productTitle}>{product.name}</h3>
-                    </Link>
-
-                    {/* Price Row */}
-                    <div className={styles.priceRow}>
-                      <span className={styles.currentPrice}>
-                        ₹{product.price.toLocaleString("en-IN")}
-                      </span>
-                      {product.originalPrice && (
-                        <span className={styles.originalPrice}>
-                          ₹{product.originalPrice.toLocaleString("en-IN")}
-                        </span>
-                      )}
-                      {discountPercent && (
-                        <span className={styles.discountBadge}>
-                          {discountPercent}% OFF
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Actions */}
-                    <div className={styles.cardActions}>
-                      <button
-                        type="button"
-                        onClick={() => handleAddToCart(product)}
-                        className={styles.addToCartBtn}
-                        aria-label={`Add ${product.name} to cart`}
-                      >
-                        <ShoppingBag size={16} />
-                        <span>Add To Cart</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => handleBuyNow(product)}
-                        className={styles.buyNowBtn}
-                        aria-label={`Buy ${product.name} now`}
-                      >
-                        Buy Now
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => removeItem(product.id)}
-                        className={styles.removeBtn}
-                        aria-label={`Remove ${product.name} from wishlist`}
-                        title="Remove"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            {items.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
           </div>
         )}
       </main>
