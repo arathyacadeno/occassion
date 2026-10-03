@@ -329,9 +329,9 @@ export default function ProductInfo({
           <span>Delivery Location</span>
         </div>
 
-        {/* 1. Location Pill: Home | 673602, Kozhikode, Kerala  (x) */}
+        {/* 1. Location Pill: Pincode | 673602, Kozhikode, Kerala  (x) */}
         <div className={styles.deliveryPill}>
-          <span className={styles.pillLabel}>Home</span>
+          <span className={styles.pillLabel}>Pincode</span>
           <span className={styles.pillDivider}>|</span>
           <input
             type="text"

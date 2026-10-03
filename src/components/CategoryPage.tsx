@@ -45,10 +45,10 @@ export default function CategoryPage({
       const text = `${lowerName} ${lowerDesc} ${lowerSlug}`;
 
       if (activeFilter === "birthday") {
-        return text.includes("birthday") || text.includes("sunflower") || text.includes("cake") || text.includes("gerbera");
+        return text.includes("birthday") || text.includes("celebration") || text.includes("sunflower") || text.includes("gerbera");
       }
       if (activeFilter === "anniversary") {
-        return text.includes("anniversary") || text.includes("rose") || text.includes("romance");
+        return text.includes("anniversary") || text.includes("engaged") || text.includes("wedding") || text.includes("heart") || text.includes("romance");
       }
       if (activeFilter === "boxes" || activeFilter === "baskets") {
         return text.includes("basket") || text.includes("box") || text.includes("crate") || text.includes("uruli");
@@ -66,10 +66,10 @@ export default function CategoryPage({
         return text.includes("lily") || text.includes("lilies");
       }
       if (activeFilter === "chocolate") {
-        return text.includes("chocolate") || text.includes("truffle") || text.includes("espresso") || text.includes("biscoff");
+        return text.includes("chocolate") || text.includes("truffle") || text.includes("espresso") || text.includes("biscoff") || text.includes("fudge") || text.includes("ganache");
       }
       if (activeFilter === "fruit" || activeFilter === "vanilla") {
-        return text.includes("berry") || text.includes("vanilla") || text.includes("mango") || text.includes("forest") || text.includes("butterscotch");
+        return text.includes("berry") || text.includes("vanilla") || text.includes("mango") || text.includes("forest") || text.includes("butterscotch") || text.includes("fruit") || text.includes("velvet") || text.includes("raspberry") || text.includes("strawberry");
       }
       return true;
     });

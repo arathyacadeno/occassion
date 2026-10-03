@@ -30,7 +30,7 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
   {
     id: "flower-bouquet",
     name: "Flower Bouquet",
-    image: "/images/cat-flower-bouquet-luxe.jpg",
+    image: "/images/flower-bouquet-luxe.png",
     link: "/flower-bouquets",
     delay: "0.14s",
     initTx: "-44px",
@@ -163,9 +163,13 @@ function CategoryItem({
   item: CategoryCardItem;
   isVisible: boolean;
 }) {
+  const isBouquet = item.id === "flower-bouquet";
   const content = (
     <div className={styles.itemWrapper}>
-      <div className={styles.imageFrame}>
+      <div
+        className={styles.imageFrame}
+        style={isBouquet ? { backgroundColor: "#FFF7F2" } : undefined}
+      >
         <Image
           src={item.image}
           alt={item.name}
