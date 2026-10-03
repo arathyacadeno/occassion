@@ -168,7 +168,7 @@ function CategoryItem({
     <div className={styles.itemWrapper}>
       <div
         className={styles.imageFrame}
-        style={isBouquet ? { backgroundColor: "#FFF7F2" } : undefined}
+        style={isBouquet ? { backgroundColor: "#B5DCF7" } : undefined}
       >
         <Image
           src={item.image}
