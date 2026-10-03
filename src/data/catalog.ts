@@ -608,35 +608,7 @@ export const CATALOG_PRODUCTS: Product[] = [
 
 
   // ==================== CAKES PRODUCTS (/cakes) ====================
-  {
-    id: "cake-onyx-black",
-    slug: "onyx-black-celebration-cake",
-    name: "Onyx Black Celebration Cake",
-    price: 1199,
-    originalPrice: 1399,
-    category: "cakes",
-    categoryLabel: "Cakes",
-    image: "/images/cakes/onyx-black-celebration-cake.png",
-    images: [
-      "/images/cakes/onyx-black-celebration-cake.png",
-      "/images/Cake category/AO Smith Z3 Onyx Black Celebration Cake.png",
-    ],
-    rating: 4.9,
-    reviewsCount: 96,
-    description:
-      "Ultra-modern matte obsidian buttercream cake adorned with sleek metallic spheres, gold dust splatters, and celebratory candles. An avant-garde luxury statement for landmark birthdays and milestones.",
-    deliveryInfo: "Freshly baked on order; express 3-hour chilled delivery across Calicut.",
-    offers: [
-      "Free celebration candle & wooden knife",
-      "Use code SWEET10 for 10% off",
-    ],
-    includes: [
-      "1kg Dark Belgian Chocolate Sponge",
-      "Hand-Rolled Metallic Spheres",
-      "Premium Gold Lettering Plaque",
-    ],
-    badge: "Modern Luxe",
-  },
+
   {
     id: "cake-blue-floral",
     slug: "blue-floral-birthday-cake",
@@ -776,6 +748,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     ],
     badge: "Engagement Special",
   },
+
   {
     id: "cake-red-heart-anniversary",
     slug: "elegant-red-heart-anniversary-cake",
@@ -834,6 +807,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     ],
     badge: "Signature Design",
   },
+
   {
     id: "cake-golden-crumb",
     slug: "golden-crumb-chocolate-drizzle-cake",
@@ -942,6 +916,35 @@ export const CATALOG_PRODUCTS: Product[] = [
     badge: "Trending Heart",
   },
   {
+    id: "cake-onyx-black",
+    slug: "onyx-black-celebration-cake",
+    name: "Onyx Black Celebration Cake",
+    price: 1199,
+    originalPrice: 1399,
+    category: "cakes",
+    categoryLabel: "Cakes",
+    image: "/images/cakes/onyx-black-celebration-cake.png",
+    images: [
+      "/images/cakes/onyx-black-celebration-cake.png",
+      "/images/Cake category/AO Smith Z3 Onyx Black Celebration Cake.png",
+    ],
+    rating: 4.9,
+    reviewsCount: 96,
+    description:
+      "Ultra-modern matte obsidian buttercream cake adorned with sleek metallic spheres, gold dust splatters, and celebratory candles. An avant-garde luxury statement for landmark birthdays and milestones.",
+    deliveryInfo: "Freshly baked on order; express 3-hour chilled delivery across Calicut.",
+    offers: [
+      "Free celebration candle & wooden knife",
+      "Use code SWEET10 for 10% off",
+    ],
+    includes: [
+      "1kg Dark Belgian Chocolate Sponge",
+      "Hand-Rolled Metallic Spheres",
+      "Premium Gold Lettering Plaque",
+    ],
+    badge: "Modern Luxe",
+  },
+  {
     id: "cake-red-velvet-gold",
     slug: "red-velvet-gold-birthday-cake",
     name: "Royal Red Velvet Gold Birthday Cake",
@@ -971,7 +974,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     badge: "Royal Bestseller",
   },
 
-  
+
 
 
 
