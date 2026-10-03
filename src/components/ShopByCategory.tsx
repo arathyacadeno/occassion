@@ -108,6 +108,7 @@ export default function ShopByCategory() {
           className={`${styles.sectionHeader} ${isVisible ? styles.headerInView : ""
             }`}
         >
+          <span className={styles.subtitle}>Fresh Collections</span>
           <h2 className={styles.mainTitle}>Shop By Category</h2>
         </div>
 
