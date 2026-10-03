@@ -56,6 +56,44 @@
   text-transform: none;
 }
 
+/* Floral decorative divider below title */
+.floralDivider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 340px;
+  margin-top: 14px;
+}
+
+.dividerLine {
+  flex: 1;
+  height: 1.2px;
+  background: linear-gradient(
+    90deg,
+    rgba(219, 39, 119, 0),
+    rgba(219, 39, 119, 0.5) 40%,
+    #db2777 100%
+  );
+}
+
+.dividerLine:last-child {
+  background: linear-gradient(
+    90deg,
+    #db2777 0%,
+    rgba(219, 39, 119, 0.5) 60%,
+    rgba(219, 39, 119, 0) 100%
+  );
+}
+
+.dividerIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
 /* ================= WHITE CONTAINER CARD ================= */
 .whiteCardWrapper {
   background-color: #ffffff;

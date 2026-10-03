@@ -110,6 +110,43 @@ export default function ShopByCategory() {
         >
           <span className={styles.subtitle}>Fresh Collections</span>
           <h2 className={styles.mainTitle}>Shop By Category</h2>
+
+          <div className={styles.floralDivider} aria-hidden="true">
+            <span className={styles.dividerLine} />
+            <span className={styles.dividerIcon}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 12 C9 8.2 9 4.2 12 1.2 C15 4.2 15 8.2 12 12 Z"
+                  fill="#fdf2f7"
+                  stroke="#db2777"
+                  strokeWidth="1.3"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M12 12 C9 15.8 9 19.8 12 22.8 C15 19.8 15 15.8 12 12 Z"
+                  fill="#fdf2f7"
+                  stroke="#db2777"
+                  strokeWidth="1.3"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M12 12 C8.2 9 4.2 9 1.2 12 C4.2 15 8.2 15 12 12 Z"
+                  fill="#fdf2f7"
+                  stroke="#db2777"
+                  strokeWidth="1.3"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M12 12 C15.8 9 19.8 9 22.8 12 C19.8 15 15.8 15 12 12 Z"
+                  fill="#fdf2f7"
+                  stroke="#db2777"
+                  strokeWidth="1.3"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </span>
+            <span className={styles.dividerLine} />
+          </div>
         </div>
 
         {/* White Rounded Card Container */}
