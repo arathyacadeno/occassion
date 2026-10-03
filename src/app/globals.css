@@ -12,10 +12,10 @@
   --font-inter: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   /* Exclusive Light Pink & Pure White Palette */
-  --color-bg: #FFEDF1;
-  --color-bg-alt: #FFEDF1;
-  --color-bg-cream: #FFEDF1;
-  --color-bg-pink-light: #FFEDF1;
+  --color-bg: #FAD9E3;
+  --color-bg-alt: #FAD9E3;
+  --color-bg-cream: #FAD9E3;
+  --color-bg-pink-light: #FAD9E3;
   --color-bg-pink-soft: #fce7f3;
   
   --color-dark: #111111; /* Crisp black for headlines */
@@ -76,14 +76,14 @@ body, h1, h2, h3, h4, h5, h6, p {
 html {
   scroll-behavior: smooth;
   font-size: 16px;
-  background-color: #FFEDF1;
+  background-color: #FAD9E3;
   font-family: var(--font-sans);
 }
 
 body {
   font-family: var(--font-sans);
   color: var(--color-text);
-  background-color: #FFEDF1;
+  background-color: #FAD9E3;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

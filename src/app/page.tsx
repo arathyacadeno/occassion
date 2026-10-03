@@ -23,7 +23,7 @@ export default function Home() {
   };
 
   return (
-    <main style={{ minHeight: "100vh", position: "relative", overflowX: "clip", backgroundColor: "#FFEDF1" }}>
+    <main style={{ minHeight: "100vh", position: "relative", overflowX: "clip", backgroundColor: "#FAD9E3" }}>
       {/* Navigation Header with dynamic split contrast & official Occassions logo */}
       <Header
         isDrawerOpen={isDrawerOpen}

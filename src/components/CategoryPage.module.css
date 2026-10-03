@@ -2,12 +2,12 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #FFEDF1;
+  background-color: #FAD9E3;
 }
 
 .mainContent {
   flex: 1;
-  background-color: #FFEDF1;
+  background-color: #FAD9E3;
 }
 
 /* Category Filter Pills (Matching Figma Design) */
