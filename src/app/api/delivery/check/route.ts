@@ -9,30 +9,52 @@
  */
 
 import { NextResponse } from "next/server";
-import { checkDelivery } from "@/lib/delivery/service";
+import { checkDelivery, searchLocations } from "@/lib/delivery/service";
 
+/**
+ * GET /api/delivery/check?q=beach
+ * Returns autocomplete location & PIN suggestions.
+ */
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const q = searchParams.get("q") || "";
+    const suggestions = searchLocations(q);
+    return NextResponse.json({ suggestions });
+  } catch (err) {
+    console.error("[delivery/search] error:", err);
+    return NextResponse.json({ suggestions: [] }, { status: 500 });
+  }
+}
+
+/**
+ * POST /api/delivery/check
+ * Body: { pinCode?: "673002", query?: "Beach Road", shopId?: "occasions-main" }
+ */
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { pinCode, shopId } = body ?? {};
+    const { pinCode, query, shopId } = body ?? {};
+    const inputVal = pinCode || query;
 
-    if (!pinCode || typeof pinCode !== "string") {
+    if (!inputVal || typeof inputVal !== "string") {
       return NextResponse.json(
         {
           serviceable: false,
+          pinCode: null,
           distance_km: null,
           delivery_charge: null,
           area: null,
           district: null,
           state: null,
-          message: "Please provide a pinCode in the request body.",
+          message: "Please enter a delivery PIN code or location name.",
           tier_label: null,
         },
         { status: 400 }
       );
     }
 
-    const result = checkDelivery({ pinCode, shopId });
+    const result = checkDelivery({ pinCode, query, shopId });
 
     return NextResponse.json(result, { status: 200 });
   } catch (err) {

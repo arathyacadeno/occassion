@@ -20,6 +20,7 @@ import { PIN_COORDS, type PinCoords } from "./pins";
 
 export interface DeliveryCheckResult {
   serviceable: boolean;
+  pinCode?: string | null;
   distance_km: number | null;
   delivery_charge: number | null;
   area: string | null;
@@ -30,9 +31,45 @@ export interface DeliveryCheckResult {
 }
 
 export interface DeliveryCheckInput {
-  pinCode: string;
+  pinCode?: string;
+  query?: string;
   /** Optional – defaults to DEFAULT_SHOP_ID */
   shopId?: string;
+}
+
+// ---------------------------------------------------------------------------
+// Location search helper (autocomplete)
+// ---------------------------------------------------------------------------
+
+export interface LocationSearchResult {
+  pinCode: string;
+  area: string;
+  district: string;
+  state: string;
+}
+
+export function searchLocations(query: string): LocationSearchResult[] {
+  const q = query.trim().toLowerCase();
+  if (!q || q.length < 2) return [];
+
+  const results: LocationSearchResult[] = [];
+  for (const [pin, info] of Object.entries(PIN_COORDS)) {
+    if (
+      pin.startsWith(q) ||
+      info.area.toLowerCase().includes(q) ||
+      info.district.toLowerCase().includes(q) ||
+      info.state.toLowerCase().includes(q)
+    ) {
+      results.push({
+        pinCode: pin,
+        area: info.area,
+        district: info.district,
+        state: info.state,
+      });
+      if (results.length >= 8) break;
+    }
+  }
+  return results;
 }
 
 // ---------------------------------------------------------------------------
@@ -66,7 +103,6 @@ function getTier(distanceKm: number, tiers: DeliveryTier[]): DeliveryTier {
       return tier;
     }
   }
-  // fallback – should never reach here if last tier has maxKm: null
   return { maxKm: null, charge: null, label: "Delivery not available" };
 }
 
@@ -87,44 +123,34 @@ function isValidPinFormat(pin: string): boolean {
 // ---------------------------------------------------------------------------
 
 export function checkDelivery(input: DeliveryCheckInput): DeliveryCheckResult {
-  const rawPin = input.pinCode ?? "";
-  const pin = normalisePin(rawPin);
+  const rawInput = (input.pinCode || input.query || "").trim();
+  let pin = normalisePin(rawInput);
+  let customerCoords: PinCoords | undefined;
 
-  // 1. Format validation
-  if (!isValidPinFormat(pin)) {
-    return {
-      serviceable: false,
-      distance_km: null,
-      delivery_charge: null,
-      area: null,
-      district: null,
-      state: null,
-      message: "Please enter a valid 6-digit PIN code.",
-      tier_label: null,
-    };
+  // 1. If 6 digits, look up PIN directly
+  if (isValidPinFormat(pin)) {
+    customerCoords = PIN_COORDS[pin];
+  } else {
+    // 2. Otherwise treat as location name search (e.g. "Beach Road", "Ernakulam")
+    const lower = rawInput.toLowerCase();
+    for (const [p, info] of Object.entries(PIN_COORDS)) {
+      if (
+        info.area.toLowerCase() === lower ||
+        info.area.toLowerCase().includes(lower) ||
+        info.district.toLowerCase() === lower
+      ) {
+        pin = p;
+        customerCoords = info;
+        break;
+      }
+    }
   }
 
-  // 2. Resolve shop
-  const shopId = input.shopId ?? DEFAULT_SHOP_ID;
-  const shop: ShopConfig | undefined = SHOPS.find((s) => s.id === shopId);
-  if (!shop) {
+  // If neither valid PIN nor recognized location name
+  if (!customerCoords || !isValidPinFormat(pin)) {
     return {
       serviceable: false,
-      distance_km: null,
-      delivery_charge: null,
-      area: null,
-      district: null,
-      state: null,
-      message: "Shop configuration error. Please contact support.",
-      tier_label: null,
-    };
-  }
-
-  // 3. Lookup customer PIN in database
-  const customerCoords: PinCoords | undefined = PIN_COORDS[pin];
-  if (!customerCoords) {
-    return {
-      serviceable: false,
+      pinCode: null,
       distance_km: null,
       delivery_charge: null,
       area: null,
@@ -136,7 +162,24 @@ export function checkDelivery(input: DeliveryCheckInput): DeliveryCheckResult {
     };
   }
 
-  // 4. Compute geographic distance (haversine)
+  // Resolve shop
+  const shopId = input.shopId ?? DEFAULT_SHOP_ID;
+  const shop: ShopConfig | undefined = SHOPS.find((s) => s.id === shopId);
+  if (!shop) {
+    return {
+      serviceable: false,
+      pinCode: pin,
+      distance_km: null,
+      delivery_charge: null,
+      area: null,
+      district: null,
+      state: null,
+      message: "Shop configuration error. Please contact support.",
+      tier_label: null,
+    };
+  }
+
+  // Compute geographic distance (haversine)
   const distanceKm = parseFloat(
     haversineKm(shop.lat, shop.lng, customerCoords.lat, customerCoords.lng).toFixed(1)
   );

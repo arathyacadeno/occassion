@@ -66,4 +66,7 @@ export const PIN_COORDS: Record<string, PinCoords> = {
   "673641": { lat: 10.7700, lng: 76.6500, area: "Palakkad Town",        district: "Palakkad",  state: "Kerala" },
   "673655": { lat: 10.8500, lng: 76.2700, area: "Ottapalam",            district: "Palakkad",  state: "Kerala" },
   "680001": { lat: 10.5200, lng: 76.2150, area: "Thrissur",             district: "Thrissur",  state: "Kerala" },
+  // ── Ernakulam / Kochi ────────────────────────────────────────────────
+  "682017": { lat: 9.9980,  lng: 76.2920, area: "Ernakulam",            district: "Ernakulam", state: "Kerala" },
+  "682001": { lat: 9.9670,  lng: 76.2430, area: "Fort Kochi",           district: "Ernakulam", state: "Kerala" },
 };

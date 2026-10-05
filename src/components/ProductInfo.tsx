@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Star,
   ChevronDown,
@@ -144,6 +144,7 @@ export default function ProductInfo({
     delivery_charge: number | null;
     area: string | null;
     district: string | null;
+    state: string | null;
     message: string | null;
     tier_label: string | null;
   }>({
@@ -153,17 +154,18 @@ export default function ProductInfo({
     delivery_charge: null,
     area: null,
     district: null,
+    state: null,
     message: null,
     tier_label: null,
   });
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const checkDelivery = useCallback((pin: string) => {
+  const checkDelivery = useCallback((queryOrPin: string) => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    const cleanPin = pin.replace(/\D/g, "");
+    const q = queryOrPin.trim();
 
-    if (cleanPin.length !== 6) {
+    if (!q) {
       setDeliveryStatus({
         loading: false,
         serviceable: null,
@@ -171,7 +173,8 @@ export default function ProductInfo({
         delivery_charge: null,
         area: null,
         district: null,
-        message: cleanPin.length > 0 ? "Enter a 6-digit PIN code" : null,
+        state: null,
+        message: null,
         tier_label: null,
       });
       return;
@@ -181,12 +184,17 @@ export default function ProductInfo({
 
     debounceRef.current = setTimeout(async () => {
       try {
+        const isSixDigits = /^\d{6}$/.test(q);
+        const bodyPayload = isSixDigits ? { pinCode: q } : { query: q };
         const res = await fetch("/api/delivery/check", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ pinCode: cleanPin }),
+          body: JSON.stringify(bodyPayload),
         });
         const data = await res.json();
+        if (data.pinCode) {
+          setPinCode(data.pinCode);
+        }
         setDeliveryStatus({
           loading: false,
           serviceable: data.serviceable,
@@ -194,6 +202,7 @@ export default function ProductInfo({
           delivery_charge: data.delivery_charge,
           area: data.area,
           district: data.district,
+          state: data.state,
           message: data.message,
           tier_label: data.tier_label,
         });
@@ -205,12 +214,68 @@ export default function ProductInfo({
           delivery_charge: null,
           area: null,
           district: null,
+          state: null,
           message: "Unable to check delivery. Please try again.",
           tier_label: null,
         });
       }
-    }, 400);
+    }, 350);
   }, []);
+
+  const [isPinFocused, setIsPinFocused] = useState(false);
+  const [typedInput, setTypedInput] = useState("");
+  const [suggestions, setSuggestions] = useState<
+    Array<{ pinCode: string; area: string; district: string; state: string }>
+  >([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const searchLocationQuery = useCallback((query: string) => {
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    const q = query.trim();
+    if (q.length < 2) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    searchDebounceRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/delivery/check?q=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        if (data.suggestions && data.suggestions.length > 0) {
+          setSuggestions(data.suggestions);
+          setShowSuggestions(true);
+        } else {
+          setSuggestions([]);
+          setShowSuggestions(false);
+        }
+      } catch {
+        setSuggestions([]);
+        setShowSuggestions(false);
+      }
+    }, 150);
+  }, []);
+
+  const handleSelectLocation = (item: {
+    pinCode: string;
+    area: string;
+    district: string;
+    state: string;
+  }) => {
+    setPinCode(item.pinCode);
+    setTypedInput("");
+    setShowSuggestions(false);
+    setIsPinFocused(false);
+    checkDelivery(item.pinCode);
+  };
+
+  // Automatically fetch location on mount if PIN is set
+  useEffect(() => {
+    if (pinCode) {
+      checkDelivery(pinCode);
+    }
+  }, [checkDelivery]);
 
   const { isInWishlist, toggleItem } = useWishlist();
   const isWishlisted = isInWishlist(product.id);
@@ -453,57 +518,172 @@ export default function ProductInfo({
       {/* Choose Delivery Preference */}
       <div className={styles.preferenceSection}>
         <h3 className={styles.sectionHeading}>Choose Delivery Preference</h3>
+
+        {/* Free Slot banner when location is fetched */}
+        {deliveryStatus.serviceable === true && (
+          <div className={styles.freeSlotBanner}>
+            <svg
+              width="24"
+              height="20"
+              viewBox="0 0 24 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className={styles.scooterIcon}
+            >
+              <rect x="1" y="4" width="7" height="7" rx="1.5" fill="#087f3b" />
+              <path
+                d="M7 11h4l3 4h4"
+                stroke="#087f3b"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M14 8l2-4h3"
+                stroke="#087f3b"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <circle cx="6" cy="16" r="3" stroke="#087f3b" strokeWidth="2" fill="#e6f7ec" />
+              <circle cx="18" cy="16" r="3" stroke="#087f3b" strokeWidth="2" fill="#e6f7ec" />
+              <circle cx="6" cy="16" r="1.2" fill="#087f3b" />
+              <circle cx="18" cy="16" r="1.2" fill="#087f3b" />
+            </svg>
+            <span>Want it free? Pick a slot with the FREE tag.</span>
+          </div>
+        )}
+
         <div className={styles.locationSubtitle}>
           <MapPin size={15} className={styles.pinIcon} />
           <span>Delivery Location</span>
         </div>
 
-        {/* 1. PIN Code input with live delivery check */}
-        <div
-          className={`${styles.deliveryPill} ${
-            deliveryStatus.serviceable === false ? styles.deliveryPillError : ""
-          }`}
-        >
-          <span className={styles.pillLabel}>PIN Code</span>
-          <span className={styles.pillDivider}>|</span>
-          <input
-            type="text"
-            value={pinCode}
-            maxLength={6}
-            inputMode="numeric"
-            onChange={(e) => {
-              const val = e.target.value.replace(/\D/g, "").slice(0, 6);
-              setPinCode(val);
-              checkDelivery(val);
-            }}
-            className={styles.pillInput}
-            placeholder="Enter 6-digit PIN"
-            aria-label="Delivery PIN Code"
-          />
-          {deliveryStatus.loading && (
-            <span className={styles.deliveryLoading}>…</span>
-          )}
-          {!deliveryStatus.loading && pinCode && (
-            <button
-              type="button"
-              onClick={() => {
-                setPinCode("");
-                setDeliveryStatus({
-                  loading: false,
-                  serviceable: null,
-                  distance_km: null,
-                  delivery_charge: null,
-                  area: null,
-                  district: null,
-                  message: null,
-                  tier_label: null,
-                });
+        {/* 1. Location Pill with Country Flag & Autocomplete for Location/PIN */}
+        <div className={styles.deliveryPillWrapper}>
+          <div
+            className={`${styles.deliveryPill} ${
+              deliveryStatus.serviceable === false ? styles.deliveryPillError : ""
+            }`}
+          >
+            <div className={styles.countrySelector}>
+              <span className={styles.flagIcon}>
+                <svg width="20" height="14" viewBox="0 0 20 14" fill="none">
+                  <rect width="20" height="4.67" fill="#FF9933" rx="1" />
+                  <rect y="4.67" width="20" height="4.67" fill="#FFFFFF" />
+                  <rect y="9.33" width="20" height="4.67" fill="#138808" rx="1" />
+                  <circle cx="10" cy="7" r="1.8" stroke="#000080" strokeWidth="0.6" fill="none" />
+                </svg>
+              </span>
+              <span className={styles.countryCode}>IND</span>
+              <ChevronDown size={13} className={styles.countryChevron} />
+            </div>
+
+            <span className={styles.pillDivider} />
+
+            <input
+              type="text"
+              value={
+                isPinFocused
+                  ? typedInput
+                  : deliveryStatus.serviceable && deliveryStatus.area
+                  ? `${pinCode}, ${deliveryStatus.area}, ${
+                      deliveryStatus.district || deliveryStatus.state || "Kerala"
+                    }, India`
+                  : typedInput || pinCode
+              }
+              onFocus={() => {
+                setIsPinFocused(true);
+                setTypedInput(pinCode || "");
+                if (pinCode) {
+                  searchLocationQuery(pinCode);
+                }
               }}
-              className={styles.clearCircleBtn}
-              aria-label="Clear PIN"
-            >
-              <X size={11} strokeWidth={2.6} />
-            </button>
+              onBlur={() => {
+                setTimeout(() => {
+                  setIsPinFocused(false);
+                  setShowSuggestions(false);
+                }, 200);
+              }}
+              onChange={(e) => {
+                const val = e.target.value;
+                setTypedInput(val);
+                const cleanDigits = val.replace(/\D/g, "");
+                if (/^\d{6}$/.test(cleanDigits)) {
+                  setPinCode(cleanDigits);
+                  checkDelivery(cleanDigits);
+                  setShowSuggestions(false);
+                } else {
+                  searchLocationQuery(val);
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  if (typedInput) {
+                    checkDelivery(typedInput);
+                    setShowSuggestions(false);
+                  }
+                }
+              }}
+              className={styles.pillInput}
+              placeholder="Enter PIN code or Location"
+              aria-label="Delivery Location"
+            />
+
+            {deliveryStatus.loading && (
+              <span className={styles.deliveryLoading}>…</span>
+            )}
+
+            {!deliveryStatus.loading && (pinCode || typedInput) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setPinCode("");
+                  setTypedInput("");
+                  setIsPinFocused(true);
+                  setSuggestions([]);
+                  setShowSuggestions(false);
+                  setDeliveryStatus({
+                    loading: false,
+                    serviceable: null,
+                    distance_km: null,
+                    delivery_charge: null,
+                    area: null,
+                    district: null,
+                    state: null,
+                    message: null,
+                    tier_label: null,
+                  });
+                }}
+                className={styles.clearCircleBtn}
+                aria-label="Clear location"
+              >
+                <X size={11} strokeWidth={2.6} />
+              </button>
+            )}
+          </div>
+
+          {/* Autocomplete Dropdown for Location / PIN */}
+          {showSuggestions && suggestions.length > 0 && (
+            <div className={styles.suggestionsDropdown}>
+              {suggestions.map((item) => (
+                <div
+                  key={item.pinCode}
+                  className={styles.suggestionItem}
+                  onMouseDown={() => handleSelectLocation(item)}
+                >
+                  <MapPin size={13} className={styles.suggestionIcon} />
+                  <div className={styles.suggestionInfo}>
+                    <span className={styles.suggestionArea}>{item.area}</span>
+                    <span className={styles.suggestionDistrict}>
+                      {item.district ? `, ${item.district}` : ""}
+                    </span>
+                  </div>
+                  <span className={styles.suggestionPin}>{item.pinCode}</span>
+                </div>
+              ))}
+            </div>
           )}
         </div>
 
@@ -559,8 +739,8 @@ export default function ProductInfo({
               >
                 <option value="">Select Time</option>
                 <optgroup label="Broad Slots">
-                  <option value="morning-block">9:00 AM – 2:00 PM</option>
-                  <option value="afternoon-block">2:00 PM – 7:00 PM</option>
+                  <option value="morning-block">9:00 AM – 2:00 PM (FREE)</option>
+                  <option value="afternoon-block">2:00 PM – 7:00 PM (FREE)</option>
                 </optgroup>
                 <optgroup label="1-Hour Slots">
                   <option value="slot-9-10">9:00 – 10:00 AM</option>
