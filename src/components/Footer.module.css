@@ -1,15 +1,8 @@
 /* =========================================================
    OCCASIONS FOOTER
-   Exact Figma Specification (1728px frame):
-   - Fixed background image with scrolling white card
-   - Card dimensions: max-width 1670px, min-height ~440px with 40px border-radius
-   - Wrapper padding: top ~125px, bottom ~145px, inline 29px
-   - Card inner padding: top ~108px, right 30px, bottom ~36px, left 52px
-   - CSS Grid columns: 478px 222px 207px 339px 1fr; column-gap: 0
-   - Absolute copyright at right: 30px; bottom: 36px
+   Matches Figma reference (1727px frame)
    ========================================================= */
 
-/* ================= 5. RESETS ================= */
 .footerWrapper,
 .footerWrapper * {
   box-sizing: border-box;
@@ -24,28 +17,20 @@
   list-style: none;
 }
 
-/* ================= 1. BACKGROUND IMAGE (FIXED) ================= */
 .footerWrapper {
+  --pink: #ff3d7a;
+  --text: #18181b;
+  /* shared left edge: logo + wordmark line up on this */
+  --edge-left: clamp(24px, 8.1vw, 140px);
+  /* Empty space at the top of footer.svg to pull away.
+     More negative (-17%) moves the wordmark UP, less negative (-14%) moves it DOWN.
+     If the tops of the letters look cut off, make this less negative. */
+  --wm-offset: -15.5%;
+
   position: relative;
   width: 100%;
-  box-sizing: border-box;
-  /* Wrapper padding: sky above (~125px), river below (~145px) */
-  padding-top: 125px;
-  padding-bottom: 145px;
-  padding-inline: 29px;
+  background: #ffffff;
   overflow: hidden;
-
-  /* Floral background image (Ultra HD 2560x1440) */
-  background-image: url("/images/Pastel Spring Floral Border.png");
-  background-size: cover;
-  background-position: center bottom;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  image-rendering: -webkit-optimize-contrast;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
   font-family: var(
     --font-sans,
     "Plus Jakarta Sans",
@@ -57,68 +42,41 @@
   );
 }
 
-/* ================= 4. CARD SIZE AND COPYRIGHT ================= */
-.footerCard {
-  position: relative;
-  z-index: 2;
+.inner {
   width: 100%;
-  max-width: 1670px;
-  min-height: 440px;
-  height: auto;
+  max-width: 1727px;
   margin: 0 auto;
-
-  /* Card inner padding: left 52px, right 30px, top ~108px, bottom ~36px */
-  padding: 108px 30px 36px 52px;
-  box-sizing: border-box;
-
-  background: #ffffff;
-  border-radius: 40px;
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-
-  display: flex;
-  flex-direction: column;
+  /* logo starts ~140px from left, newsletter ends ~54px from right */
+  padding: 100px clamp(24px, 3.2vw, 54px) 0 var(--edge-left);
 }
 
-/* ================= 1. COLUMNS (CSS GRID) ================= */
+/* ================= MAIN GRID =================
+   Column starts at 1727px: logo 140, services 571,
+   connect 807, address 989, newsletter 1357 */
 .mainGrid {
-  width: 100%;
   display: grid;
-  grid-template-columns: 2.15fr 1fr 0.95fr 1.55fr 1.35fr;
+  grid-template-columns: 292fr 160fr 123fr 249fr 214fr;
   column-gap: 0;
-  row-gap: 0;
   align-items: start;
-  box-sizing: border-box;
 }
 
-@media (min-width: 1680px) {
-  .mainGrid {
-    grid-template-columns: 478px 222px 207px 339px 1fr;
-  }
-}
-
-/* ================= 2. BRAND COLUMN ================= */
+/* ================= BRAND ================= */
 .brandCol {
   display: flex;
-  flex-direction: column;
   align-items: flex-start;
-  text-align: left;
-  max-width: 100%;
 }
 
 .logoLink {
   display: inline-flex;
-  margin-bottom: 16px;
   text-decoration: none;
 }
 
-/* Logo width ~120px */
 .logoImg {
-  width: 120px;
+  width: 165px;
   height: auto;
-  max-width: 120px;
-  object-fit: contain;
+  max-width: 165px;
   display: block;
+  object-fit: contain;
   transition: transform 0.25s ease;
 }
 
@@ -126,163 +84,104 @@
   transform: scale(1.03);
 }
 
-/* Quote: max-width ~380px, line-height ~23px wrapping into 3 lines */
-.brandQuote {
-  font-family: inherit;
-  font-size: 13px;
-  line-height: 23px;
-  color: #262626;
-  max-width: 380px;
-  text-align: left;
-  letter-spacing: -0.01em;
-}
-
-/* Social icons: 40px boxes, gap 16px, margin-top ~20px */
-.socialRow {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-top: 20px;
-}
-
-.socialBtn {
-  width: 40px;
-  height: 40px;
-  border-radius: 9px;
-  background: #f1f4ff;
-  color: #111827;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  transition: all 0.2s ease;
-}
-
-.socialBtn:hover {
-  background: #e0e7ff;
-  color: #ff4770;
-  transform: translateY(-2px);
-}
-
-.socialBtn svg {
-  width: 16px;
-  height: 16px;
-}
-
-/* ================= 3. HEADINGS AND LINKS ================= */
-h4.colTitle,
+/* ================= HEADINGS ================= */
 .colTitle {
   font-family: inherit;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 400;
-  color: #ff5277;
-  margin-top: 0;
-  margin-bottom: 28px;
-  text-align: left;
+  color: var(--pink);
   line-height: 1.2;
+  margin-bottom: 26px;
+  text-align: left;
 }
 
-/* Links Columns (Our Services, Connect) */
+/* ================= LINK COLUMNS ================= */
 .linksCol {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  text-align: left;
 }
 
-/* Links: row spacing ~39px (gap: 16px with line-height 23px = 39px) */
 .linksList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 16px;
 }
 
+/* Our Services links are slightly indented in the design */
+.servicesList {
+  padding-left: 7px;
+}
+
 .navLink {
-  font-family: inherit;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 400;
-  color: #262626;
-  text-decoration: none;
   line-height: 23px;
+  color: var(--text);
+  text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .navLink:hover {
-  color: #ff5277;
+  color: var(--pink);
 }
 
-/* Address Column: same top gap as links, 2 lines line-height 23px, ~22px space, help support */
+/* ================= ADDRESS ================= */
 .addressCol {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  text-align: left;
 }
 
 .addressContent {
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 400;
-  color: #262626;
-  text-align: left;
+  padding-left: 16px;
+  font-size: 15px;
+  color: var(--text);
 }
 
 .addressText {
   margin-bottom: 22px;
   line-height: 23px;
-  color: #262626;
-  text-align: left;
 }
 
 .helpText {
-  margin: 0;
   line-height: 23px;
-  color: #262626;
   white-space: nowrap;
-  text-align: left;
 }
 
 .phoneLink {
-  color: #262626;
+  color: var(--text);
   text-decoration: none;
-  margin-left: 4px;
   transition: color 0.2s ease;
 }
 
 .phoneLink:hover {
-  color: #ff5277;
+  color: var(--pink);
 }
 
-/* Newsletter Column: positioned right after Address, completely inside the card */
+/* ================= NEWSLETTER + SOCIALS ================= */
 .newsletterCol {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  text-align: left;
-  justify-self: start;
   width: 100%;
-  max-width: 290px;
+  max-width: 300px;
 }
 
 .newsletterForm {
   width: 100%;
-  max-width: 290px;
-  height: 48px;
+  height: 60px;
   background: #f1f2ff;
-  border-radius: 14px;
-  padding: 5px 6px 5px 16px;
+  border-radius: 16px;
+  padding: 6px 6px 6px 16px;
   display: flex;
   align-items: center;
-  box-sizing: border-box;
   transition: box-shadow 0.2s ease;
 }
 
 .newsletterForm:focus-within {
-  box-shadow: 0 0 0 2px rgba(255, 82, 119, 0.25);
+  box-shadow: 0 0 0 2px rgba(255, 61, 122, 0.25);
 }
 
 .newsletterInput {
@@ -293,19 +192,19 @@ h4.colTitle,
   outline: none;
   background: transparent;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 14px;
   color: #111827;
 }
 
 .newsletterInput::placeholder {
-  color: #555555;
+  color: #333333;
 }
 
 .sendBtn {
-  width: 48px;
-  height: 38px;
-  border-radius: 10px;
-  background: #ff4770;
+  width: 87px;
+  height: 48px;
+  border-radius: 12px;
+  background: #f94c75;
   color: #ffffff;
   border: none;
   display: inline-flex;
@@ -321,99 +220,124 @@ h4.colTitle,
   transform: scale(1.03);
 }
 
-.sendBtn svg {
+.socialRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.socialBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #f1f4ff;
+  color: #111827;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.socialBtn svg {
   width: 16px;
   height: 16px;
 }
 
-/* ================= 4. COPYRIGHT ================= */
-.copyrightRow {
-  position: absolute;
-  right: 30px;
-  bottom: 36px;
-  margin: 0;
-  padding: 0;
+.socialBtn:hover {
+  background: #e0e7ff;
+  color: var(--pink);
+  transform: translateY(-2px);
 }
 
-.copyrightText {
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 400;
-  color: #262626;
-  margin: 0;
-  text-align: right;
-  letter-spacing: -0.01em;
+/* ================= GIANT FLORAL WORDMARK (cropped) =================
+   Left edge lines up with the logo, as in the reference.
+   overflow: hidden + fixed height crops the bottom of the image.
+   The image is pulled up (--wm-offset) to remove the empty space
+   at the top of footer.svg. */
+.wordmarkWrap {
+  width: 86%;
+  max-width: 1485px;
+  height: 16.2vw;
+  max-height: 280px;
+  margin: 14px 0 0 var(--edge-left);
+  overflow: hidden;
+  user-select: none;
+  pointer-events: none;
 }
 
-/* ================= RESPONSIVE ADAPTATIONS ================= */
-/* Below 1024px switch to 2 columns & static copyright */
-@media (max-width: 1024px) {
-  .footerWrapper {
-    background-attachment: scroll;
-    padding-top: 80px;
-    padding-bottom: 80px;
-    padding-inline: 18px;
+.floralWordmarkImg {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: var(--wm-offset);
+}
+
+/* Very wide screens: keep wordmark aligned with the logo's real position */
+@media (min-width: 1727px) {
+  .wordmarkWrap {
+    margin-left: calc((100% - 1727px) / 2 + 140px);
   }
+}
 
-  .footerCard {
-    height: auto;
-    min-height: auto;
-    padding: 60px 30px 40px 30px;
+/* ================= RESPONSIVE ================= */
+@media (max-width: 1100px) {
+  .inner {
+    padding-top: 64px;
   }
 
   .mainGrid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 40px 30px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px 24px;
+  }
+
+  .brandCol {
+    grid-column: 1 / -1;
   }
 
   .newsletterCol {
-    justify-self: start;
-    max-width: 100%;
+    grid-column: 1 / -1;
+    max-width: 340px;
   }
 
-  .copyrightRow {
-    position: static;
-    margin-top: 40px;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-  }
-
-  .copyrightText {
-    text-align: center;
+  .wordmarkWrap {
+    width: 94%;
+    height: 24vw;
+    max-height: none;
+    margin: 32px auto 0;
   }
 }
 
-/* Below 640px switch to 1 column & static copyright */
 @media (max-width: 640px) {
-  .footerCard {
-    border-radius: 28px;
-    padding: 44px 20px 36px 20px;
+  .inner {
+    padding-top: 48px;
   }
 
   .mainGrid {
-    grid-template-columns: 1fr;
-    gap: 32px;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px 20px;
   }
 
-  .brandCol,
+  .addressCol {
+    grid-column: 1 / -1;
+  }
+
+  .addressContent {
+    padding-left: 0;
+  }
+
   .newsletterCol {
     max-width: 100%;
   }
 
-  .newsletterForm {
-    max-width: 100%;
+  .logoImg {
+    width: 130px;
   }
 
-  .copyrightRow {
-    position: static;
-    margin-top: 32px;
-    display: flex;
-    justify-content: center;
+  .wordmarkWrap {
     width: 100%;
-  }
-
-  .copyrightText {
-    text-align: center;
+    height: 30vw;
+    margin: 24px 0 0;
   }
 }
