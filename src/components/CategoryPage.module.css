@@ -114,7 +114,7 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 44px 40px;
-  align-items: start;
+  align-items: stretch;
   width: 100%;
 }
 

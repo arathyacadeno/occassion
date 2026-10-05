@@ -11,7 +11,7 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 24px;
-  align-items: start;
+  align-items: stretch;
   width: 100%;
 }
 

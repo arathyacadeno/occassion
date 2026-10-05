@@ -56,7 +56,7 @@
   grid-template-columns: repeat(auto-fill, 292px);
   gap: 40px;
   justify-content: center;
-  align-items: start;
+  align-items: stretch;
   width: 100%;
 }
 
