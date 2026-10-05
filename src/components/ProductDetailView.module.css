@@ -22,7 +22,7 @@
   align-items: stretch;
   width: 100%;
   margin-top: 8px;
-  margin-bottom: 36px;
+  margin-bottom: 46px;
   background-color: #F9D7E0;
   border-radius: 48px;
   padding: 38px 40px;
@@ -46,8 +46,8 @@
    RATINGS AND REVIEWS SECTION
    ======================================================== */
 .reviewsSection {
-  margin-top: 24px;
-  margin-bottom: 44px;
+  margin-top: 40px;
+  margin-bottom: 52px;
   width: 100%;
 }
 
@@ -55,7 +55,7 @@
   font-size: 1.35rem;
   font-weight: 600;
   color: #1f2937;
-  margin: 0 0 16px 0;
+  margin: 0 0 22px 0;
   letter-spacing: -0.01em;
   font-family: var(--font-sans, "Plus Jakarta Sans", sans-serif);
 }
@@ -155,8 +155,8 @@
    SIMILAR PRODUCT SECTION
    ======================================================== */
 .similarSection {
-  margin-top: 28px;
-  margin-bottom: 50px;
+  margin-top: 40px;
+  margin-bottom: 56px;
   width: 100%;
 }
 
@@ -164,7 +164,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 22px;
 }
 
 .scrollButtons {

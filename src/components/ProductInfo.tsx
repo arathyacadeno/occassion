@@ -410,19 +410,14 @@ export default function ProductInfo({
           <div className={styles.deliveryDropdownCol}>
             <label className={styles.dropdownLabel}>Delivery Date</label>
             <div className={styles.dropdownPill}>
-              <select
+              <input
+                type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className={styles.dropdownSelect}
+                className={styles.dateInput}
                 aria-label="Delivery Date"
-              >
-                <option value="">Select Date</option>
-                <option value="today">Today, Oct 5</option>
-                <option value="tomorrow">Tomorrow, Oct 6</option>
-                <option value="day-after">Tuesday, Oct 7</option>
-                <option value="custom">Wednesday, Oct 8</option>
-              </select>
-              <ChevronDown size={14} className={styles.dropdownChevron} />
+                min={new Date().toISOString().split("T")[0]}
+              />
             </div>
           </div>
 
@@ -436,10 +431,22 @@ export default function ProductInfo({
                 aria-label="Delivery Time Slot"
               >
                 <option value="">Select Time</option>
-                <option value="morning">Morning (9 AM - 12 PM)</option>
-                <option value="afternoon">Afternoon (1 PM - 4 PM)</option>
-                <option value="evening">Evening (5 PM - 8 PM)</option>
-                <option value="night">Night (9 PM - 11 PM)</option>
+                <optgroup label="Broad Slots">
+                  <option value="morning-block">9:00 AM – 2:00 PM</option>
+                  <option value="afternoon-block">2:00 PM – 7:00 PM</option>
+                </optgroup>
+                <optgroup label="1-Hour Slots">
+                  <option value="slot-9-10">9:00 – 10:00 AM</option>
+                  <option value="slot-10-11">10:00 – 11:00 AM</option>
+                  <option value="slot-11-12">11:00 AM – 12:00 PM</option>
+                  <option value="slot-12-1">12:00 – 1:00 PM</option>
+                  <option value="slot-1-2">1:00 – 2:00 PM</option>
+                  <option value="slot-2-3">2:00 – 3:00 PM</option>
+                  <option value="slot-3-4">3:00 – 4:00 PM</option>
+                  <option value="slot-4-5">4:00 – 5:00 PM</option>
+                  <option value="slot-5-6">5:00 – 6:00 PM</option>
+                  <option value="slot-6-7">6:00 – 7:00 PM</option>
+                </optgroup>
               </select>
               <ChevronDown size={14} className={styles.dropdownChevron} />
             </div>

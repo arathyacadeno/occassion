@@ -958,12 +958,36 @@ export const CATALOG_PRODUCTS: Product[] = [
     ],
     badge: "Royal Bestseller",
   },
-
-
-
-
-
-
+  {
+    id: "addon-black-forest",
+    slug: "black-forest",
+    name: "Black Forest Cake",
+    price: 80,
+    originalPrice: 120,
+    category: "cakes",
+    categoryLabel: "Cakes",
+    image: "/images/addons/black-forest.jpg",
+    images: [
+      "/images/addons/black-forest.jpg",
+      "/images/addons/black-forest.jpg",
+    ],
+    rating: 4.9,
+    ratingsCount: 42,
+    reviewsCount: 38,
+    description:
+      "Classic rich Black Forest cake layered with dark chocolate sponge, whipped fresh cream, and juicy dark cherries, crowned with chocolate shavings.",
+    deliveryInfo: "Fresh chilled delivery guaranteed across Calicut.",
+    offers: [
+      "10% off when ordered with flower bouquets",
+      "Complimentary candle & knife set included",
+    ],
+    includes: [
+      "Signature Black Forest Sponge",
+      "Fresh Whipped Dairy Cream & Cherries",
+      "Dark Chocolate Curls",
+    ],
+    badge: "Addon Favorite",
+  },
 
   // ==================== SPECIAL OCCASIONS PRODUCTS (/special-occasions) ====================
   {
@@ -1185,6 +1209,90 @@ export const CATALOG_PRODUCTS: Product[] = [
       "Sheer Chiffon Pew Drapes",
     ],
     badge: "Wedding",
+  },
+  {
+    id: "addon-ferrero",
+    slug: "ferrero-rocher-chocolate",
+    name: "Ferrero Rocher Chocolate",
+    price: 80,
+    originalPrice: 100,
+    category: "special-occasions",
+    categoryLabel: "Special Occasions",
+    image: "/images/addons/ferrero-rocher.jpg",
+    images: [
+      "/images/addons/ferrero-rocher.jpg",
+      "/images/addons/ferrero-rocher.jpg",
+    ],
+    rating: 5.0,
+    ratingsCount: 56,
+    reviewsCount: 52,
+    description:
+      "Iconic Italian Ferrero Rocher crisp hazelnut and milk chocolate pralines wrapped in signature gold foil with an elegant gold bow.",
+    deliveryInfo: "Delivered chilled alongside your floral arrangements.",
+    offers: [
+      "Complimentary personalized greeting card",
+    ],
+    includes: [
+      "Ferrero Rocher Hazelnut Chocolates",
+      "Gold Ribbon Keepsake Box",
+    ],
+    badge: "Bestseller Addon",
+  },
+  {
+    id: "addon-cadbury-silk",
+    slug: "cadbury-dairy-milk-silk",
+    name: "Cadbury Dairy Milk Silk",
+    price: 80,
+    originalPrice: 95,
+    category: "special-occasions",
+    categoryLabel: "Special Occasions",
+    image: "/images/addons/dairy-milk-silk.jpg",
+    images: [
+      "/images/addons/dairy-milk-silk.jpg",
+      "/images/addons/dairy-milk-silk.jpg",
+    ],
+    rating: 4.8,
+    ratingsCount: 47,
+    reviewsCount: 43,
+    description:
+      "Smooth, velvety Cadbury Dairy Milk Silk chocolate crafted with rich milk cocoa that melts luxuriously in the mouth.",
+    deliveryInfo: "Delivered fresh and chilled with your floral order.",
+    offers: [
+      "Complimentary gift wrap packaging",
+    ],
+    includes: [
+      "Cadbury Dairy Milk Silk Bar",
+      "Signature Gift Sleeve",
+    ],
+    badge: "Sweet Delight",
+  },
+  {
+    id: "addon-soft-toys",
+    slug: "soft-toys",
+    name: "Soft Toys Teddy Bear",
+    price: 80,
+    originalPrice: 120,
+    category: "special-occasions",
+    categoryLabel: "Special Occasions",
+    image: "/images/addons/soft-toys.jpg",
+    images: [
+      "/images/addons/soft-toys.jpg",
+      "/images/addons/soft-toys.jpg",
+    ],
+    rating: 4.9,
+    ratingsCount: 39,
+    reviewsCount: 35,
+    description:
+      "Adorable blush pink plush teddy bear holding an embroidered heart. Ultra-soft and huggable, the sweetest accompaniment to your celebration blooms.",
+    deliveryInfo: "Hand-delivered along with your gift package in pristine condition.",
+    offers: [
+      "Free personalized satin ribbon tag",
+    ],
+    includes: [
+      "Plush Pink Cuddle Bear",
+      "Embroidered Heart Keepsake",
+    ],
+    badge: "Heartfelt Gift",
   },
 
   // ==================== OUR HIGHLIGHTS PRODUCTS (/our-highlights) ====================
@@ -1446,9 +1554,20 @@ export function getProductBySlug(
   category: string,
   slug: string
 ): Product | undefined {
-  return CATALOG_PRODUCTS.find(
-    (p) => p.category === category && p.slug === slug
-  );
+  const normCat = category.toLowerCase().trim();
+  const rawSlug = decodeURIComponent(slug).toLowerCase().trim();
+  const hyphenSlug = rawSlug.replace(/\s+/g, "-");
+
+  return CATALOG_PRODUCTS.find((p) => {
+    if (p.category.toLowerCase().trim() !== normCat) return false;
+    const pSlug = p.slug.toLowerCase().trim();
+    const pHyphen = pSlug.replace(/\s+/g, "-");
+    return (
+      pSlug === rawSlug ||
+      pHyphen === hyphenSlug ||
+      decodeURIComponent(p.slug).toLowerCase().trim() === rawSlug
+    );
+  });
 }
 
 export function getAllProducts(): Product[] {

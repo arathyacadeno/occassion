@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { Minus, Plus } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import styles from "./RecommendedAddons.module.css";
@@ -11,6 +12,8 @@ export interface AddonProduct {
   price: number;
   image: string;
   category: string;
+  href: string;
+  sectionHref: string;
 }
 
 export const ADDON_PRODUCTS: AddonProduct[] = [
@@ -20,6 +23,8 @@ export const ADDON_PRODUCTS: AddonProduct[] = [
     price: 80,
     image: "/images/addons/ferrero-rocher.jpg",
     category: "Chocolates",
+    href: "/special-occasions/ferrero-rocher-chocolate",
+    sectionHref: "/special-occasions",
   },
   {
     id: "addon-cadbury-silk",
@@ -27,6 +32,8 @@ export const ADDON_PRODUCTS: AddonProduct[] = [
     price: 80,
     image: "/images/addons/dairy-milk-silk.jpg",
     category: "Chocolates",
+    href: "/special-occasions/cadbury-dairy-milk-silk",
+    sectionHref: "/special-occasions",
   },
   {
     id: "addon-black-forest",
@@ -34,6 +41,8 @@ export const ADDON_PRODUCTS: AddonProduct[] = [
     price: 80,
     image: "/images/addons/black-forest.jpg",
     category: "Cakes",
+    href: "/cakes/black-forest",
+    sectionHref: "/cakes",
   },
   {
     id: "addon-soft-toys",
@@ -41,6 +50,8 @@ export const ADDON_PRODUCTS: AddonProduct[] = [
     price: 80,
     image: "/images/addons/soft-toys.jpg",
     category: "Gifts",
+    href: "/special-occasions/soft-toys",
+    sectionHref: "/special-occasions",
   },
 ];
 
@@ -125,12 +136,18 @@ export default function RecommendedAddons({
               <div key={product.id} className={styles.addonCard}>
                 {/* Image Container with signature chamfered ramp wave cutout */}
                 <div className={styles.imageContainer}>
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className={styles.cardImage}
-                    loading="lazy"
-                  />
+                  <Link
+                    href={product.href}
+                    className={styles.imageLink}
+                    aria-label={`View ${product.name}`}
+                  >
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className={styles.cardImage}
+                      loading="lazy"
+                    />
+                  </Link>
                   <svg
                     className={styles.waveDivider}
                     viewBox="0 0 300 28"
@@ -147,7 +164,9 @@ export default function RecommendedAddons({
                 {/* Card Details */}
                 <div className={styles.cardContent}>
                   <h3 className={styles.productName} title={product.name}>
-                    {product.name}
+                    <Link href={product.href} className={styles.titleLink}>
+                      {product.name}
+                    </Link>
                   </h3>
                   <div className={styles.productPrice}>
                     ₹ {product.price.toFixed(2)}
@@ -157,7 +176,10 @@ export default function RecommendedAddons({
                     <div className={styles.qtyControl}>
                       <button
                         type="button"
-                        onClick={() => handleDecrement(product.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDecrement(product.id);
+                        }}
                         className={styles.qtyBtn}
                         aria-label={`Decrease ${product.name} quantity`}
                       >
@@ -168,7 +190,10 @@ export default function RecommendedAddons({
                       </span>
                       <button
                         type="button"
-                        onClick={() => handleIncrement(product.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleIncrement(product.id);
+                        }}
                         className={styles.qtyBtn}
                         aria-label={`Increase ${product.name} quantity`}
                       >
@@ -178,7 +203,10 @@ export default function RecommendedAddons({
                   ) : (
                     <button
                       type="button"
-                      onClick={() => handleIncrement(product.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleIncrement(product.id);
+                      }}
                       className={styles.addBtn}
                     >
                       ADD
