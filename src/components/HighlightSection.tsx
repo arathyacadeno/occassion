@@ -115,11 +115,6 @@ export default function HighlightSection() {
       ref={sectionRef}
       className={`${styles.sectionWrapper} ${isInView ? styles.sectionInView : ""}`}
     >
-      {/* Corner animated blooming flower */}
-      <div className={styles.bloomingFlowerWrap} aria-hidden="true">
-        <BloomingFlowerAnimation />
-      </div>
-
       <div className={styles.container}>
         {/* Section Header */}
         <div className={styles.sectionHeader}>
@@ -162,56 +157,64 @@ export default function HighlightSection() {
           </div>
         </div>
 
-        <div className={styles.splitLayout}>
-          {/* Left Column: Heading, Description */}
-          <div className={styles.leftCol}>
-            <div className={styles.textContent}>
-              <h3 className={styles.heading}>
-                Make Every<br />
-                Moment Bloom
-              </h3>
-              <p className={styles.description}>
-                Explore fresh seasonal flowers and elegant bouquets, carefully crafted
-                to bring beauty, warmth, and joy to every moment.
-              </p>
-            </div>
+        {/* White Rounded Card (1654 x 1002) */}
+        <div className={styles.whiteCardWrapper}>
+          {/* Animated blooming flower: bottom-left corner inside the white card */}
+          <div className={styles.bloomingFlowerWrap} aria-hidden="true">
+            <BloomingFlowerAnimation />
           </div>
 
-          {/* Right Column: 2x2 Grid of Cards */}
-          <div className={styles.rightCol}>
-            <div className={styles.cardsGrid}>
-              {highlightCards.map((card, idx) => (
-                <div
-                  key={card.id}
-                  className={styles.card}
-                  style={{ animationDelay: `${0.1 + idx * 0.1}s` }}
-                  onClick={() => setModalItem(card)}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`View ${card.title}`}
-                  onKeyDown={(e) => e.key === "Enter" && setModalItem(card)}
-                >
-                  <div className={styles.cardImgWrap}>
-                    <img
-                      src={card.image}
-                      alt={card.title}
-                      className={styles.cardImg}
-                      loading="lazy"
-                    />
-                    <div className={styles.cardOverlay}>
-                      <span className={styles.cardTitle}>{card.title}</span>
-                      <Link
-                        href={card.href}
-                        className={styles.cardArrowBtn}
-                        onClick={(e) => e.stopPropagation()}
-                        aria-label={`Explore ${card.title}`}
-                      >
-                        <ArrowUpRight size={17} strokeWidth={2.4} />
-                      </Link>
+          <div className={styles.splitLayout}>
+            {/* Left Column: Heading, Description */}
+            <div className={styles.leftCol}>
+              <div className={styles.textContent}>
+                <h3 className={styles.heading}>
+                  Make Every<br />
+                  Moment Bloom
+                </h3>
+                <p className={styles.description}>
+                  Explore fresh seasonal flowers and elegant bouquets, carefully crafted
+                  to bring beauty, warmth, and joy to every moment.
+                </p>
+              </div>
+            </div>
+
+            {/* Right Column: 2x2 Grid of Cards */}
+            <div className={styles.rightCol}>
+              <div className={styles.cardsGrid}>
+                {highlightCards.map((card, idx) => (
+                  <div
+                    key={card.id}
+                    className={styles.card}
+                    style={{ animationDelay: `${0.1 + idx * 0.1}s` }}
+                    onClick={() => setModalItem(card)}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`View ${card.title}`}
+                    onKeyDown={(e) => e.key === "Enter" && setModalItem(card)}
+                  >
+                    <div className={styles.cardImgWrap}>
+                      <img
+                        src={card.image}
+                        alt={card.title}
+                        className={styles.cardImg}
+                        loading="lazy"
+                      />
+                      <div className={styles.cardOverlay}>
+                        <span className={styles.cardTitle}>{card.title}</span>
+                        <Link
+                          href={card.href}
+                          className={styles.cardArrowBtn}
+                          onClick={(e) => e.stopPropagation()}
+                          aria-label={`Explore ${card.title}`}
+                        >
+                          <ArrowUpRight size={17} strokeWidth={2.4} />
+                        </Link>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </div>
