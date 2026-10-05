@@ -1,41 +1,37 @@
 /* ==========================================================================
-   SHOP BY OCCASION - 3-CARD STAGGERED MASONRY SLIDER (1320px CONTAINER)
+   SHOP BY OCCASION - 3-CARD STAGGERED MASONRY SLIDER
+   White card: 1653 x 689  |  Cards: 307 x 395  |  Gap: 128px
    ========================================================================== */
 
 .sectionWrapper {
   --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   width: 100%;
-  padding: 84px 0 110px 0;
+  background-color: #FAD9E3;
+  margin-top: 28px;
+  padding: 64px 0 84px 0;
   position: relative;
   overflow: hidden;
-  background-color: #FAD9E3;
 }
 
 .sectionWrapper * {
   font-family: var(--font-sans) !important;
 }
 
-/* Global 1320px Container */
+/* 1725px - 2 x 36px padding = 1653px white card on wide screens */
 .container {
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 1320px;
+  max-width: 1725px;
   margin-inline: auto;
-  padding-inline: 40px;
+  padding-inline: 36px;
   box-sizing: border-box;
-}
-
-@media (max-width: 768px) {
-  .container {
-    padding-inline: 20px;
-  }
 }
 
 /* ================= SECTION HEADER ================= */
 .sectionHeader {
   text-align: center;
-  margin: 0 auto 46px auto;
+  margin: 0 auto 42px auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -106,11 +102,26 @@
   color: #db2777;
 }
 
+/* ================= WHITE CONTAINER CARD (1653 x 689) ================= */
+.whiteCardWrapper {
+  background-color: #ffffff;
+  border-radius: 28px;
+  padding: 40px 69px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.025);
+  width: 100%;
+  height: 689px;
+  display: flex;
+  align-items: center; /* keeps cards vertically centered */
+  justify-content: center;
+  box-sizing: border-box;
+}
+
 /* ================= CAROUSEL WRAPPER WITH CONTROLS ================= */
+/* 3 x 307px cards + 2 x 128px gaps = 1177px */
 .carouselContainer {
   position: relative;
   width: 100%;
-  max-width: 1120px;
+  max-width: 1177px;
   margin: 0 auto;
 }
 
@@ -175,16 +186,16 @@
 }
 
 .track {
-  --gap: 40px;
+  --gap: 128px;
   --visible-count: 3;
   display: flex;
-  gap: var(--gap, 40px);
+  gap: var(--gap, 128px);
   transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform;
 }
 
 .cardWrapper {
-  flex: 0 0 calc((100% - (var(--visible-count, 3) - 1) * var(--gap, 40px)) / var(--visible-count, 3));
+  flex: 0 0 calc((100% - (var(--visible-count, 3) - 1) * var(--gap, 128px)) / var(--visible-count, 3));
   min-width: 0;
   transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform;
@@ -225,11 +236,11 @@
   transform: translateY(0);
 }
 
-/* ================= PROPORTIONED IMAGE FRAME ================= */
+/* ================= IMAGE FRAME (307 x 395) ================= */
 .imageFrame {
   position: relative;
   width: 100%;
-  aspect-ratio: 1 / 1.08;
+  aspect-ratio: 307 / 395;
   border-radius: 16px;
   overflow: hidden;
   background-color: #f8fafc;
@@ -256,7 +267,7 @@
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.1);
 }
 
-/* ================= GOLD / MUSTARD OVERLAPPING PILL LABEL ================= */
+/* ================= OVERLAPPING PILL LABEL ================= */
 .pillContainer {
   position: absolute;
   bottom: -22px;
@@ -284,8 +295,8 @@
 /* Visible Soft Pink Inner Pill */
 .pillSolidInner {
   display: inline-block;
-  background: #fce7f3; /* visible, luxurious soft pink */
-  color: #831843; /* deep rose berry for gorgeous contrast */
+  background: #fce7f3;
+  color: #831843;
   font-family: var(--font-sans);
   font-size: clamp(0.95rem, 1.1vw, 1.05rem);
   font-weight: 600;
@@ -345,44 +356,82 @@
 }
 
 /* ================= RESPONSIVE BREAKPOINTS ================= */
-@media (max-width: 1060px) {
+/* Smaller laptops: keep 3 cards, tighten the gap so cards stay large */
+@media (max-width: 1440px) {
+  .track {
+    --gap: 72px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .container {
+    padding-inline: 20px;
+  }
+  .whiteCardWrapper {
+    padding: 44px 32px 32px 32px;
+    border-radius: 24px;
+    height: auto;
+    display: block;
+  }
   .carouselContainer {
-    max-width: 860px;
+    max-width: 760px;
+  }
+  .track {
+    --gap: 40px;
   }
   .prevBtn {
-    left: -54px;
+    left: -44px;
   }
   .nextBtn {
-    right: -54px;
+    right: -44px;
   }
 }
 
 /* Tablet (2 cards visible) */
 @media (max-width: 960px) {
   .carouselContainer {
-    max-width: 700px;
+    max-width: 620px;
   }
   .track {
-    --gap: 24px;
+    --gap: 32px;
     --visible-count: 2;
   }
   .staggerCenter {
     transform: translateY(28px);
   }
+  .prevBtn {
+    left: -20px;
+  }
+  .nextBtn {
+    right: -20px;
+  }
 }
 
 /* Mobile (1 card visible) */
-@media (max-width: 640px) {
+@media (max-width: 680px) {
   .sectionWrapper {
-    padding: 60px 0 80px 0;
+    padding: 44px 0 56px 0;
+  }
+
+  .container {
+    padding-inline: 16px;
   }
 
   .sectionHeader {
-    margin-bottom: 38px;
+    margin-bottom: 24px;
+  }
+
+  .mainTitle {
+    font-size: 30px;
+  }
+
+  .whiteCardWrapper {
+    padding: 32px 20px 24px 20px;
+    border-radius: 20px;
   }
 
   .carouselContainer {
-    max-width: 320px;
+    max-width: 280px;
   }
 
   .prevBtn {
@@ -406,11 +455,6 @@
 
   .viewport {
     padding-bottom: 48px;
-  }
-
-  .imageFrame {
-    aspect-ratio: 1 / 1.08;
-    border-radius: 16px;
   }
 
   .pillSolidInner {

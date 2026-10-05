@@ -87,7 +87,7 @@ export default function ShopByOccasion() {
   // Responsive visible count
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 640) {
+      if (window.innerWidth < 680) {
         setVisibleCount(1);
       } else if (window.innerWidth < 960) {
         setVisibleCount(2);
@@ -238,67 +238,69 @@ export default function ShopByOccasion() {
           </div>
         </div>
 
-        {/* Carousel Container with Always-Active Infinite Arrows */}
-        <div className={styles.carouselContainer}>
-          {/* Previous Button (Always Active in Infinite Loop) */}
-          <button
-            type="button"
-            className={`${styles.navBtn} ${styles.prevBtn}`}
-            onClick={handlePrev}
-            aria-label="Previous occasion cards"
-          >
-            <ChevronLeft size={22} strokeWidth={2} />
-          </button>
-
-          {/* Viewport with generous padding so pill labels & shadows are never clipped */}
-          <div
-            className={styles.viewport}
-            onPointerDown={handlePointerDown}
-            onPointerUp={handlePointerUp}
-          >
-            <div
-              className={styles.track}
-              onTransitionEnd={handleTransitionEnd}
-              style={
-                {
-                  "--index": index,
-                  "--visible-count": visibleCount,
-                  transform: `translateX(calc(-1 * ${index} * ((100% + var(--gap, 40px)) / var(--visible-count, 3))))`,
-                  transition: withTransition
-                    ? "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)"
-                    : "none",
-                } as React.CSSProperties
-              }
+        {/* White Rounded Card Container (same as Shop By Category) */}
+        <div className={styles.whiteCardWrapper}>
+          {/* Carousel Container with Always-Active Infinite Arrows */}
+          <div className={styles.carouselContainer}>
+            {/* Previous Button */}
+            <button
+              type="button"
+              className={`${styles.navBtn} ${styles.prevBtn}`}
+              onClick={handlePrev}
+              aria-label="Previous occasion cards"
             >
-              {EXTENDED_ITEMS.map((item, cardIdx) => {
-                // Determine stagger based on current visible position:
-                // When 3 cards are visible, the center card (visiblePos === 1) is lowered
-                const visiblePos = cardIdx - index;
-                const isCenter = visibleCount === 3 && visiblePos === 1;
+              <ChevronLeft size={22} strokeWidth={2} />
+            </button>
 
-                return (
-                  <div
-                    key={item.uniqueKey}
-                    className={`${styles.cardWrapper} ${
-                      isCenter ? styles.staggerCenter : styles.staggerSide
-                    }`}
-                  >
-                    <OccasionCard item={item} isVisible={isVisible} />
-                  </div>
-                );
-              })}
+            {/* Viewport with generous padding so pill labels & shadows are never clipped */}
+            <div
+              className={styles.viewport}
+              onPointerDown={handlePointerDown}
+              onPointerUp={handlePointerUp}
+            >
+              <div
+                className={styles.track}
+                onTransitionEnd={handleTransitionEnd}
+                style={
+                  {
+                    "--index": index,
+                    "--visible-count": visibleCount,
+                    transform: `translateX(calc(-1 * ${index} * ((100% + var(--gap, 128px)) / var(--visible-count, 3))))`,
+                    transition: withTransition
+                      ? "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)"
+                      : "none",
+                  } as React.CSSProperties
+                }
+              >
+                {EXTENDED_ITEMS.map((item, cardIdx) => {
+                  // When 3 cards are visible, the center card is lowered
+                  const visiblePos = cardIdx - index;
+                  const isCenter = visibleCount === 3 && visiblePos === 1;
+
+                  return (
+                    <div
+                      key={item.uniqueKey}
+                      className={`${styles.cardWrapper} ${
+                        isCenter ? styles.staggerCenter : styles.staggerSide
+                      }`}
+                    >
+                      <OccasionCard item={item} isVisible={isVisible} />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
 
-          {/* Next Button (Always Active in Infinite Loop) */}
-          <button
-            type="button"
-            className={`${styles.navBtn} ${styles.nextBtn}`}
-            onClick={handleNext}
-            aria-label="Next occasion cards"
-          >
-            <ChevronRight size={22} strokeWidth={2} />
-          </button>
+            {/* Next Button */}
+            <button
+              type="button"
+              className={`${styles.navBtn} ${styles.nextBtn}`}
+              onClick={handleNext}
+              aria-label="Next occasion cards"
+            >
+              <ChevronRight size={22} strokeWidth={2} />
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -337,7 +339,7 @@ function OccasionCard({
           />
         </div>
 
-        {/* Gold / Pink Pill Label with Dotted Rounded Outline */}
+        {/* Pill Label with Dotted Rounded Outline */}
         <div className={styles.pillContainer}>
           <div className={styles.pillDottedOuter}>
             <span className={styles.pillSolidInner}>{item.name}</span>
