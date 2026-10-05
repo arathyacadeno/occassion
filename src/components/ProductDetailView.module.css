@@ -155,7 +155,9 @@
    SIMILAR PRODUCT SECTION
    ======================================================== */
 .similarSection {
-  margin-bottom: 40px;
+  margin-top: 28px;
+  margin-bottom: 50px;
+  width: 100%;
 }
 
 .similarHeaderRow {
@@ -166,7 +168,7 @@
 }
 
 .scrollButtons {
-  display: flex;
+  display: none; /* Hidden to match reference screenshot */
   align-items: center;
   gap: 8px;
 }
@@ -193,17 +195,30 @@
   transform: scale(1.05);
 }
 
+/* Pink Rounded Container matching user reference mockup */
+.similarContainer {
+  background-color: #F9D7E0;
+  border-radius: 40px;
+  padding: 34px 36px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
 .similarScrollRow {
   display: flex;
-  gap: 20px;
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 22px;
   overflow-x: auto;
-  padding: 6px 4px 16px 4px;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   /* Firefox */
   -ms-overflow-style: none;
   /* IE and Edge */
+  padding: 2px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .similarScrollRow::-webkit-scrollbar {
@@ -213,90 +228,8 @@
   height: 0;
 }
 
-.similarScrollRow>* {
+.similarScrollRow > * {
   flex-shrink: 0;
-}
-
-.similarCard {
-  flex: 0 0 190px;
-  width: 190px;
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
-  text-decoration: none;
-  color: inherit;
-  box-sizing: border-box;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.similarCard:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-}
-
-.similarImageWrap {
-  width: 100%;
-  height: 160px;
-  border-radius: 12px;
-  overflow: hidden;
-  background-color: #f8fafc;
-  position: relative;
-}
-
-.similarImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.similarContent {
-  padding: 10px 4px 6px 4px;
-}
-
-.similarTitle {
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: #111827;
-  margin: 0 0 6px 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.similarRatingBadge {
-  background-color: #15803d;
-  color: #ffffff;
-  font-size: 0.7rem;
-  font-weight: 700;
-  padding: 2px 5px;
-  border-radius: 3px;
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  width: fit-content;
-  margin-bottom: 6px;
-}
-
-.similarPriceRow {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-}
-
-.similarPrice {
-  font-size: 0.95rem;
-  font-weight: 800;
-  color: #111827;
-}
-
-.similarOriginalPrice {
-  font-size: 0.75rem;
-  color: #9ca3af;
-  text-decoration: line-through;
 }
 
 @media (max-width: 960px) {
@@ -308,6 +241,11 @@
 
   .mainContainer {
     padding: 18px 16px 50px 16px;
+  }
+
+  .similarContainer {
+    border-radius: 32px;
+    padding: 22px 18px;
   }
 
   .reviewItemCard {

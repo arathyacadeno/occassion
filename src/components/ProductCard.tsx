@@ -161,9 +161,9 @@ export default function ProductCard({
             ₹{product.price}
           </span>
 
-          {product.originalPrice && (
+          {(product.originalPrice || compact) && (
             <span className={styles.originalPrice}>
-              ₹{product.originalPrice}
+              ₹{product.originalPrice || Math.round(product.price * 1.15)}
             </span>
           )}
 

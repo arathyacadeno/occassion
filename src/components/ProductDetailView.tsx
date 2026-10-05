@@ -29,16 +29,16 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
     }
   };
 
-  // Similar products (up to 6 items matching reference design)
+  // Similar products (5 items matching reference design)
   const categoryProducts = getProductsByCategory(product.category).filter(
     (p) => p.id !== product.id
   );
   const fallbackProducts = CATALOG_PRODUCTS.filter((p) => p.id !== product.id);
   const similarProducts = (
-    categoryProducts.length >= 6
+    categoryProducts.length >= 5
       ? categoryProducts
       : [...categoryProducts, ...fallbackProducts]
-  ).slice(0, 6);
+  ).slice(0, 5);
 
   const categoryLabel =
     product.category === "cakes"
@@ -159,10 +159,12 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
             </div>
           </div>
 
-          <div ref={similarScrollRef} className={styles.similarScrollRow}>
-            {similarProducts.map((p) => (
-              <ProductCard key={p.id} product={p} compact />
-            ))}
+          <div className={styles.similarContainer}>
+            <div ref={similarScrollRef} className={styles.similarScrollRow}>
+              {similarProducts.map((p) => (
+                <ProductCard key={p.id} product={p} compact />
+              ))}
+            </div>
           </div>
         </section>
       </main>
