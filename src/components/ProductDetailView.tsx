@@ -97,40 +97,42 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
         <section className={styles.reviewsSection} aria-label="Ratings and Reviews">
           <h2 className={styles.sectionHeading}>Ratings and Reviews</h2>
 
-          {/* Rating Summary Row */}
-          <div className={styles.ratingSummaryRow}>
-            <div className={styles.starsGroup}>
-              {[...Array(4)].map((_, i) => (
-                <Star key={i} size={18} className={styles.starFilledGreen} />
-              ))}
-              <Star size={18} className={styles.starHalfGreen} />
+          {/* Large Pink Card Container matching design */}
+          <div className={styles.reviewsContainer}>
+            {/* Rating Summary Row */}
+            <div className={styles.ratingSummaryRow}>
+              <div className={styles.starsGroup}>
+                {[...Array(4)].map((_, i) => (
+                  <Star key={i} size={18} className={styles.starFilledGreen} />
+                ))}
+                <Star size={18} className={styles.starHalfGreen} />
+              </div>
+              <span className={styles.ratingTagline}>Beautiful &amp; Elegant Gift</span>
             </div>
-            <span className={styles.ratingScore}>{product.rating || 4.2}</span>
-            <span className={styles.ratingTagline}>Beautiful &amp; Elegant Gift</span>
-          </div>
 
-          {/* Featured Review Card */}
-          <div className={styles.reviewItemCard}>
-            <img
-              src={product.image || "/images/basket-gerberas.jpg"}
-              alt="Customer Review Photo"
-              className={styles.reviewerImg}
-            />
-            <div className={styles.reviewContent}>
-              <h3 className={styles.reviewerName}>Ashna</h3>
-              <p className={styles.reviewText}>
-                The {product.name} was absolutely beautiful. The roses were
-                fresh, neatly arranged, and the presentation looked elegant and
-                premium. A perfect choice for gifting and making any occasion
-                special.
-              </p>
-              <div className={styles.reviewMeta}>
-                Anniversary · Oct 3 · Calicut
+            {/* Featured Review Card */}
+            <div className={styles.reviewItemCard}>
+              <img
+                src={product.image || "/images/basket-yellow-roses.jpg"}
+                alt="Customer Review Photo"
+                className={styles.reviewerImg}
+              />
+              <div className={styles.reviewContent}>
+                <h3 className={styles.reviewerName}>Ashna</h3>
+                <p className={styles.reviewText}>
+                  The {product.name} was absolutely beautiful. The roses were
+                  fresh, neatly arranged, and the presentation looked elegant and
+                  premium. A perfect choice for gifting and making any occasion
+                  special.
+                </p>
+                <div className={styles.reviewMeta}>
+                  Anniversary . Oct 3 . Calicut
+                </div>
               </div>
             </div>
-          </div>
 
-          <hr className={styles.sectionDivider} />
+            <hr className={styles.sectionDivider} />
+          </div>
         </section>
 
         {/* ================= SIMILAR PRODUCT SECTION ================= */}

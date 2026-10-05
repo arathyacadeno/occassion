@@ -115,78 +115,80 @@ export default function RecommendedAddons({
     <section className={styles.addonsSection} aria-label="Recommended Addon Products">
       <h2 className={styles.sectionTitle}>Recommended Addon Products</h2>
 
-      {/* Cards Row - Aligned to Left */}
-      <div className={styles.addonsTrack}>
-        {ADDON_PRODUCTS.map((product) => {
-          const qty = quantities[product.id] || 0;
+      {/* Large Pink Card Container matching target layout */}
+      <div className={styles.addonsContainer}>
+        <div className={styles.addonsTrack}>
+          {ADDON_PRODUCTS.map((product) => {
+            const qty = quantities[product.id] || 0;
 
-          return (
-            <div key={product.id} className={styles.addonCard}>
-              {/* Image Container with signature chamfered ramp wave cutout */}
-              <div className={styles.imageContainer}>
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className={styles.cardImage}
-                  loading="lazy"
-                />
-                <svg
-                  className={styles.waveDivider}
-                  viewBox="0 0 300 28"
-                  preserveAspectRatio="none"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M -2,32 L -2,12 Q -2,0 16,0 L 185,0 C 208,0 216,20 242,20 L 304,20 L 304,32 Z"
-                    fill="#ffffff"
+            return (
+              <div key={product.id} className={styles.addonCard}>
+                {/* Image Container with signature chamfered ramp wave cutout */}
+                <div className={styles.imageContainer}>
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className={styles.cardImage}
+                    loading="lazy"
                   />
-                </svg>
-              </div>
-
-              {/* Card Details */}
-              <div className={styles.cardContent}>
-                <h3 className={styles.productName} title={product.name}>
-                  {product.name}
-                </h3>
-                <div className={styles.productPrice}>
-                  ₹ {product.price.toFixed(2)}
+                  <svg
+                    className={styles.waveDivider}
+                    viewBox="0 0 300 28"
+                    preserveAspectRatio="none"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M -2,32 L -2,12 Q -2,0 16,0 L 185,0 C 208,0 216,20 242,20 L 304,20 L 304,32 Z"
+                      fill="#ffffff"
+                    />
+                  </svg>
                 </div>
 
-                {qty > 0 ? (
-                  <div className={styles.qtyControl}>
-                    <button
-                      type="button"
-                      onClick={() => handleDecrement(product.id)}
-                      className={styles.qtyBtn}
-                      aria-label={`Decrease ${product.name} quantity`}
-                    >
-                      <Minus size={15} strokeWidth={2.8} />
-                    </button>
-                    <span className={styles.qtyValue}>
-                      {String(qty).padStart(2, "0")}
-                    </span>
+                {/* Card Details */}
+                <div className={styles.cardContent}>
+                  <h3 className={styles.productName} title={product.name}>
+                    {product.name}
+                  </h3>
+                  <div className={styles.productPrice}>
+                    ₹ {product.price.toFixed(2)}
+                  </div>
+
+                  {qty > 0 ? (
+                    <div className={styles.qtyControl}>
+                      <button
+                        type="button"
+                        onClick={() => handleDecrement(product.id)}
+                        className={styles.qtyBtn}
+                        aria-label={`Decrease ${product.name} quantity`}
+                      >
+                        <Minus size={14} strokeWidth={2.6} />
+                      </button>
+                      <span className={styles.qtyValue}>
+                        {String(qty).padStart(2, "0")}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleIncrement(product.id)}
+                        className={styles.qtyBtn}
+                        aria-label={`Increase ${product.name} quantity`}
+                      >
+                        <Plus size={14} strokeWidth={2.6} />
+                      </button>
+                    </div>
+                  ) : (
                     <button
                       type="button"
                       onClick={() => handleIncrement(product.id)}
-                      className={styles.qtyBtn}
-                      aria-label={`Increase ${product.name} quantity`}
+                      className={styles.addBtn}
                     >
-                      <Plus size={15} strokeWidth={2.8} />
+                      ADD
                     </button>
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => handleIncrement(product.id)}
-                    className={styles.addBtn}
-                  >
-                    ADD
-                  </button>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </section>
   );
