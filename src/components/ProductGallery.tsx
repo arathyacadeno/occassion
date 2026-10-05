@@ -92,7 +92,7 @@ export default function ProductGallery({
             onClick={() => setIsZoomOpen(true)}
           />
 
-          {/* Heart / Wishlist icon button in top-right corner (white circle) */}
+          {/* Heart / Wishlist icon button in top-right corner (white circle ~36px) */}
           <button
             type="button"
             className={`${styles.wishlistBtn} ${
@@ -102,7 +102,7 @@ export default function ProductGallery({
             aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
             title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
           >
-            <Heart size={20} strokeWidth={1.8} className={styles.heartIcon} />
+            <Heart size={18} strokeWidth={1.8} className={styles.heartIcon} />
           </button>
         </div>
       </div>

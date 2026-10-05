@@ -2,24 +2,43 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #FAD9E3;
+  background-color: #ffffff;
 }
 
 .mainContainer {
   flex: 1;
-  max-width: 1280px;
+  max-width: 1360px;
   width: 100%;
   margin: 0 auto;
-  padding: 20px 36px 60px 36px;
+  padding: 16px 44px 60px 44px;
   box-sizing: border-box;
 }
 
 .productLayout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 36px;
-  align-items: flex-start;
-  margin-bottom: 28px;
+  grid-template-columns: 55% 40%;
+  justify-content: space-between;
+  gap: 40px;
+  align-items: stretch;
+  margin-top: 8px;
+  margin-bottom: 36px;
+  background-color: #F9D7E0;
+  border-radius: 48px;
+  padding: 34px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 900px) {
+  .mainContainer {
+    padding: 12px 16px 48px 16px;
+  }
+
+  .productLayout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 24px 20px;
+    border-radius: 32px;
+  }
 }
 
 /* ========================================================
@@ -171,17 +190,20 @@
   padding: 6px 4px 16px 4px;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
 }
 
 .similarScrollRow::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+  display: none;
+  /* Chrome, Safari, Opera */
   width: 0;
   height: 0;
 }
 
-.similarScrollRow > * {
+.similarScrollRow>* {
   flex-shrink: 0;
 }
 

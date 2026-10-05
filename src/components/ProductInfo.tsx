@@ -130,7 +130,8 @@ export default function ProductInfo({
       : 0;
 
   const [location, setLocation] = useState("673602, Kozhikode, Kerala");
-  const [deliveryDate] = useState("Monday Oct 4");
+  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
   const [addedFeedback, setAddedFeedback] = useState(false);
   const [quantity, setQuantity] = useState(1);
 
@@ -268,215 +269,107 @@ export default function ProductInfo({
 
   return (
     <div className={styles.infoWrapper}>
-      {/* Title */}
+      {/* Title (22-24px, weight 500) */}
       <h1 className={styles.productName}>{product.name}</h1>
 
-      {/* Rating Badge */}
+      {/* Rating & Delivery Row: ★ 4.4 [green badge] Free Delivery [truck] */}
       <div className={styles.ratingDeliveryRow}>
         <div className={styles.greenRatingBadge}>
-          <Star size={11} className={styles.whiteStarIcon} />
-          <span>{(product.rating || 4.9).toFixed(1)}</span>
+          <Star size={9} fill="#ffffff" color="#ffffff" strokeWidth={0} />
+          <span>{(product.rating || 4.4).toFixed(1)}</span>
+        </div>
+        <div className={styles.freeDeliveryCallout}>
+          <span>Free Delivery</span>
+          <Truck size={13} strokeWidth={1.5} className={styles.truckIcon} />
         </div>
       </div>
 
-      {/* Pricing Row: ₹ 2245  ₹ 2514  11% OFF  (i) */}
+      {/* Price: ₹549 in bold with old price struck through in grey beside it */}
       <div className={styles.pricingRow}>
         <span className={styles.currentPrice}>
-          ₹ {activePrice.toLocaleString("en-IN")}
+          ₹{activePrice.toLocaleString("en-IN")}
         </span>
         {activeOriginalPrice && (
           <span className={styles.originalPrice}>
-            ₹ {activeOriginalPrice.toLocaleString("en-IN")}
+            ₹{activeOriginalPrice.toLocaleString("en-IN")}
           </span>
         )}
-        {discountPercent > 0 && (
-          <span className={styles.discountPercentBadge}>
-            {discountPercent}% OFF
-          </span>
-        )}
-        <button
-          type="button"
-          className={styles.infoCircleBtn}
-          title="Price inclusive of applicable discounts and taxes"
-          aria-label="Price details"
-        >
-          <Info size={18} strokeWidth={2} />
-        </button>
       </div>
 
-      {/* Flower Bouquet Customization Option (ONLY for flower bouquets) */}
-      {isBouquet && (
+      {/* If customize mode is explicitly activated via ?customize=true, display customizer */}
+      {isBouquet && isCustomMode && (
         <div className={styles.customBouquetSection}>
           <div className={styles.customHeaderRow}>
             <div className={styles.customHeaderTitleWrap}>
               <span className={styles.customBadge}>Custom Floral Arrangement</span>
               <h3 className={styles.customHeading}>Customize Bouquet</h3>
             </div>
-            <div className={styles.customToggleGroup}>
-              <button
-                type="button"
-                className={`${styles.customToggleBtn} ${!isCustomMode ? styles.customToggleActive : ""}`}
-                onClick={() => setIsCustomMode(false)}
-              >
-                Standard
-              </button>
-              <button
-                type="button"
-                className={`${styles.customToggleBtn} ${isCustomMode ? styles.customToggleActive : ""}`}
-                onClick={() => setIsCustomMode(true)}
-              >
-                <Sparkles size={13} style={{ display: "inline", marginRight: 5, verticalAlign: "middle" }} />
-                Customize
-              </button>
-            </div>
+            <button
+              type="button"
+              className={styles.customToggleBtn}
+              onClick={() => setIsCustomMode(false)}
+            >
+              Reset to Standard
+            </button>
           </div>
 
-          {isCustomMode && (
-            <div className={styles.customPanel}>
-              <div className={styles.customInfoRow}>
-                <span className={styles.pricePerFlowerLabel}>Flower Unit Price:</span>
-                <span className={styles.pricePerFlowerValue}>
-                  ₹ {pricePerFlower}{" "}
-                  <span className={styles.perUnitText}>/ flower</span>
-                </span>
-              </div>
-
-              <div className={styles.stemStepperRow}>
-                <span className={styles.stepperLabel}>Select Number of Flowers:</span>
-                <div className={styles.stepperControls}>
-                  <button
-                    type="button"
-                    className={styles.stepperBtn}
-                    onClick={() => setCustomFlowerQty((prev) => Math.max(3, prev - 1))}
-                    disabled={customFlowerQty <= 3}
-                    aria-label="Decrease flower quantity"
-                  >
-                    <Minus size={14} />
-                  </button>
-                  <input
-                    type="number"
-                    min={3}
-                    max={100}
-                    value={customFlowerQty}
-                    onChange={(e) => {
-                      const val = parseInt(e.target.value, 10);
-                      if (!isNaN(val)) {
-                        setCustomFlowerQty(Math.max(1, Math.min(100, val)));
-                      }
-                    }}
-                    className={styles.stepperInput}
-                    aria-label="Flower quantity"
-                  />
-                  <button
-                    type="button"
-                    className={styles.stepperBtn}
-                    onClick={() => setCustomFlowerQty((prev) => Math.min(100, prev + 1))}
-                    disabled={customFlowerQty >= 100}
-                    aria-label="Increase flower quantity"
-                  >
-                    <Plus size={14} />
-                  </button>
-                </div>
-              </div>
-
-              {/* Quick Stem Presets */}
-              <div className={styles.quickStemChips}>
-                {[6, 8, 12, 16, 20, 24, 30, 50].map((count) => (
-                  <button
-                    key={count}
-                    type="button"
-                    className={`${styles.stemChip} ${customFlowerQty === count ? styles.stemChipActive : ""}`}
-                    onClick={() => setCustomFlowerQty(count)}
-                  >
-                    {count} Flowers
-                  </button>
-                ))}
-              </div>
-
-              {/* Live Formula Banner: Price per flower × Quantity */}
-              <div className={styles.formulaBanner}>
-                <div className={styles.formulaEquation}>
-                  <span>Price per flower (<strong>₹{pricePerFlower}</strong>)</span>
-                  <span className={styles.formulaOperator}>×</span>
-                  <span>Quantity (<strong>{customFlowerQty}</strong>)</span>
-                  <span className={styles.formulaOperator}>=</span>
-                  <span className={styles.formulaTotal}>₹ {(pricePerFlower * customFlowerQty).toLocaleString("en-IN")}</span>
-                </div>
-                <div className={styles.formulaCaption}>
-                  Bouquet handcrafted with {customFlowerQty} fresh blooms arranged with premium wrapping & ribbon.
-                </div>
-              </div>
+          <div className={styles.customPanel}>
+            <div className={styles.customInfoRow}>
+              <span className={styles.pricePerFlowerLabel}>Flower Unit Price:</span>
+              <span className={styles.pricePerFlowerValue}>
+                ₹ {pricePerFlower}{" "}
+                <span className={styles.perUnitText}>/ flower</span>
+              </span>
             </div>
-          )}
-        </div>
-      )}
 
-      {/* Make this gift extra special section (only in standard mode if bouquet, or for non-bouquets) */}
-      {!isCustomMode && variants && variants.length > 0 && (
-        <div className={styles.giftExtraSection}>
-          <h3 className={styles.giftExtraTitle}>
-            {isLily ? "Select Stems / Arrangement" : "Make this gift extra special"}
-          </h3>
-          <div className={styles.giftVariantCards}>
-            {variants.map((v) => {
-              const isSelected = selectedVariant?.id === v.id;
-              const displayPrice = v.id === "custom" ? customStems * 100 : v.price;
-              return (
+            <div className={styles.stemStepperRow}>
+              <span className={styles.stepperLabel}>Select Number of Flowers:</span>
+              <div className={styles.stepperControls}>
                 <button
-                  key={v.id}
                   type="button"
-                  onClick={() => handleSelectVariant(v)}
-                  className={`${styles.giftVariantCard} ${
-                    isSelected ? styles.giftVariantCardSelected : ""
-                  }`}
+                  className={styles.stepperBtn}
+                  onClick={() => setCustomFlowerQty((prev) => Math.max(3, prev - 1))}
+                  disabled={customFlowerQty <= 3}
+                  aria-label="Decrease flower quantity"
                 >
-                  <div className={styles.giftCardThumbWrap}>
-                    <img
-                      src={v.image}
-                      alt={v.name}
-                      className={styles.giftCardThumbImg}
-                    />
-                  </div>
-                  <div className={styles.giftCardInfo}>
-                    <span className={styles.giftCardName}>{v.name}</span>
-                    <span className={styles.giftCardPrice}>
-                      ₹ {displayPrice.toLocaleString("en-IN")}
-                    </span>
-                  </div>
+                  <Minus size={14} />
                 </button>
-              );
-            })}
-          </div>
-
-          {isLily && selectedVariant?.id === "custom" && (
-            <div style={{ marginTop: 12, padding: "12px 16px", background: "#fdf2f8", borderRadius: 14, border: "1px dashed #f472b6", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <span style={{ fontSize: 13.5, fontWeight: 600, color: "#831843" }}>Choose Stems:</span>
-                <div style={{ display: "inline-flex", alignItems: "center", background: "#ffffff", border: "1px solid #fbcfe8", borderRadius: 999, padding: "3px 8px", gap: 8 }}>
-                  <button
-                    type="button"
-                    onClick={() => setCustomStems((prev) => Math.max(3, prev - 1))}
-                    style={{ background: "none", border: "none", width: 22, height: 22, borderRadius: "50%", cursor: "pointer", fontWeight: 700, fontSize: 15, color: "#ff4770" }}
-                    aria-label="Decrease stem count"
-                  >
-                    -
-                  </button>
-                  <span style={{ fontWeight: 700, fontSize: 13, color: "#1f2937", minWidth: 26, textAlign: "center" }}>
-                    {customStems}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setCustomStems((prev) => prev + 1)}
-                    style={{ background: "none", border: "none", width: 22, height: 22, borderRadius: "50%", cursor: "pointer", fontWeight: 700, fontSize: 15, color: "#ff4770" }}
-                    aria-label="Increase stem count"
-                  >
-                    +
-                  </button>
-                </div>
+                <input
+                  type="number"
+                  min={3}
+                  max={100}
+                  value={customFlowerQty}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value, 10);
+                    if (!isNaN(val)) {
+                      setCustomFlowerQty(Math.max(1, Math.min(100, val)));
+                    }
+                  }}
+                  className={styles.stepperInput}
+                  aria-label="Flower quantity"
+                />
+                <button
+                  type="button"
+                  className={styles.stepperBtn}
+                  onClick={() => setCustomFlowerQty((prev) => Math.min(100, prev + 1))}
+                  disabled={customFlowerQty >= 100}
+                  aria-label="Increase flower quantity"
+                >
+                  <Plus size={14} />
+                </button>
               </div>
-              <span style={{ fontSize: 12, color: "#9d174d", fontWeight: 600 }}>₹100 per stem</span>
             </div>
-          )}
+
+            <div className={styles.formulaBanner}>
+              <div className={styles.formulaEquation}>
+                <span>Price per flower (<strong>₹{pricePerFlower}</strong>)</span>
+                <span className={styles.formulaOperator}>×</span>
+                <span>Quantity (<strong>{customFlowerQty}</strong>)</span>
+                <span className={styles.formulaOperator}>=</span>
+                <span className={styles.formulaTotal}>₹ {(pricePerFlower * customFlowerQty).toLocaleString("en-IN")}</span>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
@@ -488,16 +381,16 @@ export default function ProductInfo({
           <span>Delivery Location</span>
         </div>
 
-        {/* 1. Location Pill: Pincode | 673602, Kozhikode, Kerala  (x) */}
+        {/* 1. Location Pill: PIN Code | 673602, Kozhikode, Kerala  (x) */}
         <div className={styles.deliveryPill}>
-          <span className={styles.pillLabel}>Pincode</span>
+          <span className={styles.pillLabel}>PIN Code</span>
           <span className={styles.pillDivider}>|</span>
           <input
             type="text"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             className={styles.pillInput}
-            placeholder="Enter location, pincode"
+            placeholder="673602, Kozhikode, Kerala"
             aria-label="Delivery Location"
           />
           {location && (
@@ -512,131 +405,168 @@ export default function ProductInfo({
           )}
         </div>
 
-        {/* 2. Delivery By Pill: Delivery by | Monday Oct 4 */}
-        <div className={styles.deliveryPill}>
-          <span className={styles.pillLabel}>Delivery by</span>
-          <span className={styles.pillDivider}>|</span>
-          <span className={styles.pillValue}>{deliveryDate}</span>
+        {/* 2. Two-column row: Delivery Date (left) and Delivery Time Slot (right) */}
+        <div className={styles.deliveryDropdownsRow}>
+          <div className={styles.deliveryDropdownCol}>
+            <label className={styles.dropdownLabel}>Delivery Date</label>
+            <div className={styles.dropdownPill}>
+              <select
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className={styles.dropdownSelect}
+                aria-label="Delivery Date"
+              >
+                <option value="">Select Date</option>
+                <option value="today">Today, Oct 5</option>
+                <option value="tomorrow">Tomorrow, Oct 6</option>
+                <option value="day-after">Tuesday, Oct 7</option>
+                <option value="custom">Wednesday, Oct 8</option>
+              </select>
+              <ChevronDown size={14} className={styles.dropdownChevron} />
+            </div>
+          </div>
+
+          <div className={styles.deliveryDropdownCol}>
+            <label className={styles.dropdownLabel}>Delivery Time Slot</label>
+            <div className={styles.dropdownPill}>
+              <select
+                value={selectedTimeSlot}
+                onChange={(e) => setSelectedTimeSlot(e.target.value)}
+                className={styles.dropdownSelect}
+                aria-label="Delivery Time Slot"
+              >
+                <option value="">Select Time</option>
+                <option value="morning">Morning (9 AM - 12 PM)</option>
+                <option value="afternoon">Afternoon (1 PM - 4 PM)</option>
+                <option value="evening">Evening (5 PM - 8 PM)</option>
+                <option value="night">Night (9 PM - 11 PM)</option>
+              </select>
+              <ChevronDown size={14} className={styles.dropdownChevron} />
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* 3 Standalone White Rounded Accordions: Description, Instructions, Delivery Info */}
-      <div className={styles.accordionContainer}>
-        {/* Accordion 1: Description */}
-        <div className={styles.accordionCard}>
-          <button
-            type="button"
-            onClick={() => toggleAccordion("description")}
-            className={styles.accordionBtn}
-            aria-expanded={openAccordions.description}
-          >
-            <span className={styles.accordionTitle}>Description</span>
-            {openAccordions.description ? (
-              <ChevronUp size={18} className={styles.accordionChevron} />
-            ) : (
-              <ChevronDown size={18} className={styles.accordionChevron} />
-            )}
-          </button>
-
-          {openAccordions.description && (
-            <div className={styles.accordionBody}>
-              <p className={styles.bodyParagraph}>
-                {product.description ||
-                  "Brighten their special day with the cheerful charm of radiant flowers beautifully arranged to spread happiness, warmth, and joy. A vibrant bouquet perfect for making celebrations feel extra special."}
-              </p>
-
-              {product.includes && product.includes.length > 0 && (
-                <>
-                  <h4 className={styles.bodySubHeading}>Product Details:</h4>
-                  <ul className={styles.bulletList}>
-                    {product.includes.map((item, idx) => (
-                      <li key={idx}>{item}</li>
-                    ))}
-                  </ul>
-                </>
+      {/* About the product heading + 3 Standalone White Rounded Accordions */}
+      <div className={styles.aboutProductSection}>
+        <h3 className={styles.sectionHeading}>About the product</h3>
+        <div className={styles.accordionContainer}>
+          {/* Accordion 1: Description */}
+          <div className={styles.accordionCard}>
+            <button
+              type="button"
+              onClick={() => toggleAccordion("description")}
+              className={styles.accordionBtn}
+              aria-expanded={openAccordions.description}
+            >
+              <span className={styles.accordionTitle}>Description</span>
+              {openAccordions.description ? (
+                <ChevronUp size={14} className={styles.accordionChevron} />
+              ) : (
+                <ChevronDown size={14} className={styles.accordionChevron} />
               )}
-            </div>
-          )}
-        </div>
+            </button>
 
-        {/* Accordion 2: Instructions */}
-        <div className={styles.accordionCard}>
-          <button
-            type="button"
-            onClick={() => toggleAccordion("instructions")}
-            className={styles.accordionBtn}
-            aria-expanded={openAccordions.instructions}
-          >
-            <span className={styles.accordionTitle}>Instructions</span>
-            {openAccordions.instructions ? (
-              <ChevronUp size={18} className={styles.accordionChevron} />
-            ) : (
-              <ChevronDown size={18} className={styles.accordionChevron} />
+            {openAccordions.description && (
+              <div className={styles.accordionBody}>
+                <p className={styles.bodyParagraph}>
+                  {product.description ||
+                    "Brighten their special day with the cheerful charm of radiant flowers beautifully arranged to spread happiness, warmth, and joy. A vibrant bouquet perfect for making celebrations feel extra special."}
+                </p>
+
+                {product.includes && product.includes.length > 0 && (
+                  <>
+                    <h4 className={styles.bodySubHeading}>Product Details:</h4>
+                    <ul className={styles.bulletList}>
+                      {product.includes.map((item, idx) => (
+                        <li key={idx}>{item}</li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+              </div>
             )}
-          </button>
+          </div>
 
-          {openAccordions.instructions && (
-            <div className={styles.accordionBody}>
-              <ul className={styles.bulletList}>
-                <li>
-                  When your flowers arrive, simply cut the stems and put them in fresh water.
-                </li>
-                <li>
-                  Cut the stems at 45 degrees, about 1-2 inches from the bottom.
-                </li>
-                <li>Remove the leaves below the waterline.</li>
-                <li>Check the water level every day and add more if necessary.</li>
-                <li>Do not place flowers in direct sunlight or near excessive heat.</li>
-                <li>All flowers benefit from a daily mist of fresh water.</li>
-                <li>Enjoy your flowers!</li>
-              </ul>
-              <h4 className={styles.bodySubHeading} style={{ marginTop: "14px" }}>
-                Care &amp; Delivery:
-              </h4>
-              <p className={styles.bodyParagraph} style={{ marginBottom: 0 }}>
-                Handcrafted fresh floral arrangements by Occassions Florist, Calicut.
-              </p>
-            </div>
-          )}
-        </div>
+          {/* Accordion 2: Instructions */}
+          <div className={styles.accordionCard}>
+            <button
+              type="button"
+              onClick={() => toggleAccordion("instructions")}
+              className={styles.accordionBtn}
+              aria-expanded={openAccordions.instructions}
+            >
+              <span className={styles.accordionTitle}>Instructions</span>
+              {openAccordions.instructions ? (
+                <ChevronUp size={14} className={styles.accordionChevron} />
+              ) : (
+                <ChevronDown size={14} className={styles.accordionChevron} />
+              )}
+            </button>
 
-        {/* Accordion 3: Delivery Info */}
-        <div className={styles.accordionCard}>
-          <button
-            type="button"
-            onClick={() => toggleAccordion("delivery")}
-            className={styles.accordionBtn}
-            aria-expanded={openAccordions.delivery}
-          >
-            <span className={styles.accordionTitle}>Delivery Info</span>
-            {openAccordions.delivery ? (
-              <ChevronUp size={18} className={styles.accordionChevron} />
-            ) : (
-              <ChevronDown size={18} className={styles.accordionChevron} />
+            {openAccordions.instructions && (
+              <div className={styles.accordionBody}>
+                <ul className={styles.bulletList}>
+                  <li>
+                    When your flowers arrive, simply cut the stems and put them in fresh water.
+                  </li>
+                  <li>
+                    Cut the stems at 45 degrees, about 1-2 inches from the bottom.
+                  </li>
+                  <li>Remove the leaves below the waterline.</li>
+                  <li>Check the water level every day and add more if necessary.</li>
+                  <li>Do not place flowers in direct sunlight or near excessive heat.</li>
+                  <li>All flowers benefit from a daily mist of fresh water.</li>
+                  <li>Enjoy your flowers!</li>
+                </ul>
+                <h4 className={styles.bodySubHeading} style={{ marginTop: "14px" }}>
+                  Care &amp; Delivery:
+                </h4>
+                <p className={styles.bodyParagraph} style={{ marginBottom: 0 }}>
+                  Handcrafted fresh floral arrangements by Occassions Florist, Calicut.
+                </p>
+              </div>
             )}
-          </button>
+          </div>
 
-          {openAccordions.delivery && (
-            <div className={styles.accordionBody}>
-              <ul className={styles.bulletList}>
-                <li>
-                  The image displayed is indicative in nature. Actual product may vary in design based on availability.
-                </li>
-                <li>
-                  Flowers may be delivered in fully bloomed, semi-bloomed, or bud stage for maximum vase life.
-                </li>
-                <li>
-                  The chosen delivery time is an estimate and depends on local availability and distance.
-                </li>
-                <li>
-                  Since fresh flowers are perishable, we attempt delivery of your order once to the designated location.
-                </li>
-                <li>
-                  This product is hand delivered directly by our local florist team.
-                </li>
-              </ul>
-            </div>
-          )}
+          {/* Accordion 3: Delivery Info */}
+          <div className={styles.accordionCard}>
+            <button
+              type="button"
+              onClick={() => toggleAccordion("delivery")}
+              className={styles.accordionBtn}
+              aria-expanded={openAccordions.delivery}
+            >
+              <span className={styles.accordionTitle}>Delivery Info</span>
+              {openAccordions.delivery ? (
+                <ChevronUp size={14} className={styles.accordionChevron} />
+              ) : (
+                <ChevronDown size={14} className={styles.accordionChevron} />
+              )}
+            </button>
+
+            {openAccordions.delivery && (
+              <div className={styles.accordionBody}>
+                <ul className={styles.bulletList}>
+                  <li>
+                    The image displayed is indicative in nature. Actual product may vary in design based on availability.
+                  </li>
+                  <li>
+                    Flowers may be delivered in fully bloomed, semi-bloomed, or bud stage for maximum vase life.
+                  </li>
+                  <li>
+                    The chosen delivery time is an estimate and depends on local availability and distance.
+                  </li>
+                  <li>
+                    Since fresh flowers are perishable, we attempt delivery of your order once to the designated location.
+                  </li>
+                  <li>
+                    This product is hand delivered directly by our local florist team.
+                  </li>
+                </ul>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -644,47 +574,43 @@ export default function ProductInfo({
       <div className={styles.purchaseControlsWrapper}>
         {/* Row 1: Quantity on Left + Add to Cart on Right */}
         <div className={styles.qtyAndCartRow}>
-          <div className={styles.quantitySection}>
-            <div className={styles.quantityStepper}>
-              <button
-                type="button"
-                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                className={styles.qtyStepperBtn}
-                disabled={quantity <= 1}
-                aria-label="Decrease quantity"
-              >
-                <Minus size={15} strokeWidth={2.4} />
-              </button>
-              <span className={styles.qtyValue}>{quantity}</span>
-              <button
-                type="button"
-                onClick={() => setQuantity((q) => q + 1)}
-                className={styles.qtyStepperBtn}
-                aria-label="Increase quantity"
-              >
-                <Plus size={15} strokeWidth={2.4} />
-              </button>
-            </div>
-          </div>
-
-          <div className={styles.addToCartCol}>
+          <div className={styles.quantityStepper}>
             <button
               type="button"
-              onClick={handleAddToCart}
-              className={`${styles.addToCartBtn} ${
-                addedFeedback ? styles.addedSuccess : ""
-              }`}
+              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+              className={styles.qtyStepperBtn}
+              disabled={quantity <= 1}
+              aria-label="Decrease quantity"
             >
-              {addedFeedback ? (
-                <>
-                  <Check size={18} strokeWidth={2.5} />
-                  <span>Added to Cart!</span>
-                </>
-              ) : (
-                <span>Add to Cart</span>
-              )}
+              <Minus size={13} strokeWidth={2.2} />
+            </button>
+            <span className={styles.qtyValue}>{quantity}</span>
+            <button
+              type="button"
+              onClick={() => setQuantity((q) => q + 1)}
+              className={styles.qtyStepperBtn}
+              aria-label="Increase quantity"
+            >
+              <Plus size={13} strokeWidth={2.2} />
             </button>
           </div>
+
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            className={`${styles.addToCartBtn} ${
+              addedFeedback ? styles.addedSuccess : ""
+            }`}
+          >
+            {addedFeedback ? (
+              <>
+                <Check size={15} strokeWidth={2.5} />
+                <span>Added to Cart!</span>
+              </>
+            ) : (
+              <span>Add to Cart</span>
+            )}
+          </button>
         </div>
 
         {/* Row 2: Buy Now Button */}
