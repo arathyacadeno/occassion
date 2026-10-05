@@ -212,9 +212,8 @@ export default function ShopByOccasion() {
       <div className={styles.container}>
         {/* Section Header with Floral Divider */}
         <div
-          className={`${styles.sectionHeader} ${
-            isVisible ? styles.headerInView : ""
-          }`}
+          className={`${styles.sectionHeader} ${isVisible ? styles.headerInView : ""
+            }`}
         >
           <span className={styles.subtitle}>Special Moments</span>
           <h2 className={styles.mainTitle}>Shop By Occasion</h2>
@@ -296,9 +295,8 @@ export default function ShopByOccasion() {
                   return (
                     <div
                       key={item.uniqueKey}
-                      className={`${styles.cardWrapper} ${
-                        isCenter ? styles.staggerCenter : styles.staggerSide
-                      }`}
+                      className={`${styles.cardWrapper} ${isCenter ? styles.staggerCenter : styles.staggerSide
+                        }`}
                     >
                       <OccasionCard item={item} isVisible={isVisible} />
                     </div>

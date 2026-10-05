@@ -104,10 +104,10 @@
   box-sizing: border-box;
 }
 
-/* ================= 5-CATEGORY GALLERY GRID ================= */
+/* ================= GALLERY GRID ================= */
 .galleryGrid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 283px));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 283px));
   gap: 24px;
   width: 100%;
   margin: 0 auto;
@@ -233,18 +233,9 @@
     border-radius: 24px;
   }
   .galleryGrid {
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 20px;
     max-width: 900px;
-  }
-  .galleryGrid > * {
-    grid-column: span 2;
-  }
-  .galleryGrid > :nth-child(4) {
-    grid-column: 2 / span 2;
-  }
-  .galleryGrid > :nth-child(5) {
-    grid-column: 4 / span 2;
   }
   .mainTitle {
     font-size: 28px;
