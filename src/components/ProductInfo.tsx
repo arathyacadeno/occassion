@@ -229,6 +229,20 @@ export default function ProductInfo({
   >([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [showCountryDropdown, setShowCountryDropdown] = useState(false);
+  const countryDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close country dropdown on outside click
+  useEffect(() => {
+    if (!showCountryDropdown) return;
+    const handler = (e: MouseEvent) => {
+      if (countryDropdownRef.current && !countryDropdownRef.current.contains(e.target as Node)) {
+        setShowCountryDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showCountryDropdown]);
 
   const searchLocationQuery = useCallback((query: string) => {
     if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
@@ -566,17 +580,55 @@ export default function ProductInfo({
               deliveryStatus.serviceable === false ? styles.deliveryPillError : ""
             }`}
           >
-            <div className={styles.countrySelector}>
-              <span className={styles.flagIcon}>
-                <svg width="20" height="14" viewBox="0 0 20 14" fill="none">
-                  <rect width="20" height="4.67" fill="#FF9933" rx="1" />
-                  <rect y="4.67" width="20" height="4.67" fill="#FFFFFF" />
-                  <rect y="9.33" width="20" height="4.67" fill="#138808" rx="1" />
-                  <circle cx="10" cy="7" r="1.8" stroke="#000080" strokeWidth="0.6" fill="none" />
-                </svg>
-              </span>
-              <span className={styles.countryCode}>IND</span>
-              <ChevronDown size={13} className={styles.countryChevron} />
+            {/* Country Selector with dropdown */}
+            <div className={styles.countrySelectorWrapper} ref={countryDropdownRef}>
+              <button
+                type="button"
+                className={styles.countrySelector}
+                onClick={() => setShowCountryDropdown((v) => !v)}
+                aria-label="Select delivery country"
+                aria-expanded={showCountryDropdown}
+              >
+                <span className={styles.flagIcon}>
+                  <svg width="20" height="14" viewBox="0 0 20 14" fill="none">
+                    <rect width="20" height="4.67" fill="#FF9933" rx="1" />
+                    <rect y="4.67" width="20" height="4.67" fill="#FFFFFF" />
+                    <rect y="9.33" width="20" height="4.67" fill="#138808" rx="1" />
+                    <circle cx="10" cy="7" r="1.8" stroke="#000080" strokeWidth="0.6" fill="none" />
+                  </svg>
+                </span>
+                <span className={styles.countryCode}>IND</span>
+                <ChevronDown
+                  size={13}
+                  className={`${styles.countryChevron} ${
+                    showCountryDropdown ? styles.countryChevronOpen : ""
+                  }`}
+                />
+              </button>
+
+              {/* Country Dropdown Popover */}
+              {showCountryDropdown && (
+                <div className={styles.countryDropdown}>
+                  <div className={styles.countryDropdownHeader}>Delivery Region</div>
+                  <div className={styles.countryDropdownItem}>
+                    <span className={styles.countryDropdownFlag}>
+                      <svg width="22" height="15" viewBox="0 0 20 14" fill="none">
+                        <rect width="20" height="4.67" fill="#FF9933" rx="1" />
+                        <rect y="4.67" width="20" height="4.67" fill="#FFFFFF" />
+                        <rect y="9.33" width="20" height="4.67" fill="#138808" rx="1" />
+                        <circle cx="10" cy="7" r="1.8" stroke="#000080" strokeWidth="0.6" fill="none" />
+                      </svg>
+                    </span>
+                    <div className={styles.countryDropdownInfo}>
+                      <span className={styles.countryDropdownName}>India</span>
+                      <span className={styles.countryDropdownSub}>Currently delivering across Kerala</span>
+                    </div>
+                    <span className={styles.countryDropdownActive}>✓</span>
+                  </div>
+                  <div className={styles.countryDropdownDivider} />
+                  <div className={styles.countryDropdownFooter}>More regions coming soon</div>
+                </div>
+              )}
             </div>
 
             <span className={styles.pillDivider} />
