@@ -136,7 +136,11 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
         </section>
 
         {/* ================= SIMILAR PRODUCT SECTION ================= */}
-        <section className={styles.similarSection} aria-label="Similar Products">
+        <section
+          id="similar-products"
+          className={styles.similarSection}
+          aria-label="Similar Products"
+        >
           <div className={styles.similarHeaderRow}>
             <h2 className={styles.sectionHeading}>Similar Product</h2>
             <div className={styles.scrollButtons}>

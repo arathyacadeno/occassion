@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import {
   Star,
   ChevronDown,
@@ -15,6 +15,7 @@ import {
   Plus,
   Heart,
   Sparkles,
+  AlertTriangle,
 } from "lucide-react";
 import { Product, isFlowerBouquet, getPricePerFlower } from "@/data/catalog";
 import { useCart } from "@/context/CartContext";
@@ -129,11 +130,87 @@ export default function ProductInfo({
       ? Math.round(((activeOriginalPrice - activePrice) / activeOriginalPrice) * 100)
       : 0;
 
-  const [location, setLocation] = useState("673602, Kozhikode, Kerala");
+  const [pinCode, setPinCode] = useState("673602");
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
   const [addedFeedback, setAddedFeedback] = useState(false);
   const [quantity, setQuantity] = useState(1);
+
+  // Delivery check state
+  const [deliveryStatus, setDeliveryStatus] = useState<{
+    loading: boolean;
+    serviceable: boolean | null;
+    distance_km: number | null;
+    delivery_charge: number | null;
+    area: string | null;
+    district: string | null;
+    message: string | null;
+    tier_label: string | null;
+  }>({
+    loading: false,
+    serviceable: null,
+    distance_km: null,
+    delivery_charge: null,
+    area: null,
+    district: null,
+    message: null,
+    tier_label: null,
+  });
+
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const checkDelivery = useCallback((pin: string) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    const cleanPin = pin.replace(/\D/g, "");
+
+    if (cleanPin.length !== 6) {
+      setDeliveryStatus({
+        loading: false,
+        serviceable: null,
+        distance_km: null,
+        delivery_charge: null,
+        area: null,
+        district: null,
+        message: cleanPin.length > 0 ? "Enter a 6-digit PIN code" : null,
+        tier_label: null,
+      });
+      return;
+    }
+
+    setDeliveryStatus((prev) => ({ ...prev, loading: true }));
+
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch("/api/delivery/check", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ pinCode: cleanPin }),
+        });
+        const data = await res.json();
+        setDeliveryStatus({
+          loading: false,
+          serviceable: data.serviceable,
+          distance_km: data.distance_km,
+          delivery_charge: data.delivery_charge,
+          area: data.area,
+          district: data.district,
+          message: data.message,
+          tier_label: data.tier_label,
+        });
+      } catch {
+        setDeliveryStatus({
+          loading: false,
+          serviceable: false,
+          distance_km: null,
+          delivery_charge: null,
+          area: null,
+          district: null,
+          message: "Unable to check delivery. Please try again.",
+          tier_label: null,
+        });
+      }
+    }, 400);
+  }, []);
 
   const { isInWishlist, toggleItem } = useWishlist();
   const isWishlisted = isInWishlist(product.id);
@@ -381,29 +458,79 @@ export default function ProductInfo({
           <span>Delivery Location</span>
         </div>
 
-        {/* 1. Location Pill: PIN Code | 673602, Kozhikode, Kerala  (x) */}
-        <div className={styles.deliveryPill}>
+        {/* 1. PIN Code input with live delivery check */}
+        <div
+          className={`${styles.deliveryPill} ${
+            deliveryStatus.serviceable === false ? styles.deliveryPillError : ""
+          }`}
+        >
           <span className={styles.pillLabel}>PIN Code</span>
           <span className={styles.pillDivider}>|</span>
           <input
             type="text"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
+            value={pinCode}
+            maxLength={6}
+            inputMode="numeric"
+            onChange={(e) => {
+              const val = e.target.value.replace(/\D/g, "").slice(0, 6);
+              setPinCode(val);
+              checkDelivery(val);
+            }}
             className={styles.pillInput}
-            placeholder="673602, Kozhikode, Kerala"
-            aria-label="Delivery Location"
+            placeholder="Enter 6-digit PIN"
+            aria-label="Delivery PIN Code"
           />
-          {location && (
+          {deliveryStatus.loading && (
+            <span className={styles.deliveryLoading}>…</span>
+          )}
+          {!deliveryStatus.loading && pinCode && (
             <button
               type="button"
-              onClick={() => setLocation("")}
+              onClick={() => {
+                setPinCode("");
+                setDeliveryStatus({
+                  loading: false,
+                  serviceable: null,
+                  distance_km: null,
+                  delivery_charge: null,
+                  area: null,
+                  district: null,
+                  message: null,
+                  tier_label: null,
+                });
+              }}
               className={styles.clearCircleBtn}
-              aria-label="Clear location"
+              aria-label="Clear PIN"
             >
               <X size={11} strokeWidth={2.6} />
             </button>
           )}
         </div>
+
+        {/* Warning text matching reference 2nd image when location is unavailable */}
+        {!deliveryStatus.loading && deliveryStatus.serviceable === false && (
+          <div
+            className={styles.unavailableWarning}
+            onClick={() => {
+              document
+                .getElementById("similar-products")
+                ?.scrollIntoView({ behavior: "smooth" });
+            }}
+            role="alert"
+          >
+            <AlertTriangle
+              size={13}
+              className={styles.warningIcon}
+              fill="#d9381e"
+              stroke="#d9381e"
+              color="#ffffff"
+            />
+            <span>
+              This item isn't available at this location. Tap below to explore
+              available gifts.
+            </span>
+          </div>
+        )}
 
         {/* 2. Two-column row: Delivery Date (left) and Delivery Time Slot (right) */}
         <div className={styles.deliveryDropdownsRow}>

@@ -546,3 +546,92 @@
     font-size: 1.85rem;
   }
 }
+
+/* Delivery Serviceability & Feedback Styles */
+.pinInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.pinLoadingSpinner {
+  position: absolute;
+  right: 12px;
+  font-size: 1.1rem;
+  color: #888888;
+  animation: pinPulse 1s infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes pinPulse {
+  0% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+.inputSuccess {
+  border: 1.5px solid #10b981 !important;
+  background-color: #f0fdf4 !important;
+}
+
+.inputError {
+  border: 1.5px solid #f43f5e !important;
+  background-color: #fff1f2 !important;
+}
+
+.pinCheckingText {
+  font-size: 0.78rem;
+  color: #6b7280;
+  margin-top: 6px;
+  font-style: italic;
+}
+
+.pinSuccessText {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: #065f46;
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin-top: 6px;
+  line-height: 1.35;
+}
+
+.pinErrorText {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: #9f1239;
+  background-color: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-top: 6px;
+  line-height: 1.35;
+}
+
+.feedbackIcon {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.calculatingText {
+  color: #6b7280;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.unavailableText {
+  color: #e11d48;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.freeDeliveryBadge {
+  color: #059669;
+  font-weight: 600;
+}
+

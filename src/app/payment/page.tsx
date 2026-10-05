@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -13,6 +13,9 @@ import {
   Building2,
   Star,
   Lock,
+  CheckCircle2,
+  AlertCircle,
+  Truck,
 } from "lucide-react";
 import styles from "./payment.module.css";
 
@@ -101,14 +104,93 @@ export default function SinglePageCheckoutPayment() {
   const unitPrice = primaryItem.price;
   const subtotal = unitPrice * quantity;
 
-  // Compute discount and final total
-  const discountAmount = couponApplied ? 100 : 0;
-  const deliveryCharge = 0; // Free delivery
-  const finalTotal = Math.max(0, subtotal - discountAmount + deliveryCharge);
+  // Delivery check state
+  const [deliveryStatus, setDeliveryStatus] = useState<{
+    loading: boolean;
+    serviceable: boolean | null;
+    distance_km: number | null;
+    delivery_charge: number | null;
+    area: string | null;
+    district: string | null;
+    message: string | null;
+  }>({
+    loading: false,
+    serviceable: null,
+    distance_km: null,
+    delivery_charge: null,
+    area: null,
+    district: null,
+    message: null,
+  });
 
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const checkDeliveryPin = useCallback((pin: string) => {
+    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+    const cleanPin = pin.replace(/\D/g, "");
+
+    if (cleanPin.length !== 6) {
+      setDeliveryStatus({
+        loading: false,
+        serviceable: null,
+        distance_km: null,
+        delivery_charge: null,
+        area: null,
+        district: null,
+        message: cleanPin.length > 0 ? "Please enter a valid 6-digit PIN code." : null,
+      });
+      return;
+    }
+
+    setDeliveryStatus((prev) => ({ ...prev, loading: true }));
+
+    debounceTimerRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch("/api/delivery/check", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ pinCode: cleanPin }),
+        });
+        const data = await res.json();
+        setDeliveryStatus({
+          loading: false,
+          serviceable: data.serviceable,
+          distance_km: data.distance_km,
+          delivery_charge: data.delivery_charge,
+          area: data.area,
+          district: data.district,
+          message: data.message,
+        });
+      } catch {
+        setDeliveryStatus({
+          loading: false,
+          serviceable: false,
+          distance_km: null,
+          delivery_charge: null,
+          area: null,
+          district: null,
+          message:
+            "Sorry, delivery is not available to this location. Please enter another delivery location.",
+        });
+      }
+    }, 350);
+  }, []);
+
+  // Check initial PIN code on mount
   useEffect(() => {
     setMounted(true);
-  }, []);
+    if (pinCode && pinCode.length === 6) {
+      checkDeliveryPin(pinCode);
+    }
+  }, [checkDeliveryPin]);
+
+  // Compute discount and final total with verified delivery charge
+  const discountAmount = couponApplied ? 100 : 0;
+  const deliveryCharge =
+    deliveryStatus.serviceable && deliveryStatus.delivery_charge !== null
+      ? deliveryStatus.delivery_charge
+      : 0;
+  const finalTotal = Math.max(0, subtotal - discountAmount + deliveryCharge);
 
   // Format Card Number into groups of 4
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -179,6 +261,14 @@ export default function SinglePageCheckoutPayment() {
       }
     }
 
+    if (deliveryStatus.serviceable === false) {
+      alert(
+        deliveryStatus.message ||
+          "Sorry, delivery is not available to this location. Please enter another delivery location."
+      );
+      return;
+    }
+
     setIsSubmitting(true);
 
     const deliveryPayload = {
@@ -218,6 +308,15 @@ export default function SinglePageCheckoutPayment() {
       });
 
       const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        alert(
+          data.error ||
+            "Sorry, delivery is not available to this location. Please enter another delivery location."
+        );
+        setIsSubmitting(false);
+        return;
+      }
 
       // Trigger Context completion
       const paymentMethodTitle =
@@ -402,20 +501,67 @@ export default function SinglePageCheckoutPayment() {
                 <label htmlFor="pinCode" className={styles.fieldLabel}>
                   PIN Code
                 </label>
-                <input
-                  id="pinCode"
-                  type="text"
-                  required
-                  maxLength={6}
-                  pattern="[0-9]{6}"
-                  title="Enter 6-digit postal PIN code"
-                  placeholder="6 digits"
-                  value={pinCode}
-                  onChange={(e) =>
-                    setPinCode(e.target.value.replace(/\D/g, ""))
-                  }
-                  className={styles.inputField}
-                />
+                <div className={styles.pinInputWrapper}>
+                  <input
+                    id="pinCode"
+                    type="text"
+                    required
+                    maxLength={6}
+                    pattern="[0-9]{6}"
+                    title="Enter 6-digit postal PIN code"
+                    placeholder="6 digits"
+                    value={pinCode}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, "").slice(0, 6);
+                      setPinCode(val);
+                      checkDeliveryPin(val);
+                    }}
+                    className={`${styles.inputField} ${
+                      deliveryStatus.serviceable === true
+                        ? styles.inputSuccess
+                        : deliveryStatus.serviceable === false
+                        ? styles.inputError
+                        : ""
+                    }`}
+                  />
+                  {deliveryStatus.loading && (
+                    <span className={styles.pinLoadingSpinner}>…</span>
+                  )}
+                </div>
+
+                {/* Serviceability feedback note */}
+                {deliveryStatus.loading && (
+                  <p className={styles.pinCheckingText}>
+                    Checking delivery serviceability...
+                  </p>
+                )}
+
+                {!deliveryStatus.loading && deliveryStatus.serviceable === true && (
+                  <div className={styles.pinSuccessText}>
+                    <CheckCircle2 size={13} className={styles.feedbackIcon} />
+                    <span>
+                      Delivery available to{" "}
+                      <strong>{deliveryStatus.area || "Location"}</strong>
+                      {deliveryStatus.distance_km !== null
+                        ? ` (${deliveryStatus.distance_km} km)`
+                        : ""}
+                      {" · "}
+                      {deliveryCharge === 0
+                        ? "Free Delivery 🎉"
+                        : `₹${deliveryCharge} delivery charge`}
+                    </span>
+                  </div>
+                )}
+
+                {!deliveryStatus.loading && deliveryStatus.serviceable === false && (
+                  <div className={styles.pinErrorText} role="alert">
+                    <AlertCircle size={14} className={styles.feedbackIcon} />
+                    <span>
+                      {deliveryStatus.message ||
+                        "Sorry, delivery is not available to this location. Please enter another delivery location."}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -622,7 +768,17 @@ export default function SinglePageCheckoutPayment() {
               </div>
               <div className={styles.breakdownRow}>
                 <span>Delivery Charge</span>
-                <span className={styles.breakdownValue}>Free</span>
+                <span className={styles.breakdownValue}>
+                  {deliveryStatus.loading ? (
+                    <span className={styles.calculatingText}>Calculating...</span>
+                  ) : deliveryStatus.serviceable === false ? (
+                    <span className={styles.unavailableText}>Unavailable</span>
+                  ) : deliveryCharge === 0 ? (
+                    <span className={styles.freeDeliveryBadge}>Free</span>
+                  ) : (
+                    `₹${deliveryCharge.toFixed(2)}`
+                  )}
+                </span>
               </div>
               <div className={styles.breakdownRow}>
                 <span>Subtotal</span>
@@ -664,14 +820,25 @@ export default function SinglePageCheckoutPayment() {
             {/* Master Place Order Button */}
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={
+                isSubmitting ||
+                deliveryStatus.serviceable === false ||
+                deliveryStatus.loading
+              }
               className={styles.placeOrderBtn}
+              title={
+                deliveryStatus.serviceable === false
+                  ? "Sorry, delivery is not available to this location. Please enter another delivery location."
+                  : undefined
+              }
             >
               {isSubmitting ? (
                 <>
                   <div className={styles.spinner} />
                   <span>Processing Payment...</span>
                 </>
+              ) : deliveryStatus.serviceable === false ? (
+                <span>Location Not Serviceable</span>
               ) : (
                 <>
                   <Lock size={16} />
