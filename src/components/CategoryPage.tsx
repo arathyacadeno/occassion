@@ -1,119 +1,121 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useMemo, useState } from "react";
+import styles from "./CategoryPage.module.css";
+import ProductCard from "@/components/ProductCard";
 import Navbar from "@/components/Navbar";
-import CategoryHeader from "@/components/CategoryHeader";
-import Breadcrumb from "@/components/Breadcrumb";
-import ProductGrid from "@/components/ProductGrid";
 import Footer from "@/components/Footer";
 import { Product } from "@/data/catalog";
-import styles from "./CategoryPage.module.css";
 
-interface CategoryPageProps {
-  title: string;
-  description: string;
-  products: Product[];
-  filterTabs?: { id: string; label: string }[];
-  showBreadcrumb?: boolean;
-}
-
-const DEFAULT_FILTER_TABS = [
-  { id: "all", label: "All Items" },
-  { id: "birthday", label: "Birthday" },
-  { id: "anniversary", label: "Anniversary" },
-  { id: "boxes", label: "Flowers in Boxes" },
-  { id: "bouquets", label: "Flower Bouquet" },
+const FILTERS = [
+  "All Items",
+  "Birthday",
+  "Anniversary",
+  "Flowers in Boxes",
+  "Handcrafted Baskets",
 ];
 
+interface CategoryPageProps {
+  title?: string;
+  description?: string;
+  products: Product[];
+  filterTabs?: { id: string; label: string }[];
+}
+
 export default function CategoryPage({
-  title,
-  description,
+  title = "Flower Baskets",
   products,
-  filterTabs,
-  showBreadcrumb = false,
 }: CategoryPageProps) {
-  const [activeFilter, setActiveFilter] = useState("all");
-  const tabs = filterTabs && filterTabs.length > 0 ? filterTabs : DEFAULT_FILTER_TABS;
+  const [activeFilter, setActiveFilter] = useState<string>(FILTERS[0]);
 
-  const filteredProducts = useMemo(() => {
-    if (activeFilter === "all") return products;
-
-    return products.filter((p) => {
-      const lowerName = (p.name || "").toLowerCase();
-      const lowerDesc = (p.description || "").toLowerCase();
-      const lowerSlug = (p.slug || "").toLowerCase();
-      const text = `${lowerName} ${lowerDesc} ${lowerSlug}`;
-
-      if (activeFilter === "birthday") {
-        return text.includes("birthday") || text.includes("celebration") || text.includes("sunflower") || text.includes("gerbera");
-      }
-      if (activeFilter === "anniversary") {
-        return text.includes("anniversary") || text.includes("engaged") || text.includes("wedding") || text.includes("heart") || text.includes("romance");
-      }
-      if (activeFilter === "boxes" || activeFilter === "baskets") {
-        return text.includes("basket") || text.includes("box") || text.includes("crate") || text.includes("uruli");
-      }
-      if (activeFilter === "bouquets") {
-        return text.includes("bouquet") || text.includes("cone") || text.includes("tied");
-      }
-      if (activeFilter === "roses") {
-        return text.includes("rose");
-      }
-      if (activeFilter === "tulips") {
-        return text.includes("tulip");
-      }
-      if (activeFilter === "lilies") {
-        return text.includes("lily") || text.includes("lilies");
-      }
-      if (activeFilter === "chocolate") {
-        return text.includes("chocolate") || text.includes("truffle") || text.includes("espresso") || text.includes("biscoff") || text.includes("fudge") || text.includes("ganache");
-      }
-      if (activeFilter === "fruit" || activeFilter === "vanilla") {
-        return text.includes("berry") || text.includes("vanilla") || text.includes("mango") || text.includes("forest") || text.includes("butterscotch") || text.includes("fruit") || text.includes("velvet") || text.includes("raspberry") || text.includes("strawberry");
-      }
-      return true;
-    });
-  }, [products, activeFilter]);
+  const visibleProducts = useMemo(
+    () =>
+      activeFilter === FILTERS[0]
+        ? products
+        : products.filter((p) => {
+            const text = `${p.name} ${p.description ?? ""} ${p.slug ?? ""}`.toLowerCase();
+            const f = activeFilter.toLowerCase();
+            if (f === "birthday")
+              return (
+                text.includes("birthday") ||
+                text.includes("celebration") ||
+                text.includes("sunflower") ||
+                text.includes("gerbera")
+              );
+            if (f === "anniversary")
+              return (
+                text.includes("anniversary") ||
+                text.includes("wedding") ||
+                text.includes("heart") ||
+                text.includes("romance")
+              );
+            if (f === "flowers in boxes")
+              return (
+                text.includes("basket") ||
+                text.includes("box") ||
+                text.includes("crate")
+              );
+            if (f === "handcrafted baskets") return text.includes("basket");
+            return true;
+          }),
+    [activeFilter, products]
+  );
 
   return (
     <div className={styles.pageWrapper}>
       <Navbar />
-
       <main className={styles.mainContent}>
-        {/* Optional Breadcrumb Navigation */}
-        {showBreadcrumb && <Breadcrumb items={[{ label: title }]} />}
+        {/* ================= HEADING ================= */}
+        <header className={styles.pageHeader}>
+          <h1 className={styles.pageTitle}>{title}</h1>
+          <p className={styles.pageSubtitle}>
+            Artisanal hand-woven baskets brimming with
+            <br />
+            fresh roses, peonies, baby&apos;s breath &amp; fragrant greenery.
+          </p>
+        </header>
 
-        {/* Category Header */}
-        <CategoryHeader title={title} description={description} />
+        {/* ================= PINK PANEL ================= */}
+        <section className={styles.categoryPanel}>
+          <div
+            className={styles.filterTabsRow}
+            role="tablist"
+            aria-label="Filter products"
+          >
+            {FILTERS.map((filter) => {
+              const isActive = filter === activeFilter;
+              return (
+                <button
+                  key={filter}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  className={`${styles.filterPill} ${
+                    isActive ? styles.filterPillActive : ""
+                  }`}
+                  onClick={() => setActiveFilter(filter)}
+                >
+                  {filter}
+                </button>
+              );
+            })}
+          </div>
 
-        {/* Filter Pills Navigation (Matching Reference Image) */}
-        <div className={styles.filterTabsRow} role="tablist" aria-label="Category Filters">
-          {tabs.map((tab) => {
-            const isActive = activeFilter === tab.id;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                className={`${styles.filterPill} ${
-                  isActive ? styles.filterPillActive : ""
-                }`}
-                onClick={() => setActiveFilter(tab.id)}
-              >
-                {tab.label}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Product Grid with Signature Wave Cutout Cards */}
-        <ProductGrid
-          products={filteredProducts}
-          ariaLabel={`${title} Collection`}
-        />
+          <div className={styles.gridContainer}>
+            <div className={styles.productGrid}>
+              {visibleProducts.length > 0 ? (
+                visibleProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))
+              ) : (
+                <p className={styles.emptyState}>
+                  No products in this category yet.
+                </p>
+              )}
+            </div>
+          </div>
+        </section>
       </main>
-
       <Footer />
     </div>
   );

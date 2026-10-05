@@ -17,36 +17,36 @@
 }
 
 .addToCartBtn:hover {
-  background-color: #E40345;
+  background-color: #C8235E;
   color: #ffffff;
-  border-color: #E40345;
+  border-color: #C8235E;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(228, 3, 69, 0.25);
+  box-shadow: 0 4px 12px rgba(200, 35, 94, 0.25);
 }
 
 .addToCartBtn.addedState {
-  background-color: #15803d;
+  background-color: #1F7A4B;
   color: #ffffff;
-  border-color: #15803d;
+  border-color: #1F7A4B;
 }
 
 .pillBtn {
-  background-color: #E40345;
+  background-color: #C8235E;
   color: #ffffff;
   border: none;
   border-radius: 9999px;
   padding: 10px 20px;
   font-size: 0.92rem;
   font-weight: 600;
-  box-shadow: 0 3px 12px rgba(228, 3, 69, 0.22);
+  box-shadow: 0 3px 12px rgba(200, 35, 94, 0.22);
 }
 
 .pillBtn:hover {
-  background-color: #c7023c;
+  background-color: #A01849;
   color: #ffffff;
   border-color: transparent;
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(228, 3, 69, 0.32);
+  box-shadow: 0 6px 16px rgba(200, 35, 94, 0.32);
 }
 
 
