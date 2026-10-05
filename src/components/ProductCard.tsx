@@ -2,8 +2,8 @@
 
 import React from "react";
 import Link from "next/link";
-import { Heart, Star, Truck, Trash2 } from "lucide-react";
-import { Product } from "@/data/catalog";
+import { Heart, Star, Truck, Trash2, Sparkles } from "lucide-react";
+import { Product, isFlowerBouquet } from "@/data/catalog";
 import { useWishlist } from "@/context/WishlistContext";
 import { AddToCartButton } from "@/components/Buttons";
 import styles from "./ProductCard.module.css";
@@ -26,6 +26,7 @@ export default function ProductCard({
   const shouldShowAddToCart = showAddToCart ?? !compact;
   const { isInWishlist, toggleItem } = useWishlist();
   const isWishlisted = isInWishlist(product.id);
+  const isBouquet = isFlowerBouquet(product);
   const productHref = `/${product.category}/${product.slug}`;
 
   const toggleWishlist = (e: React.MouseEvent) => {
@@ -182,10 +183,24 @@ export default function ProductCard({
           )}
         </div>
 
-        {/* Optional Add To Cart Button */}
+        {/* Optional Add To Cart / Customize Button */}
         {shouldShowAddToCart && (
           <div className={styles.cartActionWrapper}>
-            <AddToCartButton product={product} variant="pill" />
+            {isBouquet ? (
+              <div className={styles.bouquetActionsRow}>
+                <Link
+                  href={`${productHref}?customize=true`}
+                  className={styles.customizeBtn}
+                  aria-label={`Customize ${product.name}`}
+                >
+                  <Sparkles size={13} className={styles.sparkleIcon} />
+                  <span>Customize</span>
+                </Link>
+                <AddToCartButton product={product} variant="pill" />
+              </div>
+            ) : (
+              <AddToCartButton product={product} variant="pill" />
+            )}
           </div>
         )}
       </div>

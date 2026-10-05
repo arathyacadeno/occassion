@@ -14,8 +14,9 @@ import {
   Minus,
   Plus,
   Heart,
+  Sparkles,
 } from "lucide-react";
-import { Product } from "@/data/catalog";
+import { Product, isFlowerBouquet, getPricePerFlower } from "@/data/catalog";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { useCheckout, CheckoutItem } from "@/context/CheckoutContext";
@@ -48,6 +49,21 @@ export default function ProductInfo({
     (product.category as string) === "lilies" ||
     product.name.toLowerCase().includes("lily") ||
     product.name.toLowerCase().includes("lilies");
+
+  const isBouquet = isFlowerBouquet(product);
+  const pricePerFlower = getPricePerFlower(product);
+  const [isCustomMode, setIsCustomMode] = useState<boolean>(false);
+  const [customFlowerQty, setCustomFlowerQty] = useState<number>(12);
+
+  // Auto-activate customize mode if URL has ?customize=true
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("customize") === "true" && isBouquet) {
+        setIsCustomMode(true);
+      }
+    }
+  }, [isBouquet]);
 
   const [customStems, setCustomStems] = useState<number>(8);
 
@@ -90,13 +106,19 @@ export default function ProductInfo({
     onVariantChange?.(v);
   };
 
-  const activePrice = selectedVariant
+  const customBouquetPrice = pricePerFlower * customFlowerQty;
+
+  const activePrice = isCustomMode && isBouquet
+    ? customBouquetPrice
+    : selectedVariant
     ? selectedVariant.id === "custom"
       ? customStems * 100
       : selectedVariant.price
     : product.price;
 
-  const activeOriginalPrice = selectedVariant
+  const activeOriginalPrice = isCustomMode && isBouquet
+    ? Math.round(customBouquetPrice * 1.15)
+    : selectedVariant
     ? selectedVariant.id === "custom"
       ? Math.round(customStems * 100 * 1.15)
       : selectedVariant.originalPrice
@@ -138,39 +160,67 @@ export default function ProductInfo({
   };
 
   const handleAddToCart = () => {
-    addItem(
-      {
-        id: product.id,
-        slug: product.slug,
-        category: product.category,
-        name: product.name,
-        subtitle: selectedVariant
-          ? selectedVariant.id === "custom"
-            ? `${customStems} Stems (Custom Arrangement)`
-            : `${selectedVariant.name} Arrangement`
-          : product.categoryLabel,
-        price: activePrice,
-        originalPrice: activeOriginalPrice,
-        image: selectedVariant ? selectedVariant.image : product.image,
-        occasion: "celebration",
-        rating: product.rating,
-        reviewsCount: product.reviewsCount,
-        stems: product.includes || [],
-        description: product.description,
-        flowerCount: selectedVariant
-          ? selectedVariant.id === "custom"
-            ? `${customStems} Stems`
-            : `${selectedVariant.name}`
-          : `${product.includes?.length || 12} items`,
-        scent: "Fresh & Green",
-        badge: product.badge,
-        dimensions: "45cm H × 35cm W",
-      },
-      "Signature",
-      false,
-      undefined,
-      quantity
-    );
+    if (isCustomMode && isBouquet) {
+      addItem(
+        {
+          id: `${product.id}-custom-${customFlowerQty}`,
+          slug: product.slug,
+          category: product.category,
+          name: `${product.name} (Custom Bouquet)`,
+          subtitle: `${customFlowerQty} Flowers @ ₹${pricePerFlower}/flower`,
+          price: activePrice,
+          originalPrice: activeOriginalPrice,
+          image: product.image,
+          occasion: "celebration",
+          rating: product.rating,
+          reviewsCount: product.reviewsCount,
+          stems: [`${customFlowerQty} Hand-Picked Fresh Blooms`],
+          description: `Customized arrangement with ${customFlowerQty} flowers. (Price: ₹${pricePerFlower}/flower × ${customFlowerQty} = ₹${activePrice})`,
+          flowerCount: `${customFlowerQty} Flowers`,
+          scent: "Fresh & Green",
+          badge: "Custom Bouquet",
+          dimensions: "45cm H × 35cm W",
+        },
+        "Signature",
+        false,
+        undefined,
+        quantity
+      );
+    } else {
+      addItem(
+        {
+          id: product.id,
+          slug: product.slug,
+          category: product.category,
+          name: product.name,
+          subtitle: selectedVariant
+            ? selectedVariant.id === "custom"
+              ? `${customStems} Stems (Custom Arrangement)`
+              : `${selectedVariant.name} Arrangement`
+            : product.categoryLabel,
+          price: activePrice,
+          originalPrice: activeOriginalPrice,
+          image: selectedVariant ? selectedVariant.image : product.image,
+          occasion: "celebration",
+          rating: product.rating,
+          reviewsCount: product.reviewsCount,
+          stems: product.includes || [],
+          description: product.description,
+          flowerCount: selectedVariant
+            ? selectedVariant.id === "custom"
+              ? `${customStems} Stems`
+              : `${selectedVariant.name}`
+            : `${product.includes?.length || 12} items`,
+          scent: "Fresh & Green",
+          badge: product.badge,
+          dimensions: "45cm H × 35cm W",
+        },
+        "Signature",
+        false,
+        undefined,
+        quantity
+      );
+    }
 
     setAddedFeedback(true);
     setTimeout(() => {
@@ -180,9 +230,11 @@ export default function ProductInfo({
 
   const handleBuyNow = () => {
     const mainItem: CheckoutItem = {
-      id: product.id,
+      id: isCustomMode && isBouquet ? `${product.id}-custom-${customFlowerQty}` : product.id,
       slug: product.slug,
-      name: product.name,
+      name: isCustomMode && isBouquet
+        ? `${product.name} (Custom: ${customFlowerQty} Flowers)`
+        : product.name,
       category: product.category,
       price: activePrice,
       originalPrice: activeOriginalPrice,
@@ -252,8 +304,115 @@ export default function ProductInfo({
         </button>
       </div>
 
-      {/* Make this gift extra special section */}
-      {variants && variants.length > 0 && (
+      {/* Flower Bouquet Customization Option (ONLY for flower bouquets) */}
+      {isBouquet && (
+        <div className={styles.customBouquetSection}>
+          <div className={styles.customHeaderRow}>
+            <div className={styles.customHeaderTitleWrap}>
+              <span className={styles.customBadge}>Custom Floral Arrangement</span>
+              <h3 className={styles.customHeading}>Customize Bouquet</h3>
+            </div>
+            <div className={styles.customToggleGroup}>
+              <button
+                type="button"
+                className={`${styles.customToggleBtn} ${!isCustomMode ? styles.customToggleActive : ""}`}
+                onClick={() => setIsCustomMode(false)}
+              >
+                Standard
+              </button>
+              <button
+                type="button"
+                className={`${styles.customToggleBtn} ${isCustomMode ? styles.customToggleActive : ""}`}
+                onClick={() => setIsCustomMode(true)}
+              >
+                <Sparkles size={13} style={{ display: "inline", marginRight: 5, verticalAlign: "middle" }} />
+                Customize
+              </button>
+            </div>
+          </div>
+
+          {isCustomMode && (
+            <div className={styles.customPanel}>
+              <div className={styles.customInfoRow}>
+                <span className={styles.pricePerFlowerLabel}>Flower Unit Price:</span>
+                <span className={styles.pricePerFlowerValue}>
+                  ₹ {pricePerFlower}{" "}
+                  <span className={styles.perUnitText}>/ flower</span>
+                </span>
+              </div>
+
+              <div className={styles.stemStepperRow}>
+                <span className={styles.stepperLabel}>Select Number of Flowers:</span>
+                <div className={styles.stepperControls}>
+                  <button
+                    type="button"
+                    className={styles.stepperBtn}
+                    onClick={() => setCustomFlowerQty((prev) => Math.max(3, prev - 1))}
+                    disabled={customFlowerQty <= 3}
+                    aria-label="Decrease flower quantity"
+                  >
+                    <Minus size={14} />
+                  </button>
+                  <input
+                    type="number"
+                    min={3}
+                    max={100}
+                    value={customFlowerQty}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value, 10);
+                      if (!isNaN(val)) {
+                        setCustomFlowerQty(Math.max(1, Math.min(100, val)));
+                      }
+                    }}
+                    className={styles.stepperInput}
+                    aria-label="Flower quantity"
+                  />
+                  <button
+                    type="button"
+                    className={styles.stepperBtn}
+                    onClick={() => setCustomFlowerQty((prev) => Math.min(100, prev + 1))}
+                    disabled={customFlowerQty >= 100}
+                    aria-label="Increase flower quantity"
+                  >
+                    <Plus size={14} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Quick Stem Presets */}
+              <div className={styles.quickStemChips}>
+                {[6, 8, 12, 16, 20, 24, 30, 50].map((count) => (
+                  <button
+                    key={count}
+                    type="button"
+                    className={`${styles.stemChip} ${customFlowerQty === count ? styles.stemChipActive : ""}`}
+                    onClick={() => setCustomFlowerQty(count)}
+                  >
+                    {count} Flowers
+                  </button>
+                ))}
+              </div>
+
+              {/* Live Formula Banner: Price per flower × Quantity */}
+              <div className={styles.formulaBanner}>
+                <div className={styles.formulaEquation}>
+                  <span>Price per flower (<strong>₹{pricePerFlower}</strong>)</span>
+                  <span className={styles.formulaOperator}>×</span>
+                  <span>Quantity (<strong>{customFlowerQty}</strong>)</span>
+                  <span className={styles.formulaOperator}>=</span>
+                  <span className={styles.formulaTotal}>₹ {(pricePerFlower * customFlowerQty).toLocaleString("en-IN")}</span>
+                </div>
+                <div className={styles.formulaCaption}>
+                  Bouquet handcrafted with {customFlowerQty} fresh blooms arranged with premium wrapping & ribbon.
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Make this gift extra special section (only in standard mode if bouquet, or for non-bouquets) */}
+      {!isCustomMode && variants && variants.length > 0 && (
         <div className={styles.giftExtraSection}>
           <h3 className={styles.giftExtraTitle}>
             {isLily ? "Select Stems / Arrangement" : "Make this gift extra special"}

@@ -1007,3 +1007,227 @@
   text-decoration: line-through;
 }
 
+/* ================= FLOWER BOUQUET CUSTOMIZE OPTION ================= */
+.customBouquetSection {
+  margin: 18px 0;
+  padding: 16px 18px;
+  background: linear-gradient(135deg, #fff5f8 0%, #ffffff 100%);
+  border: 1.5px solid #fbcfe8;
+  border-radius: 18px;
+  box-shadow: 0 4px 18px rgba(244, 114, 182, 0.08);
+}
+
+.customHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.customHeaderTitleWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.customBadge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #db2777;
+}
+
+.customHeading {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.customToggleGroup {
+  display: inline-flex;
+  background: #fdf2f8;
+  border: 1px solid #fbcfe8;
+  border-radius: 999px;
+  padding: 3px;
+  gap: 4px;
+}
+
+.customToggleBtn {
+  background: none;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.customToggleActive {
+  background: #ff3d7a;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(255, 61, 122, 0.3);
+}
+
+.customPanel {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed #fbcfe8;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.customInfoRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pricePerFlowerLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.pricePerFlowerValue {
+  font-size: 17px;
+  font-weight: 700;
+  color: #ff3d7a;
+}
+
+.perUnitText {
+  font-size: 12px;
+  font-weight: 500;
+  color: #9ca3af;
+}
+
+.stemStepperRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stepperLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.stepperControls {
+  display: inline-flex;
+  align-items: center;
+  background: #ffffff;
+  border: 1.5px solid #f472b6;
+  border-radius: 999px;
+  padding: 4px 6px;
+  gap: 6px;
+}
+
+.stepperBtn {
+  background: #fdf2f8;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: #ff3d7a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.stepperBtn:hover:not(:disabled) {
+  background: #ff3d7a;
+  color: #ffffff;
+}
+
+.stepperBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.stepperInput {
+  width: 44px;
+  border: none;
+  background: transparent;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+  outline: none;
+}
+
+.quickStemChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.stemChip {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4b5563;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.stemChip:hover {
+  border-color: #f472b6;
+  color: #db2777;
+}
+
+.stemChipActive {
+  background: #ff3d7a;
+  border-color: #ff3d7a;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(255, 61, 122, 0.25);
+}
+
+.formulaBanner {
+  background: #ffffff;
+  border: 1px solid #fce7f3;
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.formulaEquation {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 13.5px;
+  color: #374151;
+}
+
+.formulaOperator {
+  color: #ff3d7a;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.formulaTotal {
+  font-size: 17px;
+  font-weight: 800;
+  color: #ff3d7a;
+  background: #fdf2f8;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.formulaCaption {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 6px;
+}
+
+

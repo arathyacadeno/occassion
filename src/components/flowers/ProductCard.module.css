@@ -396,6 +396,48 @@
   font-weight: 500;
 }
 
+.bouquetActionsRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.bouquetActionsRow > :last-child {
+  flex: 1;
+}
+
+.customizeBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 8px 13px;
+  border-radius: 999px;
+  background: #fff0f5;
+  border: 1.5px solid #fbcfe8;
+  color: #db2777;
+  font-family: var(--font-sans, "Plus Jakarta Sans", sans-serif);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.22s ease;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(219, 39, 119, 0.08);
+}
+
+.customizeBtn:hover {
+  background: #ff3d7a;
+  border-color: #ff3d7a;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(255, 61, 122, 0.28);
+  transform: translateY(-1px);
+}
+
+.sparkleIcon {
+  color: currentColor;
+}
+
 @media (max-width: 640px) {
   .card {
     width: 100%;

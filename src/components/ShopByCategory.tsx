@@ -67,26 +67,6 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
     initTy: "16px",
     initRot: "0deg",
   },
-  {
-    id: "get-well-soon",
-    name: "Get Well Soon",
-    image: "/images/cat-get-well-soon.jpg",
-    link: "/flower-bouquets?occasion=get-well-soon",
-    delay: "0.60s",
-    initTx: "0px",
-    initTy: "16px",
-    initRot: "0deg",
-  },
-  {
-    id: "condolences",
-    name: "Condolences",
-    image: "/images/cat-condolences.jpg",
-    link: "/flower-bouquets?occasion=condolences",
-    delay: "0.72s",
-    initTx: "0px",
-    initTy: "16px",
-    initRot: "0deg",
-  },
 ];
 
 export default function ShopByCategory() {

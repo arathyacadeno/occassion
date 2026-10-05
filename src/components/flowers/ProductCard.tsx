@@ -2,8 +2,9 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Star, Heart, Truck } from "lucide-react";
+import { Star, Heart, Truck, Sparkles } from "lucide-react";
 import { FlowerProduct } from "@/types";
+import { isFlowerBouquet } from "@/data/catalog";
 import { AddToCartButton } from "@/components/Buttons";
 import styles from "./ProductCard.module.css";
 
@@ -21,6 +22,7 @@ export default function ProductCard({
   const shouldShowAddToCart = showAddToCart ?? !compact;
   const [isWishlisted, setIsWishlisted] = useState(false);
   const productUrl = `/flowers/${product.category}/${product.slug}`;
+  const isBouquet = isFlowerBouquet(product as any);
 
   const isLily =
     product.category === "lilies" ||
@@ -259,32 +261,68 @@ export default function ProductCard({
           )}
         </div>
 
-        {/* Add To Cart Button */}
+        {/* Add To Cart / Customize Button */}
         {shouldShowAddToCart && (
           <div className={styles.cartActionWrapper}>
-            <AddToCartButton
-              product={{
-                ...(product as any),
-                price: activePrice,
-                originalPrice: activeOriginalPrice,
-                image: activeImage,
-                subtitle: isLily
-                  ? `${
-                      selectedStem === "custom"
-                        ? `${customStems} Stems (Custom)`
-                        : `${selectedStem} Stems`
-                    } Arrangement`
-                  : (product as any).subtitle,
-                flowerCount: isLily
-                  ? `${
-                      selectedStem === "custom"
-                        ? customStems
-                        : selectedStem
-                    } Stems`
-                  : (product as any).flowerCount,
-              }}
-              variant="pill"
-            />
+            {isBouquet ? (
+              <div className={styles.bouquetActionsRow}>
+                <Link
+                  href={`${productUrl}?customize=true`}
+                  className={styles.customizeBtn}
+                  aria-label={`Customize ${product.name}`}
+                >
+                  <Sparkles size={13} className={styles.sparkleIcon} />
+                  <span>Customize</span>
+                </Link>
+                <AddToCartButton
+                  product={{
+                    ...(product as any),
+                    price: activePrice,
+                    originalPrice: activeOriginalPrice,
+                    image: activeImage,
+                    subtitle: isLily
+                      ? `${
+                          selectedStem === "custom"
+                            ? `${customStems} Stems (Custom)`
+                            : `${selectedStem} Stems`
+                        } Arrangement`
+                      : (product as any).subtitle,
+                    flowerCount: isLily
+                      ? `${
+                          selectedStem === "custom"
+                            ? customStems
+                            : selectedStem
+                        } Stems`
+                      : (product as any).flowerCount,
+                  }}
+                  variant="pill"
+                />
+              </div>
+            ) : (
+              <AddToCartButton
+                product={{
+                  ...(product as any),
+                  price: activePrice,
+                  originalPrice: activeOriginalPrice,
+                  image: activeImage,
+                  subtitle: isLily
+                    ? `${
+                        selectedStem === "custom"
+                          ? `${customStems} Stems (Custom)`
+                          : `${selectedStem} Stems`
+                      } Arrangement`
+                    : (product as any).subtitle,
+                  flowerCount: isLily
+                    ? `${
+                        selectedStem === "custom"
+                          ? customStems
+                          : selectedStem
+                      } Stems`
+                    : (product as any).flowerCount,
+                }}
+                variant="pill"
+              />
+            )}
           </div>
         )}
       </div>

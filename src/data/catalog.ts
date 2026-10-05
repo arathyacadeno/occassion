@@ -1455,3 +1455,74 @@ export function getAllProducts(): Product[] {
   return CATALOG_PRODUCTS;
 }
 
+export function isFlowerBouquet(product: {
+  category?: string;
+  name?: string;
+  description?: string;
+  id?: string;
+}): boolean {
+  if (!product) return false;
+  const cat = (product.category || "").toLowerCase();
+  const name = (product.name || "").toLowerCase();
+  const desc = (product.description || "").toLowerCase();
+  const id = (product.id || "").toLowerCase();
+
+  if (
+    cat === "cakes" ||
+    cat === "table-decor" ||
+    cat === "table-arrangements" ||
+    cat === "wreaths" ||
+    cat === "our-highlights"
+  ) {
+    return false;
+  }
+  if (
+    name.includes("basket") ||
+    name.includes("box") ||
+    desc.includes("basket") ||
+    desc.includes("hat box")
+  ) {
+    return false;
+  }
+  if (
+    name.includes("cake") ||
+    name.includes("wreath") ||
+    name.includes("arch") ||
+    name.includes("car decor") ||
+    name.includes("garland")
+  ) {
+    return false;
+  }
+
+  return (
+    cat === "flower-bouquets" ||
+    cat === "bouquets" ||
+    name.includes("bouquet") ||
+    desc.includes("bouquet") ||
+    desc.includes("hand-tied") ||
+    id.startsWith("bouquet-") ||
+    id === "flower-lily-celestial-daisy"
+  );
+}
+
+export function getPricePerFlower(product: {
+  name?: string;
+  description?: string;
+  price?: number;
+}): number {
+  const name = (product.name || "").toLowerCase();
+  const desc = (product.description || "").toLowerCase();
+
+  if (name.includes("lily") || desc.includes("lily")) return 110;
+  if (name.includes("orchid") || desc.includes("orchid")) return 120;
+  if (name.includes("tulip") || desc.includes("tulip")) return 95;
+  if (name.includes("rose") || desc.includes("rose")) return 75;
+  if (name.includes("sunflower") || desc.includes("sunflower")) return 85;
+  if (name.includes("carnation") || desc.includes("carnation")) return 60;
+
+  if (product.price && product.price > 0) {
+    return Math.max(50, Math.round(product.price / 16));
+  }
+  return 75;
+}
+
