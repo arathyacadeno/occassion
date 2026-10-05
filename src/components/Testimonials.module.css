@@ -71,8 +71,33 @@
   box-sizing: border-box;
 }
 
-/* ================= CAROUSEL ================= */
+/* ================= CAROUSEL =================
+   All sizing variables live here so the slide math AND the
+   arrow positions use the same numbers. */
 .carouselContainer {
+  --gap: 32px;          /* space between cards */
+  --visible: 3;         /* cards visible at once */
+  --lead: 1;            /* cards shown before the active one */
+  --edge: 96px;         /* side margin of the clipping viewport */
+  --side-scale: 0.84;   /* size of the unfocused side cards */
+  --arrow: 46px;        /* arrow button size */
+  --arrow-gap: 14px;    /* gap between arrow and card (negative = overlap) */
+
+  /* width of one card, measured against this container */
+  --card-w: calc(
+    (100% - 2 * var(--edge) - (var(--visible) - 1) * var(--gap)) / var(--visible)
+  );
+
+  /* distance from the container edge to the arrow, so it sits
+     just outside the VISIBLE edge of the shrunken side card */
+  --arrow-offset: max(
+    8px,
+    calc(
+      var(--edge) + (1 - var(--side-scale)) * var(--card-w) -
+        var(--arrow) - var(--arrow-gap)
+    )
+  );
+
   width: 100%;
   max-width: 1500px;
   position: relative;
@@ -85,16 +110,12 @@
 .viewport {
   flex: 1;
   min-width: 0;
-  margin-inline: 96px;
+  margin-inline: var(--edge);
   overflow: hidden;
   padding: 14px 0 50px 0; /* room for shadows + hanging quote marks */
 }
 
 .cardsTrack {
-  --gap: 32px;
-  --visible: 3; /* cards visible at once */
-  --lead: 1;    /* cards shown before the active one */
-
   display: flex;
   align-items: stretch; /* equal height cards */
   gap: var(--gap);
@@ -159,12 +180,12 @@
 
 /* shrink toward the center card so the gaps stay tidy */
 .leftCard {
-  transform: scale(0.84);
+  transform: scale(var(--side-scale));
   transform-origin: right center;
 }
 
 .rightCard {
-  transform: scale(0.84);
+  transform: scale(var(--side-scale));
   transform-origin: left center;
 }
 
@@ -275,13 +296,16 @@
   height: 50px;
 }
 
-/* ================= NAVIGATION BUTTONS ================= */
+/* ================= NAVIGATION BUTTONS =================
+   Placed just outside the visible edge of the side cards.
+   top: 50% minus 18px lines them up with the card centre
+   (the viewport has 14px top / 50px bottom padding). */
 .navBtn {
   position: absolute;
-  top: 50%;
+  top: calc(50% - 18px);
   transform: translateY(-50%);
-  width: 46px;
-  height: 46px;
+  width: var(--arrow);
+  height: var(--arrow);
   border-radius: 50%;
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.05);
@@ -303,11 +327,11 @@
 }
 
 .navBtnLeft {
-  left: 0;
+  left: var(--arrow-offset);
 }
 
 .navBtnRight {
-  right: 0;
+  right: var(--arrow-offset);
 }
 
 /* ================= RESPONSIVE ================= */
@@ -319,11 +343,8 @@
     border-radius: 52px;
   }
 
-  .viewport {
-    margin-inline: 80px;
-  }
-
-  .cardsTrack {
+  .carouselContainer {
+    --edge: 80px;
     --gap: 28px;
   }
 }
@@ -339,24 +360,13 @@
     border-radius: 44px;
   }
 
-  .viewport {
-    margin-inline: 70px;
-  }
-
-  .cardsTrack {
+  .carouselContainer {
+    --edge: 70px;
     --gap: 18px;
   }
 
   .card {
     padding: 30px 24px 34px 24px;
-  }
-
-  .navBtnLeft {
-    left: 16px;
-  }
-
-  .navBtnRight {
-    right: 16px;
   }
 }
 
@@ -370,14 +380,20 @@
     border-radius: 36px;
   }
 
-  .viewport {
-    margin-inline: 64px;
-  }
-
-  .cardsTrack {
+  .carouselContainer {
     --visible: 1;
     --lead: 0;
     --gap: 24px;
+    --edge: 64px;
+  }
+
+  /* no side cards here, so sit the arrows in the side margin */
+  .navBtnLeft {
+    left: 8px;
+  }
+
+  .navBtnRight {
+    right: 8px;
   }
 
   .mainTitle {
@@ -403,8 +419,9 @@
     padding: 28px 0 20px;
   }
 
-  .viewport {
-    margin-inline: 14px;
+  .carouselContainer {
+    --edge: 14px;
+    --arrow: 38px;
   }
 
   .card {
@@ -426,11 +443,6 @@
 
   .cardQuote {
     font-size: 14px;
-  }
-
-  .navBtn {
-    width: 38px;
-    height: 38px;
   }
 
   .navBtnLeft {
