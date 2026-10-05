@@ -24,6 +24,7 @@ import {
   PartyPopper,
   Circle,
   Package,
+  MapPin,
 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
@@ -509,6 +510,16 @@ export default function Header({
                         <span>My Orders</span>
                       </Link>
 
+                      <Link
+                        href="/track-order"
+                        className={styles.profileMenuItem}
+                        onClick={() => setProfileHovered(false)}
+                        role="menuitem"
+                      >
+                        <MapPin size={17} className={styles.profileMenuIcon} />
+                        <span>Track Order</span>
+                      </Link>
+
                       <button
                         type="button"
                         className={styles.profileMenuItem}
@@ -791,6 +802,15 @@ export default function Header({
                 }}
               >
                 Our highlights
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/track-order"
+                className={styles.drawerNavLink}
+                onClick={() => setDrawerOpen(false)}
+              >
+                📦 Track Order
               </Link>
             </li>
           </ul>
