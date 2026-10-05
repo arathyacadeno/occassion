@@ -1,23 +1,24 @@
 /* =========================================================
    TESTIMONIALS SECTION
-   Exact Match to Figma Reference: "Loved in Every Bloom"
+   "Loved in Every Bloom"
    ========================================================= */
 
 .sectionWrapper {
   width: 100%;
   position: relative;
   overflow: hidden;
-  padding: 85px 24px 105px 24px;
+  margin-top: 28px;
+  padding: 64px 0 84px 0;
   background-color: #FAD9E3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  box-sizing: border-box;
 }
 
 .container {
-  max-width: 1320px;
+  max-width: 1726px;
   width: 100%;
   margin: 0 auto;
+  padding-inline: 36px;
+  box-sizing: border-box;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -28,7 +29,7 @@
 /* ================= SECTION HEADER ================= */
 .sectionHeader {
   text-align: center;
-  margin: 0 auto 52px auto;
+  margin: 0 auto 42px auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -57,67 +58,123 @@
   max-width: 540px;
 }
 
-/* ================= CAROUSEL TRACK ================= */
+/* ================= WHITE CONTAINER CARD ================= */
+.whiteCardWrapper {
+  width: 100%;
+  height: 542px;
+  background: #ffffff;
+  border-radius: 64px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.025);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+/* ================= CAROUSEL ================= */
 .carouselContainer {
   width: 100%;
+  max-width: 1500px;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Clips the sliding track */
+.viewport {
+  flex: 1;
+  min-width: 0;
+  margin-inline: 96px;
+  overflow: hidden;
+  padding: 14px 0 50px 0; /* room for shadows + hanging quote marks */
 }
 
 .cardsTrack {
+  --gap: 32px;
+  --visible: 3; /* cards visible at once */
+  --lead: 1;    /* cards shown before the active one */
+
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 28px;
+  align-items: stretch; /* equal height cards */
+  gap: var(--gap);
   width: 100%;
-  padding: 14px 48px 50px 48px;
-  position: relative;
+  will-change: transform;
+  transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+  transform: translateX(
+    calc(
+      -1 * (var(--active) - var(--lead)) *
+        (((100% - (var(--visible) - 1) * var(--gap)) / var(--visible)) + var(--gap))
+    )
+  );
 }
 
-/* Base Card */
+/* No animation at all during the silent infinite-loop jump */
+.noAnim,
+.noAnim .card,
+.noAnim .quoteMark {
+  transition: none;
+}
+
+/* ================= CARDS =================
+   Every card has the same layout width + height.
+   Focus is created visually with scale, opacity and blur. */
 .card {
+  flex: 0 0 calc((100% - (var(--visible) - 1) * var(--gap)) / var(--visible));
+  min-height: 300px;
   background: #ffffff;
-  border-radius: 20px;
+  border-radius: 22px;
+  padding: 36px 32px 40px 32px;
   position: relative;
-  overflow: visible;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   box-sizing: border-box;
-  transition: all 0.35s cubic-bezier(0.2, 0, 0, 1);
+  will-change: transform, opacity;
+  transition:
+    transform 0.8s cubic-bezier(0.65, 0, 0.35, 1),
+    opacity 0.8s ease,
+    filter 0.8s ease,
+    box-shadow 0.8s ease;
 }
 
-/* Side Cards (Left & Right) */
-.sideCard {
-  flex: 0 1 350px;
-  max-width: 350px;
-  padding: 34px 28px 36px 28px;
-  border-radius: 20px;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.035);
-  opacity: 0.92;
-  transform: scale(0.95);
+/* ---- Focused (center) card ---- */
+.activeCard {
+  transform: scale(1);
+  opacity: 1;
+  filter: none;
+  z-index: 3;
+  box-shadow: 0 18px 45px rgba(225, 29, 72, 0.12), 0 4px 18px rgba(0, 0, 0, 0.04);
+}
+
+/* ---- Unfocused side cards: smaller, faded, soft ---- */
+.inactiveCard {
+  opacity: 0.55;
+  filter: blur(1.2px);
   cursor: pointer;
   z-index: 1;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.03);
 }
 
-.sideCard:hover {
-  opacity: 1;
-  transform: scale(0.97);
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.05);
+/* shrink toward the center card so the gaps stay tidy */
+.leftCard {
+  transform: scale(0.84);
+  transform-origin: right center;
 }
 
-/* Center Active Card */
-.centerCard {
-  flex: 0 1 470px;
-  max-width: 470px;
-  padding: 38px 36px 42px 36px;
-  border-radius: 22px;
-  box-shadow: 0 18px 45px rgba(225, 29, 72, 0.08), 0 4px 18px rgba(0, 0, 0, 0.03);
-  z-index: 3;
-  transform: scale(1);
+.rightCard {
+  transform: scale(0.84);
+  transform-origin: left center;
+}
+
+.inactiveCard:hover {
+  opacity: 0.85;
+  filter: blur(0);
+}
+
+.inactiveCard .authorName {
+  color: #52525b;
 }
 
 /* ================= CARD CONTENT ================= */
@@ -133,19 +190,16 @@
   flex-shrink: 0;
 }
 
-/* Center card stars */
 .starCenterFilled {
   fill: #ff2d6c;
   stroke: #ff2d6c;
 }
 
-/* Side card stars */
 .starSideFilled {
   fill: #ff809f;
   stroke: #ff809f;
 }
 
-/* Unfilled star */
 .starEmpty {
   fill: #e5e7eb;
   stroke: #e5e7eb;
@@ -181,11 +235,7 @@
   margin-top: auto;
 }
 
-.sideCard .authorName {
-  color: #52525b;
-}
-
-/* ================= HANGING QUOTATION MARKS (BIG & PLACED AFTER CARD) ================= */
+/* ================= HANGING QUOTATION MARKS ================= */
 .quoteMark {
   position: absolute;
   pointer-events: none;
@@ -203,14 +253,13 @@
   object-fit: contain;
 }
 
-.quoteMarkLeft,
 .quoteMarkRight {
   right: 28px;
   bottom: -22px;
   opacity: 0.5;
+  transition: opacity 0.8s ease;
 }
 
-.quoteMarkLeft .quoteImg,
 .quoteMarkRight .quoteImg {
   height: 38px;
 }
@@ -262,35 +311,73 @@
 }
 
 /* ================= RESPONSIVE ================= */
-@media (max-width: 1024px) {
+@media (max-width: 1440px) {
+  .whiteCardWrapper {
+    height: auto;
+    min-height: 520px;
+    padding: 48px 0;
+    border-radius: 52px;
+  }
+
+  .viewport {
+    margin-inline: 80px;
+  }
+
   .cardsTrack {
-    gap: 18px;
-    padding: 10px 40px 32px 40px;
-  }
-
-  .sideCard {
-    flex: 0 1 310px;
-    padding: 28px 22px 32px 22px;
-  }
-
-  .centerCard {
-    flex: 0 1 420px;
-    padding: 34px 28px 38px 28px;
+    --gap: 28px;
   }
 }
 
-@media (max-width: 860px) {
-  .sideCard {
-    display: none;
+@media (max-width: 1100px) {
+  .container {
+    padding-inline: 20px;
+  }
+
+  .whiteCardWrapper {
+    min-height: 0;
+    padding: 40px 0 28px;
+    border-radius: 44px;
+  }
+
+  .viewport {
+    margin-inline: 70px;
   }
 
   .cardsTrack {
-    padding: 10px 54px 32px 54px;
+    --gap: 18px;
   }
 
-  .centerCard {
-    flex: 0 1 100%;
-    max-width: 500px;
+  .card {
+    padding: 30px 24px 34px 24px;
+  }
+
+  .navBtnLeft {
+    left: 16px;
+  }
+
+  .navBtnRight {
+    right: 16px;
+  }
+}
+
+/* Tablet/mobile: one card at a time, still sliding */
+@media (max-width: 860px) {
+  .sectionWrapper {
+    padding: 50px 0 60px 0;
+  }
+
+  .whiteCardWrapper {
+    border-radius: 36px;
+  }
+
+  .viewport {
+    margin-inline: 64px;
+  }
+
+  .cardsTrack {
+    --visible: 1;
+    --lead: 0;
+    --gap: 24px;
   }
 
   .mainTitle {
@@ -300,11 +387,29 @@
 
 @media (max-width: 540px) {
   .sectionWrapper {
-    padding: 60px 16px 80px 16px;
+    padding: 44px 0 56px 0;
+  }
+
+  .container {
+    padding-inline: 16px;
   }
 
   .sectionHeader {
-    margin-bottom: 38px;
+    margin-bottom: 28px;
+  }
+
+  .whiteCardWrapper {
+    border-radius: 28px;
+    padding: 28px 0 20px;
+  }
+
+  .viewport {
+    margin-inline: 14px;
+  }
+
+  .card {
+    padding: 30px 22px 34px 22px;
+    border-radius: 18px;
   }
 
   .mainTitle {
@@ -313,15 +418,6 @@
 
   .subtitle {
     font-size: 15px;
-  }
-
-  .cardsTrack {
-    padding: 10px 10px 32px 10px;
-  }
-
-  .centerCard {
-    padding: 30px 22px 34px 22px;
-    border-radius: 18px;
   }
 
   .cardHeadline {
@@ -338,10 +434,19 @@
   }
 
   .navBtnLeft {
-    left: -6px;
+    left: 4px;
   }
 
   .navBtnRight {
-    right: -6px;
+    right: 4px;
+  }
+}
+
+/* Respect users who prefer less motion */
+@media (prefers-reduced-motion: reduce) {
+  .cardsTrack,
+  .card,
+  .quoteMarkRight {
+    transition-duration: 0.01s;
   }
 }

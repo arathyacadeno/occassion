@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styles from "./Testimonials.module.css";
 import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -43,7 +43,7 @@ const TESTIMONIALS_DATA: TestimonialItem[] = [
     id: 4,
     headline: "“Breathtaking bridal arrangements”",
     quote:
-      "Occassions made our wedding day magical. The bridal bouquet was so fresh and fragrant, and the custom orchids lasted for days after the event. Truly unmatched florist artistry in Kozhikode.",
+      "Occasions made our wedding day magical. The bridal bouquet was so fresh and fragrant, and the custom orchids lasted for days after the event. Truly unmatched florist artistry in Kozhikode.",
     name: "PRIYA K.",
     rating: 5,
     quotePosition: "right",
@@ -59,53 +59,99 @@ const TESTIMONIALS_DATA: TestimonialItem[] = [
   },
 ];
 
-function QuoteMarks({ className }: { className?: string; flip?: boolean }) {
+const SLIDE_MS = 800;
+
+function QuoteMarks({ className }: { className?: string }) {
   return (
     <div className={className} aria-hidden="true">
-      <img
-        src="/images/quote-mark.png"
-        alt=""
-        className={styles.quoteImg}
-      />
-      <img
-        src="/images/quote-mark.png"
-        alt=""
-        className={styles.quoteImg}
-      />
+      <img src="/images/quote-mark.png" alt="" className={styles.quoteImg} />
+      <img src="/images/quote-mark.png" alt="" className={styles.quoteImg} />
     </div>
   );
 }
 
 export default function Testimonials() {
-  const [currentIndex, setCurrentIndex] = useState<number>(1);
-  const [isPaused, setIsPaused] = useState<boolean>(false);
-
   const total = TESTIMONIALS_DATA.length;
 
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + total) % total);
+  // 3 copies for infinite loop: [clones][REAL][clones]
+  const items = [
+    ...TESTIMONIALS_DATA,
+    ...TESTIMONIALS_DATA,
+    ...TESTIMONIALS_DATA,
+  ];
+
+  // index of the active (focused) card inside the extended list
+  const [active, setActive] = useState<number>(total + 1);
+  const [animate, setAnimate] = useState<boolean>(true);
+  const [isPaused, setIsPaused] = useState<boolean>(false);
+
+  // lock so rapid clicks can't push the track outside the cloned range
+  const lockedRef = useRef<boolean>(false);
+  const unlockTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const lockFor = () => {
+    lockedRef.current = true;
+    if (unlockTimer.current) clearTimeout(unlockTimer.current);
+    // safety fallback in case transitionend never fires (e.g. hidden tab)
+    unlockTimer.current = setTimeout(() => {
+      lockedRef.current = false;
+    }, SLIDE_MS + 150);
   };
 
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % total);
+  const goTo = (updater: (a: number) => number) => {
+    if (lockedRef.current) return;
+    lockFor();
+    setActive(updater);
   };
 
-  // Subtle auto-rotate every 6.5 seconds when not interacting
+  const handlePrev = () => goTo((a) => a - 1);
+  const handleNext = () => goTo((a) => a + 1);
+
+  // After the slide finishes, silently jump back into the middle copy
+  const handleTransitionEnd = (e: React.TransitionEvent<HTMLDivElement>) => {
+    if (e.target !== e.currentTarget || e.propertyName !== "transform") return;
+
+    if (active >= total * 2) {
+      setAnimate(false);
+      setActive((a) => a - total);
+    } else if (active < total) {
+      setAnimate(false);
+      setActive((a) => a + total);
+    }
+
+    lockedRef.current = false;
+  };
+
+  // Re-enable the transition after the silent jump
+  useEffect(() => {
+    if (animate) return;
+    let id2 = 0;
+    const id1 = requestAnimationFrame(() => {
+      id2 = requestAnimationFrame(() => setAnimate(true));
+    });
+    return () => {
+      cancelAnimationFrame(id1);
+      cancelAnimationFrame(id2);
+    };
+  }, [animate]);
+
+  // Auto-rotate every 6.5s (paused on hover)
   useEffect(() => {
     if (isPaused) return;
     const timer = setInterval(() => {
-      handleNext();
+      if (lockedRef.current) return;
+      lockFor();
+      setActive((a) => a + 1);
     }, 6500);
     return () => clearInterval(timer);
-  }, [isPaused, total]);
+  }, [isPaused]);
 
-  const leftIndex = (currentIndex - 1 + total) % total;
-  const centerIndex = currentIndex;
-  const rightIndex = (currentIndex + 1) % total;
-
-  const leftItem = TESTIMONIALS_DATA[leftIndex];
-  const centerItem = TESTIMONIALS_DATA[centerIndex];
-  const rightItem = TESTIMONIALS_DATA[rightIndex];
+  // Cleanup the unlock timer on unmount
+  useEffect(() => {
+    return () => {
+      if (unlockTimer.current) clearTimeout(unlockTimer.current);
+    };
+  }, []);
 
   const renderStars = (rating: number, isCenter: boolean) => (
     <div className={styles.starsRow} aria-label={`${rating} out of 5 stars`}>
@@ -131,89 +177,80 @@ export default function Testimonials() {
   return (
     <section className={styles.sectionWrapper} id="testimonials">
       <div className={styles.container}>
-        {/* Section Header matching Image 2 */}
+        {/* Section Header */}
         <div className={styles.sectionHeader}>
           <h2 className={styles.mainTitle}>Loved in Every Bloom</h2>
           <p className={styles.subtitle}>
-            Real words from the people who received a little more happiness through our flowers.
+            Real words from the people who received a little more happiness
+            through our flowers.
           </p>
         </div>
 
-        {/* 3-Card Carousel Container */}
-        <div
-          className={styles.carouselContainer}
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
-        >
-          {/* Navigation Prev Button */}
-          <button
-            type="button"
-            className={`${styles.navBtn} ${styles.navBtnLeft}`}
-            onClick={handlePrev}
-            aria-label="Previous testimonial"
+        {/* White Rounded Card */}
+        <div className={styles.whiteCardWrapper}>
+          <div
+            className={styles.carouselContainer}
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
           >
-            <ChevronLeft size={22} strokeWidth={2.4} />
-          </button>
-
-          {/* Cards Track */}
-          <div className={styles.cardsTrack}>
-            {/* Left Card */}
-            <div
-              className={`${styles.card} ${styles.sideCard} ${styles.leftCard}`}
+            <button
+              type="button"
+              className={`${styles.navBtn} ${styles.navBtnLeft}`}
               onClick={handlePrev}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") handlePrev();
-              }}
-              aria-label={`View testimonial from ${leftItem.name}`}
+              aria-label="Previous testimonial"
             >
-              {renderStars(leftItem.rating, false)}
-              <p className={styles.cardQuote}>{leftItem.quote}</p>
-              <div className={styles.authorName}>{leftItem.name}</div>
-              <QuoteMarks className={`${styles.quoteMark} ${styles.quoteMarkLeft}`} />
+              <ChevronLeft size={22} strokeWidth={2.4} />
+            </button>
+
+            {/* Clipping viewport */}
+            <div className={styles.viewport}>
+              <div
+                className={`${styles.cardsTrack} ${animate ? "" : styles.noAnim}`}
+                style={{ ["--active" as string]: active } as React.CSSProperties}
+                onTransitionEnd={handleTransitionEnd}
+              >
+                {items.map((item, idx) => {
+                  const isCenter = idx === active;
+                  const position = isCenter
+                    ? styles.activeCard
+                    : idx < active
+                    ? `${styles.inactiveCard} ${styles.leftCard}`
+                    : `${styles.inactiveCard} ${styles.rightCard}`;
+
+                  return (
+                    <div
+                      key={`${item.id}-${idx}`}
+                      className={`${styles.card} ${position}`}
+                      onClick={() => {
+                        if (!isCenter) goTo(() => idx);
+                      }}
+                    >
+                      {renderStars(item.rating, isCenter)}
+                      {item.headline && (
+                        <h3 className={styles.cardHeadline}>{item.headline}</h3>
+                      )}
+                      <p className={styles.cardQuote}>{item.quote}</p>
+                      <div className={styles.authorName}>{item.name}</div>
+                      <QuoteMarks
+                        className={`${styles.quoteMark} ${styles.quoteMarkRight} ${
+                          isCenter ? styles.quoteMarkCenter : ""
+                        }`}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
-            {/* Center Card */}
-            <div className={`${styles.card} ${styles.centerCard}`}>
-              {renderStars(centerItem.rating, true)}
-              {centerItem.headline && (
-                <h3 className={styles.cardHeadline}>{centerItem.headline}</h3>
-              )}
-              <p className={styles.cardQuote}>{centerItem.quote}</p>
-              <div className={styles.authorName}>{centerItem.name}</div>
-              <QuoteMarks
-                className={`${styles.quoteMark} ${styles.quoteMarkRight} ${styles.quoteMarkCenter}`}
-              />
-            </div>
-
-            {/* Right Card */}
-            <div
-              className={`${styles.card} ${styles.sideCard} ${styles.rightCard}`}
+            <button
+              type="button"
+              className={`${styles.navBtn} ${styles.navBtnRight}`}
               onClick={handleNext}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") handleNext();
-              }}
-              aria-label={`View testimonial from ${rightItem.name}`}
+              aria-label="Next testimonial"
             >
-              {renderStars(rightItem.rating, false)}
-              <p className={styles.cardQuote}>{rightItem.quote}</p>
-              <div className={styles.authorName}>{rightItem.name}</div>
-              <QuoteMarks className={`${styles.quoteMark} ${styles.quoteMarkRight}`} />
-            </div>
+              <ChevronRight size={22} strokeWidth={2.4} />
+            </button>
           </div>
-
-          {/* Navigation Next Button */}
-          <button
-            type="button"
-            className={`${styles.navBtn} ${styles.navBtnRight}`}
-            onClick={handleNext}
-            aria-label="Next testimonial"
-          >
-            <ChevronRight size={22} strokeWidth={2.4} />
-          </button>
         </div>
       </div>
     </section>
