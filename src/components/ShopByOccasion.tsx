@@ -30,6 +30,22 @@ const OCCASIONS_ITEMS: OccasionCardItem[] = [
       "Hello Occassions Florist Calicut, I would like to explore luxury flowers for an Anniversary.",
   },
   {
+    id: "get-well-soon",
+    name: "Get Well Soon",
+    image: "/images/occasion-get-well-soon.jpg",
+    href: "/flower-bouquets?occasion=get-well-soon",
+    whatsappMessage:
+      "Hello Occassions Florist Calicut, I would like to order cheerful Get Well Soon flowers.",
+  },
+  {
+    id: "condolences",
+    name: "Condolences",
+    image: "/images/occasion-condolences.jpg",
+    href: "/flower-bouquets?occasion=condolences",
+    whatsappMessage:
+      "Hello Occassions Florist Calicut, I would like to inquire about sympathy and Condolences flowers.",
+  },
+  {
     id: "best-wishes",
     name: "Best Wishes",
     image: "/images/occasion-best-wishes.jpg",

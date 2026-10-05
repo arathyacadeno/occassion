@@ -22,10 +22,8 @@
   --text: #18181b;
   /* shared left edge: logo + wordmark line up on this */
   --edge-left: clamp(24px, 8.1vw, 140px);
-  /* Empty space at the top of footer.svg to pull away.
-     More negative (-17%) moves the wordmark UP, less negative (-14%) moves it DOWN.
-     If the tops of the letters look cut off, make this less negative. */
-  --wm-offset: 0;
+  /* gap between the last footer link and the top of the wordmark leaf */
+  --wm-gap: clamp(28px, 3.5vw, 64px);
 
   position: relative;
   width: 100%;
@@ -252,12 +250,17 @@
 }
 
 /* ================= GIANT FLORAL WORDMARK =================
-   Placed directly under footer content, left-aligned with logo */
+   Shows only the TOP ~75% of the image (bottom quarter is cropped).
+   --wm-ratio = (image width / image height) / 0.75
+   e.g. image is ~3.5:1  ->  visible area is ~4.7:1.
+   Bigger number = shorter crop, smaller number = more of the image. */
 .wordmarkWrap {
-  width: 88%;
-  max-width: 1485px;
-  height: clamp(140px, 16vw, 250px);
-  margin: 10px 0 0 var(--edge-left);
+  --wm-ratio: 4.7;
+
+  width: calc(100% - var(--edge-left) - clamp(24px, 3.2vw, 54px));
+  max-width: 1530px;
+  aspect-ratio: var(--wm-ratio) / 1;
+  margin: var(--wm-gap) 0 0 var(--edge-left);
   overflow: hidden;
   user-select: none;
   pointer-events: none;
@@ -266,9 +269,8 @@
 .floralWordmarkImg {
   display: block;
   width: 100%;
-  height: auto;
-  object-fit: contain;
-  object-position: top left;
+  height: auto;           /* full image height; wrapper clips the bottom half */
+  filter: drop-shadow(0 0 12px rgba(255, 61, 122, 0.3));
 }
 
 /* Very wide screens: keep wordmark aligned with the logo's real position */
@@ -299,9 +301,7 @@
   }
 
   .wordmarkWrap {
-    width: 94%;
-    height: 24vw;
-    max-height: none;
+    width: 96%;
     margin: 32px auto 0;
   }
 }
@@ -334,8 +334,7 @@
 
   .wordmarkWrap {
     width: 100%;
-    height: clamp(90px, 22vw, 160px);
-    margin: 16px auto 0 auto;
+    margin: 28px auto 0 auto;
     padding: 0 16px;
   }
 }

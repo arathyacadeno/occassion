@@ -1140,9 +1140,9 @@ export const CATALOG_PRODUCTS: Product[] = [
     originalPrice: 1199,
     category: "special-occasions",
     categoryLabel: "Special Occasions",
-    image: "/images/occasion-best-wishes.jpg",
+    image: "/images/occasion-get-well-soon.jpg",
     images: [
-      "/images/occasion-best-wishes.jpg",
+      "/images/occasion-get-well-soon.jpg",
       "/images/basket-gerberas.jpg",
       "/images/sunflower-bouquet.jpg",
     ],
@@ -1185,6 +1185,33 @@ export const CATALOG_PRODUCTS: Product[] = [
       "Sheer Chiffon Pew Drapes",
     ],
     badge: "Wedding",
+  },
+  {
+    id: "occ-9",
+    slug: "graceful-condolences-sympathy-bouquet",
+    name: "Graceful Condolences Sympathy Bouquet",
+    price: 1299,
+    originalPrice: 1499,
+    category: "special-occasions",
+    categoryLabel: "Special Occasions",
+    image: "/images/occasion-condolences.jpg",
+    images: [
+      "/images/occasion-condolences.jpg",
+      "/images/occasion-thank-you.jpg",
+      "/images/flower-white-lilies.jpg",
+    ],
+    rating: 5.0,
+    reviewsCount: 38,
+    description:
+      "Tender and heartfelt sympathy arrangement featuring pristine white and pastel blush roses, chamomile, and delicate fillers expressing deepest condolences and comforting prayers.",
+    deliveryInfo: "Respectful express delivery to residences and memorial services across Calicut.",
+    offers: ["Complimentary personalized sympathy condolence card"],
+    includes: [
+      "White and Blush Sympathy Roses",
+      "Delicate Chamomile and Lilac Sprigs",
+      "Handcrafted Natural Jute Ribbon Tie",
+    ],
+    badge: "Condolences",
   },
 
   // ==================== OUR HIGHLIGHTS PRODUCTS (/our-highlights) ====================
