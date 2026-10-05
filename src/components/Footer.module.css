@@ -25,7 +25,7 @@
   /* Empty space at the top of footer.svg to pull away.
      More negative (-17%) moves the wordmark UP, less negative (-14%) moves it DOWN.
      If the tops of the letters look cut off, make this less negative. */
-  --wm-offset: -15.5%;
+  --wm-offset: 0;
 
   position: relative;
   width: 100%;
@@ -47,7 +47,7 @@
   max-width: 1727px;
   margin: 0 auto;
   /* logo starts ~140px from left, newsletter ends ~54px from right */
-  padding: 100px clamp(24px, 3.2vw, 54px) 0 var(--edge-left);
+  padding: 44px clamp(24px, 3.2vw, 54px) 0 var(--edge-left);
 }
 
 /* ================= MAIN GRID =================
@@ -251,17 +251,13 @@
   transform: translateY(-2px);
 }
 
-/* ================= GIANT FLORAL WORDMARK (cropped) =================
-   Left edge lines up with the logo, as in the reference.
-   overflow: hidden + fixed height crops the bottom of the image.
-   The image is pulled up (--wm-offset) to remove the empty space
-   at the top of footer.svg. */
+/* ================= GIANT FLORAL WORDMARK =================
+   Placed directly under footer content, left-aligned with logo */
 .wordmarkWrap {
-  width: 86%;
+  width: 88%;
   max-width: 1485px;
-  height: 16.2vw;
-  max-height: 280px;
-  margin: 14px 0 0 var(--edge-left);
+  height: clamp(140px, 16vw, 250px);
+  margin: 10px 0 0 var(--edge-left);
   overflow: hidden;
   user-select: none;
   pointer-events: none;
@@ -271,7 +267,8 @@
   display: block;
   width: 100%;
   height: auto;
-  margin-top: var(--wm-offset);
+  object-fit: contain;
+  object-position: top left;
 }
 
 /* Very wide screens: keep wordmark aligned with the logo's real position */
@@ -284,7 +281,7 @@
 /* ================= RESPONSIVE ================= */
 @media (max-width: 1100px) {
   .inner {
-    padding-top: 64px;
+    padding-top: 40px;
   }
 
   .mainGrid {
@@ -337,7 +334,8 @@
 
   .wordmarkWrap {
     width: 100%;
-    height: 30vw;
-    margin: 24px 0 0;
+    height: clamp(90px, 22vw, 160px);
+    margin: 16px auto 0 auto;
+    padding: 0 16px;
   }
 }

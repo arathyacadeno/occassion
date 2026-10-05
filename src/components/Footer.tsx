@@ -173,7 +173,7 @@ export default function Footer() {
       {/* ================= BIG FLORAL WORDMARK (cropped at bottom) ================= */}
       <div className={styles.wordmarkWrap} aria-hidden="true">
         <img
-          src="/images/footer.svg"
+          src="/images/footer.png"
           alt=""
           className={styles.floralWordmarkImg}
         />
