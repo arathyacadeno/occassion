@@ -73,12 +73,15 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
 
         {/* Main 2-column Product Detail Layout */}
         <section className={styles.productLayout}>
-          <ProductGallery
-            images={product.images}
-            productName={product.name}
-            product={product}
-            selectedImageOverride={selectedImageOverride}
-          />
+          {/* Sticky left column: thumbnails + main image */}
+          <div className={styles.stickyGallery}>
+            <ProductGallery
+              images={product.images}
+              productName={product.name}
+              product={product}
+              selectedImageOverride={selectedImageOverride}
+            />
+          </div>
 
           <ProductInfo
             product={product}
