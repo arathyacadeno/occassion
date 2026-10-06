@@ -92,7 +92,7 @@
   display: flex;
   align-items: baseline;
   gap: 8px;
-  margin-bottom: 14px;
+  margin-bottom: 0;
 }
 
 .currentPrice {
@@ -224,7 +224,7 @@
 
 /* 6. Choose Delivery Preference */
 .preferenceSection {
-  margin-top: 10px;
+  margin-top: 4px;
   margin-bottom: 14px;
 }
 
