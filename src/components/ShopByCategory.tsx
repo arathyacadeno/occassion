@@ -20,7 +20,7 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
   {
     id: "flower-basket",
     name: "Flower Basket",
-    image: "/images/cat-flower-basket-luxe.jpg",
+    image: "/images/cat-flower-bouquet-yellow.jpg",
     link: "/flower-baskets",
     delay: "0s",
     initTx: "0px",
@@ -30,7 +30,7 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
   {
     id: "flower-bouquet",
     name: "Flower Bouquet",
-    image: "/images/cat-flower-bouquet-yellow.jpg",
+    image: "/images/cat-flower-bouquet-luxe.jpg",
     link: "/flower-bouquets",
     delay: "0.12s",
     initTx: "0px",

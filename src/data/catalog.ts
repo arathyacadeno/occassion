@@ -611,8 +611,8 @@ export const CATALOG_PRODUCTS: Product[] = [
 
   {
     id: "cake-blue-floral",
-    slug: "Chocolate truffle Cake",
-    name: "Chocolate Truffle Cake",
+    slug: "blue-floral-birthday-cake",
+    name: "Blue Floral Birthday Cake",
     price: 1150,
     category: "cakes",
     categoryLabel: "Cakes",
@@ -639,8 +639,8 @@ export const CATALOG_PRODUCTS: Product[] = [
   },
   {
     id: "cake-chocolate-amma",
-    slug: "Chocolate Truffle Cake",
-    name: "Chocolate Truffle Cake",
+    slug: "chocolate-birthday-cake-for-amma",
+    name: "Chocolate Birthday Cake for Amma",
     price: 1150,
     category: "cakes",
     categoryLabel: "Cakes",
