@@ -594,6 +594,10 @@
     margin-bottom: 24px;
   }
 
+  .mainTitle {
+    font-size: 30px;
+  }
+
   .whiteCardWrapper {
     padding: 40px 18px 32px;
     border-radius: 20px;

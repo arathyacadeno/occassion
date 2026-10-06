@@ -29,16 +29,79 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
     }
   };
 
-  // Similar products (5 items matching reference design)
-  const categoryProducts = getProductsByCategory(product.category).filter(
-    (p) => p.id !== product.id
-  );
-  const fallbackProducts = CATALOG_PRODUCTS.filter((p) => p.id !== product.id);
-  const similarProducts = (
-    categoryProducts.length >= 5
-      ? categoryProducts
-      : [...categoryProducts, ...fallbackProducts]
-  ).slice(0, 5);
+  // Contextual Similar products logic
+  const isChocolate =
+    product.id.includes("chocolate") ||
+    product.id.includes("dairy-milk") ||
+    product.id.includes("cadbury") ||
+    product.id.includes("galaxy") ||
+    product.id.includes("ferrero") ||
+    product.name.toLowerCase().includes("chocolate") ||
+    product.name.toLowerCase().includes("dairy milk") ||
+    product.name.toLowerCase().includes("silk") ||
+    product.name.toLowerCase().includes("ferrero");
+
+  const isCakeProduct =
+    product.category === "cakes" ||
+    product.id.includes("cake") ||
+    product.name.toLowerCase().includes("cake") ||
+    product.name.toLowerCase().includes("forest");
+
+  const isSoftToy =
+    product.id.includes("soft-toys") ||
+    product.name.toLowerCase().includes("teddy") ||
+    product.name.toLowerCase().includes("toy");
+
+  let similarProducts: Product[] = [];
+
+  if (isChocolate) {
+    // Show other delicious chocolates (Dairy Milk variants, Galaxy, Ferrero, etc.)
+    similarProducts = CATALOG_PRODUCTS.filter(
+      (p) =>
+        p.id !== product.id &&
+        (p.id.includes("chocolate") ||
+          p.id.includes("dairy-milk") ||
+          p.id.includes("cadbury") ||
+          p.id.includes("galaxy") ||
+          p.id.includes("ferrero") ||
+          p.name.toLowerCase().includes("chocolate") ||
+          p.name.toLowerCase().includes("dairy milk") ||
+          p.name.toLowerCase().includes("silk") ||
+          p.name.toLowerCase().includes("ferrero"))
+    );
+  } else if (isCakeProduct) {
+    similarProducts = CATALOG_PRODUCTS.filter(
+      (p) =>
+        p.id !== product.id &&
+        (p.category === "cakes" ||
+          p.name.toLowerCase().includes("cake") ||
+          p.name.toLowerCase().includes("forest"))
+    );
+  } else if (isSoftToy) {
+    similarProducts = CATALOG_PRODUCTS.filter(
+      (p) =>
+        p.id !== product.id &&
+        (p.id.includes("toy") ||
+          p.name.toLowerCase().includes("toy") ||
+          p.name.toLowerCase().includes("gift") ||
+          p.category === "special-occasions")
+    );
+  } else {
+    const categoryProducts = getProductsByCategory(product.category).filter(
+      (p) => p.id !== product.id
+    );
+    similarProducts = categoryProducts;
+  }
+
+  // Fallback if less than 5 items
+  if (similarProducts.length < 5) {
+    const fallbackProducts = CATALOG_PRODUCTS.filter(
+      (p) => p.id !== product.id && !similarProducts.some((sp) => sp.id === p.id)
+    );
+    similarProducts = [...similarProducts, ...fallbackProducts];
+  }
+
+  similarProducts = similarProducts.slice(0, 6);
 
   const categoryLabel =
     product.category === "cakes"
@@ -90,11 +153,13 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
           />
         </section>
 
-        {/* Recommended Addon Products */}
-        <RecommendedAddons
-          selectedAddons={selectedAddons}
-          onAddonChange={setSelectedAddons}
-        />
+        {/* Recommended Addon Products - only show when viewing flowers/main items */}
+        {!isChocolate && !isSoftToy && (
+          <RecommendedAddons
+            selectedAddons={selectedAddons}
+            onAddonChange={setSelectedAddons}
+          />
+        )}
 
         {/* ================= RATINGS AND REVIEWS SECTION ================= */}
         <section className={styles.reviewsSection} aria-label="Ratings and Reviews">
@@ -145,7 +210,13 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
           aria-label="Similar Products"
         >
           <div className={styles.similarHeaderRow}>
-            <h2 className={styles.sectionHeading}>Similar Product</h2>
+            <h2 className={styles.sectionHeading}>
+              {isChocolate
+                ? "Similar Chocolates & Treats"
+                : isCakeProduct
+                ? "Similar Celebration Cakes"
+                : "Similar Product"}
+            </h2>
             <div className={styles.scrollButtons}>
               <button
                 type="button"
