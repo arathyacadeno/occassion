@@ -68,10 +68,43 @@ export default function ProductInfo({
 
   const [customStems, setCustomStems] = useState<number>(8);
 
-  // Resolve variants if explicitly defined or for lily products
+  const isCake = product.category === "cakes";
+
+  // Resolve variants if explicitly defined, for cakes (weight options), or for lily products
   const variants: ProductVariant[] | null =
     product.variants && product.variants.length > 0
       ? product.variants
+      : isCake
+      ? [
+          {
+            id: "500g",
+            name: "500g",
+            price: Math.round(product.price * 0.55),
+            originalPrice: product.originalPrice ? Math.round(product.originalPrice * 0.55) : undefined,
+            image: product.images[0] || product.image,
+          },
+          {
+            id: "1kg",
+            name: "1 KG",
+            price: product.price,
+            originalPrice: product.originalPrice,
+            image: product.images[1] || product.images[0] || product.image,
+          },
+          {
+            id: "1.5kg",
+            name: "1.5 KG",
+            price: Math.round(product.price * 1.45),
+            originalPrice: product.originalPrice ? Math.round(product.originalPrice * 1.45) : undefined,
+            image: product.images[2] || product.images[0] || product.image,
+          },
+          {
+            id: "2kg",
+            name: "2 KG",
+            price: Math.round(product.price * 1.9),
+            originalPrice: product.originalPrice ? Math.round(product.originalPrice * 1.9) : undefined,
+            image: product.images[3] || product.images[0] || product.image,
+          },
+        ]
       : isLily
       ? [
           {
@@ -99,7 +132,11 @@ export default function ProductInfo({
       : null;
 
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
-    variants ? variants[0] : null
+    variants
+      ? isCake
+        ? variants[1] || variants[0] // Default 1kg for cakes
+        : variants[0]
+      : null
   );
 
   const handleSelectVariant = (v: ProductVariant) => {
@@ -451,6 +488,45 @@ export default function ProductInfo({
           </span>
         )}
       </div>
+
+      {/* Available Combos / Weight options for Cakes & Variants */}
+      {variants && variants.length > 0 && !isCustomMode && (
+        <div className={styles.giftExtraSection}>
+          <h3 className={styles.giftExtraTitle}>
+            {isCake ? "Available Combos" : "Select Option"}
+          </h3>
+          <div className={styles.giftVariantCards}>
+            {variants.map((v) => {
+              const isSelected = selectedVariant?.id === v.id;
+              return (
+                <button
+                  key={v.id}
+                  type="button"
+                  onClick={() => handleSelectVariant(v)}
+                  className={`${styles.giftVariantCard} ${
+                    isSelected ? styles.giftVariantCardSelected : ""
+                  }`}
+                  aria-pressed={isSelected}
+                >
+                  <div className={styles.giftCardThumbWrap}>
+                    <img
+                      src={v.image || product.image}
+                      alt={v.name}
+                      className={styles.giftCardThumbImg}
+                    />
+                  </div>
+                  <div className={styles.giftCardInfo}>
+                    <span className={styles.giftCardName}>{v.name}</span>
+                    <span className={styles.giftCardPrice}>
+                      ₹{v.price.toLocaleString("en-IN")}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* If customize mode is explicitly activated via ?customize=true, display customizer */}
       {isBouquet && isCustomMode && (
