@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState } from "react";
 import Link from "next/link";
@@ -96,10 +96,57 @@ export default function TrackOrderPage() {
   const [searched, setSearched] = useState(false);
   const [order, setOrder]       = useState<OrderData | null>(null);
 
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const key = input.trim().toUpperCase();
     setSearched(true);
+    try {
+      const res = await fetch(`/api/orders?id=${encodeURIComponent(key)}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.order) {
+          const o = data.order;
+          const firstItem = o.items?.[0];
+          const addr = o.deliveryAddress;
+          const addrStr = addr
+            ? `${addr.house || ""} ${addr.street || ""}, ${addr.area || ""}, ${addr.city || "Calicut"} - ${addr.pinCode || ""}`.trim()
+            : "Calicut, Kerala";
+          const mappedStatus: OrderStatus =
+            o.order_status === "confirmed"
+              ? "confirmed"
+              : o.order_status === "preparing"
+              ? "preparing"
+              : o.order_status === "out_for_delivery"
+              ? "out_for_delivery"
+              : o.order_status === "delivered"
+              ? "delivered"
+              : "placed";
+
+          setOrder({
+            id: o.id,
+            status: mappedStatus,
+            product: firstItem?.product_name || "Handcrafted Flower Arrangement",
+            image: firstItem?.product_image || "/images/lily-6-stems.png",
+            placedAt: new Date(o.created_at).toLocaleDateString("en-IN", {
+              month: "short",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+            deliveryDate: "Today",
+            timeSlot: "Express Calicut Delivery",
+            address: addrStr,
+            price: o.final_amount,
+            deliveryCharge: o.delivery_charge,
+            rider: "Occasions Floral Dispatch",
+            riderPhone: "+91 8606 464 700",
+          });
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn("Live order lookup fallback", err);
+    }
     setOrder(DUMMY_ORDERS[key] ?? null);
   };
 

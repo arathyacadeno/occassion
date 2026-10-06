@@ -24,6 +24,7 @@ export const metadata: Metadata = {
   },
 };
 
+import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { CheckoutProvider } from "@/context/CheckoutContext";
@@ -69,11 +70,13 @@ export default function RootLayout({
         />
       </head>
       <body suppressHydrationWarning>
-        <CartProvider>
-          <WishlistProvider>
-            <CheckoutProvider>{children}</CheckoutProvider>
-          </WishlistProvider>
-        </CartProvider>
+        <AuthProvider>
+          <CartProvider>
+            <WishlistProvider>
+              <CheckoutProvider>{children}</CheckoutProvider>
+            </WishlistProvider>
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

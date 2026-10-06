@@ -25,9 +25,12 @@ import {
   Circle,
   Package,
   MapPin,
+  LogOut,
+  ShieldCheck,
 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
+import { useAuth } from "@/context/AuthContext";
 
 interface HeaderProps {
   isDrawerOpen?: boolean;
@@ -78,9 +81,68 @@ export default function Header({
   const pathname = usePathname();
   const { cartCount } = useCart();
   const { wishlistCount } = useWishlist();
+  const { user, isAuthenticated, isAdmin, login, signup, loginWithGoogle, logout } = useAuth();
   const [internalDrawerOpen, setInternalDrawerOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeModal, setActiveModal] = useState<"cart" | "signin" | null>(null);
+
+  const [authTab, setAuthTab] = useState<"signin" | "signup">("signin");
+  const [authForm, setAuthForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [authLoading, setAuthLoading] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
+
+  const handleAuthSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthError(null);
+    setAuthLoading(true);
+    try {
+      if (authTab === "signin") {
+        const res = await login(authForm.email, authForm.password);
+        if (res.success) {
+          setActiveModal(null);
+          setAuthForm({ name: "", email: "", phone: "", password: "", confirmPassword: "" });
+        } else {
+          setAuthError(res.error || "Failed to sign in");
+        }
+      } else {
+        if (authForm.password !== authForm.confirmPassword) {
+          setAuthError("Passwords do not match");
+          setAuthLoading(false);
+          return;
+        }
+        const res = await signup(authForm);
+        if (res.success) {
+          setActiveModal(null);
+          setAuthForm({ name: "", email: "", phone: "", password: "", confirmPassword: "" });
+        } else {
+          setAuthError(res.error || "Failed to create account");
+        }
+      }
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setAuthError(null);
+    setAuthLoading(true);
+    try {
+      const res = await loginWithGoogle();
+      if (res.success) {
+        setActiveModal(null);
+      } else {
+        setAuthError(res.error || "Google login failed");
+      }
+    } finally {
+      setAuthLoading(false);
+    }
+  };
 
   const [flowersHovered, setFlowersHovered] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -492,8 +554,12 @@ export default function Header({
                         <User size={16} />
                       </div>
                       <div className={styles.profileHeaderText}>
-                        <span className={styles.profileWelcomeLabel}>Welcome</span>
-                        <span className={styles.profileUserLabel}>Flower Boutique</span>
+                        <span className={styles.profileWelcomeLabel}>
+                          {isAuthenticated ? "Welcome back," : "Welcome"}
+                        </span>
+                        <span className={styles.profileUserLabel}>
+                          {isAuthenticated ? (user?.name || "Customer") : "Sign In / Register"}
+                        </span>
                       </div>
                     </div>
 
@@ -520,18 +586,60 @@ export default function Header({
                         <span>Track Order</span>
                       </Link>
 
-                      <button
-                        type="button"
-                        className={styles.profileMenuItem}
-                        onClick={() => {
-                          setProfileHovered(false);
-                          setActiveModal("signin");
-                        }}
-                        role="menuitem"
-                      >
-                        <User size={17} className={styles.profileMenuIcon} />
-                        <span>Profile</span>
-                      </button>
+                      {isAuthenticated ? (
+                        <>
+                          <Link
+                            href="/profile"
+                            className={styles.profileMenuItem}
+                            onClick={() => setProfileHovered(false)}
+                            role="menuitem"
+                          >
+                            <User size={17} className={styles.profileMenuIcon} />
+                            <span>My Profile & Addresses</span>
+                          </Link>
+
+                          {isAdmin && (
+                            <Link
+                              href="/admin"
+                              className={styles.profileMenuItem}
+                              onClick={() => setProfileHovered(false)}
+                              role="menuitem"
+                            >
+                              <ShieldCheck size={17} className={styles.profileMenuIcon} />
+                              <span>Admin Panel</span>
+                            </Link>
+                          )}
+
+                          <button
+                            type="button"
+                            className={styles.profileMenuItem}
+                            onClick={async () => {
+                              setProfileHovered(false);
+                              await logout();
+                            }}
+                            role="menuitem"
+                            style={{ color: "#e11d48" }}
+                          >
+                            <LogOut size={17} className={styles.profileMenuIcon} style={{ color: "#e11d48" }} />
+                            <span>Sign Out</span>
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          type="button"
+                          className={styles.profileMenuItem}
+                          onClick={() => {
+                            setProfileHovered(false);
+                            setAuthTab("signin");
+                            setAuthError(null);
+                            setActiveModal("signin");
+                          }}
+                          role="menuitem"
+                        >
+                          <User size={17} className={styles.profileMenuIcon} />
+                          <span>Sign In / Register</span>
+                        </button>
+                      )}
                     </div>
                   </div>
                 )}
@@ -633,7 +741,7 @@ export default function Header({
           >
             <div className={styles.modalHeader}>
               <h3 id="signin-modal-title" className={styles.modalTitle}>
-                Sign In to Occassions
+                {authTab === "signin" ? "Sign In to Occassions" : "Create Your Account"}
               </h3>
               <button
                 className={styles.modalCloseBtn}
@@ -644,31 +752,139 @@ export default function Header({
               </button>
             </div>
 
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                alert(
-                  "Welcome to Occassions! You can now place flower delivery orders across Calicut."
-                );
-                setActiveModal(null);
-              }}
-            >
+            {/* Tabs */}
+            <div className={styles.authTabs}>
+              <button
+                type="button"
+                className={`${styles.authTab} ${authTab === "signin" ? styles.authTabActive : ""}`}
+                onClick={() => {
+                  setAuthTab("signin");
+                  setAuthError(null);
+                }}
+              >
+                Sign In
+              </button>
+              <button
+                type="button"
+                className={`${styles.authTab} ${authTab === "signup" ? styles.authTabActive : ""}`}
+                onClick={() => {
+                  setAuthTab("signup");
+                  setAuthError(null);
+                }}
+              >
+                Create Account
+              </button>
+            </div>
+
+            {authError && <div className={styles.authError}>{authError}</div>}
+
+            <form onSubmit={handleAuthSubmit}>
+              {authTab === "signup" && (
+                <>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Full Name</label>
+                    <input
+                      type="text"
+                      className={styles.inputField}
+                      placeholder="e.g. Rahul Menon"
+                      required
+                      value={authForm.name}
+                      onChange={(e) => setAuthForm({ ...authForm, name: e.target.value })}
+                    />
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Mobile Number</label>
+                    <input
+                      type="tel"
+                      className={styles.inputField}
+                      placeholder="10-digit mobile number"
+                      value={authForm.phone}
+                      onChange={(e) => setAuthForm({ ...authForm, phone: e.target.value })}
+                    />
+                  </div>
+                </>
+              )}
+
               <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Mobile Number or Email</label>
+                <label className={styles.formLabel}>Email Address</label>
                 <input
-                  type="text"
+                  type="email"
                   className={styles.inputField}
-                  placeholder="Enter 10-digit mobile number or email"
+                  placeholder="Enter your email"
                   required
-                  autoComplete="off"
-                  suppressHydrationWarning
+                  value={authForm.email}
+                  onChange={(e) => setAuthForm({ ...authForm, email: e.target.value })}
                 />
               </div>
 
-              <button type="submit" className={styles.primaryBtn}>
-                Get OTP / Continue
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Password</label>
+                <input
+                  type="password"
+                  className={styles.inputField}
+                  placeholder={authTab === "signin" ? "Enter your password" : "At least 6 characters"}
+                  required
+                  value={authForm.password}
+                  onChange={(e) => setAuthForm({ ...authForm, password: e.target.value })}
+                />
+              </div>
+
+              {authTab === "signup" && (
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>Confirm Password</label>
+                  <input
+                    type="password"
+                    className={styles.inputField}
+                    placeholder="Re-enter your password"
+                    required
+                    value={authForm.confirmPassword}
+                    onChange={(e) => setAuthForm({ ...authForm, confirmPassword: e.target.value })}
+                  />
+                </div>
+              )}
+
+              <button type="submit" className={styles.primaryBtn} disabled={authLoading}>
+                {authLoading ? (
+                  "Processing..."
+                ) : authTab === "signin" ? (
+                  "Sign In"
+                ) : (
+                  "Create Account"
+                )}
               </button>
             </form>
+
+            <div className={styles.authDivider}>
+              <span>or</span>
+            </div>
+
+            <button
+              type="button"
+              className={styles.googleBtn}
+              onClick={handleGoogleLogin}
+              disabled={authLoading}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24">
+                <path
+                  fill="#4285F4"
+                  d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.24v3.15C3.26 21.36 7.33 24 12 24z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.24C.45 8.15 0 9.98 0 12s.45 3.85 1.24 5.42l4.04-3.15z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.24 6.58l4.04 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
+                />
+              </svg>
+              <span>Continue with Google</span>
+            </button>
 
             <div
               style={{

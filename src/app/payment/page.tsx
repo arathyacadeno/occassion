@@ -298,12 +298,20 @@ export default function SinglePageCheckoutPayment() {
       const response = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           delivery: deliveryPayload,
           paymentMethod: paymentPayload,
-          coupon: couponApplied ? appliedCouponCode : null,
+          couponCode: couponApplied ? appliedCouponCode : null,
           total: finalTotal,
-          items: [primaryItem],
+          items: (checkoutItems.length > 0 ? checkoutItems : [primaryItem]).map((it: any) => ({
+            id: it.id,
+            productId: it.id,
+            name: it.name,
+            quantity: it.quantity || 1,
+            price: it.price,
+            image: it.image,
+          })),
         }),
       });
 
@@ -332,7 +340,8 @@ export default function SinglePageCheckoutPayment() {
       // Simulated Razorpay Gateway Handoff (0.8s)
       setTimeout(() => {
         setIsSubmitting(false);
-        router.push("/order-success");
+        const orderIdParam = data.orderId ? `?orderId=${data.orderId}` : "";
+        router.push(`/order-success${orderIdParam}`);
       }, 800);
     } catch (err) {
       console.error("Order submission error:", err);

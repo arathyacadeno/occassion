@@ -18,7 +18,14 @@ import { checkDelivery, searchLocations } from "@/lib/delivery/service";
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
+    const pinCode = searchParams.get("pinCode") || searchParams.get("pin");
     const q = searchParams.get("q") || "";
+
+    if (pinCode) {
+      const result = checkDelivery({ pinCode });
+      return NextResponse.json(result);
+    }
+
     const suggestions = searchLocations(q);
     return NextResponse.json({ suggestions });
   } catch (err) {

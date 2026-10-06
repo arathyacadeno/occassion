@@ -18,12 +18,49 @@ import {
 import styles from "./orders.module.css";
 
 export default function OrdersPage() {
-  const { orders, viewOrder } = useCheckout();
+  const { orders: contextOrders, viewOrder } = useCheckout();
+  const [dbOrders, setDbOrders] = useState<CompletedOrder[]>([]);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    fetch("/api/orders", { credentials: "include" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && data.success && Array.isArray(data.orders)) {
+          const mapped: CompletedOrder[] = data.orders.map((o: any) => {
+            const firstItem = o.items?.[0];
+            return {
+              orderId: o.id,
+              productId: firstItem?.product_id || "flower-item",
+              productName: firstItem?.product_name || "Handcrafted Fresh Arrangement",
+              productImage: firstItem?.product_image || "/images/lily-6-stems.png",
+              productCategory: "Fresh Flowers",
+              quantity: firstItem?.quantity || 1,
+              price: o.final_amount,
+              unitPrice: firstItem?.product_price || o.final_amount,
+              mobileNumber: o.customer_phone || "+91 8606464700",
+              paymentMethod: o.paymentMethod?.type || "Online Payment",
+              paymentStatus: "success",
+              orderStatus: o.order_status === "delivered" ? "delivered" : "confirmed",
+              createdAt: o.created_at,
+              estimatedDelivery: "Delivered to Calicut",
+            };
+          });
+          setDbOrders(mapped);
+        }
+      })
+      .catch((e) => console.warn("Failed to fetch live orders", e));
   }, []);
+
+  // Merge DB orders and Context orders (deduplicating by orderId)
+  const allOrdersMap = new Map<string, CompletedOrder>();
+  for (const o of [...dbOrders, ...contextOrders]) {
+    if (!allOrdersMap.has(o.orderId)) {
+      allOrdersMap.set(o.orderId, o);
+    }
+  }
+  const orders = Array.from(allOrdersMap.values());
 
   if (!mounted) {
     return null;

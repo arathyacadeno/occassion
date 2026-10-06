@@ -20,6 +20,9 @@ export default function Footer() {
 
   return (
     <footer className={styles.footerWrapper} id="footer-contact">
+      {/* Fixed image layer: stays still while the card scrolls over it */}
+      <div className={styles.bgLayer} aria-hidden="true" />
+
       <div className={styles.inner}>
         {/* ================= MAIN GRID ================= */}
         <div className={styles.mainGrid}>
@@ -168,15 +171,6 @@ export default function Footer() {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* ================= BIG FLORAL WORDMARK (cropped at bottom) ================= */}
-      <div className={styles.wordmarkWrap} aria-hidden="true">
-        <img
-          src="/images/occassions.png"
-          alt=""
-          className={styles.floralWordmarkImg}
-        />
       </div>
     </footer>
   );
