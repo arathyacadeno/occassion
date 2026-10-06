@@ -55,19 +55,24 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
   let similarProducts: Product[] = [];
 
   if (isChocolate) {
-    // Show other delicious chocolates (Dairy Milk variants, Galaxy, Ferrero, etc.)
+    // Show strictly chocolates and confectionery (Dairy Milk Silk, Oreo, Galaxy, Fruit & Nut, Ferrero, etc.)
+    // Exclude cakes so chocolate cakes don't crowd out the actual chocolates!
     similarProducts = CATALOG_PRODUCTS.filter(
       (p) =>
         p.id !== product.id &&
+        p.category !== "cakes" &&
+        !p.id.startsWith("cake-") &&
         (p.id.includes("chocolate") ||
           p.id.includes("dairy-milk") ||
           p.id.includes("cadbury") ||
           p.id.includes("galaxy") ||
           p.id.includes("ferrero") ||
-          p.name.toLowerCase().includes("chocolate") ||
+          p.id.includes("silk") ||
           p.name.toLowerCase().includes("dairy milk") ||
           p.name.toLowerCase().includes("silk") ||
-          p.name.toLowerCase().includes("ferrero"))
+          p.name.toLowerCase().includes("galaxy") ||
+          p.name.toLowerCase().includes("ferrero") ||
+          p.name.toLowerCase().includes("chocolate"))
     );
   } else if (isCakeProduct) {
     similarProducts = CATALOG_PRODUCTS.filter(
@@ -93,15 +98,15 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
     similarProducts = categoryProducts;
   }
 
-  // Fallback if less than 5 items
-  if (similarProducts.length < 5) {
+  // Fallback if less than 4 items (for non-chocolate products)
+  if (!isChocolate && similarProducts.length < 4) {
     const fallbackProducts = CATALOG_PRODUCTS.filter(
       (p) => p.id !== product.id && !similarProducts.some((sp) => sp.id === p.id)
     );
     similarProducts = [...similarProducts, ...fallbackProducts];
   }
 
-  similarProducts = similarProducts.slice(0, 6);
+  similarProducts = similarProducts.slice(0, 10);
 
   const categoryLabel =
     product.category === "cakes"
