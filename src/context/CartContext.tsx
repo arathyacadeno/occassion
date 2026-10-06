@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { Bouquet, CartItem } from "@/types";
 import { BOUQUETS_DATA } from "@/data/bouquets";
+import { useAuth } from "./AuthContext";
 
 interface CartContextType {
   items: CartItem[];
@@ -24,6 +25,7 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useAuth();
   const [items, setItems] = useState<CartItem[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -73,6 +75,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     customNote?: string,
     qty: number = 1
   ) => {
+    if (!isAuthenticated) {
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("show-signin-modal"));
+      }
+      return;
+    }
+
     const addQuantity = Math.max(1, qty);
     setItems((prev) => {
       const existingIdx = prev.findIndex(
@@ -94,7 +103,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         },
       ];
     });
-  }, []);
+  }, [isAuthenticated]);
 
   const updateQty = React.useCallback((index: number, newQty: number) => {
     if (newQty <= 0) {

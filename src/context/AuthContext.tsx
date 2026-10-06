@@ -122,11 +122,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     image?: string;
   }) => {
     try {
-      const payload = googleData || {
-        email: "google.user@example.com",
-        name: "Google Customer",
-        image: "https://lh3.googleusercontent.com/a/default-user",
-      };
+      const payload = googleData?.credential
+        ? { credential: googleData.credential }
+        : googleData || {
+            email: "google.user@example.com",
+            name: "Google Customer",
+            image: "https://lh3.googleusercontent.com/a/default-user",
+          };
 
       const res = await fetch("/api/auth/google", {
         method: "POST",
@@ -148,6 +150,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     try {
       await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+    } catch {
+      // ignore network errors – still clear local state
     } finally {
       setUser(null);
     }

@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
 import { useCart } from "@/context/CartContext";
 import { useCheckout } from "@/context/CheckoutContext";
+import { useAuth } from "@/context/AuthContext";
 import { ADDON_PRODUCTS } from "@/components/RecommendedAddons";
 import { CATALOG_PRODUCTS } from "@/data/catalog";
 import { FLOWER_PRODUCTS } from "@/data/flowerProducts";
@@ -168,6 +169,7 @@ export default function CartPage() {
   const router = useRouter();
   const { items, updateQty, removeItem } = useCart();
   const { startCartCheckout } = useCheckout();
+  const { isAuthenticated } = useAuth();
   const [mounted, setMounted] = useState(false);
   const [couponCode, setCouponCode] = useState("");
 
@@ -280,6 +282,13 @@ export default function CartPage() {
 
   // Proceed to Checkout
   const handleProceedToCheckout = () => {
+    if (!isAuthenticated) {
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("show-signin-modal"));
+      }
+      return;
+    }
+
     const checkoutPayload = displayItems.map((item) => ({
       id: item.bouquet.id,
       slug: item.bouquet.id,

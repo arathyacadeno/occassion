@@ -1133,3 +1133,151 @@
   margin-bottom: 14px;
   text-align: left;
 }
+
+/* ==================== Phone / OTP Auth ==================== */
+.phoneBtn {
+  width: 100%;
+  padding: 11px 16px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 11px;
+  background: #ffffff;
+  color: #334155;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+  margin-bottom: 10px;
+}
+
+.phoneBtn:hover {
+  background: #f8fafc;
+  border-color: #db2777;
+  color: #db2777;
+  box-shadow: 0 2px 8px rgba(219, 39, 119, 0.08);
+}
+
+.phoneFlowBox {
+  background: #fdf2f8;
+  border: 1px solid #fce7f3;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 10px;
+}
+
+.phoneFlowLabel {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #64748b;
+  margin: 0 0 10px;
+  text-align: center;
+}
+
+.phoneInputRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 2px 12px 2px 10px;
+  transition: border-color 0.2s ease;
+}
+
+.phoneInputRow:focus-within {
+  border-color: #db2777;
+  box-shadow: 0 0 0 3px rgba(219, 39, 119, 0.1);
+}
+
+.phoneFlag {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #475569;
+  white-space: nowrap;
+  border-right: 1px solid #e2e8f0;
+  padding-right: 10px;
+  line-height: 1;
+}
+
+.phoneInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 0.92rem;
+  color: #1e293b;
+  background: transparent;
+  padding: 10px 0;
+  letter-spacing: 0.04em;
+}
+
+.phoneError {
+  font-size: 0.78rem;
+  color: #e11d48;
+  margin: 8px 0 0;
+  font-weight: 500;
+}
+
+.phoneCancelBtn {
+  background: none;
+  border: none;
+  color: #db2777;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0;
+  display: block;
+  margin: 8px auto 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.2s ease;
+}
+
+.phoneCancelBtn:hover {
+  color: #9d174d;
+}
+
+/* 6-box OTP input row */
+.otpInputRow {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 4px 0;
+}
+
+.otpDigit {
+  width: 42px;
+  height: 48px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+  font-family: inherit;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #be185d;
+  text-align: center;
+  outline: none;
+  transition: all 0.18s ease;
+  caret-color: #db2777;
+}
+
+.otpDigit:focus {
+  border-color: #db2777;
+  box-shadow: 0 0 0 3px rgba(219, 39, 119, 0.12);
+  background: #fff;
+}
+
+.otpResend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 8px;
+  font-size: 0.78rem;
+  color: #94a3b8;
+}

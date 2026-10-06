@@ -21,6 +21,7 @@ import { Product, isFlowerBouquet, getPricePerFlower } from "@/data/catalog";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { useCheckout, CheckoutItem } from "@/context/CheckoutContext";
+import { useAuth } from "@/context/AuthContext";
 import { ADDON_PRODUCTS } from "@/components/RecommendedAddons";
 import styles from "./ProductInfo.module.css";
 
@@ -45,6 +46,7 @@ export default function ProductInfo({
 }: ProductInfoProps) {
   const { addItem } = useCart();
   const { startBuyNow } = useCheckout();
+  const { isAuthenticated } = useAuth();
 
   const isLily =
     (product.category as string) === "lilies" ||
@@ -354,6 +356,13 @@ export default function ProductInfo({
   };
 
   const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("show-signin-modal"));
+      }
+      return;
+    }
+
     if (isCustomMode && isBouquet) {
       addItem(
         {
@@ -423,6 +432,13 @@ export default function ProductInfo({
   };
 
   const handleBuyNow = () => {
+    if (!isAuthenticated) {
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("show-signin-modal"));
+      }
+      return;
+    }
+
     const mainItem: CheckoutItem = {
       id: isCustomMode && isBouquet ? `${product.id}-custom-${customFlowerQty}` : product.id,
       slug: product.slug,
