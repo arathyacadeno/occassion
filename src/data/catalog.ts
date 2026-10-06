@@ -179,59 +179,125 @@ export const CATALOG_PRODUCTS: Product[] = [
   },
   {
     id: "flower-9",
-    slug: "blush-pink-rose-chrysanthemum-basket",
-    name: "Blush Pink Rose & Chrysanthemum Basket",
-    price: 2199,
-    originalPrice: 2599,
+    slug: "white-pink-roses-gypsophilla-bamboo-basket",
+    name: "White /pink roses with gypsophilla in a bamboo basket",
+    price: 1800,
     category: "flower",
     categoryLabel: "Flowers",
-    image: "/images/flower-basket-pink-roses.jpg",
+    image: "/images/pastel-rose-wicker-basket.png",
     images: [
-      "/images/flower-basket-pink-roses.jpg",
+      "/images/pastel-rose-wicker-basket.png",
+      "/images/pink-carnation-ribbon-basket.png",
       "/images/basket-crimson-pink-roses.jpg",
-      "/images/basket-gerberas.jpg",
     ],
     rating: 4.9,
     reviewsCount: 42,
     description:
-      "Handcrafted rustic willow basket brimming with velvety blush pink roses, soft spray chrysanthemums, and airy baby's breath. A gentle, romantic centerpiece.",
+      "White and pink roses with gypsophilla arranged in a natural bamboo basket. A gentle, elegant arrangement.",
     deliveryInfo: "Fresh morning delivery within 3 hours across Calicut.",
     offers: ["Flat 10% off with code OCCASIONS10", "Complimentary heartfelt note card"],
     includes: [
-      "Imported Blush Pink Roses",
-      "Snow-White Spray Chrysanthemums",
+      "White & Pink Roses",
       "Fresh Gypsophila Baby's Breath",
-      "Handwoven Natural Willow Basket",
+      "Handcrafted Bamboo Basket",
     ],
     badge: "Bestseller",
   },
   {
     id: "flower-10",
-    slug: "pink-lily-carnation-basket",
-    name: "Pink Lily & Carnation Floral Basket",
-    price: 2499,
-    originalPrice: 2899,
+    slug: "15-pink-carnations-gypsophilla-bamboo-basket",
+    name: "15 pink carnations with gypsophilla arranged in bamboo basket",
+    price: 1095,
     category: "flower",
     categoryLabel: "Flowers",
-    image: "/images/flower-basket-pink-lilies.jpg",
+    image: "/images/pink-carnation-ribbon-basket.png",
     images: [
-      "/images/flower-basket-pink-lilies.jpg",
-      "/images/flower-basket-pink-roses.jpg",
+      "/images/pink-carnation-ribbon-basket.png",
+      "/images/pastel-rose-wicker-basket.png",
       "/images/flower-white-lilies.jpg",
     ],
     rating: 4.8,
     reviewsCount: 36,
     description:
-      "Graceful woven basket featuring regal pink Oriental lilies, garden roses, pastel carnations, and keepsake lace ribbon. Perfect for birthdays, thank yous, and warm regards.",
+      "15 pink carnations with gypsophilla delicately arranged in a bamboo basket.",
     deliveryInfo: "Delivered fresh from botanical farms in insulated floristry vans.",
     offers: ["Free customized greeting card", "Complimentary floral nutrition sachet"],
     includes: [
-      "Multi-Bloom Pink Oriental Lilies",
-      "Pastel Pink Carnations & Roses",
-      "Handwoven Wicker Basket with Lace Ribbon",
-      "Hydrating Floral Sponge Base",
+      "15 Fresh Pink Carnations",
+      "Delicate Gypsophila Filler",
+      "Handcrafted Bamboo Basket",
+      "Keepsake Ribbon Bow",
     ],
     badge: "Artisanal Choice",
+  },
+  {
+    id: "flower-basket-3",
+    slug: "lilly-roses-chrysanthemum-chocolate-basket",
+    name: "Lilly roses chrysanthemum n assorted chocolates arranged in a bamboo basket",
+    price: 1600,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/lilly-roses-chrysanthemum-chocolate-basket.jpg",
+    images: [
+      "/images/lilly-roses-chrysanthemum-chocolate-basket.jpg",
+    ],
+    rating: 4.9,
+    reviewsCount: 24,
+    description: "Lilly roses chrysanthemum n assorted chocolates arranged in a bamboo basket.",
+    deliveryInfo: "Delivered fresh from botanical farms in insulated floristry vans.",
+    offers: ["Free customized greeting card"],
+    includes: [
+      "Lilies, Roses & Chrysanthemums",
+      "Assorted Chocolates",
+      "Handcrafted Bamboo Basket",
+    ],
+    badge: "Bestseller",
+  },
+  {
+    id: "flower-basket-4",
+    slug: "red-roses-chrysanthemum-bamboo-basket",
+    name: "20 Red Roses, white chrysanthemum n gypsophilla arranged in bamboo basket",
+    price: 1395,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/red-roses-chrysanthemum-bamboo-basket.jpg",
+    images: [
+      "/images/red-roses-chrysanthemum-bamboo-basket.jpg",
+    ],
+    rating: 4.9,
+    reviewsCount: 30,
+    description: "20 Red Roses, white chrysanthemum n gypsophilla arranged in bamboo basket.",
+    deliveryInfo: "Delivered fresh from botanical farms in insulated floristry vans.",
+    offers: ["Free customized greeting card"],
+    includes: [
+      "20 Red Roses",
+      "White Chrysanthemums & Gypsophila",
+      "Handcrafted Bamboo Basket",
+    ],
+    badge: "Classic Choice",
+  },
+  {
+    id: "flower-basket-5",
+    slug: "20-white-pink-roses-gypsophilla-bamboo-basket",
+    name: "20 white pink roses with gypsophilla arranged in bamboo basket",
+    price: 1100,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/20-white-pink-roses-bamboo-basket.jpg",
+    images: [
+      "/images/20-white-pink-roses-bamboo-basket.jpg",
+    ],
+    rating: 4.8,
+    reviewsCount: 15,
+    description: "20 white pink roses with gypsophilla delicately arranged in a bamboo basket.",
+    deliveryInfo: "Delivered fresh from botanical farms in insulated floristry vans.",
+    offers: ["Free customized greeting card"],
+    includes: [
+      "20 White & Pink Roses",
+      "Gypsophila Filler",
+      "Handcrafted Bamboo Basket",
+    ],
+    badge: "Elegant Choice",
   },
   {
     id: "flower-11",
@@ -320,37 +386,6 @@ export const CATALOG_PRODUCTS: Product[] = [
   },
 
   // ==================== BOUQUET PRODUCTS (/flower-bouquets) ====================
-  {
-    id: "bouquet-purple-lily-lavender",
-    slug: "royal-purple-lily-lavender-bouquet",
-    name: "Royal Purple Lily & Lavender Bouquet",
-    price: 2499,
-    originalPrice: 2999,
-    category: "flower",
-    categoryLabel: "Flowers",
-    image: "/images/purple-lily-lavender-bouquet.jpg",
-    images: [
-      "/images/purple-lily-lavender-bouquet.jpg",
-      "/images/lily-celestial-daisy.jpg",
-      "/images/flower-white-lilies.jpg",
-    ],
-    rating: 5.0,
-    reviewsCount: 68,
-    description:
-      "Bespoke hand-tied bouquet featuring enchanting purple lilies, heirloom lavender garden roses, English lavender stalks, and delicate lilac blossoms finished with a pure silk ribbon bow.",
-    deliveryInfo: "Same-day express delivery across Calicut within 3 hours.",
-    offers: [
-      "Free personalized greeting card with wax seal",
-      "Flat 10% off with code OCCASIONS10",
-    ],
-    includes: [
-      "Exotic Purple Lilies & Roses",
-      "English Lavender Sprigs",
-      "Lilac & Hydrangea Accents",
-      "Pure White Silk Ribbon Bow",
-    ],
-    badge: "New Arrival",
-  },
   {
     id: "bouquet-9",
     slug: "royal-purple-tulip-lavender-bouquet",
@@ -619,7 +654,6 @@ export const CATALOG_PRODUCTS: Product[] = [
     image: "/images/cakes/blue-floral-birthday-cake.png",
     images: [
       "/images/cakes/blue-floral-birthday-cake.png",
-      "/images/Cake category/Blue Floral Birthday Cake.png",
     ],
     rating: 5.0,
     reviewsCount: 118,
@@ -647,7 +681,6 @@ export const CATALOG_PRODUCTS: Product[] = [
     image: "/images/cakes/chocolate-birthday-cake-for-amma.png",
     images: [
       "/images/cakes/chocolate-birthday-cake-for-amma.png",
-      "/images/Cake category/Chocolate Birthday Cake for Amma.png",
     ],
     rating: 5.0,
     reviewsCount: 142,
@@ -675,7 +708,6 @@ export const CATALOG_PRODUCTS: Product[] = [
     image: "/images/cakes/decadent-chocolate-shavings-cake.png",
     images: [
       "/images/cakes/decadent-chocolate-shavings-cake.png",
-      "/images/Cake category/Decadent Chocolate Shavings Cake.png",
     ],
     rating: 4.9,
     reviewsCount: 88,
@@ -700,7 +732,6 @@ export const CATALOG_PRODUCTS: Product[] = [
     image: "/images/cakes/elegant-chocolate-web-cake.png",
     images: [
       "/images/cakes/elegant-chocolate-web-cake.png",
-      "/images/Cake category/Elegant Chocolate Web Cake on White Pedestal.png",
     ],
     rating: 4.8,
     reviewsCount: 75,
@@ -725,7 +756,6 @@ export const CATALOG_PRODUCTS: Product[] = [
     image: "/images/cakes/elegant-just-engaged-heart-cake.png",
     images: [
       "/images/cakes/elegant-just-engaged-heart-cake.png",
-      "/images/Cake category/Elegant Just Engaged Heart Cake.png",
     ],
     rating: 5.0,
     reviewsCount: 64,
@@ -753,7 +783,6 @@ export const CATALOG_PRODUCTS: Product[] = [
     image: "/images/cakes/elegant-red-heart-anniversary-cake.png",
     images: [
       "/images/cakes/elegant-red-heart-anniversary-cake.png",
-      "/images/Cake category/Elegant Red Heart Anniversary Cake.png",
     ],
     rating: 4.9,
     reviewsCount: 110,
@@ -781,7 +810,6 @@ export const CATALOG_PRODUCTS: Product[] = [
     image: "/images/cakes/evana-floral-celebration-cake.png",
     images: [
       "/images/cakes/evana-floral-celebration-cake.png",
-      "/images/Cake category/Evana Floral Celebration Cake.png",
     ],
     rating: 4.9,
     reviewsCount: 82,
@@ -809,7 +837,6 @@ export const CATALOG_PRODUCTS: Product[] = [
     image: "/images/cakes/golden-crumb-chocolate-drizzle-cake.png",
     images: [
       "/images/cakes/golden-crumb-chocolate-drizzle-cake.png",
-      "/images/Cake category/Golden Crumb Chocolate Drizzle Cake.png",
     ],
     rating: 4.8,
     reviewsCount: 67,
@@ -834,7 +861,6 @@ export const CATALOG_PRODUCTS: Product[] = [
     image: "/images/cakes/lavender-floral-happy-birthday-amma-cake.png",
     images: [
       "/images/cakes/lavender-floral-happy-birthday-amma-cake.png",
-      "/images/Cake category/Lavender Floral Happy Birthday Amma Cake.png",
     ],
     rating: 5.0,
     reviewsCount: 134,
@@ -862,7 +888,6 @@ export const CATALOG_PRODUCTS: Product[] = [
     image: "/images/cakes/luxury-half-chocolate-birthday-cake.png",
     images: [
       "/images/cakes/luxury-half-chocolate-birthday-cake.png",
-      "/images/Cake category/Luxury Half-Chocolate Birthday Cake.png",
     ],
     rating: 4.9,
     reviewsCount: 93,
@@ -887,7 +912,6 @@ export const CATALOG_PRODUCTS: Product[] = [
     image: "/images/cakes/pastel-pink-heart-cake.png",
     images: [
       "/images/cakes/pastel-pink-heart-cake.png",
-      "/images/Cake category/Pastel Pink Heart Cake on Stand.png",
     ],
     rating: 4.9,
     reviewsCount: 88,
@@ -912,7 +936,6 @@ export const CATALOG_PRODUCTS: Product[] = [
     image: "/images/cakes/onyx-black-celebration-cake.png",
     images: [
       "/images/cakes/onyx-black-celebration-cake.png",
-      "/images/Cake category/AO Smith Z3 Onyx Black Celebration Cake.png",
     ],
     rating: 4.9,
     reviewsCount: 96,
@@ -940,7 +963,6 @@ export const CATALOG_PRODUCTS: Product[] = [
     image: "/images/cakes/red-velvet-gold-birthday-cake.png",
     images: [
       "/images/cakes/red-velvet-gold-birthday-cake.png",
-      "/images/Cake category/Red Velvet Cake with Gold Birthday Topper.png",
     ],
     rating: 5.0,
     reviewsCount: 156,
@@ -1003,7 +1025,7 @@ export const CATALOG_PRODUCTS: Product[] = [
       "/images/occasion-birthday.jpg",
       "/images/cat-birthday.jpg",
       "/images/sunflower-bouquet.jpg",
-      "/images/cake-ombre-butterfly-birthday.jpg",
+      "/images/cakes/cake-ombre-butterfly-birthday.jpg",
     ],
     rating: 4.9,
     reviewsCount: 153,
@@ -1033,7 +1055,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     images: [
       "/images/occasion-anniversary.jpg",
       "/images/red-rose-bouquet.jpg",
-      "/images/cake-anniversary-maroon-gold.png",
+      "/images/cakes/cake-anniversary-maroon-gold.png",
     ],
     rating: 5.0,
     reviewsCount: 167,
@@ -1526,7 +1548,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     image: "/images/bouquet-2.jpg",
     images: [
       "/images/bouquet-2.jpg",
-      "/images/cake-chocolate-strawberry-drip.png",
+      "/images/cakes/cake-chocolate-strawberry-drip.png",
       "/images/sunflower-bouquet.jpg",
     ],
     rating: 4.9,
@@ -1577,11 +1599,11 @@ export const CATALOG_PRODUCTS: Product[] = [
     originalPrice: 1399,
     category: "our-highlights",
     categoryLabel: "Our Highlights",
-    image: "/images/cake-ombre-butterfly-birthday.jpg",
+    image: "/images/cakes/cake-ombre-butterfly-birthday.jpg",
     images: [
-      "/images/cake-ombre-butterfly-birthday.jpg",
-      "/images/cake-anniversary-maroon-gold.png",
-      "/images/celebration-cake-cat.jpg",
+      "/images/cakes/cake-ombre-butterfly-birthday.jpg",
+      "/images/cakes/cake-anniversary-maroon-gold.png",
+      "/images/cakes/celebration-cake-cat.jpg",
     ],
     rating: 5.0,
     reviewsCount: 115,
@@ -1633,12 +1655,7 @@ export function getProductsByCategory(
 
 export function getFlowerBaskets(): Product[] {
   return CATALOG_PRODUCTS.filter(
-    (p) =>
-      p.category === "flower" &&
-      (p.name.toLowerCase().includes("basket") ||
-        p.name.toLowerCase().includes("box") ||
-        p.description.toLowerCase().includes("basket") ||
-        p.description.toLowerCase().includes("hat box"))
+    (p) => p.id === "flower-9" || p.id === "flower-10" || p.id === "flower-basket-3" || p.id === "flower-basket-4" || p.id === "flower-basket-5"
   );
 }
 

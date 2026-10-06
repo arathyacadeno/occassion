@@ -161,11 +161,11 @@ export default function ProductCard({
             ₹{product.price}
           </span>
 
-          {(product.originalPrice || compact) && (
+          {product.originalPrice && product.originalPrice > product.price ? (
             <span className={styles.originalPrice}>
-              ₹{product.originalPrice || Math.round(product.price * 1.15)}
+              ₹{product.originalPrice}
             </span>
-          )}
+          ) : null}
 
           {discountPercent ? (
             <span className={styles.discountBadge}>

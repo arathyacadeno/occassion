@@ -16,7 +16,9 @@ const CAKE_TABS = [
 ];
 
 export default function CakesCategoryPage() {
-  const cakeProducts = getProductsByCategory("cakes");
+  const cakeProducts = getProductsByCategory("cakes").filter(
+    (p) => !p.id.startsWith("addon-")
+  );
 
   return (
     <CategoryPage

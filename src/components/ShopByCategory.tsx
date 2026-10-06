@@ -40,7 +40,7 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
   {
     id: "cakes",
     name: "Cakes",
-    image: "/images/cat-cakes-luxe.jpg",
+    image: "/images/cakes/cat-cakes-luxe.jpg",
     link: "/cakes",
     delay: "0.24s",
     initTx: "0px",
