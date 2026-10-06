@@ -533,40 +533,6 @@ export default function ProductInfo({
       <div className={styles.preferenceSection}>
         <h3 className={styles.sectionHeading}>Choose Delivery Preference</h3>
 
-        {/* Free Slot banner when location is fetched */}
-        {deliveryStatus.serviceable === true && (
-          <div className={styles.freeSlotBanner}>
-            <svg
-              width="24"
-              height="20"
-              viewBox="0 0 24 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className={styles.scooterIcon}
-            >
-              <rect x="1" y="4" width="7" height="7" rx="1.5" fill="#087f3b" />
-              <path
-                d="M7 11h4l3 4h4"
-                stroke="#087f3b"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M14 8l2-4h3"
-                stroke="#087f3b"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <circle cx="6" cy="16" r="3" stroke="#087f3b" strokeWidth="2" fill="#e6f7ec" />
-              <circle cx="18" cy="16" r="3" stroke="#087f3b" strokeWidth="2" fill="#e6f7ec" />
-              <circle cx="6" cy="16" r="1.2" fill="#087f3b" />
-              <circle cx="18" cy="16" r="1.2" fill="#087f3b" />
-            </svg>
-            <span>Want it free? Pick a slot with the FREE tag.</span>
-          </div>
-        )}
 
         <div className={styles.locationSubtitle}>
           <MapPin size={15} className={styles.pinIcon} />
