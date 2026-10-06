@@ -1570,33 +1570,6 @@ export const CATALOG_PRODUCTS: Product[] = [
     badge: "Customer Favorite",
   },
   {
-    id: "hl-6",
-    slug: "double-chocolate-strawberry-drip-highlight",
-    name: "Double Chocolate Strawberry Drip Cake",
-    price: 1099,
-    originalPrice: 1299,
-    category: "our-highlights",
-    categoryLabel: "Our Highlights",
-    image: "/images/cake-chocolate-strawberry-drip.png",
-    images: [
-      "/images/cake-chocolate-strawberry-drip.png",
-      "/images/cake-chocolate-truffle-pedestal.png",
-      "/images/berry-vanilla-cake.jpg",
-    ],
-    rating: 4.9,
-    reviewsCount: 130,
-    description:
-      "Layered chocolate fudge sponge with fresh chantilly cream, rich dark chocolate ganache drip, and crowned with ruby strawberries.",
-    deliveryInfo: "Baked fresh and delivered in chilled insulated cake caddy.",
-    offers: ["Free celebration candles and wooden knife"],
-    includes: [
-      "1kg Belgian Chocolate Drip Cake",
-      "Fresh Strawberries & Chocolate Shards",
-      "Gold Lettered Plaque",
-    ],
-    badge: "Top Rated Cake",
-  },
-  {
     id: "hl-7",
     slug: "pastel-ombre-butterfly-cake-highlight",
     name: "Artisan Ombre Butterfly Cake",

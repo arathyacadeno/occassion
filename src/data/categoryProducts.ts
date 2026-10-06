@@ -151,14 +151,6 @@ export const CAKE_PRODUCTS: CategoryProduct[] = [
     description: "Delicate textured ombre buttercream with butterfly accent, chocolate pearls, and celebration candle.",
   },
   {
-    id: "cake-2",
-    title: "Decadent Double Chocolate Strawberry Drip",
-    image: "/images/cake-chocolate-strawberry-drip.png",
-    price: "₹2,800",
-    tag: "Bestseller",
-    description: "Two-tiered moist chocolate sponge filled with fresh cream, glazed with rich dark chocolate drip and ruby strawberries.",
-  },
-  {
     id: "cake-3",
     title: "Belgian Dark Truffle Ganache Gateau",
     image: "/images/cake-chocolate-truffle-pedestal.png",
