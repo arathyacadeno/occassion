@@ -54,8 +54,14 @@ export function getDb() {
 
   const db = new DatabaseSyncClass(dbPath);
 
-  // Configure WAL mode & foreign keys
-  db.exec("PRAGMA journal_mode = WAL;");
+  // Configure journal mode & foreign keys
+  // Note: On Vercel / serverless /tmp, WAL mode requires shared memory (.shm files) which can fail.
+  // Using MEMORY or DELETE journal mode is robust on serverless.
+  if (isVercel) {
+    db.exec("PRAGMA journal_mode = MEMORY;");
+  } else {
+    db.exec("PRAGMA journal_mode = WAL;");
+  }
   db.exec("PRAGMA foreign_keys = ON;");
 
   initSchema(db);
