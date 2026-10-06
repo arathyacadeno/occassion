@@ -545,22 +545,6 @@ export default function SinglePageCheckoutPayment() {
                   </p>
                 )}
 
-                {!deliveryStatus.loading && deliveryStatus.serviceable === true && (
-                  <div className={styles.pinSuccessText}>
-                    <CheckCircle2 size={13} className={styles.feedbackIcon} />
-                    <span>
-                      Delivery available to{" "}
-                      <strong>{deliveryStatus.area || "Location"}</strong>
-                      {deliveryStatus.distance_km !== null
-                        ? ` (${deliveryStatus.distance_km} km)`
-                        : ""}
-                      {" · "}
-                      {deliveryCharge === 0
-                        ? "Free Delivery 🎉"
-                        : `₹${deliveryCharge} delivery charge`}
-                    </span>
-                  </div>
-                )}
 
                 {!deliveryStatus.loading && deliveryStatus.serviceable === false && (
                   <div className={styles.pinErrorText} role="alert">

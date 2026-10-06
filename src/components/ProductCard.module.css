@@ -15,12 +15,6 @@
   position: relative;
   box-shadow: 0 2px 14px rgba(60, 15, 30, 0.06);
   border: none;
-  transition: box-shadow 0.25s ease, transform 0.25s ease;
-}
-
-.card:hover {
-  box-shadow: 0 8px 32px rgba(60, 15, 30, 0.12);
-  transform: translateY(-2px);
 }
 
 /* ================= COMPACT VARIANT ================= */
@@ -40,12 +34,6 @@
   overflow: hidden;
   position: relative;
   flex-shrink: 0;
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
-}
-
-.compactCard:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(60, 15, 30, 0.12);
 }
 
 .compactCard .imageContainer {
@@ -203,11 +191,6 @@
   object-fit: cover;
   object-position: center;
   border-radius: 16px;
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.imageContainer:hover .productImage {
-  transform: scale(1.04);
 }
 
 /* ================= WAVE NOTCH (old element, hidden) ================= */
