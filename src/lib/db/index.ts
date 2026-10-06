@@ -22,12 +22,36 @@ export function getDb() {
     return dbInstance;
   }
 
-  const dbDir = path.join(process.cwd(), "data");
-  if (!fs.existsSync(dbDir)) {
-    fs.mkdirSync(dbDir, { recursive: true });
+  // On Vercel / AWS Lambda serverless functions, the root filesystem is READ-ONLY.
+  // The only writable path is `/tmp`.
+  const isVercel = Boolean(
+    process.env.VERCEL ||
+    process.env.AWS_LAMBDA_FUNCTION_NAME ||
+    process.env.VERCEL_ENV
+  );
+  const sourceDbPath = path.join(process.cwd(), "data", "occasions.db");
+
+  let dbPath: string;
+  if (isVercel) {
+    const tmpDir = "/tmp";
+    dbPath = path.join(tmpDir, "occasions.db");
+
+    // If database already exists in data/occasions.db, copy it to /tmp initially
+    if (!fs.existsSync(dbPath) && fs.existsSync(sourceDbPath)) {
+      try {
+        fs.copyFileSync(sourceDbPath, dbPath);
+      } catch (e) {
+        console.warn("Could not copy existing db to /tmp, creating fresh", e);
+      }
+    }
+  } else {
+    const dbDir = path.join(process.cwd(), "data");
+    if (!fs.existsSync(dbDir)) {
+      fs.mkdirSync(dbDir, { recursive: true });
+    }
+    dbPath = path.join(dbDir, "occasions.db");
   }
 
-  const dbPath = path.join(dbDir, "occasions.db");
   const db = new DatabaseSyncClass(dbPath);
 
   // Configure WAL mode & foreign keys
