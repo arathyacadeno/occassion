@@ -192,7 +192,6 @@ export default function ProductGallery({
           <span className={styles.counter}>
             {selectedIndex + 1} / {total}
           </span>
-          <span className={styles.zoomHint}>Hover to zoom · Click to enlarge</span>
         </div>
       </div>
 
