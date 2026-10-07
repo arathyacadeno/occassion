@@ -59,7 +59,7 @@ export const FLOWER_BASKET_PRODUCTS: CategoryProduct[] = [
   {
     id: "basket-7",
     title: "Mix flower half ball arrangement in a basket.... 20 roses, chrysanthemum, gypsophilla",
-    image: "/images/mix-flower-half-ball-basket.jpg",
+    image: "/images/flower-basket/mix-flower-half-ball-basket.jpg",
     price: "₹1,495",
     tag: "Bestseller",
     description: "Mix flower half ball arrangement in a basket featuring 20 roses, chrysanthemum, and gypsophilla.",
@@ -67,7 +67,7 @@ export const FLOWER_BASKET_PRODUCTS: CategoryProduct[] = [
   {
     id: "basket-8",
     title: "40 pink white roses with pink Chrysanthemum n gypsophilla arranged in bamboo basket",
-    image: "/images/40-pink-white-roses-chrysanthemum-basket.jpg",
+    image: "/images/flower-basket/40-pink-white-roses-chrysanthemum-basket.jpg",
     price: "₹2,500",
     tag: "Luxury Choice",
     description: "40 pink and white roses with pink Chrysanthemum and gypsophilla gracefully arranged in a bamboo basket.",
@@ -75,7 +75,7 @@ export const FLOWER_BASKET_PRODUCTS: CategoryProduct[] = [
   {
     id: "basket-9",
     title: "2 stem pink Lilly,20 stems roses, carnations, gypsophilla arrangement in a round container",
-    image: "/images/pink-lily-rose-carnation-round-container.jpg",
+    image: "/images/flower-basket/pink-lily-rose-carnation-round-container.jpg",
     price: "₹1,600",
     tag: "Elegant Choice",
     description: "2 stem pink Lilly, 20 stems roses, carnations, and gypsophilla beautifully arranged in a premium round container.",
@@ -83,7 +83,7 @@ export const FLOWER_BASKET_PRODUCTS: CategoryProduct[] = [
   {
     id: "basket-10",
     title: "1 stem Asiatic lilly, white pink peach roses, chrysanthemum, gypsophilla",
-    image: "/images/asiatic-lily-peach-roses-basket.jpg",
+    image: "/images/flower-basket/asiatic-lily-peach-roses-basket.jpg",
     price: "₹1,600",
     tag: "Bestseller",
     description: "1 stem Asiatic lily paired with beautiful white, pink, and peach roses, chrysanthemums, and gypsophilla arranged in a classic bamboo basket.",
@@ -91,7 +91,7 @@ export const FLOWER_BASKET_PRODUCTS: CategoryProduct[] = [
   {
     id: "basket-11",
     title: "40 white /yellow roses with gypsophilla one sided arrangement in premium quality basket",
-    image: "/images/40-white-yellow-roses-one-sided-basket.jpg",
+    image: "/images/flower-basket/40-white-yellow-roses-one-sided-basket.jpg",
     price: "₹2,299",
     tag: "Premium Choice",
     description: "40 beautifully arranged white and yellow roses with gypsophilla in a one-sided premium quality basket.",
@@ -99,10 +99,18 @@ export const FLOWER_BASKET_PRODUCTS: CategoryProduct[] = [
   {
     id: "basket-12",
     title: "24 White/pink roses and gypsophilla beautifully arranged in a bamboo basket",
-    image: "/images/24-white-pink-roses-basket.jpg",
+    image: "/images/flower-basket/24-white-pink-roses-basket.jpg",
     price: "₹1,400",
     tag: "Bestseller",
     description: "24 White and pink roses and gypsophilla beautifully arranged in a classic bamboo basket.",
+  },
+  {
+    id: "basket-13",
+    title: "30 white yellow roses with gypsophilla arranged in premium quality basket 1995",
+    image: "/images/flower-basket/30-white-yellow-roses-premium-basket-2.jpg",
+    price: "₹1,995",
+    tag: "Premium Choice",
+    description: "30 white yellow roses with gypsophilla delicately arranged in a premium quality basket.",
   },
 ];
 
