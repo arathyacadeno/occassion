@@ -80,6 +80,22 @@ export const FLOWER_BASKET_PRODUCTS: CategoryProduct[] = [
     tag: "Elegant Choice",
     description: "2 stem pink Lilly, 20 stems roses, carnations, and gypsophilla beautifully arranged in a premium round container.",
   },
+  {
+    id: "basket-10",
+    title: "1 stem Asiatic lilly, white pink peach roses, chrysanthemum, gypsophilla",
+    image: "/images/asiatic-lily-peach-roses-basket.jpg",
+    price: "₹1,600",
+    tag: "Bestseller",
+    description: "1 stem Asiatic lily paired with beautiful white, pink, and peach roses, chrysanthemums, and gypsophilla arranged in a classic bamboo basket.",
+  },
+  {
+    id: "basket-11",
+    title: "40 white /yellow roses with gypsophilla one sided arrangement in premium quality basket",
+    image: "/images/40-white-yellow-roses-one-sided-basket.jpg",
+    price: "₹2,299",
+    tag: "Premium Choice",
+    description: "40 beautifully arranged white and yellow roses with gypsophilla in a one-sided premium quality basket.",
+  },
 ];
 
 export const BOUQUET_PRODUCTS: CategoryProduct[] = [

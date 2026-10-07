@@ -392,6 +392,52 @@ export const CATALOG_PRODUCTS: Product[] = [
     badge: "Elegant Choice",
   },
   {
+    id: "flower-basket-10",
+    slug: "asiatic-lily-peach-roses-basket",
+    name: "1 stem Asiatic lilly, white pink peach roses, chrysanthemum, gypsophilla",
+    price: 1600,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/asiatic-lily-peach-roses-basket.jpg",
+    images: [
+      "/images/asiatic-lily-peach-roses-basket.jpg",
+    ],
+    rating: 4.9,
+    reviewsCount: 16,
+    description: "1 stem Asiatic lily paired with beautiful white, pink, and peach roses, chrysanthemums, and gypsophilla arranged in a classic bamboo basket.",
+    deliveryInfo: "Delivered fresh from botanical farms in insulated floristry vans.",
+    offers: ["Free customized greeting card"],
+    includes: [
+      "1 White Asiatic Lily",
+      "Assorted Peach, Pink & White Roses",
+      "Handcrafted Basket",
+    ],
+    badge: "Bestseller",
+  },
+  {
+    id: "flower-basket-11",
+    slug: "40-white-yellow-roses-one-sided-basket",
+    name: "40 white /yellow roses with gypsophilla one sided arrangement in premium quality basket",
+    price: 2299,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/40-white-yellow-roses-one-sided-basket.jpg",
+    images: [
+      "/images/40-white-yellow-roses-one-sided-basket.jpg",
+    ],
+    rating: 4.9,
+    reviewsCount: 19,
+    description: "40 beautifully arranged white and yellow roses with gypsophilla in a one-sided premium quality basket.",
+    deliveryInfo: "Delivered fresh from botanical farms in insulated floristry vans.",
+    offers: ["Free customized greeting card"],
+    includes: [
+      "40 White & Yellow Roses",
+      "Gypsophila Fillers",
+      "Premium Handcrafted Basket",
+    ],
+    badge: "Premium Choice",
+  },
+  {
     id: "flower-11",
     slug: "imperial-white-lily-crimson-box",
     name: "Imperial White Lily & Crimson Rose Box",
@@ -1747,7 +1793,7 @@ export function getProductsByCategory(
 
 export function getFlowerBaskets(): Product[] {
   return CATALOG_PRODUCTS.filter(
-    (p) => p.id === "flower-9" || p.id === "flower-10" || p.id === "flower-basket-3" || p.id === "flower-basket-4" || p.id === "flower-basket-5" || p.id === "flower-basket-6" || p.id === "flower-basket-7" || p.id === "flower-basket-8" || p.id === "flower-basket-9"
+    (p) => p.id === "flower-9" || p.id === "flower-10" || p.id === "flower-basket-3" || p.id === "flower-basket-4" || p.id === "flower-basket-5" || p.id === "flower-basket-6" || p.id === "flower-basket-7" || p.id === "flower-basket-8" || p.id === "flower-basket-9" || p.id === "flower-basket-10" || p.id === "flower-basket-11"
   );
 }
 
