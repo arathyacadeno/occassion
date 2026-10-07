@@ -72,6 +72,14 @@ export const FLOWER_BASKET_PRODUCTS: CategoryProduct[] = [
     tag: "Luxury Choice",
     description: "40 pink and white roses with pink Chrysanthemum and gypsophilla gracefully arranged in a bamboo basket.",
   },
+  {
+    id: "basket-9",
+    title: "2 stem pink Lilly,20 stems roses, carnations, gypsophilla arrangement in a round container",
+    image: "/images/pink-lily-rose-carnation-round-container.jpg",
+    price: "₹1,600",
+    tag: "Elegant Choice",
+    description: "2 stem pink Lilly, 20 stems roses, carnations, and gypsophilla beautifully arranged in a premium round container.",
+  },
 ];
 
 export const BOUQUET_PRODUCTS: CategoryProduct[] = [

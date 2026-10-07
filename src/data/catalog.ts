@@ -369,6 +369,29 @@ export const CATALOG_PRODUCTS: Product[] = [
     badge: "Luxury Choice",
   },
   {
+    id: "flower-basket-9",
+    slug: "pink-lily-rose-carnation-round-container",
+    name: "2 stem pink Lilly,20 stems roses, carnations, gypsophilla arrangement in a round container",
+    price: 1600,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/pink-lily-rose-carnation-round-container.jpg",
+    images: [
+      "/images/pink-lily-rose-carnation-round-container.jpg",
+    ],
+    rating: 4.8,
+    reviewsCount: 14,
+    description: "2 stem pink Lilly, 20 stems roses, carnations, and gypsophilla beautifully arranged in a premium round container.",
+    deliveryInfo: "Delivered fresh from botanical farms in insulated floristry vans.",
+    offers: ["Free customized greeting card"],
+    includes: [
+      "2 Pink Lilies",
+      "20 Pink Roses & Carnations",
+      "Premium Round Container",
+    ],
+    badge: "Elegant Choice",
+  },
+  {
     id: "flower-11",
     slug: "imperial-white-lily-crimson-box",
     name: "Imperial White Lily & Crimson Rose Box",
@@ -1724,7 +1747,7 @@ export function getProductsByCategory(
 
 export function getFlowerBaskets(): Product[] {
   return CATALOG_PRODUCTS.filter(
-    (p) => p.id === "flower-9" || p.id === "flower-10" || p.id === "flower-basket-3" || p.id === "flower-basket-4" || p.id === "flower-basket-5" || p.id === "flower-basket-6" || p.id === "flower-basket-7" || p.id === "flower-basket-8"
+    (p) => p.id === "flower-9" || p.id === "flower-10" || p.id === "flower-basket-3" || p.id === "flower-basket-4" || p.id === "flower-basket-5" || p.id === "flower-basket-6" || p.id === "flower-basket-7" || p.id === "flower-basket-8" || p.id === "flower-basket-9"
   );
 }
 
