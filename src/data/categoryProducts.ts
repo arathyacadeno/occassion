@@ -96,6 +96,14 @@ export const FLOWER_BASKET_PRODUCTS: CategoryProduct[] = [
     tag: "Premium Choice",
     description: "40 beautifully arranged white and yellow roses with gypsophilla in a one-sided premium quality basket.",
   },
+  {
+    id: "basket-12",
+    title: "24 White/pink roses and gypsophilla beautifully arranged in a bamboo basket",
+    image: "/images/24-white-pink-roses-basket.jpg",
+    price: "₹1,400",
+    tag: "Bestseller",
+    description: "24 White and pink roses and gypsophilla beautifully arranged in a classic bamboo basket.",
+  },
 ];
 
 export const BOUQUET_PRODUCTS: CategoryProduct[] = [

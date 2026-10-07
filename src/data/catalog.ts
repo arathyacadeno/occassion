@@ -438,6 +438,29 @@ export const CATALOG_PRODUCTS: Product[] = [
     badge: "Premium Choice",
   },
   {
+    id: "flower-basket-12",
+    slug: "24-white-pink-roses-basket",
+    name: "24 White/pink roses and gypsophilla beautifully arranged in a bamboo basket",
+    price: 1400,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/24-white-pink-roses-basket.jpg",
+    images: [
+      "/images/24-white-pink-roses-basket.jpg",
+    ],
+    rating: 4.7,
+    reviewsCount: 15,
+    description: "24 White and pink roses and gypsophilla beautifully arranged in a classic bamboo basket.",
+    deliveryInfo: "Delivered fresh from botanical farms in insulated floristry vans.",
+    offers: ["Free customized greeting card"],
+    includes: [
+      "24 White & Pink Roses",
+      "Gypsophila Fillers",
+      "Handcrafted Bamboo Basket",
+    ],
+    badge: "Bestseller",
+  },
+  {
     id: "flower-11",
     slug: "imperial-white-lily-crimson-box",
     name: "Imperial White Lily & Crimson Rose Box",
@@ -1793,7 +1816,7 @@ export function getProductsByCategory(
 
 export function getFlowerBaskets(): Product[] {
   return CATALOG_PRODUCTS.filter(
-    (p) => p.id === "flower-9" || p.id === "flower-10" || p.id === "flower-basket-3" || p.id === "flower-basket-4" || p.id === "flower-basket-5" || p.id === "flower-basket-6" || p.id === "flower-basket-7" || p.id === "flower-basket-8" || p.id === "flower-basket-9" || p.id === "flower-basket-10" || p.id === "flower-basket-11"
+    (p) => p.id === "flower-9" || p.id === "flower-10" || p.id === "flower-basket-3" || p.id === "flower-basket-4" || p.id === "flower-basket-5" || p.id === "flower-basket-6" || p.id === "flower-basket-7" || p.id === "flower-basket-8" || p.id === "flower-basket-9" || p.id === "flower-basket-10" || p.id === "flower-basket-11" || p.id === "flower-basket-12"
   );
 }
 
