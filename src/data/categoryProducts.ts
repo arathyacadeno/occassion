@@ -48,6 +48,14 @@ export const FLOWER_BASKET_PRODUCTS: CategoryProduct[] = [
     tag: "Elegant Choice",
     description: "20 white pink roses with gypsophilla delicately arranged in a bamboo basket.",
   },
+  {
+    id: "basket-6",
+    title: "30 white yellow roses with gypsophilla arranged in premium quality basket",
+    image: "/images/30-white-yellow-roses-premium-basket.jpg",
+    price: "₹1,995",
+    tag: "Premium Choice",
+    description: "30 white yellow roses with gypsophilla delicately arranged in a premium quality basket.",
+  },
 ];
 
 export const BOUQUET_PRODUCTS: CategoryProduct[] = [

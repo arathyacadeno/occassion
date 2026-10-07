@@ -300,6 +300,29 @@ export const CATALOG_PRODUCTS: Product[] = [
     badge: "Elegant Choice",
   },
   {
+    id: "flower-basket-6",
+    slug: "30-white-yellow-roses-gypsophilla-premium-basket",
+    name: "30 white yellow roses with gypsophilla arranged in premium quality basket",
+    price: 1995,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/30-white-yellow-roses-premium-basket.jpg",
+    images: [
+      "/images/30-white-yellow-roses-premium-basket.jpg",
+    ],
+    rating: 4.9,
+    reviewsCount: 18,
+    description: "30 white yellow roses with gypsophilla delicately arranged in a premium quality basket.",
+    deliveryInfo: "Delivered fresh from botanical farms in insulated floristry vans.",
+    offers: ["Free customized greeting card"],
+    includes: [
+      "30 White & Yellow Roses",
+      "Gypsophila Filler",
+      "Premium Handcrafted Basket",
+    ],
+    badge: "Premium Choice",
+  },
+  {
     id: "flower-11",
     slug: "imperial-white-lily-crimson-box",
     name: "Imperial White Lily & Crimson Rose Box",
@@ -1655,7 +1678,7 @@ export function getProductsByCategory(
 
 export function getFlowerBaskets(): Product[] {
   return CATALOG_PRODUCTS.filter(
-    (p) => p.id === "flower-9" || p.id === "flower-10" || p.id === "flower-basket-3" || p.id === "flower-basket-4" || p.id === "flower-basket-5"
+    (p) => p.id === "flower-9" || p.id === "flower-10" || p.id === "flower-basket-3" || p.id === "flower-basket-4" || p.id === "flower-basket-5" || p.id === "flower-basket-6"
   );
 }
 
