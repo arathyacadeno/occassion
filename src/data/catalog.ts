@@ -323,6 +323,52 @@ export const CATALOG_PRODUCTS: Product[] = [
     badge: "Premium Choice",
   },
   {
+    id: "flower-basket-7",
+    slug: "mix-flower-half-ball-basket",
+    name: "Mix flower half ball arrangement in a basket.... 20 roses, chrysanthemum, gypsophilla",
+    price: 1495,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/mix-flower-half-ball-basket.jpg",
+    images: [
+      "/images/mix-flower-half-ball-basket.jpg",
+    ],
+    rating: 4.8,
+    reviewsCount: 22,
+    description: "Mix flower half ball arrangement in a basket featuring 20 roses, chrysanthemum, and gypsophilla.",
+    deliveryInfo: "Delivered fresh from botanical farms in insulated floristry vans.",
+    offers: ["Free customized greeting card"],
+    includes: [
+      "20 Assorted Roses",
+      "Chrysanthemums & Gypsophila",
+      "Handcrafted Basket",
+    ],
+    badge: "Bestseller",
+  },
+  {
+    id: "flower-basket-8",
+    slug: "40-pink-white-roses-chrysanthemum-basket",
+    name: "40 pink white roses with pink Chrysanthemum n gypsophilla arranged in bamboo basket",
+    price: 2500,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/40-pink-white-roses-chrysanthemum-basket.jpg",
+    images: [
+      "/images/40-pink-white-roses-chrysanthemum-basket.jpg",
+    ],
+    rating: 5.0,
+    reviewsCount: 12,
+    description: "40 pink and white roses with pink Chrysanthemum and gypsophilla gracefully arranged in a bamboo basket.",
+    deliveryInfo: "Delivered fresh from botanical farms in insulated floristry vans.",
+    offers: ["Free customized greeting card"],
+    includes: [
+      "40 Pink & White Roses",
+      "Pink Chrysanthemums & Gypsophila",
+      "Handcrafted Bamboo Basket",
+    ],
+    badge: "Luxury Choice",
+  },
+  {
     id: "flower-11",
     slug: "imperial-white-lily-crimson-box",
     name: "Imperial White Lily & Crimson Rose Box",
@@ -1678,7 +1724,7 @@ export function getProductsByCategory(
 
 export function getFlowerBaskets(): Product[] {
   return CATALOG_PRODUCTS.filter(
-    (p) => p.id === "flower-9" || p.id === "flower-10" || p.id === "flower-basket-3" || p.id === "flower-basket-4" || p.id === "flower-basket-5" || p.id === "flower-basket-6"
+    (p) => p.id === "flower-9" || p.id === "flower-10" || p.id === "flower-basket-3" || p.id === "flower-basket-4" || p.id === "flower-basket-5" || p.id === "flower-basket-6" || p.id === "flower-basket-7" || p.id === "flower-basket-8"
   );
 }
 

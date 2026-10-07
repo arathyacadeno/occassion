@@ -56,6 +56,22 @@ export const FLOWER_BASKET_PRODUCTS: CategoryProduct[] = [
     tag: "Premium Choice",
     description: "30 white yellow roses with gypsophilla delicately arranged in a premium quality basket.",
   },
+  {
+    id: "basket-7",
+    title: "Mix flower half ball arrangement in a basket.... 20 roses, chrysanthemum, gypsophilla",
+    image: "/images/mix-flower-half-ball-basket.jpg",
+    price: "₹1,495",
+    tag: "Bestseller",
+    description: "Mix flower half ball arrangement in a basket featuring 20 roses, chrysanthemum, and gypsophilla.",
+  },
+  {
+    id: "basket-8",
+    title: "40 pink white roses with pink Chrysanthemum n gypsophilla arranged in bamboo basket",
+    image: "/images/40-pink-white-roses-chrysanthemum-basket.jpg",
+    price: "₹2,500",
+    tag: "Luxury Choice",
+    description: "40 pink and white roses with pink Chrysanthemum and gypsophilla gracefully arranged in a bamboo basket.",
+  },
 ];
 
 export const BOUQUET_PRODUCTS: CategoryProduct[] = [
