@@ -781,14 +781,12 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background-color: #fdf2f2;
-  border: 1px solid #f9caca;
-  color: #d9381e;
-  padding: 8px 12px;
-  border-radius: 8px;
   font-size: 11.5px;
-  font-weight: 500;
-  margin-top: 14px;
+  color: #d9381e;
+  margin-top: -6px;
+  margin-bottom: 12px;
+  line-height: 1.35;
+  font-weight: 400;
 }
 
 .purchaseControlsWrapper {

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, Heart, X } from "lucide-react";
 import { useWishlist } from "@/context/WishlistContext";
 import { Product } from "@/data/catalog";
@@ -121,9 +122,8 @@ export default function ProductGallery({
               onMouseEnter={() => {
                 if (window.matchMedia("(hover: hover)").matches) setSelectedIndex(idx);
               }}
-              className={`${styles.thumbnailBtn} ${
-                selectedIndex === idx ? styles.thumbnailActive : ""
-              }`}
+              className={`${styles.thumbnailBtn} ${selectedIndex === idx ? styles.thumbnailActive : ""
+                }`}
             >
               <img
                 src={img}
@@ -156,9 +156,8 @@ export default function ProductGallery({
 
           <button
             type="button"
-            className={`${styles.wishlistBtn} ${
-              isWishlisted ? styles.wishlistActive : ""
-            }`}
+            className={`${styles.wishlistBtn} ${isWishlisted ? styles.wishlistActive : ""
+              }`}
             onClick={handleToggleWishlist}
             aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
             title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
@@ -196,18 +195,19 @@ export default function ProductGallery({
       </div>
 
       {/* Fullscreen lightbox */}
-      {isZoomOpen && (
-        <div
-          className={styles.modalBackdrop}
-          onClick={() => setIsZoomOpen(false)}
-          role="dialog"
-          aria-modal="true"
-          aria-label={`${productName} image preview`}
-        >
+      {isZoomOpen && typeof document !== "undefined" &&
+        createPortal(
           <div
-            className={styles.modalContent}
-            onClick={(e) => e.stopPropagation()}
+            className={styles.modalBackdrop}
+            onClick={() => setIsZoomOpen(false)}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${productName} image preview`}
           >
+            <div
+              className={styles.modalContent}
+              onClick={(e) => e.stopPropagation()}
+            >
             <button
               type="button"
               onClick={() => setIsZoomOpen(false)}
@@ -244,16 +244,16 @@ export default function ProductGallery({
                   type="button"
                   onClick={() => setSelectedIndex(idx)}
                   aria-label={`Show image ${idx + 1}`}
-                  className={`${styles.modalThumbBtn} ${
-                    selectedIndex === idx ? styles.modalThumbActive : ""
-                  }`}
+                  className={`${styles.modalThumbBtn} ${selectedIndex === idx ? styles.modalThumbActive : ""
+                    }`}
                 >
                   <img src={img} alt="" className={styles.thumbnailImg} />
                 </button>
               ))}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

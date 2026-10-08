@@ -175,7 +175,11 @@ export default function ProductInfo({
   const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
   const [cakeMessage, setCakeMessage] = useState("");
   const [cardMessage, setCardMessage] = useState("");
-  const [validationError, setValidationError] = useState("");
+  const [validationErrors, setValidationErrors] = useState<{
+    location?: string;
+    date?: string;
+    timeSlot?: string;
+  }>({});
   const [addedFeedback, setAddedFeedback] = useState(false);
   const [quantity, setQuantity] = useState(1);
 
@@ -322,6 +326,7 @@ export default function ProductInfo({
   }) => {
     setPinCode(item.pinCode);
     setTypedInput(`${item.pinCode}, ${item.area}, ${item.district || item.state || "Kerala"}, India`);
+    setValidationErrors((prev) => ({ ...prev, location: undefined }));
     setShowSuggestions(false);
     setIsPinFocused(false);
     checkDelivery(item.pinCode);
@@ -360,24 +365,29 @@ export default function ProductInfo({
   };
 
   const validateForm = () => {
+    const errors: { location?: string; date?: string; timeSlot?: string } = {};
+    let isValid = true;
+
     if (!pinCode) {
-      setValidationError("Please enter a valid Delivery Location pincode before proceeding.");
-      return false;
+      errors.location = "Please enter a valid Delivery Location pincode before proceeding.";
+      isValid = false;
+    } else if (deliveryStatus.serviceable === false) {
+      errors.location = "Sorry, we cannot deliver to this location.";
+      isValid = false;
     }
-    if (deliveryStatus.serviceable === false) {
-      setValidationError("Sorry, we cannot deliver to this location.");
-      return false;
-    }
+
     if (!selectedDate) {
-      setValidationError("Please select a Delivery Date before proceeding.");
-      return false;
+      errors.date = "Please select a Delivery Date before proceeding.";
+      isValid = false;
     }
+
     if (!selectedTimeSlot) {
-      setValidationError("Please select a Delivery Time Slot before proceeding.");
-      return false;
+      errors.timeSlot = "Please select a Delivery Time Slot before proceeding.";
+      isValid = false;
     }
-    setValidationError("");
-    return true;
+
+    setValidationErrors(errors);
+    return isValid;
   };
 
   const handleAddToCart = () => {
@@ -786,6 +796,7 @@ export default function ProductInfo({
                 }
 
                 setTypedInput(val);
+                setValidationErrors((prev) => ({ ...prev, location: undefined }));
                 
                 searchLocationQuery(val);
 
@@ -823,6 +834,7 @@ export default function ProductInfo({
                   setIsPinFocused(true);
                   setSuggestions([]);
                   setShowSuggestions(false);
+                  setValidationErrors((prev) => ({ ...prev, location: undefined }));
                   setDeliveryStatus({
                     loading: false,
                     serviceable: null,
@@ -865,6 +877,13 @@ export default function ProductInfo({
             </div>
           )}
         </div>
+
+        {validationErrors.location && (
+          <div className={styles.validationError}>
+            <AlertTriangle size={13} strokeWidth={2.5} color="#d9381e" />
+            <span>{validationErrors.location}</span>
+          </div>
+        )}
 
         {/* Warning text matching reference 2nd image when location is unavailable */}
         {!deliveryStatus.loading && deliveryStatus.serviceable === false && (
@@ -935,12 +954,21 @@ export default function ProductInfo({
               <input
                 type="date"
                 value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
+                onChange={(e) => {
+                  setSelectedDate(e.target.value);
+                  setValidationErrors((prev) => ({ ...prev, date: undefined }));
+                }}
                 className={styles.dateInput}
                 aria-label="Delivery Date"
                 min={new Date().toISOString().split("T")[0]}
               />
             </div>
+            {validationErrors.date && (
+              <div className={styles.validationError} style={{ marginTop: '8px' }}>
+                <AlertTriangle size={13} strokeWidth={2.5} color="#d9381e" />
+                <span>{validationErrors.date}</span>
+              </div>
+            )}
           </div>
 
           <div className={styles.deliveryDropdownCol}>
@@ -948,7 +976,10 @@ export default function ProductInfo({
             <div className={styles.dropdownPill}>
               <select
                 value={selectedTimeSlot}
-                onChange={(e) => setSelectedTimeSlot(e.target.value)}
+                onChange={(e) => {
+                  setSelectedTimeSlot(e.target.value);
+                  setValidationErrors((prev) => ({ ...prev, timeSlot: undefined }));
+                }}
                 className={styles.dropdownSelect}
                 aria-label="Delivery Time Slot"
               >
@@ -972,6 +1003,12 @@ export default function ProductInfo({
               </select>
               <ChevronDown size={14} className={styles.dropdownChevron} />
             </div>
+            {validationErrors.timeSlot && (
+              <div className={styles.validationError} style={{ marginTop: '8px' }}>
+                <AlertTriangle size={13} strokeWidth={2.5} color="#d9381e" />
+                <span>{validationErrors.timeSlot}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -1098,14 +1135,6 @@ export default function ProductInfo({
           </div>
         </div>
       </div>
-
-      {/* Validation Error Message */}
-      {validationError && (
-        <div className={styles.validationError}>
-          <AlertTriangle size={14} color="#d9381e" />
-          <span>{validationError}</span>
-        </div>
-      )}
 
       {/* Purchase Controls: Quantity Selector + Add to Cart (Row 1), Buy Now (Row 2) */}
       <div className={styles.purchaseControlsWrapper}>

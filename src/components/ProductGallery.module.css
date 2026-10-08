@@ -23,13 +23,15 @@
   display: flex;
   flex-direction: column;
   gap: 32px;
-  flex: 0 0 19.38%;          /* 157 / 810 */
+  flex: 0 0 19.38%;
+  /* 157 / 810 */
   min-width: 0;
 }
 
 .thumbnailBtn {
   position: relative;
-  flex: 1;                   /* 4 equal rows = 122px at Figma size */
+  flex: 1;
+  /* 4 equal rows = 122px at Figma size */
   min-height: 0;
   width: 100%;
   padding: 0;
@@ -76,7 +78,8 @@
   min-width: 0;
   aspect-ratio: 617 / 584;
   border-radius: 24px;
-  overflow: hidden;          /* clips the zoomed image */
+  overflow: hidden;
+  /* clips the zoomed image */
   background-color: #ffffff;
   box-sizing: border-box;
   cursor: zoom-in;
@@ -340,7 +343,8 @@
 /* ---------- Responsive (< 900px) ---------- */
 @media (max-width: 900px) {
   .galleryWrapper {
-    flex-direction: column-reverse; /* main image first, thumbnails below */
+    flex-direction: column-reverse;
+    /* main image first, thumbnails below */
     gap: 14px;
     max-width: 100%;
   }

@@ -28,11 +28,11 @@ export default function ProductDetails({
       product.images && product.images.length >= 4
         ? product.images
         : product.images && product.images.length > 0
-        ? [
+          ? [
             ...product.images,
             ...Array(4 - product.images.length).fill(product.image),
           ]
-        : [product.image, product.image, product.image, product.image],
+          : [product.image, product.image, product.image, product.image],
     rating: product.rating || 4.4,
     reviewsCount: product.reviewsCount || 34,
     description: product.description,
