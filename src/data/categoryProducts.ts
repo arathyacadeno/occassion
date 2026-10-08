@@ -323,6 +323,22 @@ export const BOUQUET_PRODUCTS: CategoryProduct[] = [
     tag: "New",
     description: "A bright and cheerful bouquet of vibrant yellow roses, perfectly complemented by green foliage and wrapped in beautiful purple paper.",
   },
+  {
+    id: "bouquet-blush-serenity",
+    title: "Blush Serenity Bouquet - 20 white, pink roses with gypsophilla",
+    image: "/images/flower-bouquet/blush-serenity-bouquet.jpg",
+    price: "₹1,400",
+    tag: "Premium",
+    description: "A calming bunch of 20 soft pink and white roses perfectly interspersed with delicate gypsophila, carefully wrapped in elegant pink paper.",
+  },
+  {
+    id: "bouquet-sunlit-elegance",
+    title: "Sunlit Elegance - 10 white/yellow roses Bunch",
+    image: "/images/flower-bouquet/sunlit-elegance.jpg",
+    price: "₹650",
+    tag: "Elegant",
+    description: "A bright and elegant bunch of 10 mixed white and yellow roses, thoughtfully arranged with green fillers and wrapped in a premium white paper with a beautiful yellow ribbon.",
+  },
 ];
 
 export const CAKE_PRODUCTS: CategoryProduct[] = [
