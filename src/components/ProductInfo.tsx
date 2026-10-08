@@ -170,11 +170,12 @@ export default function ProductInfo({
       ? Math.round(((activeOriginalPrice - activePrice) / activeOriginalPrice) * 100)
       : 0;
 
-  const [pinCode, setPinCode] = useState("673602");
+  const [pinCode, setPinCode] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
   const [cakeMessage, setCakeMessage] = useState("");
   const [cardMessage, setCardMessage] = useState("");
+  const [validationError, setValidationError] = useState("");
   const [addedFeedback, setAddedFeedback] = useState(false);
   const [quantity, setQuantity] = useState(1);
 
@@ -358,7 +359,26 @@ export default function ProductInfo({
     }));
   };
 
+  const validateForm = () => {
+    if (!pinCode) {
+      setValidationError("Please enter a valid Delivery Location pincode before proceeding.");
+      return false;
+    }
+    if (!selectedDate) {
+      setValidationError("Please select a Delivery Date before proceeding.");
+      return false;
+    }
+    if (!selectedTimeSlot) {
+      setValidationError("Please select a Delivery Time Slot before proceeding.");
+      return false;
+    }
+    setValidationError("");
+    return true;
+  };
+
   const handleAddToCart = () => {
+    if (!validateForm()) return;
+
     if (!isAuthenticated) {
       if (typeof window !== "undefined") {
         window.dispatchEvent(new CustomEvent("show-signin-modal"));
@@ -467,6 +487,8 @@ export default function ProductInfo({
   };
 
   const handleBuyNow = () => {
+    if (!validateForm()) return;
+
     if (!isAuthenticated) {
       if (typeof window !== "undefined") {
         window.dispatchEvent(new CustomEvent("show-signin-modal"));
@@ -1065,6 +1087,14 @@ export default function ProductInfo({
           </div>
         </div>
       </div>
+
+      {/* Validation Error Message */}
+      {validationError && (
+        <div className={styles.validationError}>
+          <AlertTriangle size={14} color="#d9381e" />
+          <span>{validationError}</span>
+        </div>
+      )}
 
       {/* Purchase Controls: Quantity Selector + Add to Cart (Row 1), Buy Now (Row 2) */}
       <div className={styles.purchaseControlsWrapper}>
