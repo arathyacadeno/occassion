@@ -15,8 +15,9 @@
 
 .exploreMoreCircleBtn {
   position: absolute;
-  top: 32px;
-  right: 32px;
+  top: 50%;
+  right: 24px;
+  transform: translateY(-50%);
   width: 44px;
   height: 44px;
   border-radius: 50%;
@@ -27,11 +28,12 @@
   justify-content: center;
   transition: all 0.2s ease;
   z-index: 2;
+  box-shadow: -4px 0 12px rgba(249, 215, 224, 0.8);
 }
 
 .exploreMoreCircleBtn:hover {
   background-color: #fae1e8;
-  transform: translateX(2px);
+  transform: translateY(-50%) translateX(2px);
 }
 
 /* Large Pink Rounded Container */
