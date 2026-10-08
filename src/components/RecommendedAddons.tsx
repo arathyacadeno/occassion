@@ -189,30 +189,6 @@ export default function RecommendedAddons({
     };
 
     updateQuantities(nextQuantities);
-
-    // Add to cart safely outside state updater
-    const addon = ADDON_PRODUCTS.find((p) => p.id === id);
-    if (addon) {
-      addItem(
-        {
-          id: addon.id,
-          name: addon.name,
-          subtitle: "Recommended Addon",
-          price: addon.price,
-          image: addon.image,
-          occasion: "celebration",
-          rating: 5.0,
-          reviewsCount: 42,
-          stems: [],
-          flowerCount: "1 item",
-          description: addon.name,
-          scent: "Fresh & Green",
-          dimensions: "Standard",
-        },
-        "Signature",
-        false
-      );
-    }
   };
 
   const handleDecrement = (id: string) => {
@@ -245,18 +221,12 @@ export default function RecommendedAddons({
               <div key={product.id} className={styles.addonCard}>
                 {/* Image Container with signature chamfered ramp wave cutout */}
                 <div className={styles.imageContainer}>
-                  <Link
-                    href={product.href}
-                    className={styles.imageLink}
-                    aria-label={`View ${product.name}`}
-                  >
                     <img
                       src={product.image}
                       alt={product.name}
                       className={styles.cardImage}
                       loading="lazy"
                     />
-                  </Link>
                   <svg
                     className={styles.waveDivider}
                     viewBox="0 0 300 28"
@@ -273,9 +243,7 @@ export default function RecommendedAddons({
                 {/* Card Details */}
                 <div className={styles.cardContent}>
                   <h3 className={styles.productName} title={product.name}>
-                    <Link href={product.href} className={styles.titleLink}>
-                      {product.name}
-                    </Link>
+                    {product.name}
                   </h3>
                   <div className={styles.productPrice}>
                     ₹ {product.price.toFixed(2)}

@@ -425,6 +425,38 @@ export default function ProductInfo({
       );
     }
 
+    // Add selected addons
+    if (selectedAddons) {
+      Object.entries(selectedAddons).forEach(([addonId, qty]) => {
+        if (qty > 0) {
+          const addon = ADDON_PRODUCTS.find((p) => p.id === addonId);
+          if (addon) {
+            addItem(
+              {
+                id: addon.id,
+                name: addon.name,
+                subtitle: "Recommended Addon",
+                price: addon.price,
+                image: addon.image,
+                occasion: "celebration",
+                rating: 5.0,
+                reviewsCount: 42,
+                stems: [],
+                flowerCount: "1 item",
+                description: addon.name,
+                scent: "Fresh & Green",
+                dimensions: "Standard",
+              },
+              "Signature",
+              false,
+              undefined,
+              qty
+            );
+          }
+        }
+      });
+    }
+
     setAddedFeedback(true);
     setTimeout(() => {
       setAddedFeedback(false);
