@@ -237,9 +237,6 @@ export default function ProductInfo({
         const data = await res.json();
         if (data.pinCode) {
           setPinCode(data.pinCode);
-          if (data.area) {
-            setTypedInput(`${data.pinCode}, ${data.area}, ${data.district || data.state || "Kerala"}, India`);
-          }
         }
         setDeliveryStatus({
           loading: false,
@@ -780,15 +777,23 @@ export default function ProductInfo({
                 }, 200);
               }}
               onChange={(e) => {
-                const val = e.target.value;
-                setTypedInput(val);
+                let val = e.target.value;
                 const cleanDigits = val.replace(/\D/g, "");
+
+                // If editing a formatted string and digits changed, strip the old city text
+                if (val.includes(",") && cleanDigits !== pinCode) {
+                  val = cleanDigits;
+                }
+
+                setTypedInput(val);
+                
+                searchLocationQuery(val);
+
                 if (/^\d{6}$/.test(cleanDigits)) {
                   setPinCode(cleanDigits);
                   checkDelivery(cleanDigits);
-                  setShowSuggestions(false);
-                } else {
-                  searchLocationQuery(val);
+                } else if (pinCode) {
+                  setPinCode("");
                 }
               }}
               onKeyDown={(e) => {

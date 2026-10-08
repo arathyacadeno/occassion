@@ -26,7 +26,26 @@ export async function GET(request: Request) {
       return NextResponse.json(result);
     }
 
-    const suggestions = searchLocations(q);
+    let suggestions = searchLocations(q);
+
+    if (suggestions.length === 0 && /^\d{6}$/.test(q)) {
+      try {
+        const pinRes = await fetch(`https://api.postalpincode.in/pincode/${q}`);
+        const pinData = await pinRes.json();
+        if (pinData && pinData[0] && pinData[0].Status === "Success") {
+          const postOffice = pinData[0].PostOffice[0];
+          suggestions = [{
+            pinCode: q,
+            area: postOffice.Name,
+            district: postOffice.District,
+            state: postOffice.State
+          }];
+        }
+      } catch (e) {
+        console.error("Failed to fetch external pincode for autocomplete", e);
+      }
+    }
+
     return NextResponse.json({ suggestions });
   } catch (err) {
     console.error("[delivery/search] error:", err);
@@ -62,6 +81,22 @@ export async function POST(request: Request) {
     }
 
     const result = checkDelivery({ pinCode, query, shopId });
+
+    if (!result.area && inputVal && /^\d{6}$/.test(inputVal)) {
+      try {
+        const pinRes = await fetch(`https://api.postalpincode.in/pincode/${inputVal}`);
+        const pinData = await pinRes.json();
+        if (pinData && pinData[0] && pinData[0].Status === "Success") {
+          const postOffice = pinData[0].PostOffice[0];
+          result.area = postOffice.Name;
+          result.district = postOffice.District;
+          result.state = postOffice.State;
+          result.pinCode = inputVal;
+        }
+      } catch (e) {
+        console.error("Failed to fetch external pincode", e);
+      }
+    }
 
     return NextResponse.json(result, { status: 200 });
   } catch (err) {
