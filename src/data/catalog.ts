@@ -407,6 +407,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     ],
     badge: "Exotic",
   },
+
   {
     id: "bouquet-rose-garden-bliss",
     slug: "rose-garden-bliss",
@@ -427,6 +428,30 @@ export const CATALOG_PRODUCTS: Product[] = [
       "60 Premium Mixed Roses",
       "Gypsophila Fillers",
       "Elegant Wrapping & Ribbon",
+    ],
+    badge: "Premium",
+  },
+  {
+    id: "bouquet-rose-royale",
+    slug: "rose-royale",
+    name: "Rose Royale",
+    price: 3200,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/flower-bouquet/rose-royale.jpg",
+    images: [
+      "/images/flower-bouquet/rose-royale.jpg",
+    ],
+    rating: 4.9,
+    reviewsCount: 18,
+    description: "A spectacular royal arrangement featuring premium red and white roses, beautifully bound with a crimson ribbon.",
+    deliveryInfo: "Delivered fresh from botanical farms in insulated floristry vans.",
+    offers: ["Free customized greeting card"],
+    includes: [
+      "Premium Red Roses",
+      "Premium White Roses",
+      "Gypsophila Fillers",
+      "Elegant Red Ribbon",
     ],
     badge: "Premium",
   },

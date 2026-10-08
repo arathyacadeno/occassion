@@ -204,6 +204,14 @@ export const BOUQUET_PRODUCTS: CategoryProduct[] = [
     description: "A stunning symphony of exotic purple orchids and delicate pink roses, beautifully arranged to create a lasting impression.",
   },
   {
+    id: "bouquet-rose-royale",
+    title: "Rose Royale",
+    image: "/images/flower-bouquet/rose-royale.jpg",
+    price: "₹3,200",
+    tag: "Premium",
+    description: "A spectacular royal arrangement featuring premium red and white roses, beautifully bound with a crimson ribbon.",
+  },
+  {
     id: "bouquet-rose-garden-bliss",
     title: "Rose Garden Bliss - 60 roses",
     image: "/images/flower-bouquet/rose-garden-bliss.jpg",
