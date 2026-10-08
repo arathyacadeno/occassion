@@ -59,11 +59,15 @@ export default function SinglePageCheckoutPayment() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Delivery Form State
-  const [fullName, setFullName] = useState("");
-  const [mobileNumber, setMobileNumber] = useState("");
-  const [emailAddress, setEmailAddress] = useState("");
+  const [senderName, setSenderName] = useState("");
+  const [senderMobile, setSenderMobile] = useState("");
+  const [senderEmail, setSenderEmail] = useState("");
+  
+  const [receiverName, setReceiverName] = useState("");
+  const [receiverMobile, setReceiverMobile] = useState("");
   const [houseBuilding, setHouseBuilding] = useState("");
-  const [streetArea, setStreetArea] = useState("");
+  const [street, setStreet] = useState("");
+  const [landmark, setLandmark] = useState("");
   const [city, setCity] = useState("Kozhikode (Calicut)");
   const [state, setState] = useState("Kerala");
   const [pinCode, setPinCode] = useState("673602");
@@ -272,11 +276,14 @@ export default function SinglePageCheckoutPayment() {
     setIsSubmitting(true);
 
     const deliveryPayload = {
-      fullName,
-      mobile: `+91 ${mobileNumber}`,
-      email: emailAddress,
+      senderName,
+      senderMobile: `+91 ${senderMobile}`,
+      senderEmail,
+      receiverName,
+      receiverMobile: `+91 ${receiverMobile}`,
       houseBuilding,
-      streetArea,
+      street,
+      landmark,
       city,
       state,
       pinCode,
@@ -382,42 +389,44 @@ export default function SinglePageCheckoutPayment() {
         <form onSubmit={handleSubmitOrder} className={styles.checkoutGrid}>
           {/* ================= LEFT COLUMN ================= */}
           <div className={styles.leftColumn}>
-            {/* Delivery Form Fields */}
-            <div className={styles.formRow}>
+            {/* Sender Details */}
+            <div className={styles.sectionHeader} style={{ marginTop: 0 }}>
+              <h2 className={styles.sectionTitle}>Sender Details</h2>
+            </div>
+            
+            <div className={`${styles.formRow} ${styles.threeCols}`}>
               <div className={styles.fieldGroup}>
-                <label htmlFor="fullName" className={styles.fieldLabel}>
-                  Full Name
+                <label htmlFor="senderName" className={styles.fieldLabel}>
+                  Sender Name
                 </label>
                 <input
-                  id="fullName"
+                  id="senderName"
                   type="text"
                   required
-                  placeholder="Enter your full name"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Your full name"
+                  value={senderName}
+                  onChange={(e) => setSenderName(e.target.value)}
                   className={styles.inputField}
                 />
               </div>
-            </div>
 
-            <div className={`${styles.formRow} ${styles.twoCols}`}>
               <div className={styles.fieldGroup}>
-                <label htmlFor="mobileNumber" className={styles.fieldLabel}>
-                  Mobile Number
+                <label htmlFor="senderMobile" className={styles.fieldLabel}>
+                  Sender Mobile
                 </label>
                 <div className={styles.phoneInputWrapper}>
                   <span className={styles.phonePrefix}>+91</span>
                   <input
-                    id="mobileNumber"
+                    id="senderMobile"
                     type="tel"
                     required
                     maxLength={10}
-                    placeholder="10-digit mobile number"
+                    placeholder="10-digit mobile"
                     pattern="[6-9][0-9]{9}"
                     title="Enter a valid 10-digit Indian mobile number"
-                    value={mobileNumber}
+                    value={senderMobile}
                     onChange={(e) =>
-                      setMobileNumber(e.target.value.replace(/\D/g, ""))
+                      setSenderMobile(e.target.value.replace(/\D/g, ""))
                     }
                     className={styles.phoneInputField}
                   />
@@ -425,22 +434,69 @@ export default function SinglePageCheckoutPayment() {
               </div>
 
               <div className={styles.fieldGroup}>
-                <label htmlFor="emailAddress" className={styles.fieldLabel}>
+                <label htmlFor="senderEmail" className={styles.fieldLabel}>
                   Email Address
                 </label>
                 <input
-                  id="emailAddress"
+                  id="senderEmail"
                   type="email"
                   required
                   placeholder="your.email@example.com"
-                  value={emailAddress}
-                  onChange={(e) => setEmailAddress(e.target.value)}
+                  value={senderEmail}
+                  onChange={(e) => setSenderEmail(e.target.value)}
                   className={styles.inputField}
                 />
               </div>
             </div>
 
+            <hr className={styles.divider} />
+
+            {/* Receiver Details */}
+            <div className={styles.sectionHeader}>
+              <h2 className={styles.sectionTitle}>Receiver Details & Address</h2>
+            </div>
+
             <div className={`${styles.formRow} ${styles.twoCols}`}>
+              <div className={styles.fieldGroup}>
+                <label htmlFor="receiverName" className={styles.fieldLabel}>
+                  Receiver Name
+                </label>
+                <input
+                  id="receiverName"
+                  type="text"
+                  required
+                  placeholder="Recipient's full name"
+                  value={receiverName}
+                  onChange={(e) => setReceiverName(e.target.value)}
+                  className={styles.inputField}
+                />
+              </div>
+
+              <div className={styles.fieldGroup}>
+                <label htmlFor="receiverMobile" className={styles.fieldLabel}>
+                  Receiver Mobile
+                </label>
+                <div className={styles.phoneInputWrapper}>
+                  <span className={styles.phonePrefix}>+91</span>
+                  <input
+                    id="receiverMobile"
+                    type="tel"
+                    required
+                    maxLength={10}
+                    placeholder="10-digit mobile"
+                    pattern="[6-9][0-9]{9}"
+                    title="Enter a valid 10-digit Indian mobile number"
+                    value={receiverMobile}
+                    onChange={(e) =>
+                      setReceiverMobile(e.target.value.replace(/\D/g, ""))
+                    }
+                    className={styles.phoneInputField}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className={`${styles.formRow} ${styles.threeCols}`}>
               <div className={styles.fieldGroup}>
                 <label htmlFor="houseBuilding" className={styles.fieldLabel}>
                   House / Building Name
@@ -457,16 +513,30 @@ export default function SinglePageCheckoutPayment() {
               </div>
 
               <div className={styles.fieldGroup}>
-                <label htmlFor="streetArea" className={styles.fieldLabel}>
-                  Street / Area
+                <label htmlFor="street" className={styles.fieldLabel}>
+                  Street
                 </label>
                 <input
-                  id="streetArea"
+                  id="street"
                   type="text"
                   required
-                  placeholder="Street, Landmark, Area name"
-                  value={streetArea}
-                  onChange={(e) => setStreetArea(e.target.value)}
+                  placeholder="Street, Area name"
+                  value={street}
+                  onChange={(e) => setStreet(e.target.value)}
+                  className={styles.inputField}
+                />
+              </div>
+
+              <div className={styles.fieldGroup}>
+                <label htmlFor="landmark" className={styles.fieldLabel}>
+                  Landmark
+                </label>
+                <input
+                  id="landmark"
+                  type="text"
+                  placeholder="Near something (optional)"
+                  value={landmark}
+                  onChange={(e) => setLandmark(e.target.value)}
                   className={styles.inputField}
                 />
               </div>

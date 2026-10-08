@@ -635,3 +635,19 @@
   font-weight: 600;
 }
 
+.sectionHeader {
+  margin-top: 16px;
+  margin-bottom: 24px;
+}
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+.divider {
+  border: 0;
+  height: 1px;
+  background-color: #e2e8f0;
+  margin: 32px 0;
+}
