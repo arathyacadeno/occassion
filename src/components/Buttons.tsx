@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ShoppingBag, Check } from "lucide-react";
+import { ShoppingBag, Check, Minus, Plus } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { Product } from "@/data/catalog";
@@ -20,9 +20,12 @@ export function AddToCartButton({
   size = "small",
   variant = "default",
 }: AddToCartButtonProps) {
-  const { addItem } = useCart();
+  const { addItem, items, updateQty } = useCart();
   const { isAuthenticated } = useAuth();
   const [added, setAdded] = useState(false);
+
+  const cartItemIndex = items.findIndex((i) => i.bouquet.id === product.id);
+  const cartItem = cartItemIndex > -1 ? items[cartItemIndex] : null;
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -65,6 +68,46 @@ export function AddToCartButton({
       setAdded(false);
     }, 1800);
   };
+
+  if (cartItem) {
+    return (
+      <div
+        className={`${styles.qtySelector} ${
+          variant === "pill" ? styles.qtyPill : ""
+        } ${size === "large" ? styles.qtyLarge : ""} ${className}`}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+      >
+        <button
+          type="button"
+          className={styles.qtyBtn}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            updateQty(cartItemIndex, cartItem.quantity - 1);
+          }}
+          aria-label="Decrease quantity"
+        >
+          <Minus size={16} strokeWidth={3} />
+        </button>
+        <span className={styles.qtyText}>{cartItem.quantity}</span>
+        <button
+          type="button"
+          className={styles.qtyBtn}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            updateQty(cartItemIndex, cartItem.quantity + 1);
+          }}
+          aria-label="Increase quantity"
+        >
+          <Plus size={16} strokeWidth={3} />
+        </button>
+      </div>
+    );
+  }
 
   return (
     <button
