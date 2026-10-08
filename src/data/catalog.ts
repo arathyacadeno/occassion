@@ -338,6 +338,98 @@ export const CATALOG_PRODUCTS: Product[] = [
 
   // ==================== BOUQUET PRODUCTS (/flower-bouquets) ====================
   {
+    id: "bouquet-orchid-symphony",
+    slug: "orchid-symphony-bouquet",
+    name: "Orchid Symphony",
+    price: 2000,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/flower-bouquet/orchid-symphony.jpg",
+    images: [
+      "/images/flower-bouquet/orchid-symphony.jpg",
+    ],
+    rating: 4.9,
+    reviewsCount: 15,
+    description: "A stunning symphony of purple orchids and delicate pink roses, beautifully wrapped in matching floral paper.",
+    deliveryInfo: "Delivered fresh from botanical farms in insulated floristry vans.",
+    offers: ["Free customized greeting card"],
+    includes: [
+      "Purple Orchids",
+      "Pink Roses",
+      "Premium Wrapping",
+    ],
+    badge: "Bestseller",
+  },
+  {
+    id: "bouquet-soft",
+    slug: "soft-bouquet",
+    name: "Soft",
+    price: 20000,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/flower-bouquet/ivory-elegance.jpg",
+    images: [
+      "/images/flower-bouquet/ivory-elegance.jpg",
+    ],
+    rating: 4.9,
+    reviewsCount: 10,
+    description: "A breathtaking bouquet of soft pink roses and lilies delicately wrapped in vibrant green premium paper, conveying a message of love and joy.",
+    deliveryInfo: "Delivered fresh from botanical farms in insulated floristry vans.",
+    offers: ["Free customized greeting card"],
+    includes: [
+      "Soft Pink Roses",
+      "Lilies",
+      "Premium Green Wrapping",
+    ],
+    badge: "Luxury Choice",
+  },
+  {
+    id: "bouquet-rose-garden-bliss",
+    slug: "rose-garden-bliss-bouquet",
+    name: "Rose Garden Bliss - 60 roses",
+    price: 3600,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/flower-bouquet/rose-garden-bliss.png",
+    images: [
+      "/images/flower-bouquet/rose-garden-bliss.png",
+    ],
+    rating: 4.9,
+    reviewsCount: 15,
+    description: "A magnificent arrangement of 60 fresh roses beautifully arranged as a garden bliss bouquet, perfect for conveying deep affection and grand celebrations.",
+    deliveryInfo: "Delivered fresh from botanical farms in insulated floristry vans.",
+    offers: ["Free customized greeting card"],
+    includes: [
+      "60 Premium Roses",
+      "Greenery",
+      "Premium Wrapping",
+    ],
+    badge: "Luxury Choice",
+  },
+  {
+    id: "bouquet-black-velvet-roses",
+    slug: "black-velvet-roses-bouquet",
+    name: "Black Velvet Roses - 20 roses with gypsophilla",
+    price: 1300,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/flower-bouquet/black-velvet-roses.jpg",
+    images: [
+      "/images/flower-bouquet/black-velvet-roses.jpg",
+    ],
+    rating: 4.8,
+    reviewsCount: 12,
+    description: "20 elegant red roses with gypsophilla beautifully wrapped in striking black premium paper with gold accents.",
+    deliveryInfo: "Delivered fresh from botanical farms in insulated floristry vans.",
+    offers: ["Free customized greeting card"],
+    includes: [
+      "20 Red Roses",
+      "Gypsophila Fillers",
+      "Premium Black & Gold Wrapping",
+    ],
+    badge: "Classic Choice",
+  },
+  {
     id: "bouquet-9",
     slug: "royal-purple-tulip-lavender-bouquet",
     name: "Royal Purple Tulip & Lavender Bouquet",
@@ -1620,7 +1712,8 @@ export function getFlowerBouquets(): Product[] {
         p.description.toLowerCase().includes("bouquet") ||
         p.description.toLowerCase().includes("hand-tied") ||
         p.id.startsWith("bouquet-") ||
-        p.id === "flower-lily-celestial-daisy")
+        p.id === "flower-lily-celestial-daisy" ||
+        p.id === "bouquet-orchid-symphony")
   );
 }
 

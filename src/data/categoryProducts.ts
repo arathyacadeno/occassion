@@ -179,6 +179,38 @@ export const BOUQUET_PRODUCTS: CategoryProduct[] = [
     tag: "European Chic",
     description: "A dreamy garden-gathered bunch featuring delicate seasonal blooms and fresh fragrant eucalyptus.",
   },
+  {
+    id: "bouquet-orchid-symphony",
+    title: "Orchid Symphony",
+    image: "/images/flower-bouquet/orchid-symphony.jpg",
+    price: "₹2,000",
+    tag: "Bestseller",
+    description: "A stunning symphony of purple orchids and delicate pink roses, beautifully wrapped in matching floral paper.",
+  },
+  {
+    id: "bouquet-soft",
+    title: "Soft",
+    image: "/images/flower-bouquet/ivory-elegance.jpg",
+    price: "₹20,000",
+    tag: "Premium",
+    description: "A breathtaking bouquet of soft pink roses and lilies delicately wrapped in vibrant green premium paper.",
+  },
+  {
+    id: "bouquet-rose-garden-bliss",
+    title: "Rose Garden Bliss - 60 roses",
+    image: "/images/flower-bouquet/rose-garden-bliss.png",
+    price: "₹3,600",
+    tag: "Luxury Choice",
+    description: "A magnificent arrangement of 60 fresh roses beautifully arranged as a garden bliss bouquet.",
+  },
+  {
+    id: "bouquet-black-velvet-roses",
+    title: "Black Velvet Roses - 20 roses with gypsophilla",
+    image: "/images/flower-bouquet/black-velvet-roses.jpg",
+    price: "₹1,300",
+    tag: "Classic Choice",
+    description: "20 elegant red roses with gypsophilla beautifully wrapped in striking black premium paper with gold accents.",
+  },
 ];
 
 export const CAKE_PRODUCTS: CategoryProduct[] = [
