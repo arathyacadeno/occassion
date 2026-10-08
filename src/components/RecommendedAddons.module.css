@@ -4,13 +4,39 @@
   width: 100%;
 }
 
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
 .sectionTitle {
   font-size: 1.35rem;
   font-weight: 600;
   color: #1f2937;
-  margin: 0 0 22px 0;
+  margin: 0;
   letter-spacing: -0.01em;
   font-family: var(--font-sans, "Plus Jakarta Sans", sans-serif);
+}
+
+.exploreMoreBtn {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #c82a63;
+  text-decoration: none;
+  padding: 8px 24px;
+  border-radius: 9999px;
+  background: #fcedf2;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.exploreMoreBtn:hover {
+  background: #f7dbe4;
+  text-decoration: none;
 }
 
 /* Large Pink Rounded Container */

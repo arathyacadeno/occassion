@@ -17,15 +17,7 @@ export interface AddonProduct {
 }
 
 export const ADDON_PRODUCTS: AddonProduct[] = [
-  {
-    id: "addon-ferrero",
-    name: "Ferrero Rocher Chocolate",
-    price: 80,
-    image: "/images/addons/ferrero-rocher.jpg",
-    category: "Chocolates",
-    href: "/special-occasions/ferrero-rocher-chocolate",
-    sectionHref: "/special-occasions",
-  },
+
   {
     id: "addon-cadbury-silk",
     name: "Cadbury Dairy Milk Silk",
@@ -124,7 +116,12 @@ export default function RecommendedAddons({
 
   return (
     <section className={styles.addonsSection} aria-label="Recommended Addon Products">
-      <h2 className={styles.sectionTitle}>Recommended Addon Products</h2>
+      <div className={styles.sectionHeader}>
+        <h2 className={styles.sectionTitle}>Recommended Addon Products</h2>
+        <Link href="/special-occasions" className={styles.exploreMoreBtn}>
+          Explore More
+        </Link>
+      </div>
 
       {/* Large Pink Card Container matching target layout */}
       <div className={styles.addonsContainer}>
