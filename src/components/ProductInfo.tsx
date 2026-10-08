@@ -71,6 +71,7 @@ export default function ProductInfo({
   const [customStems, setCustomStems] = useState<number>(8);
 
   const isCake = product.category === "cakes";
+  const isFlower = product.category === "flower" || isBouquet;
 
   // Resolve variants if explicitly defined, for cakes (weight options), or for lily products
   const variants: ProductVariant[] | null =
@@ -172,6 +173,8 @@ export default function ProductInfo({
   const [pinCode, setPinCode] = useState("673602");
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
+  const [cakeMessage, setCakeMessage] = useState("");
+  const [cardMessage, setCardMessage] = useState("");
   const [addedFeedback, setAddedFeedback] = useState(false);
   const [quantity, setQuantity] = useState(1);
 
@@ -386,7 +389,7 @@ export default function ProductInfo({
         },
         "Signature",
         false,
-        undefined,
+        cardMessage ? `Message on Card: ${cardMessage}` : undefined,
         quantity
       );
     } else {
@@ -420,7 +423,7 @@ export default function ProductInfo({
         },
         "Signature",
         false,
-        undefined,
+        isCake && cakeMessage ? `Message on Cake: ${cakeMessage}` : (isFlower && cardMessage ? `Message on Card: ${cardMessage}` : undefined),
         quantity
       );
     }
@@ -482,6 +485,7 @@ export default function ProductInfo({
       originalPrice: activeOriginalPrice,
       image: selectedVariant ? selectedVariant.image : product.image,
       quantity: quantity,
+      subtitle: isCake && cakeMessage ? `Message on Cake: ${cakeMessage}` : (isFlower && cardMessage ? `Message on Card: ${cardMessage}` : undefined),
     };
 
     const addonItems: CheckoutItem[] = [];
@@ -851,6 +855,42 @@ export default function ProductInfo({
               This item isn't available at this location. Tap below to explore
               available gifts.
             </span>
+          </div>
+        )}
+
+        {/* Cake Message Input (Only for cakes) */}
+        {isCake && (
+          <div className={styles.cakeMessageRow}>
+            <label className={styles.dropdownLabel}>Message on Cake</label>
+            <div className={styles.dropdownPill}>
+              <input
+                type="text"
+                value={cakeMessage}
+                onChange={(e) => setCakeMessage(e.target.value)}
+                placeholder="e.g. Happy Birthday!"
+                className={styles.cakeMessageInput}
+                maxLength={40}
+                aria-label="Message on Cake"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Card Message Input (Only for flowers) */}
+        {isFlower && (
+          <div className={styles.cakeMessageRow}>
+            <label className={styles.dropdownLabel}>Message on Card</label>
+            <div className={styles.dropdownPill}>
+              <input
+                type="text"
+                value={cardMessage}
+                onChange={(e) => setCardMessage(e.target.value)}
+                placeholder="e.g. With love on your special day!"
+                className={styles.cakeMessageInput}
+                maxLength={100}
+                aria-label="Message on Card"
+              />
+            </div>
           </div>
         )}
 

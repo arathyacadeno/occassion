@@ -588,6 +588,30 @@
   background-color: #6b7280;
 }
 
+/* Cake Message Row */
+.cakeMessageRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.cakeMessageInput {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 11.5px;
+  color: #444444;
+  padding: 0;
+  box-sizing: border-box;
+}
+.cakeMessageInput::placeholder {
+  color: #999999;
+}
+
 /* Two-column Delivery Date & Time Slot Row */
 .deliveryDropdownsRow {
   display: grid;
