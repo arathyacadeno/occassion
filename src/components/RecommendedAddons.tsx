@@ -35,6 +35,15 @@ export const ADDON_PRODUCTS: AddonProduct[] = [
     href: "/special-occasions/kitkat",
     sectionHref: "/special-occasions",
   },
+    {
+    id: "addon-golden-crumb-chocolate-drizzle-cake",
+    name: "Golden Crumb Chocolate Drizzle Cake",
+    price: 1200,
+    image: "/images/cakes/golden-crumb-chocolate-drizzle-cake.png",
+    category: "Cakes",
+    href: "/cakes/golden-crumb-chocolate-drizzle-cake",
+    sectionHref: "/cakes",
+  },
   {
     id: "addon-soft-toys",
     name: "Soft Toys",
@@ -108,15 +117,15 @@ export const ADDON_PRODUCTS: AddonProduct[] = [
     sectionHref: "/cakes",
   },
   {
-    id: "addon-teddy-bear",
-    name: "Teddy Bear",
-    price: 80,
-    image: "/images/addons/Cute teddybear.jpg",
-    category: "Gifts",
-    href: "/special-occasions/teddy-bear",
-    sectionHref: "/special-occasions",
+    id: "addon-elegant-red-heart-anniversary-cake",
+    name: "Elegant Red Heart Anniversary Cake",
+    price: 1200,
+    image: "/images/cakes/elegant-red-heart-anniversary-cake.png",
+    category: "Cakes",
+    href: "/cakes/elegant-red-heart-anniversary-cake",
+    sectionHref: "/cakes",
   },
-  
+
 ];
 
 export interface RecommendedAddonsProps {
@@ -131,7 +140,12 @@ const getAddonProducts = (category?: string) => {
     return ADDON_PRODUCTS.filter(p => p.category === "Chocolates" || p.category === "Gifts");
   }
   if (norm === "flower" || norm === "basket") {
-    return ADDON_PRODUCTS.filter(p => p.category === "Cakes" || p.category === "Chocolates" || p.category === "Gifts");
+    const valid = ADDON_PRODUCTS.filter(p => p.category === "Cakes" || p.category === "Chocolates" || p.category === "Gifts");
+    const cakes = valid.filter(p => p.category === "Cakes");
+    const gifts = valid.filter(p => p.category === "Gifts");
+    const chocolates = valid.filter(p => p.category === "Chocolates");
+    // Bring cakes and gifts to the front so they are visible in the initial 6 slots
+    return [...cakes, ...gifts, ...chocolates];
   }
   return ADDON_PRODUCTS;
 };
