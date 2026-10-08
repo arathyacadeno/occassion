@@ -311,67 +311,63 @@ function seedInitialData(db: any) {
     insertCoupon.run(cp.id, cp.code, cp.type, cp.value, cp.minOrder, cp.maxDiscount);
   }
 
-  // 6. Products from CATALOG_PRODUCTS
-  const productCount = db.prepare("SELECT count(*) as count FROM products").get();
-  if (productCount && productCount.count === 0) {
-    const insertProduct = db.prepare(`
-      INSERT OR IGNORE INTO products (
-        id, name, slug, description, images, price, discount_price, stock, sku,
-        category_id, flower_type_id, occasion_id, featured, active, rating,
-        reviews_count, delivery_info, offers, includes, badge, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
+  const insertProduct = db.prepare(`
+    INSERT OR IGNORE INTO products (
+      id, name, slug, description, images, price, discount_price, stock, sku,
+      category_id, flower_type_id, occasion_id, featured, active, rating,
+      reviews_count, delivery_info, offers, includes, badge, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
 
-    for (const p of CATALOG_PRODUCTS) {
-      // Map category
-      let categoryId = "cat-flower-bouquet";
-      if (p.category === "cakes") categoryId = "cat-cakes";
-      else if (p.slug.includes("basket")) categoryId = "cat-flower-basket";
-      else if (p.slug.includes("table")) categoryId = "cat-table-decor";
-      else if (p.slug.includes("wreath")) categoryId = "cat-wreath";
+  for (const p of CATALOG_PRODUCTS) {
+    // Map category
+    let categoryId = "cat-flower-bouquet";
+    if (p.category === "cakes") categoryId = "cat-cakes";
+    else if (p.slug.includes("basket")) categoryId = "cat-flower-basket";
+    else if (p.slug.includes("table")) categoryId = "cat-table-decor";
+    else if (p.slug.includes("wreath")) categoryId = "cat-wreath";
 
-      // Map flower type
-      let flowerTypeId = "ft-mixed-flowers";
-      const lower = (p.name + " " + p.slug).toLowerCase();
-      if (lower.includes("rose")) flowerTypeId = "ft-roses";
-      else if (lower.includes("lily") || lower.includes("lilies")) flowerTypeId = "ft-lilies";
-      else if (lower.includes("orchid")) flowerTypeId = "ft-orchids";
-      else if (lower.includes("sunflower")) flowerTypeId = "ft-sunflowers";
+    // Map flower type
+    let flowerTypeId = "ft-mixed-flowers";
+    const lower = (p.name + " " + p.slug).toLowerCase();
+    if (lower.includes("rose")) flowerTypeId = "ft-roses";
+    else if (lower.includes("lily") || lower.includes("lilies")) flowerTypeId = "ft-lilies";
+    else if (lower.includes("orchid")) flowerTypeId = "ft-orchids";
+    else if (lower.includes("sunflower")) flowerTypeId = "ft-sunflowers";
 
-      // Map occasion
-      let occasionId = "occ-birthday";
-      if (lower.includes("anniversary")) occasionId = "occ-anniversary";
-      else if (lower.includes("wedding")) occasionId = "occ-wedding";
-      else if (lower.includes("valentine") || lower.includes("love")) occasionId = "occ-valentines";
-      else if (lower.includes("housewarming")) occasionId = "occ-housewarming";
+    // Map occasion
+    let occasionId = "occ-birthday";
+    if (lower.includes("anniversary")) occasionId = "occ-anniversary";
+    else if (lower.includes("wedding")) occasionId = "occ-wedding";
+    else if (lower.includes("valentine") || lower.includes("love")) occasionId = "occ-valentines";
+    else if (lower.includes("housewarming")) occasionId = "occ-housewarming";
 
-      const allImages = Array.isArray(p.images) && p.images.length > 0 ? p.images : [p.image];
+    const allImages = Array.isArray(p.images) && p.images.length > 0 ? p.images : [p.image];
 
-      insertProduct.run(
-        p.id,
-        p.name,
-        p.slug,
-        p.description || "",
-        JSON.stringify(allImages),
-        p.price,
-        p.originalPrice || null,
-        45, // initial stock
-        `SKU-${p.id.toUpperCase()}`,
-        categoryId,
-        flowerTypeId,
-        occasionId,
-        p.badge ? 1 : 0,
-        1,
-        p.rating || 4.8,
-        p.reviewsCount || 10,
-        p.deliveryInfo || "Express same-day Calicut delivery available",
-        JSON.stringify(p.offers || []),
-        JSON.stringify(p.includes || []),
-        p.badge || null,
-        now,
-        now
-      );
-    }
+    insertProduct.run(
+      p.id,
+      p.name,
+      p.slug,
+      p.description || "",
+      JSON.stringify(allImages),
+      p.price,
+      p.originalPrice || null,
+      45, // initial stock
+      `SKU-${p.id.toUpperCase()}`,
+      categoryId,
+      flowerTypeId,
+      occasionId,
+      p.badge ? 1 : 0,
+      1,
+      p.rating || 4.8,
+      p.reviewsCount || 10,
+      p.deliveryInfo || "Express same-day Calicut delivery available",
+      JSON.stringify(p.offers || []),
+      JSON.stringify(p.includes || []),
+      p.badge || null,
+      now,
+      now
+    );
   }
 
   // 7. Seed demo orders (matching track-order demo IDs: OCC-100123 and OCC-100098)
