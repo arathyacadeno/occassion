@@ -18,21 +18,30 @@ export interface AddonProduct {
 
 export const ADDON_PRODUCTS: AddonProduct[] = [
   {
-    id: "addon-cadbury-silk-heart-blush",
-    name: "Cadbury Dairy Milk Silk Heart Blush",
-    price: 80,
-    image: "/images/addons/cadbury-silk-heart-blush.jpg",
+    id: "addon-ferrero-rocher-heart",
+    name: "Ferrero Rocher Heart",
+    price: 150,
+    image: "/images/addons/ferrero-rocher-heart.jpg",
     category: "Chocolates",
-    href: "/special-occasions/cadbury-silk-heart-blush",
+    href: "/special-occasions/ferrero-rocher-heart",
     sectionHref: "/special-occasions",
   },
   {
-    id: "addon-cadbury-dairy-milk",
-    name: "Cadbury Dairy Milk",
-    price: 80,
-    image: "/images/addons/cadbury-dairy-milk.jpg",
+    id: "addon-kitkat",
+    name: "KitKat",
+    price: 40,
+    image: "/images/addons/kitkat.jpg",
     category: "Chocolates",
-    href: "/special-occasions/cadbury-dairy-milk",
+    href: "/special-occasions/kitkat",
+    sectionHref: "/special-occasions",
+  },
+  {
+    id: "addon-soft-toys",
+    name: "Soft Toys",
+    price: 80,
+    image: "/images/addons/soft-toys.jpg",
+    category: "Gifts",
+    href: "/special-occasions/soft-toys",
     sectionHref: "/special-occasions",
   },
   {
@@ -45,21 +54,39 @@ export const ADDON_PRODUCTS: AddonProduct[] = [
     sectionHref: "/special-occasions",
   },
   {
+    id: "addon-toblerone",
+    name: "Toblerone",
+    price: 100,
+    image: "/images/addons/toblerone.jpg",
+    category: "Chocolates",
+    href: "/special-occasions/toblerone",
+    sectionHref: "/special-occasions",
+  },
+  {
+    id: "addon-galaxy-smooth-milk",
+    name: "Galaxy Smooth Milk",
+    price: 80,
+    image: "/images/addons/galaxy-smooth-milk.jpg",
+    category: "Chocolates",
+    href: "/special-occasions/galaxy-smooth-milk",
+    sectionHref: "/special-occasions",
+  },
+  {
+    id: "addon-cadbury-dairy-milk",
+    name: "Cadbury Dairy Milk",
+    price: 80,
+    image: "/images/addons/cadbury-dairy-milk.jpg",
+    category: "Chocolates",
+    href: "/special-occasions/cadbury-dairy-milk",
+    sectionHref: "/special-occasions",
+  },
+  {
     id: "addon-cadbury-fruit-nut",
     name: "Cadbury Dairy Milk Fruit & Nut",
     price: 80,
     image: "/images/addons/cadbury-fruit-nut.jpg",
     category: "Chocolates",
     href: "/special-occasions/cadbury-fruit-nut",
-    sectionHref: "/special-occasions",
-  },
-  {
-    id: "addon-ferrero-rocher-heart",
-    name: "Ferrero Rocher Heart",
-    price: 150,
-    image: "/images/addons/ferrero-rocher-heart.jpg",
-    category: "Chocolates",
-    href: "/special-occasions/ferrero-rocher-heart",
     sectionHref: "/special-occasions",
   },
   {
@@ -79,15 +106,6 @@ export const ADDON_PRODUCTS: AddonProduct[] = [
     category: "Cakes",
     href: "/cakes/black-forest",
     sectionHref: "/cakes",
-  },
-  {
-    id: "addon-soft-toys",
-    name: "Soft Toys",
-    price: 80,
-    image: "/images/addons/soft-toys.jpg",
-    category: "Gifts",
-    href: "/special-occasions/soft-toys",
-    sectionHref: "/special-occasions",
   },
 ];
 
@@ -185,7 +203,7 @@ export default function RecommendedAddons({
           </svg>
         </button>
         <div className={styles.addonsTrack}>
-          {filteredAddons.map((product) => {
+          {filteredAddons.slice(0, 6).map((product) => {
             const qty = quantities[product.id] || 0;
 
             return (
