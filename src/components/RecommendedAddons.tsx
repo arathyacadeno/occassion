@@ -198,8 +198,8 @@ export default function RecommendedAddons({
       {/* Large Pink Card Container matching target layout */}
       <div className={styles.addonsContainer}>
         <button type="button" onClick={() => setIsModalOpen(true)} className={styles.exploreMoreCircleBtn} aria-label="Explore More Addons">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M5 12h14M12 5l7 7-7 7" />
+          <svg width="32" height="24" viewBox="0 0 32 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M2 12h28M23 5l7 7-7 7" />
           </svg>
         </button>
         <div className={styles.addonsTrack}>
@@ -302,7 +302,7 @@ export default function RecommendedAddons({
                 <X size={24} />
               </button>
             </div>
-            
+
             <div className={styles.modalGrid}>
               {filteredAddons.map((product) => {
                 const qty = quantities[product.id] || 0;
