@@ -237,6 +237,9 @@ export default function ProductInfo({
         const data = await res.json();
         if (data.pinCode) {
           setPinCode(data.pinCode);
+          if (data.area) {
+            setTypedInput(`${data.pinCode}, ${data.area}, ${data.district || data.state || "Kerala"}, India`);
+          }
         }
         setDeliveryStatus({
           loading: false,
@@ -321,7 +324,7 @@ export default function ProductInfo({
     state: string;
   }) => {
     setPinCode(item.pinCode);
-    setTypedInput("");
+    setTypedInput(`${item.pinCode}, ${item.area}, ${item.district || item.state || "Kerala"}, India`);
     setShowSuggestions(false);
     setIsPinFocused(false);
     checkDelivery(item.pinCode);
@@ -362,6 +365,10 @@ export default function ProductInfo({
   const validateForm = () => {
     if (!pinCode) {
       setValidationError("Please enter a valid Delivery Location pincode before proceeding.");
+      return false;
+    }
+    if (deliveryStatus.serviceable === false) {
+      setValidationError("Sorry, we cannot deliver to this location.");
       return false;
     }
     if (!selectedDate) {
@@ -754,7 +761,7 @@ export default function ProductInfo({
               value={
                 isPinFocused
                   ? typedInput
-                  : deliveryStatus.serviceable && deliveryStatus.area
+                  : deliveryStatus.area
                   ? `${pinCode}, ${deliveryStatus.area}, ${
                       deliveryStatus.district || deliveryStatus.state || "Kerala"
                     }, India`
@@ -762,7 +769,6 @@ export default function ProductInfo({
               }
               onFocus={() => {
                 setIsPinFocused(true);
-                setTypedInput(pinCode || "");
                 if (pinCode) {
                   searchLocationQuery(pinCode);
                 }
