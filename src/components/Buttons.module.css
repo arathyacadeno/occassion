@@ -86,6 +86,7 @@
   justify-content: space-between;
   border-radius: 12px;
   background-color: #F0E1E5; /* soft pink */
+  border: 1px solid #F0C4D3; /* pink border */
   overflow: hidden;
   height: 42px;
 }
