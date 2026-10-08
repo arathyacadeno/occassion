@@ -198,7 +198,7 @@ export const BOUQUET_PRODUCTS: CategoryProduct[] = [
   {
     id: "bouquet-orchid-symphony",
     title: "Orchid Symphony",
-    image: "/images/flower-bouquet/orchid-symphony-2.jpg",
+    image: "/images/flower-bouquet/orchid-symphony-3.jpg",
     price: "₹2,000",
     tag: "Exotic",
     description: "A stunning symphony of exotic purple orchids and delicate pink roses, beautifully arranged to create a lasting impression.",

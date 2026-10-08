@@ -390,9 +390,9 @@ export const CATALOG_PRODUCTS: Product[] = [
     price: 2000,
     category: "flower",
     categoryLabel: "Flowers",
-    image: "/images/flower-bouquet/orchid-symphony-2.jpg",
+    image: "/images/flower-bouquet/orchid-symphony-3.jpg",
     images: [
-      "/images/flower-bouquet/orchid-symphony-2.jpg",
+      "/images/flower-bouquet/orchid-symphony-3.jpg",
     ],
     rating: 4.8,
     reviewsCount: 15,
