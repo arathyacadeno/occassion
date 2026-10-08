@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Minus, Plus, X } from "lucide-react";
 import { useCart } from "@/context/CartContext";
@@ -73,18 +73,18 @@ export const ADDON_PRODUCTS: AddonProduct[] = [
   },
   {
     id: "addon-cadbury-dairy-milk",
-    name: "Cadbury Dairy Milk",
+    name: "Cadbury Dairy Milk Bubbly",
     price: 80,
-    image: "/images/addons/cadbury-dairy-milk.jpg",
+    image: "/images/addons/dairy-milk-bubbly.jpg",
     category: "Chocolates",
-    href: "/special-occasions/cadbury-dairy-milk",
+    href: "/special-occasions/cadbury-dairy-bubbly",
     sectionHref: "/special-occasions",
   },
   {
     id: "addon-cadbury-fruit-nut",
     name: "Cadbury Dairy Milk Fruit & Nut",
     price: 80,
-    image: "/images/addons/cadbury-fruit-nut.jpg",
+    image: "/images/addons/dairy-milk-fruit-nut.jpg",
     category: "Chocolates",
     href: "/special-occasions/cadbury-fruit-nut",
     sectionHref: "/special-occasions",
@@ -107,6 +107,16 @@ export const ADDON_PRODUCTS: AddonProduct[] = [
     href: "/cakes/black-forest",
     sectionHref: "/cakes",
   },
+  {
+    id: "addon-teddy-bear",
+    name: "Teddy Bear",
+    price: 80,
+    image: "/images/addons/Cute teddybear.jpg",
+    category: "Gifts",
+    href: "/special-occasions/teddy-bear",
+    sectionHref: "/special-occasions",
+  },
+  
 ];
 
 export interface RecommendedAddonsProps {
@@ -137,6 +147,17 @@ export default function RecommendedAddons({
 
   const [localQuantities, setLocalQuantities] = useState<Record<string, number>>({});
   const quantities = selectedAddons !== undefined ? selectedAddons : localQuantities;
+
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isModalOpen]);
 
   const updateQuantities = (next: Record<string, number>) => {
     if (onAddonChange) {
