@@ -2,29 +2,6 @@ import { Bouquet } from "@/types";
 
 export const BOUQUETS_DATA: Bouquet[] = [
   {
-    id: "bouquet-1",
-    name: "Classic Calicut Bridal Bouquet",
-    subtitle: "Blush Roses, Baby's Breath & Jasmine Accents",
-    price: 1899,
-    originalPrice: 2299,
-    image: "/images/bouquet-1.jpg",
-    occasion: "wedding",
-    rating: 5.0,
-    reviewsCount: 56,
-    stems: [
-      "Dutch Pink Roses",
-      "White Gypsophila (Baby's Breath)",
-      "Madurai Jasmine Sprays",
-      "Silver Dollar Eucalyptus",
-      "French Silk Ribbon"
-    ],
-    description: "Hand-tied bridal bouquet specially designed for wedding ceremonies and receptions in Calicut. Features velvety blush roses paired with delicate gypsophila and trailing silk ribbon.",
-    flowerCount: "26-30 hand-selected stems",
-    scent: "Heirloom Rose",
-    badge: "Bridal Favorite",
-    dimensions: "45cm H × 38cm W"
-  },
-  {
     id: "bouquet-2",
     name: "Celebration Floral & Cake Hamper",
     subtitle: "Fresh Blooms with Gourmet Birthday Cake",
