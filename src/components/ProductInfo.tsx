@@ -985,7 +985,7 @@ export default function ProductInfo({
                     Since fresh flowers are perishable, we attempt delivery of your order once to the designated location.
                   </li>
                   <li>
-                    This product is hand delivered directly by our local florist team.
+                    This product is hand delivered directly By Occasions.
                   </li>
                 </ul>
               </div>
