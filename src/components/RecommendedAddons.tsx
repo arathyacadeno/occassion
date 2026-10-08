@@ -116,15 +116,15 @@ export default function RecommendedAddons({
 
   return (
     <section className={styles.addonsSection} aria-label="Recommended Addon Products">
-      <div className={styles.sectionHeader}>
-        <h2 className={styles.sectionTitle}>Recommended Addon Products</h2>
-        <Link href="/special-occasions" className={styles.exploreMoreBtn}>
-          Explore More
-        </Link>
-      </div>
+      <h2 className={styles.sectionTitle}>Recommended Addon Products</h2>
 
       {/* Large Pink Card Container matching target layout */}
       <div className={styles.addonsContainer}>
+        <Link href="/special-occasions" className={styles.exploreMoreCircleBtn} aria-label="Explore More Addons">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </Link>
         <div className={styles.addonsTrack}>
           {ADDON_PRODUCTS.map((product) => {
             const qty = quantities[product.id] || 0;
