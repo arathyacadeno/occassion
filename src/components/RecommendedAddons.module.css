@@ -456,9 +456,9 @@
 
   box-sizing: border-box;
 
-  scrollbar-width: thin;
+  scrollbar-width: none;
 
-  scrollbar-color: #ef2f69 transparent;
+  -ms-overflow-style: none;
 
   overscroll-behavior: contain;
 
@@ -470,24 +470,11 @@
    ========================================================= */
 
 .modalContent::-webkit-scrollbar {
-  width: 6px;
+  display: none;
+  width: 0;
+  height: 0;
 }
 
-.modalContent::-webkit-scrollbar-track {
-  background: transparent;
-
-  margin: 32px 0;
-}
-
-.modalContent::-webkit-scrollbar-thumb {
-  background-color: #E40345;
-
-  border-radius: 10px;
-}
-
-.modalContent::-webkit-scrollbar-thumb:hover {
-  background-color: #c7023c;
-}
 
 /* =========================================================
    MODAL HEADER
