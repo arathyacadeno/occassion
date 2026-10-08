@@ -111,9 +111,6 @@ export default function CheckoutPage() {
                   />
 
                   <div className={styles.summaryItemDetails}>
-                    <span className={styles.summaryCategory}>
-                      {item.category.toUpperCase()}
-                    </span>
                     <h3 className={styles.summaryProductName}>
                       {item.name}
                     </h3>
