@@ -35,7 +35,7 @@ export interface CompletedOrder {
 
 const INITIAL_DEMO_ORDERS: CompletedOrder[] = [
   {
-    orderId: "ORD893120",
+    orderId: "893120",
     productId: "birthday-flower-basket",
     productName: "Birthday Flower Basket",
     productImage:
@@ -52,7 +52,7 @@ const INITIAL_DEMO_ORDERS: CompletedOrder[] = [
     estimatedDelivery: "Delivered to Calicut",
   },
   {
-    orderId: "ORD652419",
+    orderId: "652419",
     productId: "pink-rose-delight",
     productName: "Pink Rose Delight Basket",
     productImage:
@@ -240,7 +240,7 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
 
     const primaryItem = checkoutItems[0];
     const randomSuffix = Math.floor(100000 + Math.random() * 900000);
-    const orderId = `ORD${randomSuffix}`;
+    const orderId = `${randomSuffix}`;
 
     const newOrder: CompletedOrder = {
       orderId,

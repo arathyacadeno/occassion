@@ -11,7 +11,7 @@ import { Check, ArrowRight, ShoppingBag } from "lucide-react";
 import styles from "./order-success.module.css";
 
 const fallbackOrder: CompletedOrder = {
-  orderId: "ORD123456",
+  orderId: "123456",
   productId: "birthday-basket",
   productName: "Birthday Flower Basket",
   productImage:
@@ -140,7 +140,7 @@ export default function OrderSuccessPage() {
 
             <button
               type="button"
-              onClick={() => router.push("/flower")}
+              onClick={() => router.push("/#categories")}
               className={styles.secondaryLink}
             >
               <ShoppingBag size={16} />

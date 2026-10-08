@@ -190,7 +190,7 @@ export async function POST(request: Request) {
 
     // 6. Generate order ID and tracking timeline
     const orderRandom = Math.floor(100000 + Math.random() * 900000);
-    const orderId = `OCC-${orderRandom}`;
+    const orderId = `${orderRandom}`;
     const now = new Date().toISOString();
 
     const customerName = (delivery?.fullName || auth?.name || "Customer").trim();
