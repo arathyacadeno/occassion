@@ -158,8 +158,8 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
           />
         </section>
 
-        {/* Recommended Addon Products - only show when viewing flowers/main items */}
-        {!isChocolate && !isSoftToy && (
+        {/* Recommended Addon Products - only show when viewing flowers, cakes, or main items */}
+        {(!isChocolate || isCakeProduct) && !isSoftToy && (
           <RecommendedAddons
             selectedAddons={selectedAddons}
             onAddonChange={setSelectedAddons}
