@@ -53,6 +53,11 @@ export default function ProductInfo({
     product.name.toLowerCase().includes("lily") ||
     product.name.toLowerCase().includes("lilies");
 
+  const isOrchid =
+    (product.category as string) === "orchids" ||
+    product.name.toLowerCase().includes("orchid") ||
+    product.name.toLowerCase().includes("orchids");
+
   const isBouquet = isFlowerBouquet(product);
   const pricePerFlower = getPricePerFlower(product);
   const [isCustomMode, setIsCustomMode] = useState<boolean>(false);
@@ -106,6 +111,30 @@ export default function ProductInfo({
             price: Math.round(product.price * 1.9),
             originalPrice: product.originalPrice ? Math.round(product.originalPrice * 1.9) : undefined,
             image: product.images[3] || product.images[0] || product.image,
+          },
+        ]
+      : isOrchid
+      ? [
+          {
+            id: "6-stems",
+            name: "6 Stems",
+            price: 695,
+            originalPrice: 795,
+            image: product.images?.[0] || product.image,
+          },
+          {
+            id: "12-stems",
+            name: "12 Stems",
+            price: 1195,
+            originalPrice: 1395,
+            image: product.images?.[1] || product.images?.[0] || product.image,
+          },
+          {
+            id: "custom",
+            name: "Custom",
+            price: 695,
+            originalPrice: 795,
+            image: product.images?.[0] || product.image,
           },
         ]
       : isBouquet
