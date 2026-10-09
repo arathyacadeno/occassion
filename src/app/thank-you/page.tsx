@@ -212,7 +212,7 @@ export default function ThankYouPage() {
             <div className={styles.buttonActionGroup}>
               <button
                 type="button"
-                onClick={() => router.push("/flower")}
+                onClick={() => router.push("/#categories")}
                 className={styles.continueShoppingBtn}
               >
                 <ShoppingBag size={18} />

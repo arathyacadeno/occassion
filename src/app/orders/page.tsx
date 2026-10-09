@@ -78,9 +78,8 @@ export default function OrdersPage() {
             <h1 className={styles.pageTitle}>My Orders</h1>
             <p className={styles.pageSubtitle}>
               {orders.length > 0
-                ? `You have placed ${orders.length} ${
-                    orders.length === 1 ? "order" : "orders"
-                  } with Occassions Florist.`
+                ? `You have placed ${orders.length} ${orders.length === 1 ? "order" : "orders"
+                } with Occassions Florist.`
                 : "Track your past and active flower deliveries."}
             </p>
           </div>
