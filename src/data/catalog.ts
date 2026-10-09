@@ -383,6 +383,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     ],
     badge: "New",
   },
+
   {
     id: "bouquet-orchid-symphony",
     slug: "orchid-symphony",
@@ -431,6 +432,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     ],
     badge: "Premium",
   },
+  
   {
     id: "bouquet-rose-royale",
     slug: "rose-royale",
@@ -454,6 +456,30 @@ export const CATALOG_PRODUCTS: Product[] = [
       "Elegant Red Ribbon",
     ],
     badge: "Premium",
+  },
+  {
+    id: "bouquet-pink-and-pearl",
+    slug: "pink-and-pearl",
+    name: "Pink & Pearl",
+    price: 3200,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/flower-bouquet/pink-and-pearl.jpg",
+    images: [
+      "/images/flower-bouquet/pink-and-pearl.jpg",
+    ],
+    rating: 4.9,
+    reviewsCount: 18,
+    description: "An elegant arrangement of pure white and soft pink roses, beautifully wrapped in soft cream paper with a pink ribbon bow.",
+    deliveryInfo: "Delivered fresh from botanical farms in insulated floristry vans.",
+    offers: ["Free customized greeting card"],
+    includes: [
+      "White Roses",
+      "Pink Roses",
+      "Gypsophila Fillers",
+      "Premium Wrapping",
+    ],
+    badge: "Bestseller",
   },
   {
     id: "bouquet-rose-majesty",

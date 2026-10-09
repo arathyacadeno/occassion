@@ -196,6 +196,14 @@ export const BOUQUET_PRODUCTS: CategoryProduct[] = [
     description: "An elegant bouquet of pristine white roses and delicate gypsophila, carefully arranged and wrapped in a classic white and gold paper finish.",
   },
   {
+    id: "bouquet-pink-and-pearl",
+    title: "Pink & Pearl",
+    image: "/images/flower-bouquet/pink-and-pearl.jpg",
+    price: "₹3,200",
+    tag: "Bestseller",
+    description: "An elegant arrangement of pure white and soft pink roses, beautifully wrapped in soft cream paper with a pink ribbon bow.",
+  },
+  {
     id: "bouquet-orchid-symphony",
     title: "Orchid Symphony",
     image: "/images/flower-bouquet/orchid-symphony-3.jpg",
