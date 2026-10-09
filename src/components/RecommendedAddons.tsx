@@ -19,7 +19,7 @@ export interface AddonProduct {
 export const ADDON_PRODUCTS: AddonProduct[] = [
   {
     id: "addon-ferrero-rocher-heart",
-    name: "Ferrero Rocher Heart",
+    name: "Ferrero Rocher 16 Pieces",
     price: 150,
     image: "/images/addons/ferrero-rocher-heart.jpg",
     category: "Chocolates",
@@ -72,15 +72,6 @@ export const ADDON_PRODUCTS: AddonProduct[] = [
     sectionHref: "/special-occasions",
   },
   {
-    id: "addon-galaxy-smooth-milk",
-    name: "Galaxy Smooth Milk",
-    price: 80,
-    image: "/images/addons/galaxy-smooth-milk.jpg",
-    category: "Chocolates",
-    href: "/special-occasions/galaxy-smooth-milk",
-    sectionHref: "/special-occasions",
-  },
-  {
     id: "addon-cadbury-dairy-milk",
     name: "Cadbury Dairy Milk Bubbly",
     price: 80,
@@ -108,6 +99,15 @@ export const ADDON_PRODUCTS: AddonProduct[] = [
     sectionHref: "/special-occasions",
   },
   {
+    id: "addon-ferrero-rocher-24",
+    name: "Ferrero Rocher 24 Pieces",
+    price: 150,
+    image: "/images/addons/ferrero-rocher-24.jpg",
+    category: "Chocolates",
+    href: "/special-occasions/ferrero-rocher-24",
+    sectionHref: "/special-occasions",
+  },
+  {
     id: "addon-black-forest",
     name: "Black Forest",
     price: 80,
@@ -125,7 +125,42 @@ export const ADDON_PRODUCTS: AddonProduct[] = [
     href: "/cakes/elegant-red-heart-anniversary-cake",
     sectionHref: "/cakes",
   },
-
+  {
+    id: "addon-5-star",
+    name: "5 Star",
+    price: 20,
+    image: "/images/addons/5star.jpg",
+    category: "Chocolates",
+    href: "/special-occasions/5-star",
+    sectionHref: "/special-occasions",
+  },
+  {
+    id: "addon-bournville",
+    name: "Bournville",
+    price: 100,
+    image: "/images/addons/bournville.jpg",
+    category: "Chocolates",
+    href: "/special-occasions/bournville",
+    sectionHref: "/special-occasions",
+  },
+  {
+    id: "addon-fruit-n-nut-new",
+    name: "Fruit n Nut",
+    price: 80,
+    image: "/images/addons/fruit-n-nut.jpg",
+    category: "Chocolates",
+    href: "/special-occasions/fruit-n-nut",
+    sectionHref: "/special-occasions",
+  },
+  {
+    id: "addon-temptations",
+    name: "Temptations",
+    price: 100,
+    image: "/images/addons/Temptations.jpg",
+    category: "Chocolates",
+    href: "/special-occasions/temptations",
+    sectionHref: "/special-occasions",
+  },
 ];
 
 export interface RecommendedAddonsProps {
