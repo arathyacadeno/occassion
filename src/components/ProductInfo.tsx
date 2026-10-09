@@ -176,20 +176,16 @@ export default function ProductInfo({
 
   const customBouquetPrice = pricePerFlower * customFlowerQty;
 
-  const activePrice = isCustomMode && isBouquet
+  const activePrice = isCustomMode
     ? customBouquetPrice
     : selectedVariant
-    ? selectedVariant.id === "custom"
-      ? customStems * 100
-      : selectedVariant.price
+    ? selectedVariant.price
     : product.price;
 
-  const activeOriginalPrice = isCustomMode && isBouquet
+  const activeOriginalPrice = isCustomMode
     ? Math.round(customBouquetPrice * 1.15)
     : selectedVariant
-    ? selectedVariant.id === "custom"
-      ? Math.round(customStems * 100 * 1.15)
-      : selectedVariant.originalPrice
+    ? selectedVariant.originalPrice
     : product.originalPrice;
 
   const discountPercent =
@@ -644,7 +640,7 @@ export default function ProductInfo({
       )}
 
       {/* If customize mode is explicitly activated via ?customize=true, display customizer */}
-      {isBouquet && isCustomMode && (
+      {isCustomMode && (
         <div className={styles.customBouquetSection}>
 
           <div className={styles.customPanel}>
