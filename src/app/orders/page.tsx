@@ -5,6 +5,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCheckout, CompletedOrder } from "@/context/CheckoutContext";
+import { CATALOG_PRODUCTS } from "@/data/catalog";
 import {
   Package,
   Calendar,
@@ -35,7 +36,7 @@ export default function OrdersPage() {
               productId: firstItem?.product_id || "flower-item",
               productName: firstItem?.product_name || "Handcrafted Fresh Arrangement",
               productImage: firstItem?.product_image || "/images/lily-6-stems.png",
-              productCategory: "Fresh Flowers",
+              productCategory: CATALOG_PRODUCTS.find((p) => p.id === firstItem?.product_id)?.categoryLabel || "Fresh Flowers",
               quantity: firstItem?.quantity || 1,
               price: o.final_amount,
               unitPrice: firstItem?.product_price || o.final_amount,
