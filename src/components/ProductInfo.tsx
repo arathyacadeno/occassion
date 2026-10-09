@@ -108,28 +108,21 @@ export default function ProductInfo({
             image: product.images[3] || product.images[0] || product.image,
           },
         ]
-      : isLily
+      : isBouquet
       ? [
           {
-            id: "6-stems",
-            name: "6 Stems",
-            price: 695,
-            originalPrice: 795,
-            image: "/images/lily-6-stems.png",
-          },
-          {
-            id: "12-stems",
-            name: "12 Stems",
-            price: 1195,
-            originalPrice: 1395,
-            image: "/images/lily-12-stems.png",
+            id: "classic",
+            name: "Classic",
+            price: product.price,
+            originalPrice: product.originalPrice,
+            image: product.images?.[0] || product.image,
           },
           {
             id: "custom",
-            name: "Custom",
-            price: 695,
-            originalPrice: 795,
-            image: "/images/lily-custom-stems.png",
+            name: "Customize",
+            price: pricePerFlower * 12,
+            originalPrice: Math.round(pricePerFlower * 12 * 1.15),
+            image: product.images?.[1] || product.images?.[0] || product.image,
           },
         ]
       : null;
@@ -144,6 +137,11 @@ export default function ProductInfo({
 
   const handleSelectVariant = (v: ProductVariant) => {
     setSelectedVariant(v);
+    if (v.id === "custom") {
+      setIsCustomMode(true);
+    } else {
+      setIsCustomMode(false);
+    }
     onVariantChange?.(v);
   };
 
@@ -578,10 +576,10 @@ export default function ProductInfo({
       </div>
 
       {/* Available Combos / Weight options for Cakes & Variants */}
-      {variants && variants.length > 0 && !isCustomMode && (
+      {variants && variants.length > 0 && (
         <div className={styles.giftExtraSection}>
           <h3 className={styles.giftExtraTitle}>
-            {isCake ? "Available Combos" : "Select Option"}
+            {isCake ? "Available Combos" : "Make this gift extra special"}
           </h3>
           <div className={styles.giftVariantCards}>
             {variants.map((v) => {
@@ -624,13 +622,6 @@ export default function ProductInfo({
               <span className={styles.customBadge}>Custom Floral Arrangement</span>
               <h3 className={styles.customHeading}>Customize Bouquet</h3>
             </div>
-            <button
-              type="button"
-              className={styles.customToggleBtn}
-              onClick={() => setIsCustomMode(false)}
-            >
-              Reset to Standard
-            </button>
           </div>
 
           <div className={styles.customPanel}>
@@ -680,15 +671,7 @@ export default function ProductInfo({
               </div>
             </div>
 
-            <div className={styles.formulaBanner}>
-              <div className={styles.formulaEquation}>
-                <span>Price per flower (<strong>₹{pricePerFlower}</strong>)</span>
-                <span className={styles.formulaOperator}>×</span>
-                <span>Quantity (<strong>{customFlowerQty}</strong>)</span>
-                <span className={styles.formulaOperator}>=</span>
-                <span className={styles.formulaTotal}>₹ {(pricePerFlower * customFlowerQty).toLocaleString("en-IN")}</span>
-              </div>
-            </div>
+
           </div>
         </div>
       )}
