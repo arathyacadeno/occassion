@@ -85,10 +85,7 @@ export default function OrdersPage() {
             </p>
           </div>
 
-          <Link href="/flower" className={styles.exploreLink}>
-            <ShoppingBag size={16} />
-            <span>Order New Flowers</span>
-          </Link>
+
         </div>
 
         {/* Orders List */}
