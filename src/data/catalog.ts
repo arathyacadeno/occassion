@@ -461,7 +461,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     id: "bouquet-pink-and-pearl",
     slug: "pink-and-pearl",
     name: "Pink & Pearl",
-    price: 3200,
+    price: 2600,
     category: "flower",
     categoryLabel: "Flowers",
     image: "/images/flower-bouquet/pink-and-pearl.jpg",
