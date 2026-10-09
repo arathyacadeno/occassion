@@ -617,12 +617,6 @@ export default function ProductInfo({
       {/* If customize mode is explicitly activated via ?customize=true, display customizer */}
       {isBouquet && isCustomMode && (
         <div className={styles.customBouquetSection}>
-          <div className={styles.customHeaderRow}>
-            <div className={styles.customHeaderTitleWrap}>
-              <span className={styles.customBadge}>Custom Floral Arrangement</span>
-              <h3 className={styles.customHeading}>Customize Bouquet</h3>
-            </div>
-          </div>
 
           <div className={styles.customPanel}>
             <div className={styles.customInfoRow}>
