@@ -116,6 +116,14 @@ export const FLOWER_BASKET_PRODUCTS: CategoryProduct[] = [
 
 export const BOUQUET_PRODUCTS: CategoryProduct[] = [
   {
+    id: "flower-30-white-roses",
+    title: "30 white roses sheeve bouquet",
+    image: "/images/flower-bouquet/30-white-roses-sheeve-bouquet.jpg",
+    price: "₹1,800",
+    tag: "New Arrival",
+    description: "An elegant arrangement of 30 pristine white roses beautifully wrapped in a yellow sheeve style bouquet with a delicate white ribbon. Perfect for expressing purity and grace.",
+  },
+  {
     id: "bouquet-1",
     title: "Pastel Blush & Rose Elegance Wrap",
     image: "/images/bouquet-pastel-luxe.png",

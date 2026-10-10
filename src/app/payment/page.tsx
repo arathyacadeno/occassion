@@ -18,6 +18,7 @@ import {
   AlertCircle,
   Truck,
   ChevronDown,
+  Clock,
 } from "lucide-react";
 import styles from "./payment.module.css";
 
@@ -659,7 +660,7 @@ export default function SinglePageCheckoutPayment() {
                     <div className={styles.dropdownSelect} style={{ display: "flex", alignItems: "center" }}>
                       {deliveryTime ? deliveryTime : "Select Time"}
                     </div>
-                    <ChevronDown size={14} className={styles.dropdownChevron} />
+                    <Clock size={14} className={styles.dropdownChevron} />
                   </div>
                 </div>
               </div>

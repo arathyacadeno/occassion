@@ -30,6 +30,29 @@ export interface Product {
 export const CATALOG_PRODUCTS: Product[] = [
   // ==================== FLOWER PRODUCTS (/flower) ====================
   {
+    id: "flower-30-white-roses",
+    slug: "30-white-roses-sheeve-bouquet",
+    name: "30 white roses sheeve bouquet",
+    price: 1800,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/flower-bouquet/30-white-roses-sheeve-bouquet.jpg",
+    images: [
+      "/images/flower-bouquet/30-white-roses-sheeve-bouquet.jpg"
+    ],
+    rating: 5.0,
+    reviewsCount: 15,
+    description: "An elegant arrangement of 30 pristine white roses beautifully wrapped in a yellow sheeve style bouquet with a delicate white ribbon. Perfect for expressing purity and grace.",
+    deliveryInfo: "Fresh morning delivery within 3 hours across Calicut.",
+    offers: ["Flat 10% off with code OCCASIONS10", "Complimentary heartfelt note card"],
+    includes: [
+      "30 Fresh White Roses",
+      "Premium Sheeve Paper Wrapping",
+      "Satin Ribbon Bow"
+    ],
+    badge: "New Arrival",
+  },
+  {
     id: "flower-9",
     slug: "white-pink-roses-gypsophilla-bamboo-basket",
     name: "White /pink roses with gypsophilla in a bamboo basket",
@@ -384,30 +407,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     badge: "New",
   },
 
-  {
-    id: "bouquet-orchid-symphony",
-    slug: "orchid-symphony",
-    name: "Orchid Symphony",
-    price: 2000,
-    category: "flower",
-    categoryLabel: "Flowers",
-    image: "/images/flower-bouquet/orchid-symphony-3.jpg",
-    images: [
-      "/images/flower-bouquet/orchid-symphony-3.jpg",
-    ],
-    rating: 4.8,
-    reviewsCount: 15,
-    description: "A stunning symphony of exotic purple orchids and delicate pink roses, beautifully arranged to create a lasting impression.",
-    deliveryInfo: "Delivered fresh from botanical farms in insulated floristry vans.",
-    offers: ["Free customized greeting card"],
-    includes: [
-      "Purple Orchids",
-      "Pink Roses",
-      "Gypsophila Fillers",
-      "Premium Wrapping",
-    ],
-    badge: "Exotic",
-  },
+
 
   {
     id: "bouquet-rose-garden-bliss",
@@ -432,7 +432,30 @@ export const CATALOG_PRODUCTS: Product[] = [
     ],
     badge: "Premium",
   },
-  
+  {
+    id: "bouquet-orchid-symphony",
+    slug: "orchid-symphony",
+    name: "Orchid Symphony",
+    price: 2000,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/flower-bouquet/orchid-symphony-3.jpg",
+    images: [
+      "/images/flower-bouquet/orchid-symphony-3.jpg",
+    ],
+    rating: 4.8,
+    reviewsCount: 15,
+    description: "A stunning symphony of exotic purple orchids and delicate pink roses, beautifully arranged to create a lasting impression.",
+    deliveryInfo: "Delivered fresh from botanical farms in insulated floristry vans.",
+    offers: ["Free customized greeting card"],
+    includes: [
+      "Purple Orchids",
+      "Pink Roses",
+      "Gypsophila Fillers",
+      "Premium Wrapping",
+    ],
+    badge: "Exotic",
+  },
   {
     id: "bouquet-rose-royale",
     slug: "rose-royale",
