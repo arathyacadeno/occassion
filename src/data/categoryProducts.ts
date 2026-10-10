@@ -204,6 +204,22 @@ export const BOUQUET_PRODUCTS: CategoryProduct[] = [
     description: "An elegant arrangement of pure white and soft pink roses, beautifully wrapped in soft cream paper with a pink ribbon bow.",
   },
   {
+    id: "bouquet-sunshine-orchids",
+    title: "Sunshine & Orchids",
+    image: "/images/flower-bouquet/sunshine-orchids.jpg",
+    price: "₹1,200",
+    tag: "New",
+    description: "A vibrant arrangement featuring bright sunflowers, striking purple orchids, and delicate gypsophila, beautifully wrapped in white and soft pink paper.",
+  },
+  {
+    id: "bouquet-golden-blush",
+    title: "Golden Blush Orchid Rose Bouquet",
+    image: "/images/flower-bouquet/golden-blush-orchid-rose.jpg",
+    price: "₹1,200",
+    tag: "New",
+    description: "An elegant arrangement of red and pink roses alongside stunning purple orchids and delicate gypsophila, wrapped beautifully in golden paper.",
+  },
+  {
     id: "bouquet-orchid-symphony",
     title: "Orchid Symphony",
     image: "/images/flower-bouquet/orchid-symphony-3.jpg",

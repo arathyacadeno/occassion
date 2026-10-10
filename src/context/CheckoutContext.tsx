@@ -199,7 +199,7 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
     } catch (e) {
       console.error(e);
     }
-    router.push("/checkout");
+    router.push("/payment");
   };
 
   const startCartCheckout = (items: CheckoutItem[]) => {
@@ -211,7 +211,7 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
     } catch (e) {
       console.error(e);
     }
-    router.push("/checkout");
+    router.push("/payment");
   };
 
   const setMobile = (mobile: string) => {
