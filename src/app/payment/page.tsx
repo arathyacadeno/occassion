@@ -245,10 +245,6 @@ export default function SinglePageCheckoutPayment() {
     e.preventDefault();
 
     // Specific payment validations
-    if (activeTab === "upi" && !upiId.trim()) {
-      alert("Please enter your UPI ID.");
-      return;
-    }
     if (activeTab === "card") {
       const cleanDigits = cardNumber.replace(/\D/g, "");
       if (cleanDigits.length < 15) {
@@ -734,21 +730,25 @@ export default function SinglePageCheckoutPayment() {
 
                 {activeTab === "upi" && (
                   <div>
-                    <h3 className={styles.cardBoxHeader}>UPI Payment</h3>
-                    <div className={styles.fieldGroup}>
-                      <label className={styles.fieldLabel}>UPI ID / VPA</label>
-                      <input
-                        type="text"
-                        required={activeTab === "upi"}
-                        placeholder="username@okhdfcbank or 9876543210@upi"
-                        value={upiId}
-                        onChange={(e) => setUpiId(e.target.value)}
-                        className={styles.inputField}
-                      />
-                      <p className={styles.upiHintText}>
-                        A payment request will be sent to your UPI app (Google Pay,
-                        PhonePe, Paytm, or BHIM).
-                      </p>
+                    <h3 className={styles.upiBoxHeader}>Pay by any UPI App</h3>
+                    <div className={styles.upiInterfaceWrapper}>
+                      <div className={styles.qrBox}>
+                        <div className={styles.qrImagePlaceholder}>
+                          <div className={styles.showQrOverlay}>
+                            <button type="button" className={styles.showQrBtn}>SHOW QR</button>
+                          </div>
+                        </div>
+                      </div>
+                      <div className={styles.upiAppsSection}>
+                        <p className={styles.upiAppsText}>
+                          Scan QR code with any upi app to proceed with payment of ₹{finalTotal}
+                        </p>
+                        <div className={styles.upiAppsGrid}>
+                          <div className={styles.upiAppIcon}><img src="/images/phonepe.png" alt="PhonePe" /></div>
+                          <div className={styles.upiAppIcon}><img src="/images/gpay.png" alt="GPay" /></div>
+                          <div className={styles.upiAppIcon}><img src="/images/paytm.png" alt="Paytm" /></div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}

@@ -220,6 +220,14 @@ export const BOUQUET_PRODUCTS: CategoryProduct[] = [
     description: "An elegant arrangement of red and pink roses alongside stunning purple orchids and delicate gypsophila, wrapped beautifully in golden paper.",
   },
   {
+    id: "bouquet-golden-aura",
+    title: "Golden Aura",
+    image: "/images/flower-bouquet/golden-aura.jpg",
+    price: "₹1,100",
+    tag: "New",
+    description: "A bright and cheerful bouquet featuring beautiful yellow and white roses, gracefully wrapped in golden paper and finished with a rustic burlap tie.",
+  },
+  {
     id: "bouquet-orchid-symphony",
     title: "Orchid Symphony",
     image: "/images/flower-bouquet/orchid-symphony-3.jpg",
