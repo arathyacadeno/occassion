@@ -660,18 +660,6 @@ export default function SinglePageCheckoutPayment() {
                   <CreditCard size={20} className={styles.tabIcon} />
                   <span>Card</span>
                 </button>
-
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("netbanking")}
-                  className={`${styles.paymentTabBtn} ${
-                    activeTab === "netbanking" ? styles.activeTabBtn : ""
-                  }`}
-                  aria-label="Pay with Net Banking"
-                >
-                  <Building2 size={20} className={styles.tabIcon} />
-                  <span>Net Bank</span>
-                </button>
               </div>
 
               {/* White Rounded Card showing fields for active tab */}
@@ -761,26 +749,6 @@ export default function SinglePageCheckoutPayment() {
                         A payment request will be sent to your UPI app (Google Pay,
                         PhonePe, Paytm, or BHIM).
                       </p>
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === "netbanking" && (
-                  <div>
-                    <h3 className={styles.cardBoxHeader}>Net Banking</h3>
-                    <div className={styles.fieldGroup}>
-                      <label className={styles.fieldLabel}>Select Bank</label>
-                      <select
-                        value={selectedBank}
-                        onChange={(e) => setSelectedBank(e.target.value)}
-                        className={styles.selectField}
-                      >
-                        {POPULAR_BANKS.map((b) => (
-                          <option key={b} value={b}>
-                            {b}
-                          </option>
-                        ))}
-                      </select>
                     </div>
                   </div>
                 )}
