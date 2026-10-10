@@ -67,6 +67,12 @@ export default function SinglePageCheckoutPayment() {
   const [senderName, setSenderName] = useState("");
   const [senderMobile, setSenderMobile] = useState("");
   const [senderEmail, setSenderEmail] = useState("");
+  const [senderHouseBuilding, setSenderHouseBuilding] = useState("");
+  const [senderStreet, setSenderStreet] = useState("");
+  const [senderLandmark, setSenderLandmark] = useState("");
+  const [senderCity, setSenderCity] = useState("Kozhikode (Calicut)");
+  const [senderState, setSenderState] = useState("Kerala");
+  const [senderPinCode, setSenderPinCode] = useState("673602");
   
   const [receiverName, setReceiverName] = useState("");
   const [receiverMobile, setReceiverMobile] = useState("");
@@ -456,11 +462,139 @@ export default function SinglePageCheckoutPayment() {
               </div>
             </div>
 
+            <div className={`${styles.formRow} ${styles.threeCols}`}>
+              <div className={styles.fieldGroup}>
+                <label htmlFor="senderHouseBuilding" className={styles.fieldLabel}>
+                  House / Building Name
+                </label>
+                <input
+                  id="senderHouseBuilding"
+                  type="text"
+                  required
+                  placeholder="Flat, House no."
+                  value={senderHouseBuilding}
+                  onChange={(e) => setSenderHouseBuilding(e.target.value)}
+                  className={styles.inputField}
+                />
+              </div>
+
+              <div className={styles.fieldGroup}>
+                <label htmlFor="senderStreet" className={styles.fieldLabel}>
+                  Street
+                </label>
+                <input
+                  id="senderStreet"
+                  type="text"
+                  required
+                  placeholder="Street, Area name"
+                  value={senderStreet}
+                  onChange={(e) => setSenderStreet(e.target.value)}
+                  className={styles.inputField}
+                />
+              </div>
+
+              <div className={styles.fieldGroup}>
+                <label htmlFor="senderLandmark" className={styles.fieldLabel}>
+                  Landmark
+                </label>
+                <input
+                  id="senderLandmark"
+                  type="text"
+                  placeholder="Near something (optional)"
+                  value={senderLandmark}
+                  onChange={(e) => setSenderLandmark(e.target.value)}
+                  className={styles.inputField}
+                />
+              </div>
+            </div>
+
+            <div className={`${styles.formRow} ${styles.threeCols}`}>
+              <div className={styles.fieldGroup}>
+                <label htmlFor="senderCity" className={styles.fieldLabel}>
+                  City
+                </label>
+                <select
+                  id="senderCity"
+                  required
+                  value={senderCity}
+                  onChange={(e) => setSenderCity(e.target.value)}
+                  className={styles.selectField}
+                >
+                  {KERALA_CITIES.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className={styles.fieldGroup}>
+                <label htmlFor="senderState" className={styles.fieldLabel}>
+                  State
+                </label>
+                <input
+                  id="senderState"
+                  type="text"
+                  required
+                  value={senderState}
+                  readOnly
+                  className={`${styles.inputField} ${styles.readOnlyField}`}
+                />
+              </div>
+
+              <div className={styles.fieldGroup}>
+                <label htmlFor="senderPinCode" className={styles.fieldLabel}>
+                  PIN Code
+                </label>
+                <input
+                  id="senderPinCode"
+                  type="text"
+                  required
+                  maxLength={6}
+                  pattern="[0-9]{6}"
+                  title="6-digit PIN code"
+                  placeholder="e.g. 673602"
+                  value={senderPinCode}
+                  onChange={(e) => setSenderPinCode(e.target.value.replace(/\D/g, ""))}
+                  className={styles.inputField}
+                />
+              </div>
+            </div>
+
             <hr className={styles.divider} />
 
             {/* Receiver Details */}
             <div className={styles.sectionHeader}>
               <h2 className={styles.sectionTitle}>Receiver Details & Address</h2>
+            </div>
+
+            <div style={{ backgroundColor: "#fdf2f5", padding: "12px 16px", borderRadius: "8px", marginBottom: "24px" }}>
+              <label style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.95rem", cursor: "pointer", color: "#3b2a22", fontWeight: 500 }}>
+                <input 
+                  type="checkbox" 
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setReceiverName(senderName);
+                      setReceiverMobile(senderMobile);
+                      setHouseBuilding(senderHouseBuilding);
+                      setStreet(senderStreet);
+                      setLandmark(senderLandmark);
+                      setCity(senderCity);
+                      setState(senderState);
+                      setPinCode(senderPinCode);
+                    } else {
+                      setReceiverName("");
+                      setReceiverMobile("");
+                      setHouseBuilding("");
+                      setStreet("");
+                      setLandmark("");
+                      setCity("Kozhikode (Calicut)");
+                      setState("Kerala");
+                      setPinCode("673602");
+                    }
+                  }} 
+                  style={{ accentColor: "#e4004b", width: "18px", height: "18px", cursor: "pointer" }}
+                />
+                Same as Sender
+              </label>
             </div>
 
             <div className={`${styles.formRow} ${styles.twoCols}`}>
