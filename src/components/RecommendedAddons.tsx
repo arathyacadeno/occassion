@@ -108,15 +108,6 @@ export const ADDON_PRODUCTS: AddonProduct[] = [
     sectionHref: "/special-occasions",
   },
   {
-    id: "addon-black-forest",
-    name: "Black Forest",
-    price: 80,
-    image: "/images/addons/black-forest.jpg",
-    category: "Cakes",
-    href: "/cakes/black-forest",
-    sectionHref: "/cakes",
-  },
-  {
     id: "addon-elegant-red-heart-anniversary-cake",
     name: "Elegant Red Heart Anniversary Cake",
     price: 1200,

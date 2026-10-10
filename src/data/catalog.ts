@@ -1316,36 +1316,6 @@ export const CATALOG_PRODUCTS: Product[] = [
     ],
     badge: "Royal Bestseller",
   },
-  {
-    id: "addon-black-forest",
-    slug: "black-forest",
-    name: "Black Forest Cake",
-    price: 80,
-    originalPrice: 120,
-    category: "cakes",
-    categoryLabel: "Cakes",
-    image: "/images/addons/black-forest.jpg",
-    images: [
-      "/images/addons/black-forest.jpg",
-      "/images/addons/black-forest.jpg",
-    ],
-    rating: 4.9,
-    ratingsCount: 42,
-    reviewsCount: 38,
-    description:
-      "Classic rich Black Forest cake layered with dark chocolate sponge, whipped fresh cream, and juicy dark cherries, crowned with chocolate shavings.",
-    deliveryInfo: "Fresh chilled delivery guaranteed across Calicut.",
-    offers: [
-      "10% off when ordered with flower bouquets",
-      "Complimentary candle & knife set included",
-    ],
-    includes: [
-      "Signature Black Forest Sponge",
-      "Fresh Whipped Dairy Cream & Cherries",
-      "Dark Chocolate Curls",
-    ],
-    badge: "Addon Favorite",
-  },
 
   // ==================== SPECIAL OCCASIONS PRODUCTS (/special-occasions) ====================
   {

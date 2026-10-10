@@ -756,3 +756,97 @@
   height: 24px;
   object-fit: contain;
 }
+
+/* Delivery Time Section */
+.deliveryTimeSection {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.deliveryTimeHeading {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #3b2a22;
+  margin: 0 0 16px 0;
+}
+
+.deliveryDropdownsRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.deliveryDropdownCol {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dropdownLabel {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #3b2a22;
+}
+
+.dropdownPill {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: #faf8f3;
+  border-radius: 8px;
+  height: 44px;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+
+.dropdownSelect {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: #3b2a22;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 22px;
+}
+
+.dropdownChevron {
+  position: absolute;
+  right: 12px;
+  pointer-events: none;
+  color: #786c65;
+}
+
+/* Date picker input — calendar format */
+.dateInput {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: #3b2a22;
+  cursor: pointer;
+  padding: 0;
+  box-sizing: border-box;
+  appearance: auto;
+  -webkit-appearance: auto;
+}
+
+.dateInput::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.6;
+  margin-left: auto;
+}
+
+.dateInput:focus {
+  outline: none;
+}

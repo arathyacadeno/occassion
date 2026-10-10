@@ -612,19 +612,7 @@
   color: #999999;
 }
 
-/* Two-column Delivery Date & Time Slot Row */
-.deliveryDropdownsRow {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 14px;
-}
 
-.deliveryDropdownCol {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
 
 .dropdownLabel {
   font-size: 11.5px;
@@ -644,55 +632,7 @@
   box-sizing: border-box;
 }
 
-.dropdownSelect {
-  width: 100%;
-  height: 100%;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-family: inherit;
-  font-size: 11.5px;
-  color: #444444;
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  padding-right: 22px;
-}
 
-.dropdownChevron {
-  position: absolute;
-  right: 10px;
-  pointer-events: none;
-  color: #555555;
-}
-
-/* Date picker input — calendar format */
-.dateInput {
-  width: 100%;
-  height: 100%;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-family: inherit;
-  font-size: 11.5px;
-  color: #444444;
-  cursor: pointer;
-  padding: 0;
-  box-sizing: border-box;
-  /* Show native calendar icon */
-  appearance: auto;
-  -webkit-appearance: auto;
-}
-
-.dateInput::-webkit-calendar-picker-indicator {
-  cursor: pointer;
-  opacity: 0.6;
-  margin-left: auto;
-}
-
-.dateInput:focus {
-  outline: none;
-}
 
 /* About the product heading + 3 Standalone White Rounded Accordions */
 .aboutProductSection {

@@ -16,6 +16,7 @@ import {
   CheckCircle2,
   AlertCircle,
   Truck,
+  ChevronDown,
 } from "lucide-react";
 import styles from "./payment.module.css";
 
@@ -71,6 +72,9 @@ export default function SinglePageCheckoutPayment() {
   const [city, setCity] = useState("Kozhikode (Calicut)");
   const [state, setState] = useState("Kerala");
   const [pinCode, setPinCode] = useState("673602");
+  
+  const [deliveryDate, setDeliveryDate] = useState("");
+  const [deliveryTime, setDeliveryTime] = useState("");
 
   // Payment Method State
   const [activeTab, setActiveTab] = useState<PaymentTabType>("card");
@@ -622,6 +626,57 @@ export default function SinglePageCheckoutPayment() {
                     </span>
                   </div>
                 )}
+              </div>
+            </div>
+
+            {/* Delivery Date & Time */}
+            <div className={styles.deliveryTimeSection}>
+              <h2 className={styles.deliveryTimeHeading}>Delivery Preference</h2>
+              <div className={styles.deliveryDropdownsRow}>
+                <div className={styles.deliveryDropdownCol}>
+                  <label className={styles.dropdownLabel}>Delivery Date</label>
+                  <div className={styles.dropdownPill}>
+                    <input
+                      type="date"
+                      value={deliveryDate}
+                      onChange={(e) => setDeliveryDate(e.target.value)}
+                      className={styles.dateInput}
+                      min={new Date().toISOString().split("T")[0]}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.deliveryDropdownCol}>
+                  <label className={styles.dropdownLabel}>Delivery Time Slot</label>
+                  <div className={styles.dropdownPill}>
+                    <select
+                      value={deliveryTime}
+                      onChange={(e) => setDeliveryTime(e.target.value)}
+                      className={styles.dropdownSelect}
+                      required
+                    >
+                      <option value="">Select Time</option>
+                      <optgroup label="Broad Slots">
+                        <option value="morning-block">9:00 AM – 2:00 PM (FREE)</option>
+                        <option value="afternoon-block">2:00 PM – 7:00 PM (FREE)</option>
+                      </optgroup>
+                      <optgroup label="1-Hour Slots">
+                        <option value="slot-9-10">9:00 – 10:00 AM</option>
+                        <option value="slot-10-11">10:00 – 11:00 AM</option>
+                        <option value="slot-11-12">11:00 AM – 12:00 PM</option>
+                        <option value="slot-12-1">12:00 – 1:00 PM</option>
+                        <option value="slot-1-2">1:00 – 2:00 PM</option>
+                        <option value="slot-2-3">2:00 – 3:00 PM</option>
+                        <option value="slot-3-4">3:00 – 4:00 PM</option>
+                        <option value="slot-4-5">4:00 – 5:00 PM</option>
+                        <option value="slot-5-6">5:00 – 6:00 PM</option>
+                        <option value="slot-6-7">6:00 – 7:00 PM</option>
+                      </optgroup>
+                    </select>
+                    <ChevronDown size={14} className={styles.dropdownChevron} />
+                  </div>
+                </div>
               </div>
             </div>
 

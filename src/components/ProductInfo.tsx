@@ -194,14 +194,10 @@ export default function ProductInfo({
       : 0;
 
   const [pinCode, setPinCode] = useState("");
-  const [selectedDate, setSelectedDate] = useState("");
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
   const [cakeMessage, setCakeMessage] = useState("");
   const [cardMessage, setCardMessage] = useState("");
   const [validationErrors, setValidationErrors] = useState<{
     location?: string;
-    date?: string;
-    timeSlot?: string;
   }>({});
   const [addedFeedback, setAddedFeedback] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -388,7 +384,7 @@ export default function ProductInfo({
   };
 
   const validateForm = () => {
-    const errors: { location?: string; date?: string; timeSlot?: string } = {};
+    const errors: { location?: string } = {};
     let isValid = true;
 
     if (!pinCode) {
@@ -396,16 +392,6 @@ export default function ProductInfo({
       isValid = false;
     } else if (deliveryStatus.serviceable === false) {
       errors.location = "Sorry, we cannot deliver to this location.";
-      isValid = false;
-    }
-
-    if (!selectedDate) {
-      errors.date = "Please select a Delivery Date before proceeding.";
-      isValid = false;
-    }
-
-    if (!selectedTimeSlot) {
-      errors.timeSlot = "Please select a Delivery Time Slot before proceeding.";
       isValid = false;
     }
 
@@ -948,71 +934,7 @@ export default function ProductInfo({
           </div>
         )}
 
-        {/* 2. Two-column row: Delivery Date (left) and Delivery Time Slot (right) */}
-        <div className={styles.deliveryDropdownsRow}>
-          <div className={styles.deliveryDropdownCol}>
-            <label className={styles.dropdownLabel}>Delivery Date</label>
-            <div className={styles.dropdownPill}>
-              <input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => {
-                  setSelectedDate(e.target.value);
-                  setValidationErrors((prev) => ({ ...prev, date: undefined }));
-                }}
-                className={styles.dateInput}
-                aria-label="Delivery Date"
-                min={new Date().toISOString().split("T")[0]}
-              />
-            </div>
-            {validationErrors.date && (
-              <div className={styles.validationError} style={{ marginTop: '8px' }}>
-                <AlertTriangle size={13} strokeWidth={2.5} color="#d9381e" />
-                <span>{validationErrors.date}</span>
-              </div>
-            )}
-          </div>
-
-          <div className={styles.deliveryDropdownCol}>
-            <label className={styles.dropdownLabel}>Delivery Time Slot</label>
-            <div className={styles.dropdownPill}>
-              <select
-                value={selectedTimeSlot}
-                onChange={(e) => {
-                  setSelectedTimeSlot(e.target.value);
-                  setValidationErrors((prev) => ({ ...prev, timeSlot: undefined }));
-                }}
-                className={styles.dropdownSelect}
-                aria-label="Delivery Time Slot"
-              >
-                <option value="">Select Time</option>
-                <optgroup label="Broad Slots">
-                  <option value="morning-block">9:00 AM – 2:00 PM (FREE)</option>
-                  <option value="afternoon-block">2:00 PM – 7:00 PM (FREE)</option>
-                </optgroup>
-                <optgroup label="1-Hour Slots">
-                  <option value="slot-9-10">9:00 – 10:00 AM</option>
-                  <option value="slot-10-11">10:00 – 11:00 AM</option>
-                  <option value="slot-11-12">11:00 AM – 12:00 PM</option>
-                  <option value="slot-12-1">12:00 – 1:00 PM</option>
-                  <option value="slot-1-2">1:00 – 2:00 PM</option>
-                  <option value="slot-2-3">2:00 – 3:00 PM</option>
-                  <option value="slot-3-4">3:00 – 4:00 PM</option>
-                  <option value="slot-4-5">4:00 – 5:00 PM</option>
-                  <option value="slot-5-6">5:00 – 6:00 PM</option>
-                  <option value="slot-6-7">6:00 – 7:00 PM</option>
-                </optgroup>
-              </select>
-              <ChevronDown size={14} className={styles.dropdownChevron} />
-            </div>
-            {validationErrors.timeSlot && (
-              <div className={styles.validationError} style={{ marginTop: '8px' }}>
-                <AlertTriangle size={13} strokeWidth={2.5} color="#d9381e" />
-                <span>{validationErrors.timeSlot}</span>
-              </div>
-            )}
-          </div>
-        </div>
+        {/* Delivery Date and Time Removed */}
       </div>
 
       {/* About the product heading + 3 Standalone White Rounded Accordions */}
