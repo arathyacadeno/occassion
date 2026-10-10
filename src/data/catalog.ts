@@ -30,31 +30,6 @@ export interface Product {
 export const CATALOG_PRODUCTS: Product[] = [
   // ==================== FLOWER PRODUCTS (/flower) ====================
   {
-    id: "bouquet-scarlet-dream",
-    slug: "scarlet-dream",
-    name: "Scarlet Dream",
-    price: 800,
-    category: "flower",
-    categoryLabel: "Flowers",
-    image: "/images/flower-bouquet/scarlet-dream.jpg",
-    images: [
-      "/images/flower-bouquet/scarlet-dream.jpg"
-    ],
-    rating: 4.8,
-    reviewsCount: 18,
-    description: "A stunning bouquet of vibrant red roses beautifully accented with delicate baby's breath and wrapped in elegant red and golden dual-tone paper with a lovely red ribbon.",
-    deliveryInfo: "Fresh morning delivery within 3 hours across Calicut.",
-    offers: ["Flat 10% off with code OCCASIONS10", "Complimentary heartfelt note card"],
-    includes: [
-      "Fresh Red Roses",
-      "Baby's Breath",
-      "Premium Red & Gold Wrapping",
-      "Red Ribbon Bow"
-    ],
-    badge: "New Arrival",
-  },
-
-  {
     id: "flower-30-white-roses",
     slug: "30-white-roses-sheeve-bouquet",
     name: "30 white roses sheeve bouquet",
@@ -1091,6 +1066,30 @@ export const CATALOG_PRODUCTS: Product[] = [
       "Fresh Red Roses",
       "Premium Black Wrapping",
       "Pink Satin Ribbon"
+    ],
+    badge: "New Arrival",
+  },
+  {
+    id: "bouquet-scarlet-dream",
+    slug: "scarlet-dream",
+    name: "Scarlet Dream",
+    price: 800,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/flower-bouquet/scarlet-dream.jpg",
+    images: [
+      "/images/flower-bouquet/scarlet-dream.jpg"
+    ],
+    rating: 4.8,
+    reviewsCount: 18,
+    description: "A stunning bouquet of vibrant red roses beautifully accented with delicate baby's breath and wrapped in elegant red and golden dual-tone paper with a lovely red ribbon.",
+    deliveryInfo: "Fresh morning delivery within 3 hours across Calicut.",
+    offers: ["Flat 10% off with code OCCASIONS10", "Complimentary heartfelt note card"],
+    includes: [
+      "Fresh Red Roses",
+      "Baby's Breath",
+      "Premium Red & Gold Wrapping",
+      "Red Ribbon Bow"
     ],
     badge: "New Arrival",
   },
