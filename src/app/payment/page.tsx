@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
+import TimeSlotModal from "@/components/TimeSlotModal";
 import { useCheckout } from "@/context/CheckoutContext";
 import { useCart } from "@/context/CartContext";
 import {
@@ -75,6 +76,7 @@ export default function SinglePageCheckoutPayment() {
   
   const [deliveryDate, setDeliveryDate] = useState("");
   const [deliveryTime, setDeliveryTime] = useState("");
+  const [showTimeSlotModal, setShowTimeSlotModal] = useState(false);
 
   // Payment Method State
   const [activeTab, setActiveTab] = useState<PaymentTabType>("card");
@@ -649,36 +651,30 @@ export default function SinglePageCheckoutPayment() {
 
                 <div className={styles.deliveryDropdownCol}>
                   <label className={styles.dropdownLabel}>Delivery Time Slot</label>
-                  <div className={styles.dropdownPill}>
-                    <select
-                      value={deliveryTime}
-                      onChange={(e) => setDeliveryTime(e.target.value)}
-                      className={styles.dropdownSelect}
-                      required
-                    >
-                      <option value="">Select Time</option>
-                      <optgroup label="Broad Slots">
-                        <option value="morning-block">9:00 AM – 2:00 PM (FREE)</option>
-                        <option value="afternoon-block">2:00 PM – 7:00 PM (FREE)</option>
-                      </optgroup>
-                      <optgroup label="1-Hour Slots">
-                        <option value="slot-9-10">9:00 – 10:00 AM</option>
-                        <option value="slot-10-11">10:00 – 11:00 AM</option>
-                        <option value="slot-11-12">11:00 AM – 12:00 PM</option>
-                        <option value="slot-12-1">12:00 – 1:00 PM</option>
-                        <option value="slot-1-2">1:00 – 2:00 PM</option>
-                        <option value="slot-2-3">2:00 – 3:00 PM</option>
-                        <option value="slot-3-4">3:00 – 4:00 PM</option>
-                        <option value="slot-4-5">4:00 – 5:00 PM</option>
-                        <option value="slot-5-6">5:00 – 6:00 PM</option>
-                        <option value="slot-6-7">6:00 – 7:00 PM</option>
-                      </optgroup>
-                    </select>
+                  <div
+                    className={styles.dropdownPill}
+                    onClick={() => setShowTimeSlotModal(true)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <div className={styles.dropdownSelect} style={{ display: "flex", alignItems: "center" }}>
+                      {deliveryTime ? deliveryTime : "Select Time"}
+                    </div>
                     <ChevronDown size={14} className={styles.dropdownChevron} />
                   </div>
                 </div>
               </div>
             </div>
+
+            {/* Time Slot Modal */}
+            <TimeSlotModal
+              isOpen={showTimeSlotModal}
+              onClose={() => setShowTimeSlotModal(false)}
+              selectedDate={deliveryDate}
+              onConfirm={(deliveryType, slot, price) => {
+                setDeliveryTime(slot);
+                setShowTimeSlotModal(false);
+              }}
+            />
 
             {/* Payment Method Section */}
             <div className={styles.paymentSection}>
