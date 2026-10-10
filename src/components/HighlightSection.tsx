@@ -269,7 +269,7 @@ export default function HighlightSection() {
                   className={styles.modalWhatsAppBtn}
                 >
                   <MessageCircle size={16} />
-                  <span>Inquire on WhatsApp (+91 8606 464 700)</span>
+                  <span>Inquire on WhatsApp</span>
                 </a>
                 <a href="tel:+918606464700" className={styles.modalCallBtn}>
                   <Phone size={14} color="#ec4899" />
