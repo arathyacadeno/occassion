@@ -228,6 +228,14 @@ export const BOUQUET_PRODUCTS: CategoryProduct[] = [
     description: "A bright and cheerful bouquet featuring beautiful yellow and white roses, gracefully wrapped in golden paper and finished with a rustic burlap tie.",
   },
   {
+    id: "bouquet-blush-royale",
+    title: "Blush Royale Rose Bouquet",
+    image: "/images/flower-bouquet/blush-royale.jpg",
+    price: "₹1,200",
+    tag: "New",
+    description: "A breathtaking assortment of white, pink, and red roses, carefully arranged and wrapped in elegant pale pink paper with a beautiful purple ribbon.",
+  },
+  {
     id: "bouquet-orchid-symphony",
     title: "Orchid Symphony",
     image: "/images/flower-bouquet/orchid-symphony-3.jpg",

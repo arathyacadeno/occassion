@@ -80,6 +80,7 @@ export default function SinglePageCheckoutPayment() {
   const [cardCvv, setCardCvv] = useState("");
   const [upiId, setUpiId] = useState("");
   const [selectedBank, setSelectedBank] = useState("HDFC Bank");
+  const [showQrCode, setShowQrCode] = useState(false);
 
   // Coupon State
   const [couponCode, setCouponCode] = useState("");
@@ -733,11 +734,25 @@ export default function SinglePageCheckoutPayment() {
                     <h3 className={styles.upiBoxHeader}>Pay by any UPI App</h3>
                     <div className={styles.upiInterfaceWrapper}>
                       <div className={styles.qrBox}>
-                        <div className={styles.qrImagePlaceholder}>
-                          <div className={styles.showQrOverlay}>
-                            <button type="button" className={styles.showQrBtn}>SHOW QR</button>
+                        {showQrCode ? (
+                          <img 
+                            src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg" 
+                            alt="Scan QR" 
+                            style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+                          />
+                        ) : (
+                          <div className={styles.qrImagePlaceholder}>
+                            <div className={styles.showQrOverlay}>
+                              <button 
+                                type="button" 
+                                className={styles.showQrBtn}
+                                onClick={() => setShowQrCode(true)}
+                              >
+                                SHOW QR
+                              </button>
+                            </div>
                           </div>
-                        </div>
+                        )}
                       </div>
                       <div className={styles.upiAppsSection}>
                         <p className={styles.upiAppsText}>
