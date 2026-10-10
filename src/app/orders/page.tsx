@@ -108,7 +108,7 @@ export default function OrdersPage() {
                   <div className={styles.cardHeader}>
                     <div className={styles.headerLeft}>
                       <span className={styles.orderIdBadge}>
-                        <Package size={17} color="#686b2e" />
+                        <Package size={17} color="#c21460" />
                         #{order.orderId}
                       </span>
                       <span className={styles.orderDateText}>
@@ -139,9 +139,6 @@ export default function OrdersPage() {
                         className={styles.productImage}
                       />
                       <div className={styles.detailsCol}>
-                        <span className={styles.productCategoryTag}>
-                          {order.productCategory || "Fresh Flowers"}
-                        </span>
                         <h3 className={styles.productTitle}>
                           {order.productName}
                         </h3>
@@ -175,7 +172,21 @@ export default function OrdersPage() {
                           <ArrowRight size={15} />
                         </button>
 
-                        <Link href="/flower" className={styles.reorderBtn}>
+                        <Link 
+                          href={
+                            (() => {
+                              const id = (order.productId || "").toLowerCase();
+                              if (id.includes("cake")) return "/cakes";
+                              if (id.includes("basket")) return "/flower-baskets";
+                              if (id.includes("bouquet")) return "/flower-bouquets";
+                              if (id.includes("church")) return "/church-arrangements";
+                              if (id.includes("wreath")) return "/wreaths";
+                              if (id.includes("table")) return "/table-decor";
+                              return "/flower";
+                            })()
+                          } 
+                          className={styles.reorderBtn}
+                        >
                           Reorder
                         </Link>
                       </div>
