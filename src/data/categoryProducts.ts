@@ -427,6 +427,14 @@ export const BOUQUET_PRODUCTS: CategoryProduct[] = [
     tag: "New Arrival",
     description: "A stunning bouquet of vibrant red roses beautifully accented with delicate baby's breath and wrapped in elegant red and golden dual-tone paper with a lovely red ribbon.",
   },
+  {
+    id: "bouquet-pink-elegance",
+    title: "Pink Elegance",
+    image: "/images/flower-bouquet/pink-elegance.jpg",
+    price: "₹350",
+    tag: "New Arrival",
+    description: "A stunning bouquet of 3 elegant red roses, beautifully arranged and wrapped in premium pink paper with a white ribbon.",
+  },
 ];
 
 export const CAKE_PRODUCTS: CategoryProduct[] = [

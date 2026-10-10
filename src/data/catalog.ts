@@ -1093,6 +1093,29 @@ export const CATALOG_PRODUCTS: Product[] = [
     ],
     badge: "New Arrival",
   },
+  {
+    id: "bouquet-pink-elegance",
+    slug: "pink-elegance",
+    name: "Pink Elegance",
+    price: 350,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/flower-bouquet/pink-elegance.jpg",
+    images: [
+      "/images/flower-bouquet/pink-elegance.jpg",
+    ],
+    rating: 4.9,
+    reviewsCount: 12,
+    description: "A stunning bouquet of 3 elegant red roses, beautifully arranged and wrapped in premium pink paper with a white ribbon.",
+    deliveryInfo: "Fresh morning delivery within 3 hours across Calicut.",
+    offers: ["Flat 10% off with code OCCASIONS10", "Complimentary heartfelt note card"],
+    includes: [
+      "3 Red Roses",
+      "Green Fillers",
+      "Premium Pink Wrapping with White Ribbon",
+    ],
+    badge: "New Arrival",
+  },
 
   // ==================== CAKES PRODUCTS (/cakes) ====================
 
