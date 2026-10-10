@@ -116,6 +116,14 @@ export const FLOWER_BASKET_PRODUCTS: CategoryProduct[] = [
 
 export const BOUQUET_PRODUCTS: CategoryProduct[] = [
   {
+    id: "bouquet-scarlet-dream",
+    title: "Scarlet Dream",
+    image: "/images/flower-bouquet/scarlet-dream.jpg",
+    price: "₹800",
+    tag: "New Arrival",
+    description: "A stunning bouquet of vibrant red roses beautifully accented with delicate baby's breath and wrapped in elegant red and golden dual-tone paper with a lovely red ribbon.",
+  },
+  {
     id: "bouquet-1",
     title: "Pastel Blush & Rose Elegance Wrap",
     image: "/images/bouquet-pastel-luxe.png",
