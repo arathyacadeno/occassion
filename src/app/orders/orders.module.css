@@ -251,7 +251,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background-color: #686b2e;
+  background-color: #c21460;
   color: #ffffff;
   border: none;
   border-radius: 12px;
@@ -260,11 +260,11 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(104, 107, 46, 0.2);
+  box-shadow: 0 4px 12px rgba(194, 20, 96, 0.2);
 }
 
 .viewDetailsBtn:hover {
-  background-color: #555823;
+  background-color: #a3104e;
   transform: translateY(-1px);
 }
 
@@ -285,8 +285,8 @@
 }
 
 .reorderBtn:hover {
-  border-color: #686b2e;
-  color: #686b2e;
+  border-color: #c21460;
+  color: #c21460;
   background-color: #fafbfc;
 }
 
