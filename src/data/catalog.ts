@@ -29,6 +29,7 @@ export interface Product {
 
 export const CATALOG_PRODUCTS: Product[] = [
   // ==================== FLOWER PRODUCTS (/flower) ====================
+  
   {
     id: "flower-30-white-roses",
     slug: "30-white-roses-sheeve-bouquet",
@@ -1022,6 +1023,29 @@ export const CATALOG_PRODUCTS: Product[] = [
       "Yellow Ribbon",
     ],
     badge: "Elegant",
+  },
+  {
+    id: "bouquet-ocean-of-love",
+    slug: "ocean-of-love",
+    name: "Ocean of Love",
+    price: 650,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/flower-bouquet/ocean-of-love.jpg",
+    images: [
+      "/images/flower-bouquet/ocean-of-love.jpg"
+    ],
+    rating: 4.8,
+    reviewsCount: 15,
+    description: "A gorgeous mix of red, pink, white, and yellow roses beautifully wrapped in a refreshing light blue paper.",
+    deliveryInfo: "Fresh morning delivery within 3 hours across Calicut.",
+    offers: ["Flat 10% off with code OCCASIONS10", "Complimentary heartfelt note card"],
+    includes: [
+      "Mixed Fresh Roses",
+      "Premium Blue Wrapping",
+      "White Ribbon Bow"
+    ],
+    badge: "Bestseller",
   },
 
   // ==================== CAKES PRODUCTS (/cakes) ====================
