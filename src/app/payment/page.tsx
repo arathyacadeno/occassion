@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
 import TimeSlotModal from "@/components/TimeSlotModal";
+import DateModal from "@/components/DateModal";
 import { useCheckout } from "@/context/CheckoutContext";
 import { useCart } from "@/context/CartContext";
 import {
@@ -19,6 +20,7 @@ import {
   Truck,
   ChevronDown,
   Clock,
+  Calendar,
 } from "lucide-react";
 import styles from "./payment.module.css";
 
@@ -78,6 +80,7 @@ export default function SinglePageCheckoutPayment() {
   const [deliveryDate, setDeliveryDate] = useState("");
   const [deliveryTime, setDeliveryTime] = useState("");
   const [showTimeSlotModal, setShowTimeSlotModal] = useState(false);
+  const [showDateModal, setShowDateModal] = useState(false);
 
   // Payment Method State
   const [activeTab, setActiveTab] = useState<PaymentTabType>("card");
@@ -638,15 +641,21 @@ export default function SinglePageCheckoutPayment() {
               <div className={styles.deliveryDropdownsRow}>
                 <div className={styles.deliveryDropdownCol}>
                   <label className={styles.dropdownLabel}>Delivery Date</label>
-                  <div className={styles.dropdownPill}>
-                    <input
-                      type="date"
-                      value={deliveryDate}
-                      onChange={(e) => setDeliveryDate(e.target.value)}
-                      className={styles.dateInput}
-                      min={new Date().toISOString().split("T")[0]}
-                      required
-                    />
+                  <div
+                    className={styles.dropdownPill}
+                    onClick={() => setShowDateModal(true)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <div className={styles.dropdownSelect} style={{ display: "flex", alignItems: "center" }}>
+                      {deliveryDate
+                        ? new Date(deliveryDate).toLocaleDateString("en-GB", {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                          })
+                        : "Select Date"}
+                    </div>
+                    <Calendar size={14} className={styles.dropdownChevron} />
                   </div>
                 </div>
 
@@ -674,6 +683,17 @@ export default function SinglePageCheckoutPayment() {
               onConfirm={(deliveryType, slot, price) => {
                 setDeliveryTime(slot);
                 setShowTimeSlotModal(false);
+              }}
+            />
+
+            {/* Date Modal */}
+            <DateModal
+              isOpen={showDateModal}
+              onClose={() => setShowDateModal(false)}
+              selectedDate={deliveryDate}
+              onConfirm={(date) => {
+                setDeliveryDate(date);
+                setShowDateModal(false);
               }}
             />
 
