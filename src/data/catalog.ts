@@ -29,7 +29,7 @@ export interface Product {
 
 export const CATALOG_PRODUCTS: Product[] = [
   // ==================== FLOWER PRODUCTS (/flower) ====================
-  
+
   {
     id: "flower-30-white-roses",
     slug: "30-white-roses-sheeve-bouquet",
@@ -1046,6 +1046,29 @@ export const CATALOG_PRODUCTS: Product[] = [
       "White Ribbon Bow"
     ],
     badge: "Bestseller",
+  },
+  {
+    id: "bouquet-midnight-roses",
+    slug: "midnight-roses",
+    name: "Midnight Roses",
+    price: 500,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/flower-bouquet/midnight-roses.jpg",
+    images: [
+      "/images/flower-bouquet/midnight-roses.jpg"
+    ],
+    rating: 4.9,
+    reviewsCount: 8,
+    description: "An elegant bouquet of red roses enveloped in striking black wrapping and tied with a beautiful pink ribbon.",
+    deliveryInfo: "Fresh morning delivery within 3 hours across Calicut.",
+    offers: ["Flat 10% off with code OCCASIONS10", "Complimentary heartfelt note card"],
+    includes: [
+      "Fresh Red Roses",
+      "Premium Black Wrapping",
+      "Pink Satin Ribbon"
+    ],
+    badge: "New Arrival",
   },
 
   // ==================== CAKES PRODUCTS (/cakes) ====================

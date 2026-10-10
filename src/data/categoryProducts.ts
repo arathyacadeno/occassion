@@ -116,14 +116,6 @@ export const FLOWER_BASKET_PRODUCTS: CategoryProduct[] = [
 
 export const BOUQUET_PRODUCTS: CategoryProduct[] = [
   {
-    id: "bouquet-ocean-of-love",
-    title: "Ocean of Love",
-    image: "/images/flower-bouquet/ocean-of-love.jpg",
-    price: "₹650",
-    tag: "Bestseller",
-    description: "A gorgeous mix of red, pink, white, and yellow roses beautifully wrapped in a refreshing light blue paper.",
-  },
-  {
     id: "bouquet-1",
     title: "Pastel Blush & Rose Elegance Wrap",
     image: "/images/bouquet-pastel-luxe.png",
@@ -418,6 +410,14 @@ export const BOUQUET_PRODUCTS: CategoryProduct[] = [
     price: "₹650",
     tag: "Bestseller",
     description: "A gorgeous mix of red, pink, white, and yellow roses beautifully wrapped in a refreshing light blue paper.",
+  },
+  {
+    id: "bouquet-midnight-roses",
+    title: "Midnight Roses",
+    image: "/images/flower-bouquet/midnight-roses.jpg",
+    price: "₹500",
+    tag: "New Arrival",
+    description: "An elegant bouquet of red roses enveloped in striking black wrapping and tied with a beautiful pink ribbon.",
   },
 ];
 
