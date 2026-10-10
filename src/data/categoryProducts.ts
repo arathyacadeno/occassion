@@ -116,14 +116,6 @@ export const FLOWER_BASKET_PRODUCTS: CategoryProduct[] = [
 
 export const BOUQUET_PRODUCTS: CategoryProduct[] = [
   {
-    id: "flower-30-white-roses",
-    title: "30 white roses sheeve bouquet",
-    image: "/images/flower-bouquet/30-white-roses-sheeve-bouquet.jpg",
-    price: "₹1,800",
-    tag: "New Arrival",
-    description: "An elegant arrangement of 30 pristine white roses beautifully wrapped in a yellow sheeve style bouquet with a delicate white ribbon. Perfect for expressing purity and grace.",
-  },
-  {
     id: "bouquet-1",
     title: "Pastel Blush & Rose Elegance Wrap",
     image: "/images/bouquet-pastel-luxe.png",
@@ -242,6 +234,14 @@ export const BOUQUET_PRODUCTS: CategoryProduct[] = [
     price: "₹1,200",
     tag: "New",
     description: "A breathtaking assortment of white, pink, and red roses, carefully arranged and wrapped in elegant pale pink paper with a beautiful purple ribbon.",
+  },
+  {
+    id: "bouquet-passion-petals",
+    title: "Passion Petals Bouquet",
+    image: "/images/flower-bouquet/passion-petals.jpg",
+    price: "₹650",
+    tag: "Bestseller",
+    description: "A gorgeous bouquet of deep red roses wrapped beautifully to convey your deepest passion.",
   },
   {
     id: "bouquet-snow-white",

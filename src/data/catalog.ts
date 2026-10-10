@@ -597,6 +597,29 @@ export const CATALOG_PRODUCTS: Product[] = [
     badge: "New",
   },
   {
+    id: "bouquet-passion-petals",
+    slug: "passion-petals-bouquet",
+    name: "Passion Petals Bouquet",
+    price: 650,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/flower-bouquet/passion-petals.jpg",
+    images: [
+      "/images/flower-bouquet/passion-petals.jpg"
+    ],
+    rating: 4.8,
+    reviewsCount: 22,
+    description: "A gorgeous bouquet of deep red roses wrapped beautifully to convey your deepest passion.",
+    deliveryInfo: "Fresh morning delivery within 3 hours across Calicut.",
+    offers: ["Flat 10% off with code OCCASIONS10", "Complimentary heartfelt note card"],
+    includes: [
+      "Fresh Red Roses",
+      "Premium Wrapping",
+      "Satin Ribbon Bow"
+    ],
+    badge: "Bestseller",
+  },
+  {
     id: "bouquet-snow-white",
     slug: "snow-white",
     name: "Snow White Rose Bouquet",
