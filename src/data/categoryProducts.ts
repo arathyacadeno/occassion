@@ -236,6 +236,14 @@ export const BOUQUET_PRODUCTS: CategoryProduct[] = [
     description: "A breathtaking assortment of white, pink, and red roses, carefully arranged and wrapped in elegant pale pink paper with a beautiful purple ribbon.",
   },
   {
+    id: "bouquet-snow-white",
+    title: "Snow White Rose Bouquet",
+    image: "/images/flower-bouquet/snow-white.jpg",
+    price: "₹800",
+    tag: "New",
+    description: "A pristine collection of elegant white roses accented with lush green foliage, wrapped in soothing light blue paper and tied with a striking red ribbon.",
+  },
+  {
     id: "bouquet-orchid-symphony",
     title: "Orchid Symphony",
     image: "/images/flower-bouquet/orchid-symphony-3.jpg",
