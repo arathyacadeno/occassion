@@ -335,7 +335,7 @@ export default function Testimonials() {
             </button>
           </div>
 
-          {/* Dots & Counter showing all testimonials */}
+          {/* Dots showing all testimonials */}
           <div className={styles.paginationArea}>
             <div className={styles.dotsWrapper}>
               {TESTIMONIALS_DATA.map((item, i) => {
@@ -356,9 +356,6 @@ export default function Testimonials() {
                   />
                 );
               })}
-            </div>
-            <div className={styles.counterText}>
-              Review {(((active % total) + total) % total) + 1} of {total} • Real Google Reviews
             </div>
           </div>
         </div>

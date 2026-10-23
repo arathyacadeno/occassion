@@ -87,14 +87,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  max-width: 90%;
+  gap: 6px;
+  flex-wrap: nowrap;
+  max-width: 100%;
 }
 
 .dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
   border-radius: 9999px;
   background-color: #fce7f3;
   border: 1px solid #fbcfe8;
@@ -109,7 +110,8 @@
 }
 
 .activeDot {
-  width: 28px;
+  width: 22px;
+  flex-shrink: 0;
   background-color: #ff2d6c;
   border-color: #ff2d6c;
   box-shadow: 0 2px 10px rgba(255, 45, 108, 0.35);
@@ -504,6 +506,19 @@
 
   .navBtnRight {
     right: 4px;
+  }
+
+  .dotsWrapper {
+    gap: 5px;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  .activeDot {
+    width: 18px;
   }
 }
 
