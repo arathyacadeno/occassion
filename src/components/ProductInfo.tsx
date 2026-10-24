@@ -7,7 +7,6 @@ import {
   ChevronUp,
   MapPin,
   X,
-  Truck,
   Check,
   Minus,
   Plus,
@@ -587,15 +586,11 @@ export default function ProductInfo({
       {/* Title (22-24px, weight 500) */}
       <h1 className={styles.productName}>{product.name}</h1>
 
-      {/* Rating & Delivery Row: ★ 4.4 [green badge] Free Delivery [truck] */}
+      {/* Rating Badge */}
       <div className={styles.ratingDeliveryRow}>
         <div className={styles.greenRatingBadge}>
           <Star size={9} fill="#ffffff" color="#ffffff" strokeWidth={0} />
           <span>{(product.rating || 4.4).toFixed(1)}</span>
-        </div>
-        <div className={styles.freeDeliveryCallout}>
-          <span>Free Delivery</span>
-          <Truck size={13} strokeWidth={1.5} className={styles.truckIcon} />
         </div>
       </div>
 

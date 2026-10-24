@@ -940,7 +940,7 @@
   font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: capitalize;
-  color: #831843;
+  color: #000000;
 }
 
 .modalCloseBtn {
@@ -1202,7 +1202,7 @@
   font-family: var(--font-serif, "Playfair Display", Georgia, serif);
   font-size: 1.45rem;
   font-weight: 700;
-  color: #831843;
+  color: #000000;
   margin: 0;
 }
 

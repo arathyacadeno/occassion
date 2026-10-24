@@ -13,6 +13,8 @@ import {
   getProductsByCategory,
   getFlowerBaskets,
   getFlowerBouquets,
+  getTableDecorProducts,
+  getWreathProducts,
   CATALOG_PRODUCTS,
 } from "@/data/catalog";
 import ProductCard from "@/components/ProductCard";
@@ -35,34 +37,22 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
     }
   };
 
-  // Contextual Similar products logic
-  const isChocolate =
-    product.id.includes("chocolate") ||
-    product.id.includes("dairy-milk") ||
-    product.id.includes("cadbury") ||
-    product.id.includes("galaxy") ||
-    product.id.includes("ferrero") ||
-    product.name.toLowerCase().includes("chocolate") ||
-    product.name.toLowerCase().includes("dairy milk") ||
-    product.name.toLowerCase().includes("silk") ||
-    product.name.toLowerCase().includes("ferrero");
-
+  // Contextual Similar products logic - strictly category-isolated
   const isCakeProduct =
-    product.category === "cakes" ||
-    product.id.includes("cake") ||
-    product.name.toLowerCase().includes("cake") ||
-    product.name.toLowerCase().includes("forest");
-
-  const isSoftToy =
-    product.id.includes("soft-toys") ||
-    product.name.toLowerCase().includes("teddy") ||
-    product.name.toLowerCase().includes("toy");
+    product.category === "cakes" || product.id.startsWith("cake-");
 
   const isWreath =
     product.category === "wreaths" ||
-    product.id.includes("wreath") ||
+    product.id.startsWith("wreath-") ||
     product.slug?.includes("wreath") ||
     product.name.toLowerCase().includes("wreath");
+
+  const isTableDecor =
+    product.category === "table-decor" ||
+    product.id.startsWith("table-decor-") ||
+    product.slug?.includes("table-decor") ||
+    product.name.toLowerCase().includes("table decor") ||
+    product.name.toLowerCase().includes("centerpiece");
 
   const isFlowerBasket =
     product.category === "flower" &&
@@ -78,16 +68,48 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
   const isFlowerBouquet =
     product.category === "flower" && !isFlowerBasket;
 
+  const isChocolate =
+    product.category === "special-occasions" &&
+    (product.id.includes("chocolate") ||
+      product.id.includes("dairy-milk") ||
+      product.id.includes("cadbury") ||
+      product.id.includes("galaxy") ||
+      product.id.includes("ferrero") ||
+      product.name.toLowerCase().includes("chocolate") ||
+      product.name.toLowerCase().includes("dairy milk") ||
+      product.name.toLowerCase().includes("silk") ||
+      product.name.toLowerCase().includes("ferrero"));
+
+  const isSoftToy =
+    product.category === "special-occasions" &&
+    (product.id.includes("soft-toys") ||
+      product.name.toLowerCase().includes("teddy") ||
+      product.name.toLowerCase().includes("toy"));
+
   let similarProducts: Product[] = [];
 
-  if (isChocolate) {
-    // Show strictly chocolates and confectionery (Dairy Milk Silk, Oreo, Galaxy, Fruit & Nut, Ferrero, etc.)
-    // Exclude cakes so chocolate cakes don't crowd out the actual chocolates!
+  if (isFlowerBouquet) {
+    // Strictly show ONLY flower bouquets
+    similarProducts = getFlowerBouquets().filter((p) => p.id !== product.id);
+  } else if (isFlowerBasket) {
+    // Strictly show ONLY flower baskets
+    similarProducts = getFlowerBaskets().filter((p) => p.id !== product.id);
+  } else if (isCakeProduct) {
+    // Strictly show ONLY cakes
+    similarProducts = CATALOG_PRODUCTS.filter(
+      (p) => p.id !== product.id && p.category === "cakes"
+    );
+  } else if (isWreath) {
+    // Strictly show ONLY wreaths
+    similarProducts = getWreathProducts().filter((p) => p.id !== product.id);
+  } else if (isTableDecor) {
+    // Strictly show ONLY table decor
+    similarProducts = getTableDecorProducts().filter((p) => p.id !== product.id);
+  } else if (isChocolate) {
     similarProducts = CATALOG_PRODUCTS.filter(
       (p) =>
         p.id !== product.id &&
-        p.category !== "cakes" &&
-        !p.id.startsWith("cake-") &&
+        p.category === "special-occasions" &&
         (p.id.includes("chocolate") ||
           p.id.includes("dairy-milk") ||
           p.id.includes("cadbury") ||
@@ -100,55 +122,23 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
           p.name.toLowerCase().includes("ferrero") ||
           p.name.toLowerCase().includes("chocolate"))
     );
-  } else if (isCakeProduct) {
-    similarProducts = CATALOG_PRODUCTS.filter(
-      (p) =>
-        p.id !== product.id &&
-        (p.category === "cakes" ||
-          p.name.toLowerCase().includes("cake") ||
-          p.name.toLowerCase().includes("forest"))
-    );
   } else if (isSoftToy) {
     similarProducts = CATALOG_PRODUCTS.filter(
       (p) =>
         p.id !== product.id &&
+        p.category === "special-occasions" &&
         (p.id.includes("toy") ||
+          p.name.toLowerCase().includes("teddy") ||
           p.name.toLowerCase().includes("toy") ||
-          p.name.toLowerCase().includes("gift") ||
-          p.category === "special-occasions")
+          p.name.toLowerCase().includes("gift"))
     );
-  } else if (isFlowerBasket) {
-    // Strictly show ONLY flower baskets (never flower bouquets)
-    similarProducts = getFlowerBaskets().filter((p) => p.id !== product.id);
-  } else if (isFlowerBouquet) {
-    // Strictly show ONLY flower bouquets (never flower baskets)
-    similarProducts = getFlowerBouquets().filter((p) => p.id !== product.id);
   } else {
-    const categoryProducts = getProductsByCategory(product.category as any).filter(
+    similarProducts = getProductsByCategory(product.category as any).filter(
       (p) => p.id !== product.id
     );
-    similarProducts = categoryProducts;
   }
 
-  // Fallback if less than 4 items (strictly kept within same type)
-  if (!isChocolate && similarProducts.length < 4) {
-    if (isFlowerBasket) {
-      const fallback = getFlowerBaskets().filter((p) => !similarProducts.some((sp) => sp.id === p.id));
-      similarProducts = [...similarProducts, ...fallback];
-    } else if (isFlowerBouquet) {
-      const fallback = getFlowerBouquets().filter((p) => !similarProducts.some((sp) => sp.id === p.id));
-      similarProducts = [...similarProducts, ...fallback];
-    } else {
-      const fallbackProducts = CATALOG_PRODUCTS.filter(
-        (p) =>
-          p.id !== product.id &&
-          p.category === product.category &&
-          !similarProducts.some((sp) => sp.id === p.id)
-      );
-      similarProducts = [...similarProducts, ...fallbackProducts];
-    }
-  }
-
+  // Strictly keep similar products within their own category
   similarProducts = similarProducts.slice(0, 10);
 
   const categoryLabel =
@@ -275,17 +265,21 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
         >
           <div className={styles.similarHeaderRow}>
             <h2 className={styles.sectionHeading}>
-              {isChocolate
-                ? "Similar Chocolates & Treats"
-                : isCakeProduct
-                ? "Similar Celebration Cakes"
-                : isWreath
-                ? "Similar Memorial & Tribute Wreaths"
-                : isFlowerBasket
-                ? "Similar Flower Baskets"
-                : isFlowerBouquet
+              {isFlowerBouquet
                 ? "Similar Flower Bouquets"
-                : "Similar Product"}
+                : isFlowerBasket
+                ? "Similar Flower Basket"
+                : isCakeProduct
+                ? "Similar Cakes"
+                : isWreath
+                ? "Similar Wreath"
+                : isTableDecor
+                ? "Similar Table Decor"
+                : isChocolate
+                ? "Similar Chocolates & Treats"
+                : isSoftToy
+                ? "Similar Soft Toys & Gifts"
+                : "Similar Products"}
             </h2>
             <div className={styles.scrollButtons}>
               <button
