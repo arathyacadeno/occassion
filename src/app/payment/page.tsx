@@ -258,6 +258,14 @@ export default function SinglePageCheckoutPayment() {
   // Check initial PIN code on mount
   useEffect(() => {
     setMounted(true);
+    try {
+      const storedPin = localStorage.getItem("occassions_delivery_pincode");
+      if (storedPin && storedPin.length === 6) {
+        setPinCode(storedPin);
+        checkDeliveryPin(storedPin);
+        return;
+      }
+    } catch {}
     if (pinCode && pinCode.length === 6) {
       checkDeliveryPin(pinCode);
     }

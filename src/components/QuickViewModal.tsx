@@ -38,9 +38,7 @@ export default function QuickViewModal({
 
           <div className={styles.priceRow}>
             <span className={styles.price}>${bouquet.price}</span>
-            {bouquet.originalPrice && (
-              <span className={styles.originalPrice}>${bouquet.originalPrice}</span>
-            )}
+            
           </div>
 
           <p className={styles.description}>{bouquet.description}</p>

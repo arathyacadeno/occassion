@@ -1,120 +1,107 @@
-/* CartItemAddons.module.css - Compact "Make It Extra Special!" Addons Section */
+/* CartItemAddons.module.css - Full-width bleed grey bar & add-ons carousel */
 
 .addonsWrapper {
   margin-top: 16px;
-  padding-top: 14px;
-  border-top: 1px dashed #fed7df;
+  margin-left: calc(-1 * var(--card-pad-x, var(--card-pad, 24px)));
+  margin-right: calc(-1 * var(--card-pad-x, var(--card-pad, 24px)));
+  margin-bottom: calc(-1 * var(--card-pad-y, var(--card-pad, 20px)));
+  background-color: #f6f6f4;
+  border-top: 1px solid #ececec;
+  border-bottom-left-radius: 14px;
+  border-bottom-right-radius: 14px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  width: calc(100% + var(--card-pad-x, var(--card-pad, 24px)) * 2);
+  max-width: calc(100% + var(--card-pad-x, var(--card-pad, 24px)) * 2);
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
-/* Header row with Title and Controls */
-.headerRow {
+/* 1) Entire Bar Button (Collapsed & Header Bar) */
+.headerBar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  user-select: none;
-  padding: 4px 6px;
-  border-radius: 8px;
+  width: 100%;
+  padding: 14px var(--card-pad-x, var(--card-pad, 24px));
+  background: transparent;
+  border: none;
   cursor: pointer;
-  transition: background-color 0.18s ease;
+  user-select: none;
+  text-align: left;
+  transition: background-color 0.15s ease;
+  box-sizing: border-box;
 }
 
-.headerRow:hover {
-  background-color: #fff8f9;
+.headerBar:hover {
+  background-color: #efefec;
 }
 
 .titleArea {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
-.giftIconBadge {
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
-  background-color: #fff1f2;
-  color: #e11d48;
+.giftIconWrap {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.95rem;
+  color: #111827;
 }
 
 .sectionTitle {
-  font-size: 0.92rem;
+  font-size: 0.98rem;
   font-weight: 700;
-  color: #1e293b;
+  color: #111827;
   margin: 0;
   letter-spacing: -0.01em;
 }
 
 .itemCountBadge {
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: #15803d;
-  background-color: #dcfce7;
-  border: 1px solid #bbf7d0;
-  padding: 2px 7px;
-  border-radius: 9999px;
-}
-
-.headerControls {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.openScreenBtn {
-  background-color: #fff1f2;
-  border: 1px solid #fecdd3;
-  color: #E40345;
   font-size: 0.75rem;
   font-weight: 700;
-  padding: 4px 10px;
+  color: #E40345;
+  background-color: #fff1f2;
+  border: 1px solid #fecdd3;
+  padding: 2px 8px;
   border-radius: 9999px;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  cursor: pointer;
-  transition: all 0.18s ease;
+  letter-spacing: 0.01em;
 }
 
-.openScreenBtn:hover {
-  background-color: #E40345;
-  border-color: #E40345;
-  color: #ffffff;
-  transform: translateY(-1px);
-}
-
-.toggleExpandBtn {
-  background: none;
-  border: none;
-  color: #64748b;
+.chevronWrap {
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 6px;
-  transition: color 0.18s ease;
+  color: #111827;
 }
 
-.toggleExpandBtn:hover {
-  color: #1e293b;
+/* 2) Expanded Content */
+.expandedContent {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding: 0 var(--card-pad-x, var(--card-pad, 24px)) 16px var(--card-pad-x, var(--card-pad, 24px));
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
 }
 
 /* Category Filter Tabs (Pills) */
 .categoryPillsTrack {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   overflow-x: auto;
-  padding: 2px 0 6px 0;
+  padding: 2px 0;
   scrollbar-width: none;
+  -ms-overflow-style: none;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .categoryPillsTrack::-webkit-scrollbar {
@@ -123,133 +110,122 @@
 
 .pillBtn {
   white-space: nowrap;
-  font-size: 0.74rem;
-  font-weight: 600;
-  padding: 4px 12px;
+  font-size: 0.84rem;
+  font-weight: 500;
+  padding: 6px 16px;
   border-radius: 9999px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #d4d4d0;
   background-color: #ffffff;
-  color: #475569;
+  color: #374151;
   cursor: pointer;
-  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-  display: inline-flex;
-  align-items: center;
+  transition: all 0.18s ease;
+  flex-shrink: 0;
 }
 
 .pillBtn:hover {
-  border-color: #cbd5e1;
-  color: #1e293b;
-  background-color: #f8fafc;
+  border-color: #E40345;
+  color: #E40345;
 }
 
-.pillBtnActive {
-  background-color: #1e293b;
-  border-color: #1e293b;
-  color: #ffffff;
-  box-shadow: 0 1px 4px rgba(30, 41, 59, 0.12);
-}
-
+.pillBtnActive,
 .pillBtnActive:hover {
-  background-color: #0f172a;
-  border-color: #0f172a;
-  color: #ffffff;
+  background-color: #fff1f2;
+  border-color: #E40345;
+  color: #E40345;
+  font-weight: 600;
 }
 
-/* Carousel Outer Viewport with Floating Navigation Buttons */
+/* Carousel Outer Viewport */
 .carouselViewport {
   position: relative;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
-/* Floating Side Arrows (like in Image 2 / FNP) */
+/* Floating Side Navigation Arrows */
 .floatingArrowBtn {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-  color: #334155;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+  border: 1px solid #e5e7eb;
+  color: #374151;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 10;
   padding: 0;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.18s ease;
 }
 
 .floatingArrowBtn:hover {
   background-color: #E40345;
   border-color: #E40345;
   color: #ffffff;
-  transform: translateY(-50%) scale(1.1);
-  box-shadow: 0 4px 14px rgba(228, 3, 69, 0.3);
 }
 
 .floatingArrowLeft {
-  left: -8px;
+  left: 4px;
 }
 
 .floatingArrowRight {
-  right: -8px;
+  right: 4px;
 }
 
-/* Cards Track - Compact horizontally scrollable strip */
+/* Horizontal Cards Track */
 .cardsTrack {
   display: flex;
   align-items: stretch;
-  gap: 10px;
+  gap: 12px;
   overflow-x: auto;
   scroll-behavior: smooth;
-  padding: 4px 2px 8px 2px;
+  padding: 2px 0 6px 0;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .cardsTrack::-webkit-scrollbar {
   display: none;
 }
 
-/* Compact Individual Addon Card (matching FNP Image 2) */
+/* Add-on Card (96px wide, no outer box) */
 .addonCard {
-  flex: 0 0 98px;
-  width: 98px;
-  background-color: #ffffff;
-  border: 1px solid #f1f5f9;
-  border-radius: 10px;
+  flex: 0 0 96px;
+  width: 96px;
+  background: transparent;
+  border: none;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  position: relative;
+  gap: 6px;
+  user-select: none;
 }
 
-.addonCard:hover {
-  border-color: #fed7df;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(228, 3, 69, 0.09);
-}
-
-.addonCardAdded {
-  border-color: #86efac;
-  background-color: #f0fdf4;
-}
-
-/* Compact Image Wrapper (height 82px instead of 124px!) */
+/* 96x96 White Image Tile with 8px radius and thin grey border */
 .addonImageWrap {
   position: relative;
-  width: 100%;
-  height: 82px;
-  background-color: #f8fafc;
+  width: 96px;
+  height: 96px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-shrink: 0;
+}
+
+.addonCardAdded .addonImageWrap {
+  border-color: #E40345;
+  box-shadow: 0 0 0 1px #E40345;
 }
 
 .addonImg {
@@ -257,114 +233,79 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.25s ease;
 }
 
-.addonCard:hover .addonImg {
-  transform: scale(1.06);
-}
-
-/* Compact Circular + Button in bottom-right of thumbnail */
+/* Square (6px radius) Outlined "+" Button in brand red at bottom-right */
 .quickAddBtn {
   position: absolute;
-  bottom: 5px;
-  right: 5px;
-  width: 23px;
-  height: 23px;
-  border-radius: 50%;
-  border: 1.5px solid #ffffff;
+  bottom: 6px;
+  right: 6px;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 1.5px solid #E40345;
   background-color: #ffffff;
   color: #E40345;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.16);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
   padding: 0;
+  transition: all 0.18s ease;
 }
 
 .quickAddBtn:hover {
-  background-color: #E40345;
-  color: #ffffff;
-  transform: scale(1.15);
-  box-shadow: 0 2px 8px rgba(228, 3, 69, 0.4);
+  background-color: #fff1f2;
 }
 
 .quickAddBtnAdded {
-  background-color: #16a34a;
+  background-color: #E40345;
+  border-color: #E40345;
   color: #ffffff;
-  border-color: #ffffff;
 }
 
 .quickAddBtnAdded:hover {
-  background-color: #dc2626;
-  color: #ffffff;
+  background-color: #c7023c;
+  border-color: #c7023c;
 }
 
-/* Compact Card Content */
+/* Text Content below tile */
 .cardContent {
-  padding: 5px 6px 7px 6px;
   display: flex;
   flex-direction: column;
-  flex: 1;
-  justify-content: space-between;
+  gap: 2px;
 }
 
 .addonTitle {
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: #1e293b;
-  margin: 0 0 4px 0;
-  line-height: 1.25;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #111827;
+  line-height: 1.3;
+  white-space: nowrap;
   overflow: hidden;
-  min-height: 1.8em;
-  word-break: break-word;
+  text-overflow: ellipsis;
 }
 
 .priceContainer {
   display: flex;
   align-items: baseline;
-  gap: 4px;
-  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .priceCurrent {
-  font-size: 0.82rem;
-  font-weight: 800;
-  color: #0f172a;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #111827;
 }
 
 .priceOriginal {
-  font-size: 0.68rem;
-  color: #94a3b8;
+  font-size: 0.78rem;
+  color: #9ca3af;
   text-decoration: line-through;
-}
-
-.addedStatusBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: #15803d;
-  margin-top: 3px;
 }
 
 /* Mobile Responsiveness */
 @media (max-width: 640px) {
-  .addonCard {
-    flex: 0 0 92px;
-    width: 92px;
-  }
-
-  .addonImageWrap {
-    height: 76px;
-  }
-
   .floatingArrowBtn {
     display: none;
   }

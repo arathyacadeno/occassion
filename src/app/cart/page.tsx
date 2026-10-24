@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
@@ -19,7 +19,9 @@ import {
   Minus,
   Plus,
   Lock,
+  MapPin,
 } from "lucide-react";
+import CartItemAddons from "@/components/CartItemAddons";
 import styles from "./cart.module.css";
 
 // Helper to determine if an item is a recommended add-on product
@@ -150,6 +152,88 @@ export default function CartPage() {
   // Authenticated user address state (no dummy placeholder for guests)
   const [savedAddress, setSavedAddress] = useState<any | null>(null);
 
+  // Delivery PIN code & calculation state
+  const [pinCode, setPinCode] = useState<string>("");
+  const [tempPin, setTempPin] = useState<string>("");
+  const [deliveryStatus, setDeliveryStatus] = useState<any | null>(null);
+  const [deliveryLoading, setDeliveryLoading] = useState<boolean>(false);
+  const [isEditingPin, setIsEditingPin] = useState<boolean>(false);
+  const [pinInputError, setPinInputError] = useState<string | null>(null);
+
+  const checkDeliveryPin = useCallback(async (pin: string) => {
+    const cleanPin = (pin || "").replace(/\D/g, "").trim();
+    if (cleanPin.length !== 6) {
+      setDeliveryStatus(null);
+      setDeliveryLoading(false);
+      return;
+    }
+    setDeliveryLoading(true);
+    try {
+      const res = await fetch(`/api/delivery/check?pinCode=${cleanPin}`);
+      const data = await res.json();
+      setDeliveryStatus(data);
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem("occassions_delivery_pincode", cleanPin);
+        } catch {}
+      }
+    } catch {
+      setDeliveryStatus({
+        serviceable: false,
+        message: "Unable to check delivery charges. Please try again.",
+      });
+    } finally {
+      setDeliveryLoading(false);
+    }
+  }, []);
+
+  // Initialize PIN from savedAddress if available, or localStorage
+  useEffect(() => {
+    if (savedAddress?.pinCode) {
+      const addrPin = String(savedAddress.pinCode).replace(/\D/g, "");
+      if (addrPin.length === 6) {
+        setPinCode(addrPin);
+        setTempPin(addrPin);
+        checkDeliveryPin(addrPin);
+      }
+    } else if (typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem("occassions_delivery_pincode");
+        if (stored && /^\d{6}$/.test(stored)) {
+          setPinCode(stored);
+          setTempPin(stored);
+          checkDeliveryPin(stored);
+        }
+      } catch {}
+    }
+  }, [savedAddress, checkDeliveryPin]);
+
+  const handleApplyPin = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const clean = tempPin.replace(/\D/g, "");
+    if (clean.length !== 6) {
+      setPinInputError("Please enter a valid 6-digit PIN code.");
+      return;
+    }
+    setPinInputError(null);
+    setPinCode(clean);
+    setIsEditingPin(false);
+    checkDeliveryPin(clean);
+  };
+
+  const handleClearPin = () => {
+    setPinCode("");
+    setTempPin("");
+    setPinInputError(null);
+    setDeliveryStatus(null);
+    setIsEditingPin(true);
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.removeItem("occassions_delivery_pincode");
+      } catch {}
+    }
+  };
+
   useEffect(() => {
     if (isAuthenticated) {
       fetch("/api/addresses", { credentials: "include" })
@@ -240,7 +324,19 @@ export default function CartPage() {
   }, 0);
 
   const totalDiscount = Math.max(0, totalMRP - totalCurrentPrice);
-  const finalTotal = totalCurrentPrice;
+
+  // Delivery charge based on customer location (null if no pin code added)
+  const deliveryCharge = useMemo(() => {
+    if (!pinCode || pinCode.length !== 6) return null;
+    if (!deliveryStatus || deliveryStatus.serviceable === false) return null;
+    if (typeof deliveryStatus.delivery_charge === "number") {
+      return deliveryStatus.delivery_charge;
+    }
+    return null;
+  }, [pinCode, deliveryStatus]);
+
+  const finalTotal =
+    totalCurrentPrice + (deliveryCharge !== null && deliveryCharge > 0 ? deliveryCharge : 0);
 
   const [pendingCheckoutAfterLogin, setPendingCheckoutAfterLogin] = useState(false);
 
@@ -330,42 +426,135 @@ export default function CartPage() {
           <div className={styles.cartGrid}>
             {/* ================= LEFT COLUMN ================= */}
             <div className={styles.leftColumn}>
-              {/* Deliver to Card: Only shown for authenticated customers with their real account/saved address */}
-              {isAuthenticated && (
-                <div className={styles.addressCard}>
-                  <div className={styles.addressInfo}>
-                    <div className={styles.addressTopRow}>
-                      <span className={styles.deliverToLabel}>Deliver to:</span>
-                      <span className={styles.recipientName}>
-                        {savedAddress?.fullName || user?.name || "Your Account"}
-                      </span>
-                      {savedAddress?.type && (
-                        <span className={styles.homeBadge}>{savedAddress.type}</span>
-                      )}
+              {/* Deliver to Card: Shown for both authenticated users and guests to check/set PIN code */}
+              <div className={styles.addressCard}>
+                {!isEditingPin && (savedAddress || pinCode) ? (
+                  <>
+                    <div className={styles.addressInfo}>
+                      <div className={styles.addressTopRow}>
+                        <MapPin size={16} color="#E40345" />
+                        <span className={styles.deliverToLabel}>Deliver to:</span>
+                        <span className={styles.recipientName}>
+                          {savedAddress?.fullName || user?.name || (deliveryStatus?.area ? `${deliveryStatus.area}` : "Your Location")}
+                        </span>
+                        {savedAddress?.type && (
+                          <span className={styles.homeBadge}>{savedAddress.type}</span>
+                        )}
+                        {pinCode && (
+                          <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "#111827" }}>
+                            - {pinCode}
+                          </span>
+                        )}
+                      </div>
+                      <div className={styles.addressSubtext}>
+                        {savedAddress
+                          ? [
+                              savedAddress.house,
+                              savedAddress.street,
+                              savedAddress.city,
+                              savedAddress.pinCode,
+                            ]
+                              .filter(Boolean)
+                              .join(", ")
+                          : deliveryStatus?.area
+                          ? `${deliveryStatus.area}, ${deliveryStatus.district || deliveryStatus.state || "Kerala"}`
+                          : "Delivery PIN code active"}
+                      </div>
+                      {/* Serviceability note */}
+                      {deliveryLoading ? (
+                        <div className={styles.pinServiceText}>
+                          <span style={{ color: "#6b7280" }}>Checking delivery fee...</span>
+                        </div>
+                      ) : deliveryStatus && deliveryStatus.serviceable === false ? (
+                        <div className={styles.pinServiceText}>
+                          <span className={styles.pinServiceError}>
+                            ✕ Delivery not available to PIN {pinCode}
+                          </span>
+                        </div>
+                      ) : deliveryCharge !== null ? (
+                        <div className={styles.pinServiceText}>
+                          <span className={styles.pinServiceSuccess}>
+                            ✓ Delivery available • {deliveryCharge === 0 ? "Free Delivery" : `₹${deliveryCharge} Delivery Charge`}
+                          </span>
+                        </div>
+                      ) : null}
                     </div>
-                    <div className={styles.addressSubtext}>
-                      {savedAddress
-                        ? [
-                          savedAddress.house,
-                          savedAddress.street,
-                          savedAddress.city,
-                          savedAddress.pinCode,
-                        ]
-                          .filter(Boolean)
-                          .join(", ")
-                        : "Delivery address will be confirmed at checkout"}
-                    </div>
-                  </div>
 
-                  <button
-                    type="button"
-                    onClick={handleProceedToCheckout}
-                    className={styles.changeAddressBtn}
-                  >
-                    {savedAddress ? "Change" : "Add Address"}
-                  </button>
-                </div>
-              )}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsEditingPin(true);
+                        setTempPin(pinCode || "");
+                      }}
+                      className={styles.changeAddressBtn}
+                    >
+                      Change PIN
+                    </button>
+                  </>
+                ) : (
+                  /* Form to enter / update 6-digit PIN code */
+                  <div className={styles.addressInfo} style={{ width: "100%" }}>
+                    <div className={styles.addressTopRow}>
+                      <MapPin size={16} color="#E40345" />
+                      <span className={styles.deliverToLabel} style={{ fontWeight: 600, color: "#111827" }}>
+                        {pinCode ? "Change Delivery PIN Code" : "Delivery Location PIN Code"}
+                      </span>
+                    </div>
+                    <p className={styles.addressSubtext}>
+                      {pinCode
+                        ? "Enter a 6-digit PIN code to recalculate delivery fee based on your location"
+                        : "Enter your PIN code to check delivery availability and calculate delivery fee"}
+                    </p>
+                    <form onSubmit={handleApplyPin} className={styles.pinForm}>
+                      <input
+                        type="text"
+                        maxLength={6}
+                        placeholder="Enter 6-digit PIN"
+                        value={tempPin}
+                        onChange={(e) => {
+                          const v = e.target.value.replace(/\D/g, "").slice(0, 6);
+                          setTempPin(v);
+                          if (pinInputError) setPinInputError(null);
+                        }}
+                        className={styles.pinInput}
+                        aria-label="Delivery PIN Code"
+                      />
+                      <button type="submit" className={styles.pinApplyBtn} disabled={deliveryLoading}>
+                        {deliveryLoading ? "Checking..." : "Apply"}
+                      </button>
+                      {pinCode && (
+                        <button
+                          type="button"
+                          onClick={handleClearPin}
+                          className={styles.pinClearBtn}
+                          title="Clear PIN code (charge will be empty)"
+                        >
+                          Clear PIN
+                        </button>
+                      )}
+                      {(savedAddress || pinCode) && isEditingPin && (
+                        <button
+                          type="button"
+                          onClick={() => setIsEditingPin(false)}
+                          className={styles.pinClearBtn}
+                        >
+                          Cancel
+                        </button>
+                      )}
+                    </form>
+                    {pinInputError && (
+                      <span style={{ fontSize: "0.8rem", color: "#e11d48", marginTop: "2px" }}>
+                        {pinInputError}
+                      </span>
+                    )}
+                    {deliveryStatus && deliveryStatus.serviceable === false && (
+                      <span style={{ fontSize: "0.8rem", color: "#e11d48", marginTop: "2px" }}>
+                        {deliveryStatus.message || "Sorry, delivery is not available to this location."}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
 
               {/* Cart Items List: Groups Main Product and its Add-ons */}
               {groupedCartItems.map((group) => {
@@ -456,27 +645,9 @@ export default function CartPage() {
 
                         {/* Price Row */}
                         <div className={styles.priceRow}>
-                          {discountPercent > 0 && (
-                            <span className={styles.discountBadge}>
-                              ↓ {discountPercent}%
-                            </span>
-                          )}
-
-                          {discountPercent > 0 && (
-                            <span className={styles.originalPrice}>
-                              ₹{(origPrice * item.quantity).toLocaleString("en-IN")}
-                            </span>
-                          )}
-
                           <span className={styles.currentPrice}>
                             ₹{(item.bouquet.price * item.quantity).toLocaleString("en-IN")}
                           </span>
-
-                          {discountPercent > 0 && (
-                            <span className={styles.freeDeliveryText}>
-                              Free Delivery
-                            </span>
-                          )}
                         </div>
 
                         <div className={styles.deliveryDate}>
@@ -589,16 +760,6 @@ export default function CartPage() {
                                 </div>
 
                                 <div className={styles.priceRow}>
-                                  {addonDiscount > 0 && (
-                                    <span className={styles.discountBadge}>
-                                      ↓ {addonDiscount}%
-                                    </span>
-                                  )}
-                                  {addonDiscount > 0 && (
-                                    <span className={styles.originalPrice}>
-                                      ₹{(addonOrig * addonItem.quantity).toLocaleString("en-IN")}
-                                    </span>
-                                  )}
                                   <span className={styles.currentPrice}>
                                     ₹{(addonItem.bouquet.price * addonItem.quantity).toLocaleString("en-IN")}
                                   </span>
@@ -610,6 +771,8 @@ export default function CartPage() {
                       </div>
                     )}
 
+                    {/* Make It Extra Special! Add-ons Section */}
+                    <CartItemAddons attachedAddons={group.addons} />
                   </article>
                 );
               })}
@@ -624,15 +787,23 @@ export default function CartPage() {
                   <div className={styles.summaryRow}>
                     <span className={styles.summaryLabel}>Product Price</span>
                     <span className={styles.summaryValue}>
-                      ₹{totalMRP.toLocaleString("en-IN")}
+                      ₹{totalCurrentPrice.toLocaleString("en-IN")}
                     </span>
                   </div>
 
                   <div className={styles.summaryRow}>
-                    <span className={styles.summaryLabel}>Discounts</span>
-                    <span className={styles.greenValue}>
-                      - ₹{totalDiscount.toLocaleString("en-IN")}
-                    </span>
+                    <span className={styles.summaryLabel}>Delivery Charges</span>
+                    {deliveryLoading ? (
+                      <span style={{ fontSize: "0.85rem", color: "#6b7280" }}>Calculating...</span>
+                    ) : deliveryCharge === null ? (
+                      <span className={styles.deliveryEmptyText}>--</span>
+                    ) : deliveryCharge === 0 ? (
+                      <span className={styles.greenValue}>FREE</span>
+                    ) : (
+                      <span className={styles.summaryValue}>
+                        ₹{deliveryCharge.toLocaleString("en-IN")}
+                      </span>
+                    )}
                   </div>
                 </div>
 

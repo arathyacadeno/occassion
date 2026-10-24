@@ -111,28 +111,24 @@ export default function ProductInfo({
             id: "500g",
             name: "500g",
             price: Math.round(product.price * 0.55),
-            originalPrice: product.originalPrice ? Math.round(product.originalPrice * 0.55) : undefined,
             image: product.image,
           },
           {
             id: "1kg",
             name: "1 KG",
             price: product.price,
-            originalPrice: product.originalPrice,
             image: product.image,
           },
           {
             id: "1.5kg",
             name: "1.5 KG",
             price: Math.round(product.price * 1.45),
-            originalPrice: product.originalPrice ? Math.round(product.originalPrice * 1.45) : undefined,
             image: product.image,
           },
           {
             id: "2kg",
             name: "2 KG",
             price: Math.round(product.price * 1.9),
-            originalPrice: product.originalPrice ? Math.round(product.originalPrice * 1.9) : undefined,
             image: product.image,
           },
         ]
@@ -142,21 +138,18 @@ export default function ProductInfo({
             id: "6-stems",
             name: "6 Stems",
             price: 695,
-            originalPrice: 795,
             image: product.images?.[0] || product.image,
           },
           {
             id: "12-stems",
             name: "12 Stems",
             price: 1195,
-            originalPrice: 1395,
             image: product.images?.[0] || product.image,
           },
           {
             id: "custom",
             name: "Custom",
             price: 695,
-            originalPrice: 795,
             image: product.images?.[0] || product.image,
           },
         ]
@@ -166,14 +159,12 @@ export default function ProductInfo({
             id: "classic",
             name: "Classic",
             price: product.price,
-            originalPrice: product.originalPrice,
             image: product.images?.[0] || product.image,
           },
           {
             id: "custom",
             name: "Customize",
             price: pricePerFlower * 12,
-            originalPrice: Math.round(pricePerFlower * 12 * 1.15),
             image: product.images?.[0] || product.image,
           },
         ]
@@ -448,7 +439,6 @@ export default function ProductInfo({
           name: `${product.name} (Custom Bouquet)`,
           subtitle: `${customFlowerQty} Flowers @ ₹${pricePerFlower}/flower`,
           price: activePrice,
-          originalPrice: activeOriginalPrice,
           image: product.image,
           occasion: "celebration",
           rating: product.rating,
@@ -478,7 +468,6 @@ export default function ProductInfo({
               : `${selectedVariant.name} Arrangement`
             : product.categoryLabel,
           price: activePrice,
-          originalPrice: activeOriginalPrice,
           image: selectedVariant ? selectedVariant.image : product.image,
           occasion: "celebration",
           rating: product.rating,
@@ -566,7 +555,6 @@ export default function ProductInfo({
         : product.name,
       category: product.category,
       price: activePrice,
-      originalPrice: activeOriginalPrice,
       image: selectedVariant ? selectedVariant.image : product.image,
       quantity: quantity,
       subtitle: isCake && cakeMessage ? `Message on Cake: ${cakeMessage}` : (isFlower && cardMessage ? `Message on Card: ${cardMessage}` : undefined),
@@ -613,15 +601,10 @@ export default function ProductInfo({
 
       {/* Price: ₹549 in bold with old price struck through in grey beside it */}
       <div className={styles.pricingRow}>
-        <span className={styles.currentPrice}>
-          ₹{activePrice.toLocaleString("en-IN")}
-        </span>
-        {activeOriginalPrice && (
-          <span className={styles.originalPrice}>
-            ₹{activeOriginalPrice.toLocaleString("en-IN")}
+          <span className={styles.currentPrice}>
+            ₹{activePrice.toLocaleString("en-IN")}
           </span>
-        )}
-      </div>
+        </div>
 
       {/* Available Combos / Weight options for Cakes & Variants */}
       {variants && variants.length > 0 && (

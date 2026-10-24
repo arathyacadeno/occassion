@@ -160,18 +160,6 @@ export default function ProductCard({
             ₹{product.price}
           </span>
 
-          {product.originalPrice && product.originalPrice > product.price ? (
-            <span className={styles.originalPrice}>
-              ₹{product.originalPrice}
-            </span>
-          ) : null}
-
-          {discountPercent ? (
-            <span className={styles.discountBadge}>
-              {product.id === "flower-3" ? "10% off" : `${discountPercent}% off`}
-            </span>
-          ) : null}
-
           {deliveryText && (
             <span className={styles.deliveryBadge}>
               {deliveryText}

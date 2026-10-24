@@ -239,16 +239,6 @@ export default function ProductCard({
             ₹{activePrice.toLocaleString("en-IN")}
           </span>
 
-          {activeOriginalPrice && (
-            <span className={styles.originalPrice}>
-              ₹{activeOriginalPrice.toLocaleString("en-IN")}
-            </span>
-          )}
-
-          {discountPercent ? (
-            <span className={styles.discountBadge}>{discountPercent}% off</span>
-          ) : null}
-
           {deliveryText && (
             <span className={styles.deliveryBadge}>
               {deliveryText}
