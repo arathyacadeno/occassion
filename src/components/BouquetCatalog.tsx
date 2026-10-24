@@ -110,9 +110,6 @@ export default function BouquetCatalog({ onAddToCart, onQuickView }: BouquetCata
                 <div className={styles.cardFooter}>
                   <div className={styles.priceWrapper}>
                     <span className={styles.price}>₹{bouquet.price.toLocaleString("en-IN")}</span>
-                    
-                      </span>
-                    )}
                   </div>
 
                   <div style={{ display: "flex", gap: 8 }}>
