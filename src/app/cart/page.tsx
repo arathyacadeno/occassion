@@ -807,18 +807,7 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                <hr className={styles.dashedDivider} />
-
-                {/* Coupon Box */}
-                <div className={styles.couponBox}>
-                  <input
-                    type="text"
-                    placeholder="Apply coupon code"
-                    value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value)}
-                    className={styles.couponInput}
-                  />
-                </div>
+                
 
                 <hr className={styles.solidDivider} />
 

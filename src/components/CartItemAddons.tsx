@@ -239,11 +239,6 @@ export default function CartItemAddons({ attachedAddons }: CartItemAddonsProps) 
                         <span className={styles.priceCurrent}>
                           ₹{addon.price.toLocaleString("en-IN")}
                         </span>
-                        {originalPrice && originalPrice > addon.price && (
-                          <span className={styles.priceOriginal}>
-                            ₹{originalPrice.toLocaleString("en-IN")}
-                          </span>
-                        )}
                       </div>
                     </div>
                   </div>

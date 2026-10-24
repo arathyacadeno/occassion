@@ -142,12 +142,10 @@ export default function SinglePageCheckoutPayment() {
 
   // Coupon State
   const [couponCode, setCouponCode] = useState("");
-  const [couponApplied, setCouponApplied] = useState(true);
-  const [appliedCouponCode, setAppliedCouponCode] = useState("OCCASIONS");
+  const [couponApplied, setCouponApplied] = useState(false);
+  const [appliedCouponCode, setAppliedCouponCode] = useState("");
   const [couponError, setCouponError] = useState<string | null>(null);
-  const [couponSuccess, setCouponSuccess] = useState<string | null>(
-    "Default discount ₹100.00 applied!"
-  );
+  const [couponSuccess, setCouponSuccess] = useState<string | null>(null);
 
   // Load cart / product items or fallback to mockup reference
   const primaryItem =
@@ -318,12 +316,12 @@ export default function SinglePageCheckoutPayment() {
   }, [isAuthenticated, checkDeliveryPin]);
 
   // Compute discount and final total with verified delivery charge
-  const discountAmount = couponApplied ? 100 : 0;
+  const discountAmount = 0;
   const deliveryCharge =
     deliveryStatus.serviceable && deliveryStatus.delivery_charge !== null
       ? deliveryStatus.delivery_charge
       : 0;
-  const finalTotal = Math.max(0, subtotal - discountAmount + deliveryCharge);
+  const finalTotal = subtotal + deliveryCharge;
 
   // Format Card Number into groups of 4
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1371,36 +1369,18 @@ export default function SinglePageCheckoutPayment() {
                   ₹{subtotal.toFixed(2)}
                 </span>
               </div>
-              <div className={styles.breakdownRow}>
-                <span>Discount</span>
-                <span className={`${styles.breakdownValue} ${styles.greenDiscount}`}>
-                  - ₹{discountAmount.toFixed(2)}
-                </span>
               </div>
-            </div>
-
             <div className={styles.summaryDivider} />
 
             {/* Total Row */}
             <div className={styles.totalRow}>
               <span className={styles.totalLabel}>Total</span>
               <div className={styles.totalPriceBlock}>
-                <div className={styles.priceWithStrikethrough}>
-                  <span className={styles.strikethroughPrice}>
-                    ₹{subtotal.toFixed(2)}
-                  </span>
-                  <span className={styles.finalPriceBold}>
-                    ₹{finalTotal.toFixed(2)}
-                  </span>
-                </div>
-                {discountAmount > 0 && (
-                  <span className={styles.savingsBadge}>
-                    You save ₹{discountAmount.toFixed(2)}
-                  </span>
-                )}
+                <span className={styles.finalPriceBold}>
+                  ₹{finalTotal.toFixed(2)}
+                </span>
               </div>
             </div>
-
 
             {/* Master Place Order Button */}
             <button
