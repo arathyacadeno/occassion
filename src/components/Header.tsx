@@ -866,7 +866,7 @@ export default function Header({
                             className={styles.dropdownItemLink}
                             onClick={() => setFlowersHovered(false)}
                           >
-                            Flowers in basket
+                            Flowers in Basket
                           </Link>
                         </li>
                         <li>
@@ -887,7 +887,7 @@ export default function Header({
                               setFlowersHovered(false);
                             }}
                           >
-                            Shop by flowers
+                            Shop by Flowers
                           </Link>
                         </li>
                       </ul>
