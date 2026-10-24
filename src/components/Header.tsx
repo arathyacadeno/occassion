@@ -19,6 +19,7 @@ import {
   ShieldCheck,
   ChevronDown,
 } from "lucide-react";
+import { getSearchRoute } from "@/lib/searchRoutes";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { useAuth } from "@/context/AuthContext";
@@ -703,64 +704,13 @@ export default function Header({
   const handleSearchSubmit = (term: string) => {
     const rawTerm = term.trim();
     if (!rawTerm) return;
-    const q = rawTerm.toLowerCase();
-    const encoded = encodeURIComponent(rawTerm);
     setSearchQuery(rawTerm);
 
-    if (q.includes("cake")) {
-      router.push(`/cakes?search=${encoded}`);
-      return;
-    } else if (q.includes("basket")) {
-      router.push(`/flower-baskets?search=${encoded}`);
-      return;
-    } else if (q.includes("rose")) {
-      router.push(`/flowers/roses?search=${encoded}`);
-      return;
-    } else if (q.includes("tulip")) {
-      router.push(`/flowers/tulips?search=${encoded}`);
-      return;
-    } else if (q.includes("sunflower")) {
-      router.push(`/flowers/sunflowers?search=${encoded}`);
-      return;
-    } else if (q.includes("lilies") || q.includes("lily")) {
-      router.push(`/flowers/lilies?search=${encoded}`);
-      return;
-    } else if (q.includes("orchid")) {
-      router.push(`/flower-bouquets?flower=orchids&search=${encoded}`);
-      return;
-    } else if (q.includes("bouquet") || q.includes("flower")) {
-      router.push(`/flower-bouquets?search=${encoded}`);
-      return;
-    } else if (q.includes("table") || q.includes("centerpiece")) {
-      router.push(`/table-decor?search=${encoded}`);
-      return;
-    } else if (q.includes("wreath")) {
-      router.push(`/wreaths?search=${encoded}`);
-      return;
-    } else if (q.includes("garland") || q.includes("varmala")) {
-      handleNavCategory("Flower baskets & garlands", 1);
-      return;
-    } else if (
-      q.includes("contact") ||
-      q.includes("phone") ||
-      q.includes("location") ||
-      q.includes("address")
-    ) {
-      setDrawerOpen(true);
-      return;
+    const matchedRoute = getSearchRoute(rawTerm);
+    if (matchedRoute) {
+      router.push(matchedRoute);
     } else {
-      if (pathname === "/cakes") {
-        router.push(`/cakes?search=${encoded}`);
-      } else if (pathname === "/flower-baskets") {
-        router.push(`/flower-baskets?search=${encoded}`);
-      } else if (pathname === "/table-decor") {
-        router.push(`/table-decor?search=${encoded}`);
-      } else if (pathname === "/wreaths") {
-        router.push(`/wreaths?search=${encoded}`);
-      } else {
-        router.push(`/flower-bouquets?search=${encoded}`);
-      }
-      return;
+      router.push(`/search?q=${encodeURIComponent(rawTerm)}`);
     }
   };
 
@@ -1225,7 +1175,11 @@ export default function Header({
                 className={styles.searchIconLabel}
                 onClick={(e) => {
                   e.stopPropagation();
-                  searchInputRef.current?.focus();
+                  if (searchQuery.trim()) {
+                    handleSearchSubmit(searchQuery.trim());
+                  } else {
+                    searchInputRef.current?.focus();
+                  }
                 }}
                 title="Search"
               >
@@ -1239,6 +1193,14 @@ export default function Header({
                 placeholder={animatedPlaceholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    if (searchQuery.trim()) {
+                      handleSearchSubmit(searchQuery.trim());
+                    }
+                  }
+                }}
                 aria-label="Search for flowers, cakes and gifts"
                 autoComplete="off"
                 autoCorrect="off"
