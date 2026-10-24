@@ -81,7 +81,7 @@ export const FLOWER_BASKET_PRODUCTS: CategoryProduct[] = [
   },
   {
     id: "basket-6",
-    title: "Mix flower one sided arrangements in white yellow combination in a premium quality basket 1800",
+    title: "Mix flower one sided arrangements in white yellow combination in a premium Cane basket",
     image: "/images/flower-basket/side-view/front-view 30-white-yellow-roses-premium-basket.jpg",
     images: [
       "/images/flower-basket/side-view/front-view 30-white-yellow-roses-premium-basket.jpg",
@@ -91,7 +91,7 @@ export const FLOWER_BASKET_PRODUCTS: CategoryProduct[] = [
     ],
     price: "₹1,800",
     tag: "Premium Choice",
-    description: "30 white yellow roses with gypsophilla delicately arranged in a premium quality basket.",
+    description: "30 white yellow roses with gypsophilla delicately arranged in a premium Cane basket.",
   },
   {
     id: "basket-7",
