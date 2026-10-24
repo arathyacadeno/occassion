@@ -634,14 +634,6 @@ export default function CartPage() {
                       - ₹{totalDiscount.toLocaleString("en-IN")}
                     </span>
                   </div>
-
-                  <div className={styles.summaryRow}>
-                    <span className={styles.summaryLabel}>Delivery Charges</span>
-                    <div className={styles.freeDeliveryWrap}>
-                      <span className={styles.strikethroughDelivery}>₹80</span>
-                      <span className={styles.greenValue}>FREE</span>
-                    </div>
-                  </div>
                 </div>
 
                 <hr className={styles.dashedDivider} />
