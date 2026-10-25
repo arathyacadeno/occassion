@@ -38,28 +38,40 @@ const FAQ_ITEMS: FaqItem[] = [
       "Yes, you may select a preferred delivery date from the available options during checkout. Delivery slots depend on the product, location, and availability. We recommend placing your order in advance for birthdays, anniversaries, and other special occasions.",
   },
   {
-    id: "payment-methods",
+    id: "track-order",
     question: "How can I track my order?",
     answer:
       "Once your order is confirmed, you can use the tracking link or order-tracking section on our website, if available, to check its status. You may also contact our customer support team with your order number for assistance.",
   },
   {
-    id: "delivery-coverage",
+    id: "payment-methods",
     question: "What payment methods do you accept?",
     answer:
       "You can pay using the payment methods displayed at checkout, which may include UPI, credit cards, debit cards, net banking, and other supported payment options. Your order will be processed according to the payment confirmation status.",
   },
   {
-    id: "flower-freshness",
+    id: "cancel-modify",
     question: "Can I cancel or modify my order?",
     answer:
       "Cancellation or modification requests depend on the order status and product preparation stage. Since cakes, flowers, and personalized gifts may be prepared specifically for your order, some requests may not be possible once preparation or dispatch has begun. Please contact our support team as soon as possible.",
   },
   {
-    id: "greeting-cards",
+    id: "damaged-incorrect",
     question: "What happens if my order arrives damaged or incorrect?",
     answer:
       "We are committed to providing a pleasant gifting experience. If your order arrives damaged, incorrect, or significantly different from what you ordered, please contact our customer support team promptly with your order number and clear photographs of the issue. We will review the request and explain the available resolution according to our policy.",
+  },
+  {
+    id: "send-gifts-directly",
+    question: "Can I send gifts directly to someone else?",
+    answer:
+      "Absolutely! You can send cakes, flowers, and gifts directly to your loved ones by entering their name, delivery address, and contact details during checkout. You can also include a personal message with eligible products to make your gift more special.",
+  },
+  {
+    id: "contact-support",
+    question: "How can I contact customer support?",
+    answer:
+      "You can contact the Occassion customer support team through our available communication channels, including email, phone, or WhatsApp, if available. Our team will assist you with order inquiries, delivery updates, product customization, payment issues, and refund requests. Please keep your order number and relevant details ready so we can assist you more efficiently.",
   },
 ];
 
@@ -147,27 +159,6 @@ export default function FaqClient() {
                 </div>
               );
             })}
-          </div>
-
-          {/* Need More Help CTA */}
-          <div className={styles.supportBox}>
-            <h2 className={styles.supportTitle}>Still have questions?</h2>
-            <p className={styles.supportDesc}>
-              Can&apos;t find the answer you&apos;re looking for? Chat with our friendly team on WhatsApp or drop us a message.
-            </p>
-            <div className={styles.supportActions}>
-              <a
-                href="https://wa.me/918606464700?text=Hello%20Occasions,%20I%20have%20a%20question%20about%20my%20order."
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.whatsappBtn}
-              >
-                Chat on WhatsApp
-              </a>
-              <Link href="/contact" className={styles.contactBtn}>
-                Contact Us
-              </Link>
-            </div>
           </div>
         </div>
       </main>
