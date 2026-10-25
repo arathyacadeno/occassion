@@ -71,7 +71,7 @@ const FAQ_ITEMS: FaqItem[] = [
     id: "contact-support",
     question: "How can I contact customer support?",
     answer:
-      "You can contact the Occassion customer support team through our available communication channels, including email, phone, or WhatsApp, if available. Our team will assist you with order inquiries, delivery updates, product customization, payment issues, and refund requests. Please keep your order number and relevant details ready so we can assist you more efficiently.",
+      "You can contact the Occasion customer support team through our available communication channels, ...",
   },
 ];
 
