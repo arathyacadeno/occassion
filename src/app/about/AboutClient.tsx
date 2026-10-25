@@ -82,12 +82,14 @@ export default function AboutClient() {
 
               {/* Floating Rating Badge Card */}
               <div className={styles.ratingFloatingCard} aria-label="Rating 4.9 out of 5 stars">
-                <div className={styles.ratingStarsRow}>
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={16} className={styles.starIcon} />
-                  ))}
+                <div className={styles.ratingContentWrap}>
+                  <div className={styles.ratingStarsRow}>
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} size={14} className={styles.starIcon} />
+                    ))}
+                  </div>
+                  <span className={styles.ratingValueText}>4.9/5</span>
                 </div>
-                <span className={styles.ratingValueText}>4.9/5</span>
               </div>
 
               <div className={styles.storySubImageCard}>
@@ -104,7 +106,11 @@ export default function AboutClient() {
             <div className={styles.storyTextColumn}>
               <span className={styles.sectionBadgeLabel}>Our Story</span>
               <h2 className={styles.storyHeading}>
-                &ldquo;Bringing Happiness, One Bloom &amp; Bite at a Time&rdquo;
+                <span className={styles.headingLineOne}>
+                  &ldquo;Bringing Happiness, One Bloom &amp; Bite
+                </span>
+                <br className={styles.headingBr} />
+                at a Time&rdquo;
               </h2>
               <p className={styles.storyParagraph}>
                 At Occasions, we believe life&apos;s most beautiful moments deserve
@@ -122,12 +128,12 @@ export default function AboutClient() {
                 {/* Made with Love */}
                 <div className={styles.storyFeatureCard}>
                   <div className={styles.featureIconWrapper}>
-                    <Heart size={20} className={styles.featureIconHeart} />
+                    <Heart size={18} className={styles.featureIconHeart} />
                   </div>
                   <div className={styles.featureTextWrap}>
                     <h3 className={styles.featureTitle}>Made with Love</h3>
                     <p className={styles.featureDesc}>
-                      Beautifully crafted flowers and delicious cakes, made with care.
+                      Beautiful flowers and delicious cakes, made with care..
                     </p>
                   </div>
                 </div>
@@ -135,12 +141,12 @@ export default function AboutClient() {
                 {/* Sustainably Sourced */}
                 <div className={styles.storyFeatureCard}>
                   <div className={styles.featureIconWrapper}>
-                    <Leaf size={20} className={styles.featureIconLeaf} />
+                    <Leaf size={18} className={styles.featureIconLeaf} />
                   </div>
                   <div className={styles.featureTextWrap}>
                     <h3 className={styles.featureTitle}>Sustainably Sourced</h3>
                     <p className={styles.featureDesc}>
-                      Partnering with trusted local suppliers for a greener future.
+                      Partnering with local flower farms for a greener future
                     </p>
                   </div>
                 </div>
