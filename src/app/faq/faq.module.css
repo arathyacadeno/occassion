@@ -38,20 +38,17 @@
 
 .faqCard {
   background-color: #ffffff;
-  border: 1px solid #E5E7EB;
+  border: 1px solid #E8D5C4E0;
   border-radius: 16px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
 }
 
-.faqCard:hover {
-  border-color: #D1D5DB;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-}
+
 
 .faqCardOpen {
-  border-color: #E5E7EB;
+  border-color:#E8D5C4E0;
 }
 
 /* Question Header button */
@@ -106,10 +103,10 @@
   transform: scale(1.05);
 }
 
-/* Dotted horizontal divider line */
+/* Dashed horizontal divider line */
 .divider {
   margin: 0 28px;
-  border-top: 1.5px dotted #D1D5DB;
+  border-top: 1.5px dashed #000000;
 }
 
 /* Answer text container */
