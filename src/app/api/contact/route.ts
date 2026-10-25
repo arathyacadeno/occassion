@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { sendContactNotification } from "@/lib/email";
 
 export async function POST(req: Request) {
   try {
@@ -27,7 +28,13 @@ export async function POST(req: Request) {
       );
     }
 
-    // Try persisting inquiry to DB if table exists or can be created
+    const cleanName = name.trim();
+    const cleanEmail = email.trim();
+    const cleanPhone = phone ? phone.trim() : null;
+    const cleanSubject = subject ? subject.trim() : "General Inquiry";
+    const cleanMessage = message.trim();
+
+    // 1. Persist inquiry into database
     try {
       const db = getDb();
       db.exec(`
@@ -49,9 +56,22 @@ export async function POST(req: Request) {
         INSERT INTO contact_inquiries (id, name, email, phone, subject, message, created_at)
         VALUES (?, ?, ?, ?, ?, ?, ?)
       `);
-      stmt.run(inquiryId, name.trim(), email.trim(), phone ? phone.trim() : null, subject || "General", message.trim(), createdAt);
+      stmt.run(inquiryId, cleanName, cleanEmail, cleanPhone, cleanSubject, cleanMessage, createdAt);
     } catch (dbErr) {
       console.warn("Could not save inquiry to local DB (continuing gracefully):", dbErr);
+    }
+
+    // 2. Dispatch email notification to owner (occassions.flowers@gmail.com)
+    try {
+      await sendContactNotification({
+        name: cleanName,
+        email: cleanEmail,
+        phone: cleanPhone,
+        subject: cleanSubject,
+        message: cleanMessage,
+      });
+    } catch (emailErr) {
+      console.error("Error dispatching contact email:", emailErr);
     }
 
     return NextResponse.json({

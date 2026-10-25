@@ -10,8 +10,10 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",
+    "@opentelemetry/api": "^1.9.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/nodemailer": "^8.0.2",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.11.0",
     "dotenv": "^18.0.6",
@@ -20,6 +22,7 @@
     "lucide-react": "^1.48.0",
     "next": "16.3.6",
     "next-cloudinary": "^6.19.3",
+    "nodemailer": "^10.2.1",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
