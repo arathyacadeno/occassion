@@ -26,7 +26,7 @@ export const CONTACT_CONFIG = {
   },
   workingHours: [
     { day: "Monday — Saturday", hours: "09:00 AM — 6:30 PM" },
-    { day: "Sunday", hours: "09:00 AM — 10:00 AM" },
+    { day: "Sunday", hours: "08:00 AM — 10:00 AM" },
   ],
   socials: {
     facebook: "https://facebook.com/occasionsfloristcalicut",
