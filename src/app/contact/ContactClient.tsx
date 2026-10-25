@@ -21,7 +21,7 @@ export const CONTACT_CONFIG = {
   },
   email: {
     display: "occasions.flowers@gmail.com",
-    referenceDisplay: "occassions.floowers@gmail.com",
+    referenceDisplay: "occassions.flowers@gmail.com",
     mailto: "mailto:occasions.flowers@gmail.com",
   },
   workingHours: [
