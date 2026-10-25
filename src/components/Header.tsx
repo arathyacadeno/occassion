@@ -2045,6 +2045,13 @@ export default function Header({
               ▶ Wreaths
             </Link>
             <Link
+              href="/about"
+              onClick={() => setDrawerOpen(false)}
+              style={{ color: "inherit", textDecoration: "none" }}
+            >
+              ▶ About Us
+            </Link>
+            <Link
               href="/contact"
               onClick={() => setDrawerOpen(false)}
               style={{ color: "inherit", textDecoration: "none" }}

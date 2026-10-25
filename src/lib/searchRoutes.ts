@@ -55,6 +55,21 @@ export const SEARCH_ROUTE_MAP: Record<string, string> = {
 
   "wreath": "/wreaths",
   "wreaths": "/wreaths",
+
+  // Privacy Policy
+  "privacy": "/privacy-policy",
+  "privacy policy": "/privacy-policy",
+
+  // Contact
+  "contact": "/contact",
+  "contact us": "/contact",
+  "connect": "/contact",
+  "connect with us": "/contact",
+  "support": "/contact",
+
+  // About
+  "about": "/about",
+  "about us": "/about",
 };
 
 /**

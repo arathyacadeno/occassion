@@ -270,11 +270,11 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
               {isFlowerBouquet
                 ? "Similar Flower Bouquets"
                 : isFlowerBasket
-                ? "Similar Flower Basket"
+                ? "Similar Flower Baskets"
                 : isCakeProduct
                 ? "Similar Cakes"
                 : isWreath
-                ? "Similar Wreath"
+                ? "Similar Flower Wreaths"
                 : isTableDecor
                 ? "Similar Table Decor"
                 : isChocolate

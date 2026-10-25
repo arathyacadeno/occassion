@@ -65,7 +65,10 @@ export default function ProductCard({
       className={`${styles.card} ${compact ? styles.compactCard : ""}`}
     >
       {/* Top Image Container with Wave Scoop Cutout */}
-      <div className={styles.imageContainer}>
+      <div
+        className={`${styles.imageContainer} ${
+          compact ? "similar-product-image-container" : ""
+        }`}>
         <Link
           href={productHref}
           className={styles.imageLink}
@@ -74,7 +77,9 @@ export default function ProductCard({
           <img
             src={product.image}
             alt={product.name}
-            className={styles.productImage}
+            className={`${styles.productImage} ${
+              compact ? "similar-product-image" : ""
+            }`}
             loading="lazy"
           />
         </Link>
@@ -116,8 +121,9 @@ export default function ProductCard({
         )}
 
         {/* Signature Chamfered Ramp Cutout at bottom of image */}
-        <svg
-          className={styles.waveDivider}
+        {!compact && (
+          <svg
+            className={styles.waveDivider}
           viewBox="0 0 300 28"
           preserveAspectRatio="none"
           aria-hidden="true"
@@ -127,6 +133,7 @@ export default function ProductCard({
             fill="#ffffff"
           />
         </svg>
+        )}
       </div>
 
       {/* Card Info Section */}

@@ -79,7 +79,10 @@ export default function ProductCard({
       className={`${styles.card} ${compact ? styles.compactCard : ""}`}
     >
       {/* Top Image Container with Wave Scoop Cutout */}
-      <div className={styles.imageContainer}>
+      <div
+        className={`${styles.imageContainer} ${
+          compact ? "similar-product-image-container" : ""
+        }`}>
         <Link
           href={productUrl}
           className={styles.imageLink}
@@ -88,7 +91,9 @@ export default function ProductCard({
           <img
             src={activeImage}
             alt={product.name}
-            className={styles.productImage}
+            className={`${styles.productImage} ${
+              compact ? "similar-product-image" : ""
+            }`}
             loading="lazy"
           />
         </Link>

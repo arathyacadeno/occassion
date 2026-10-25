@@ -69,6 +69,11 @@
   display: block;
 }
 
+.compactCard .imageContainer::after,
+.compactCard .waveDivider {
+  display: none !important;
+}
+
 .compactCard .wishlistBtn {
   display: none;
 }

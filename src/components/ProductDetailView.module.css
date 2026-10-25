@@ -278,3 +278,43 @@
     height: 110px;
   }
 }
+/* Ensure similar product images are fully fit, centered, and never cropped across all categories */
+.similarScrollRow [class*="imageContainer"] {
+  width: 100% !important;
+  height: 220px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  background-color: #FAF4F6 !important;
+  border-radius: 16px !important;
+}
+
+.similarScrollRow [class*="imageLink"] {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.similarScrollRow img {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  display: block !important;
+}
+
+.similarScrollRow [class*="imageContainer"]::after,
+.similarScrollRow [class*="waveDivider"] {
+  display: none !important;
+}
+
+@media (max-width: 640px) {
+  .similarScrollRow [class*="imageContainer"] {
+    height: 180px !important;
+  }
+}

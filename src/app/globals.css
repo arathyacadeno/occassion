@@ -433,3 +433,41 @@ button, input, select, textarea {
     padding: 16px 16px 12px;
   }
 }
+
+/* =========================================================
+   SIMILAR PRODUCTS & RELATED PRODUCTS UNIFORM CONTAINERS
+   ========================================================= */
+.similar-product-image-container {
+  width: 100% !important;
+  height: 220px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  background-color: #FAF4F6 !important;
+  border-radius: 16px !important;
+  position: relative !important;
+  padding: 6px !important;
+  box-sizing: border-box !important;
+}
+
+.similar-product-image-container::after {
+  display: none !important;
+}
+
+.similar-product-image {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  border-radius: 12px !important;
+  display: block !important;
+}
+
+@media (max-width: 640px) {
+  .similar-product-image-container {
+    height: 180px !important;
+  }
+}

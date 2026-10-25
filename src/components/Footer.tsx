@@ -98,7 +98,7 @@ export default function Footer() {
                 <Link href="/contact" className={styles.navLink}>Contact Us</Link>
               </li>
               <li>
-                <a href="#our-story" className={styles.navLink}>About Us</a>
+                <Link href="/about" className={styles.navLink}>About Us</Link>
               </li>
               <li>
                 <a href="#faq" className={styles.navLink}>FAQs</a>
