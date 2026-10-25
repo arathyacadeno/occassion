@@ -21,7 +21,7 @@ export const CONTACT_CONFIG = {
   },
   email: {
     display: "occasions.flowers@gmail.com",
-    referenceDisplay: "occassions.floowers@gmail.com",
+    referenceDisplay: "occassions.flowers@gmail.com",
     mailto: "mailto:occasions.flowers@gmail.com",
   },
   workingHours: [
@@ -139,8 +139,7 @@ export default function ContactClient() {
             Connect with us
           </h1>
           <p className={styles.pageSubtitle}>
-            Fill out the form below and our concierge will respond within 24 hours.
-            For urgent matters, please use our priority phone line.
+            Fill out the form below and our concierge will respond within 24 hours. For urgent matters, please use our priority phone line.
           </p>
         </section>
 
