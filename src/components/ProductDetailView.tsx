@@ -188,9 +188,11 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
           <div className={styles.stickyGallery}>
             <ProductGallery
               images={
-                product.image && !product.images.includes(product.image)
-                  ? [product.image, ...product.images]
-                  : product.images
+                product.images && product.images.length > 0
+                  ? product.images
+                  : product.image
+                  ? [product.image]
+                  : []
               }
               productName={product.name}
               product={product}

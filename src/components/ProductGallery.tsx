@@ -26,6 +26,15 @@ export default function ProductGallery({
   // Always show exactly 4 thumbnails (repeat images if fewer are supplied)
   const thumbnails = useMemo(() => {
     let list = images && images.length > 0 ? [...images] : [FALLBACK_IMAGE];
+    if (list.length > 4) {
+      // If list has back view, ensure back view is included in the 4 thumbnails
+      const backIdx = list.findIndex((img) => img.toLowerCase().includes("back"));
+      if (backIdx >= 4) {
+        const backImg = list[backIdx];
+        const initialSlice = list.slice(0, 3);
+        list = [...initialSlice, backImg];
+      }
+    }
     while (list.length < 4) list = [...list, ...list];
     return list.slice(0, 4);
   }, [images]);
