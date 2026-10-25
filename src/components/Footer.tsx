@@ -101,7 +101,7 @@ export default function Footer() {
                 <Link href="/about" className={styles.navLink}>About Us</Link>
               </li>
               <li>
-                <a href="#faq" className={styles.navLink}>FAQs</a>
+                <Link href="/faq" className={styles.navLink}>FAQs</Link>
               </li>
               <li>
                 <Link href="/privacy-policy" className={styles.navLink}>
