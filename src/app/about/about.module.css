@@ -281,10 +281,8 @@
 
 /* ================= SECTION 3: WHY CHOOSE OCCASIONS? ================= */
 .whyChooseSection {
-  padding: 86px 24px;
-  background-color: #FAFAFA;
-  border-top: 1px solid #f3f4f6;
-  border-bottom: 1px solid #f3f4f6;
+  padding: 86px 24px 92px 24px;
+  background-color: #ffffff;
 }
 
 .whyChooseContainer {
@@ -314,22 +312,22 @@
 }
 
 .whyIconCircle {
-  width: 52px;
-  height: 52px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   border: 1.5px solid #22c55e;
-  background-color: #f0fdf4;
-  color: #16a34a;
+  background-color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
 }
 
 .whyItem:hover .whyIconCircle {
   transform: scale(1.06);
-  background-color: #dcfce7;
+  border-color: #15803d;
+  background-color: #f0fdf4;
 }
 
 .whyTextWrap {
