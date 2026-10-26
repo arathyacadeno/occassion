@@ -1,0 +1,360 @@
+/* ==========================================================
+   CAR DECOR SHOWCASE MODAL - matches reference mockup
+   ========================================================== */
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background-color: white;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+  animation: modalFadeIn 0.24s ease;
+  overflow-y: auto;
+}
+
+.modalCard {
+  position: relative;
+  background: #ffffff;
+  border-radius: 28px;
+  max-width: 1100px;
+  width: 100%;
+  overflow: hidden; /* image sits flush against the rounded corners */
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.12), 0 10px 25px rgba(190, 24, 93, 0.1);
+  box-sizing: border-box;
+  animation: modalCardPop 0.28s ease;
+  margin: auto;
+}
+
+.closeButton {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: none;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 20;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.closeButton:hover {
+  background: #fdf2f8;
+  color: #e91e63;
+}
+
+/* ── Top: image (flush) + details ── */
+.topGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  align-items: stretch;
+}
+
+.heroImageWrapper {
+  position: relative;
+  width: 100%;
+  height: 475px;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+.heroImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.navArrowBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(229, 231, 235, 0.92);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #111827;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.2s ease;
+}
+
+.navArrowBtn:hover {
+  background: #ffffff;
+}
+
+.navArrowPrev {
+  left: 16px;
+}
+
+.navArrowNext {
+  right: 16px;
+}
+
+/* ── Details ── */
+.detailsCol {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 34px 48px 34px 34px;
+}
+
+.description {
+  font-family: var(--font-sans, "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  font-size: 15.5px;
+  line-height: 1.85;
+  color: #111827;
+  margin: 0;
+  font-weight: 400;
+}
+
+.priceTag {
+  font-family: var(--font-sans, "Inter", sans-serif);
+  font-size: 26px;
+  font-weight: 700;
+  color: #e91e63;
+  line-height: 1.2;
+  margin: 26px 0 20px;
+}
+
+.actionButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.callButton,
+.whatsappButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 8px;
+  color: #ffffff;
+  font-family: var(--font-sans, sans-serif);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.callButton svg,
+.whatsappButton svg {
+  width: 13px;
+  height: 13px;
+}
+
+.callButton {
+  background: #e91e63;
+}
+
+.whatsappButton {
+  background: #388e3c;
+}
+
+.callButton:hover,
+.whatsappButton:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.guaranteeBadge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 16px;
+  font-family: var(--font-sans, sans-serif);
+  font-size: 10px;
+  font-weight: 400;
+  color: #9ca3af;
+}
+
+.guaranteeIcon {
+  color: #e91e63;
+  display: flex;
+  align-items: center;
+}
+
+.guaranteeIcon svg {
+  width: 11px;
+  height: 11px;
+}
+
+/* ── Thumbnail strip (arrows overlay the strip) ── */
+.bottomThumbnailsRow {
+  position: relative;
+  padding: 16px 20px 22px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.thumbScrollBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(229, 231, 235, 0.95);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #111827;
+  cursor: pointer;
+}
+
+.thumbScrollBtn:first-child {
+  left: 10px;
+}
+
+.thumbScrollBtn:last-child {
+  right: 10px;
+}
+
+.thumbScrollBtn:hover {
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.thumbnailsTrack {
+  position: relative; /* needed so thumb.offsetLeft is measured from the track */
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 4px 28px;
+}
+
+.thumbnailsTrack::-webkit-scrollbar {
+  display: none;
+}
+
+.thumbCard {
+  flex: 0 0 calc((100% - 96px) / 5);
+  min-width: 130px;
+  aspect-ratio: 1.55 / 1;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  background: #f3f4f6;
+  padding: 0;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.thumbCard:hover {
+  transform: translateY(-2px);
+}
+
+.thumbCardActive {
+  border-color: #e91e63;
+}
+
+.thumbImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalCardPop {
+  from { opacity: 0; transform: scale(0.97) translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modalBackdrop,
+  .modalCard {
+    animation: none;
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
+  .topGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .heroImageWrapper {
+    height: 320px;
+  }
+
+  .detailsCol {
+    padding: 20px;
+  }
+
+  .description {
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+  .priceTag {
+    margin: 18px 0;
+  }
+
+  .thumbnailsTrack {
+    gap: 12px;
+  }
+
+  .thumbCard {
+    flex: 0 0 110px;
+  }
+}
+
+@media (max-width: 520px) {
+  .modalBackdrop {
+    padding: 12px;
+  }
+
+  .heroImageWrapper {
+    height: 260px;
+  }
+
+  .navArrowBtn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .thumbCard {
+    flex: 0 0 92px;
+    min-width: 92px;
+    border-radius: 12px;
+  }
+}

@@ -378,8 +378,17 @@ export default function AboutClient() {
             {/* Right Column: Large Interior Image */}
             <div className={styles.missionImageCard}>
               <img
-                src="/images/about/mission-interior.jpg"
-                alt="Occasions luxury boutique flower shop interior"
+                key={activeTab}
+                src={
+                  activeTab === "vision"
+                    ? "/images/about/vission-interior.jpg"
+                    : "/images/about/mission-interior.jpg"
+                }
+                alt={
+                  activeTab === "vision"
+                    ? "Occasions Vision - Floral boutique interior"
+                    : "Occasions Mission - Luxury boutique shop interior"
+                }
                 className={styles.missionInteriorImg}
                 loading="lazy"
               />

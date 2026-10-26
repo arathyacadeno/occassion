@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { MessageCircle, Phone, X, ArrowUpRight } from "lucide-react";
 import BloomingFlowerAnimation from "./BloomingFlowerAnimation";
+import CarDecorModal from "./CarDecorModal";
 import styles from "./HighlightSection.module.css";
 
 export interface HighlightCard {
@@ -86,8 +87,34 @@ const highlightCards: HighlightCard[] = [
 
 export default function HighlightSection() {
   const [modalItem, setModalItem] = useState<HighlightCard | null>(null);
+  const [isCarDecorModalOpen, setIsCarDecorModalOpen] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
+
+  const handleCardClick = (card: HighlightCard) => {
+    if (card.id === "car-decor") {
+      setIsCarDecorModalOpen(true);
+    } else {
+      setModalItem(card);
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const checkHash = () => {
+      if (window.location.hash === "#car-decor") {
+        setIsCarDecorModalOpen(true);
+      }
+    };
+    checkHash();
+    window.addEventListener("hashchange", checkHash);
+    const handleCustomOpen = () => setIsCarDecorModalOpen(true);
+    window.addEventListener("open-car-decor-modal", handleCustomOpen);
+    return () => {
+      window.removeEventListener("hashchange", checkHash);
+      window.removeEventListener("open-car-decor-modal", handleCustomOpen);
+    };
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -187,11 +214,11 @@ export default function HighlightSection() {
                     key={card.id}
                     className={styles.card}
                     style={{ animationDelay: `${0.1 + idx * 0.1}s` }}
-                    onClick={() => setModalItem(card)}
+                    onClick={() => handleCardClick(card)}
                     role="button"
                     tabIndex={0}
                     aria-label={`View ${card.title}`}
-                    onKeyDown={(e) => e.key === "Enter" && setModalItem(card)}
+                    onKeyDown={(e) => e.key === "Enter" && handleCardClick(card)}
                   >
                     <div className={styles.cardImgWrap}>
                       <img
@@ -207,7 +234,7 @@ export default function HighlightSection() {
                           className={styles.cardArrowBtn}
                           onClick={(e) => {
                             e.stopPropagation();
-                            setModalItem(card);
+                            handleCardClick(card);
                           }}
                           aria-label={`View ${card.title} details`}
                         >
@@ -283,6 +310,12 @@ export default function HighlightSection() {
           </div>
         </div>
       )}
+
+      {/* Car Decor Dedicated Showcase Modal */}
+      <CarDecorModal
+        isOpen={isCarDecorModalOpen}
+        onClose={() => setIsCarDecorModalOpen(false)}
+      />
     </section>
   );
 }

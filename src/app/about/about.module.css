@@ -487,7 +487,7 @@
 .missionImageCard {
   width: 100%;
   height: 520px;
-  border-radius: 64px 64px 64px 20px;
+  border-radius: 76px 0 76px 0;
   overflow: hidden;
   box-shadow: 0 24px 60px rgba(17, 50, 36, 0.12);
   background-color: #faf4f6;
@@ -500,6 +500,7 @@
   object-position: center;
   display: block;
   transition: transform 0.5s ease;
+  animation: fadeIn 0.35s ease-in-out;
 }
 
 .missionImageCard:hover .missionInteriorImg {
@@ -641,7 +642,7 @@
 
   .missionImageCard {
     height: 340px;
-    border-radius: 36px 36px 36px 16px;
+    border-radius: 48px 0 48px 0;
   }
 }
 
