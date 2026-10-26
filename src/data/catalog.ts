@@ -2201,7 +2201,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     slug: "birthday-flower-gift",
     name: "Birthday Flower Gift Set",
     price: 1199,
-    
+
     category: "special-occasions",
     categoryLabel: "Special Occasions",
     image: "/images/occasion-birthday.jpg",
@@ -2232,7 +2232,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     slug: "anniversary-romance-rose-hamper",
     name: "Anniversary Romance Rose Hamper",
     price: 2299,
-    
+
     category: "special-occasions",
     categoryLabel: "Special Occasions",
     image: "/images/occasion-anniversary.jpg",
@@ -2259,7 +2259,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     slug: "wedding-cathedral-altar-arch",
     name: "Cathedral Grand Altar Floral Arch",
     price: 5999,
-    
+
     category: "special-occasions",
     categoryLabel: "Special Occasions",
     image: "/images/highlight-church-arrangements.jpg",
@@ -2286,7 +2286,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     slug: "valentines-crimson-luxury-box",
     name: "Valentine's Crimson Luxury Heart",
     price: 1899,
-    
+
     category: "special-occasions",
     categoryLabel: "Special Occasions",
     image: "/images/wreath-heart-pink-sash.jpg",
@@ -2313,7 +2313,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     slug: "mothers-day-pastels-basket",
     name: "Mother's Day Pastel Grace Basket",
     price: 1599,
-    
+
     category: "special-occasions",
     categoryLabel: "Special Occasions",
     image: "/images/basket-pink-chrysanthemums.jpg",
@@ -2340,7 +2340,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     slug: "congratulations-sunshine-blooms",
     name: "Congratulations Sunshine Blooms",
     price: 1299,
-    
+
     category: "special-occasions",
     categoryLabel: "Special Occasions",
     image: "/images/occasion-congratulations.jpg",
@@ -2367,7 +2367,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     slug: "get-well-soon-chamomile-gift",
     name: "Get Well Soon Chamomile Meadow",
     price: 1199,
-    
+
     category: "special-occasions",
     categoryLabel: "Special Occasions",
     image: "/images/occasion-best-wishes.jpg",
@@ -2394,7 +2394,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     slug: "candlelit-wedding-aisle-clusters",
     name: "Candlelit Wedding Aisle Clusters",
     price: 2999,
-    
+
     category: "special-occasions",
     categoryLabel: "Special Occasions",
     image: "/images/table-decor-wedding-fairy-lights.jpg",
@@ -2421,7 +2421,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     slug: "ferrero-rocher-chocolate",
     name: "Ferrero Rocher Chocolate",
     price: 100,
-    
+
     category: "special-occasions",
     categoryLabel: "Special Occasions",
     image: "/images/addons/ferrero-rocher-heart.jpg",
@@ -2449,7 +2449,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     slug: "cadbury-dairy-milk-silk",
     name: "Cadbury Dairy Milk Silk",
     price: 95,
-    
+
     category: "special-occasions",
     categoryLabel: "Special Occasions",
     image: "/images/addons/dairy-milk-silk.jpg",
@@ -2477,7 +2477,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     slug: "cadbury-dairy-milk-silk-oreo",
     name: "Cadbury Dairy Milk Silk Oreo",
     price: 105,
-    
+
     category: "special-occasions",
     categoryLabel: "Special Occasions",
     image: "/images/addons/dairy-milk-silk-oreo.jpg",
@@ -2506,7 +2506,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     slug: "5-star-chocolate",
     name: "5 Star",
     price: 30,
-    
+
     category: "special-occasions",
     categoryLabel: "Special Occasions",
     image: "/images/addons/5star.jpg",
@@ -2525,7 +2525,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     slug: "bournville-dark-chocolate",
     name: "Bournville",
     price: 120,
-    
+
     category: "special-occasions",
     categoryLabel: "Special Occasions",
     image: "/images/addons/bournville.jpg",
@@ -2544,7 +2544,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     slug: "temptations-chocolate",
     name: "Temptations",
     price: 130,
-    
+
     category: "special-occasions",
     categoryLabel: "Special Occasions",
     image: "/images/addons/Temptations.jpg",
@@ -2563,7 +2563,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     slug: "cadbury-dairy-milk-fruit-and-nut",
     name: "Cadbury Dairy Milk Fruit & Nut",
     price: 105,
-    
+
     category: "special-occasions",
     categoryLabel: "Special Occasions",
     image: "/images/addons/dairy-milk-fruit-nut.jpg",
@@ -2589,7 +2589,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     slug: "cadbury-dairy-milk-roast-almond",
     name: "Cadbury Dairy Milk Roast Almond",
     price: 105,
-    
+
     category: "special-occasions",
     categoryLabel: "Special Occasions",
     image: "/images/addons/dairy-milk-roast-almond.jpg",
@@ -2615,7 +2615,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     slug: "cadbury-dairy-milk-silk-bubbly",
     name: "Cadbury Dairy Milk Silk Bubbly",
     price: 110,
-    
+
     category: "special-occasions",
     categoryLabel: "Special Occasions",
     image: "/images/addons/dairy-milk-bubbly.jpg",
@@ -2773,7 +2773,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     slug: "signature-occasions-bridal-bouquet",
     name: "Signature Occasions Bridal Bouquet",
     price: 1899,
-    
+
     category: "our-highlights",
     categoryLabel: "Our Highlights",
     image: "/images/bouquet-1.jpg",
@@ -2805,7 +2805,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     slug: "royal-casablanca-candelabra-display",
     name: "Royal Casablanca Candelabra Display",
     price: 3499,
-    
+
     category: "our-highlights",
     categoryLabel: "Our Highlights",
     image: "/images/highlight-table-arrangements.jpg",
@@ -2832,7 +2832,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     slug: "ceremonial-jasmine-marigold-garland",
     name: "Ceremonial Jasmine & Marigold Garland",
     price: 1799,
-    
+
     category: "our-highlights",
     categoryLabel: "Our Highlights",
     image: "/images/highlight-garlands.jpg",
@@ -2859,7 +2859,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     slug: "celebration-cake-flower-hamper-luxe",
     name: "Celebration Cake & Floral Hamper Luxe",
     price: 2099,
-    
+
     category: "our-highlights",
     categoryLabel: "Our Highlights",
     image: "/images/bouquet-2.jpg",
@@ -2886,7 +2886,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     slug: "pure-white-rose-majesty-highlight",
     name: "Pure White Rose Majesty Basket",
     price: 1999,
-    
+
     category: "our-highlights",
     categoryLabel: "Our Highlights",
     image: "/images/basket-white-roses.jpg",
@@ -2913,7 +2913,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     slug: "pastel-ombre-butterfly-cake-highlight",
     name: "Artisan Ombre Butterfly Cake",
     price: 1399,
-    
+
     category: "our-highlights",
     categoryLabel: "Our Highlights",
     image: "/images/cakes/cake-ombre-butterfly-birthday.jpg",
@@ -2940,7 +2940,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     slug: "grand-altar-floral-sanctuary-highlight",
     name: "Cathedral Grand Altar Floral Arch",
     price: 5999,
-    
+
     category: "our-highlights",
     categoryLabel: "Our Highlights",
     image: "/images/highlight-church-arrangements.jpg",
