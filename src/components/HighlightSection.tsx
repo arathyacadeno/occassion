@@ -4,6 +4,7 @@ import Link from "next/link";
 import { MessageCircle, Phone, X, ArrowUpRight } from "lucide-react";
 import BloomingFlowerAnimation from "./BloomingFlowerAnimation";
 import CarDecorModal from "./CarDecorModal";
+import StageDecorModal from "./StageDecorModal";
 import styles from "./HighlightSection.module.css";
 
 export interface HighlightCard {
@@ -40,7 +41,7 @@ const highlightCards: HighlightCard[] = [
     tag: "Celebration",
     title: "Stage Decor",
     subtitle: "Opulent Banquet & Centerpiece Styling",
-    image: "/images/highlight-table-arrangements.jpg",
+    image: "/images/stage decor/7.jpg",
     desc: "Elevate your stage and banquet reception with opulent floral backdrops, elevated crystal centerpieces, blush roses, cascading hydrangeas, and glowing candlelight ambiance.",
     features: [
       "Elevated Crystal Centerpieces",
@@ -88,12 +89,15 @@ const highlightCards: HighlightCard[] = [
 export default function HighlightSection() {
   const [modalItem, setModalItem] = useState<HighlightCard | null>(null);
   const [isCarDecorModalOpen, setIsCarDecorModalOpen] = useState(false);
+  const [isStageDecorModalOpen, setIsStageDecorModalOpen] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
   const handleCardClick = (card: HighlightCard) => {
     if (card.id === "car-decor") {
       setIsCarDecorModalOpen(true);
+    } else if (card.id === "stage-decor") {
+      setIsStageDecorModalOpen(true);
     } else {
       setModalItem(card);
     }
@@ -104,15 +108,20 @@ export default function HighlightSection() {
     const checkHash = () => {
       if (window.location.hash === "#car-decor") {
         setIsCarDecorModalOpen(true);
+      } else if (window.location.hash === "#stage-decor") {
+        setIsStageDecorModalOpen(true);
       }
     };
     checkHash();
     window.addEventListener("hashchange", checkHash);
-    const handleCustomOpen = () => setIsCarDecorModalOpen(true);
-    window.addEventListener("open-car-decor-modal", handleCustomOpen);
+    const handleCarOpen = () => setIsCarDecorModalOpen(true);
+    const handleStageOpen = () => setIsStageDecorModalOpen(true);
+    window.addEventListener("open-car-decor-modal", handleCarOpen);
+    window.addEventListener("open-stage-decor-modal", handleStageOpen);
     return () => {
       window.removeEventListener("hashchange", checkHash);
-      window.removeEventListener("open-car-decor-modal", handleCustomOpen);
+      window.removeEventListener("open-car-decor-modal", handleCarOpen);
+      window.removeEventListener("open-stage-decor-modal", handleStageOpen);
     };
   }, []);
 
@@ -315,6 +324,12 @@ export default function HighlightSection() {
       <CarDecorModal
         isOpen={isCarDecorModalOpen}
         onClose={() => setIsCarDecorModalOpen(false)}
+      />
+
+      {/* Stage Decor Dedicated Showcase Modal */}
+      <StageDecorModal
+        isOpen={isStageDecorModalOpen}
+        onClose={() => setIsStageDecorModalOpen(false)}
       />
     </section>
   );
