@@ -11,6 +11,8 @@ import DateModal from "@/components/DateModal";
 import { useCheckout } from "@/context/CheckoutContext";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
+import Script from "next/script";
+import { loadRazorpayScript } from "@/components/RazorpayPayButton";
 import {
   Smartphone,
   CreditCard,
@@ -380,7 +382,7 @@ export default function SinglePageCheckoutPayment() {
     }
 
     // Specific payment validations
-    if (activeTab === "card") {
+    if (activeTab === "card" && cardNumber.trim().length > 0) {
       const cleanDigits = cardNumber.replace(/\D/g, "");
       if (cleanDigits.length < 15) {
         alert("Please enter a valid 16-digit card number.");
@@ -536,22 +538,104 @@ export default function SinglePageCheckoutPayment() {
         }
       }
 
-      completeOrder(paymentMethodTitle, data.orderId, formattedDelivery);
-      clearCart();
+      // 1. Create Razorpay order on backend (/api/create-order)
+      const rzpOrderRes = await fetch("/api/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: Math.round(finalTotal * 100), // amount in paise
+          currency: "INR",
+          receipt: `rcpt_${data.orderId}`,
+          notes: {
+            appOrderId: data.orderId,
+          },
+        }),
+      });
 
-      // Simulated Razorpay Gateway Handoff (0.8s)
-      setTimeout(() => {
+      const rzpOrderData = await rzpOrderRes.json();
+      if (!rzpOrderRes.ok || !rzpOrderData.order_id) {
+        throw new Error(rzpOrderData.error || "Failed to initialize Razorpay payment order");
+      }
+
+      // 2. Ensure Razorpay checkout script is loaded
+      await loadRazorpayScript();
+
+      // 3. Open Razorpay Standard Checkout Modal
+      const keyId =
+        process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "";
+
+      const rzpOptions = {
+        key: keyId,
+        amount: rzpOrderData.amount,
+        currency: rzpOrderData.currency,
+        name: "Occasions Flowers & Gifts",
+        description: "Floral Arrangement & Gift Delivery",
+        order_id: rzpOrderData.order_id,
+        prefill: {
+          name: senderName || receiverName,
+          email: senderEmail,
+          contact: (senderMobile || receiverMobile || "").replace(/\D/g, "").slice(-10),
+        },
+        theme: {
+          color: "#e11d48",
+        },
+        modal: {
+          ondismiss: function () {
+            setIsSubmitting(false);
+            console.log("Razorpay checkout modal closed by user");
+          },
+        },
+        handler: async function (paymentResponse: {
+          razorpay_payment_id: string;
+          razorpay_order_id: string;
+          razorpay_signature: string;
+        }) {
+          try {
+            // 4. Verify payment signature on backend (/api/verify-payment)
+            const verifyRes = await fetch("/api/verify-payment", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                razorpay_order_id: paymentResponse.razorpay_order_id,
+                razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                razorpay_signature: paymentResponse.razorpay_signature,
+                app_order_id: data.orderId,
+              }),
+            });
+
+            const verifyData = await verifyRes.json();
+            if (!verifyRes.ok || !verifyData.success) {
+              alert(verifyData.error || "Payment signature verification failed. Please contact support.");
+              setIsSubmitting(false);
+              return;
+            }
+
+            // Successfully paid and verified!
+            completeOrder(paymentMethodTitle, data.orderId, formattedDelivery);
+            clearCart();
+            setIsSubmitting(false);
+            const orderIdParam = data.orderId ? `?orderId=${data.orderId}` : "";
+            router.push(`/thank-you${orderIdParam}`);
+          } catch (verErr: any) {
+            console.error("Signature verification error:", verErr);
+            alert(`Payment verification failed: ${verErr.message || "Failed to verify signature"}`);
+            setIsSubmitting(false);
+          }
+        },
+      };
+
+      const rzp = new (window as any).Razorpay(rzpOptions);
+      rzp.on("payment.failed", function (response: any) {
+        console.error("Payment failed:", response.error);
+        alert(`Payment failed: ${response.error?.description || "Transaction declined"}`);
         setIsSubmitting(false);
-        const orderIdParam = data.orderId ? `?orderId=${data.orderId}` : "";
-        router.push(`/thank-you${orderIdParam}`);
-      }, 800);
-    } catch (err) {
+      });
+
+      rzp.open();
+    } catch (err: any) {
       console.error("Order submission error:", err);
-      // Fallback completion even if fetch errors
-      completeOrder("Online Payment");
-      clearCart();
+      alert(`Payment error: ${err.message || "Could not process order"}`);
       setIsSubmitting(false);
-      router.push("/thank-you");
     }
   };
 
@@ -561,6 +645,7 @@ export default function SinglePageCheckoutPayment() {
 
   return (
     <div className={styles.pageWrapper}>
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       <Navbar />
 
       <main className={styles.mainContainer}>
