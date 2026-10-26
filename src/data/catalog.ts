@@ -557,7 +557,6 @@ export const CATALOG_PRODUCTS: Product[] = [
     categoryLabel: "Flowers",
     image: "/images/flower-bouquet/sunshine-pink-charm-bouquet.jpeg",
     images: [
-      "/images/flower-bouquet/sunshine-pink-charm-bouquet.jpeg",
       "/images/flower-bouquet/side-view/49/WhatsApp Image 2026-10-26 at 12.06.14 PM.jpeg",
       "/images/flower-bouquet/side-view/49/WhatsApp Image 2026-10-26 at 12.06.14 PM (1).jpeg",
       "/images/flower-bouquet/side-view/49/WhatsApp Image 2026-10-26 at 12.06.14 PM (2).jpeg",
@@ -614,7 +613,6 @@ export const CATALOG_PRODUCTS: Product[] = [
     categoryLabel: "Flowers",
     image: "/images/flower-bouquet/Sunflower Bouquet with Ribbon Tag.png",
     images: [
-      "/images/flower-bouquet/Sunflower Bouquet with Ribbon Tag.png",
       "/images/flower-bouquet/side-view/50/sunflower_bouquet_front_view.png",
       "/images/flower-bouquet/side-view/50/sunflower_bouquet_three_quarter_view.png",
       "/images/flower-bouquet/side-view/50/sunflower_bouquet_side_view.png",
