@@ -46,7 +46,7 @@ export default function Footer() {
           <div className={styles.brandCol}>
             <Link href="/" className={styles.logoLink} aria-label="Occasions Home">
               <img
-                src="/images/occasions-logo.png"
+                src="/images/logo.png"
                 alt="Occasions - Do it with flowers"
                 className={styles.logoImg}
               />

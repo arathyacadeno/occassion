@@ -755,7 +755,7 @@ export default function Header({
             aria-label="Occasions - Do it with flowers"
           >
             <img
-              src="/images/occasions-logo.png"
+              src="/images/logo.png"
               alt="Occasions - Do it with flowers"
               className={styles.brandMasterLogo}
             />
@@ -1880,7 +1880,7 @@ export default function Header({
           <div className={styles.drawerBrand}>
             <div style={{ marginBottom: 12 }}>
               <img
-                src="/images/occasions-logo.png"
+                src="/images/logo.png"
                 alt="Occassions - Do it with flowers"
                 style={{
                   height: 72,
