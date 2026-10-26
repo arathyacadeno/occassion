@@ -21,7 +21,7 @@ export interface CarDecorImageItem {
 
 export const CAR_DECOR_GALLERY: CarDecorImageItem[] = [
   {
-    src: "/images/car decor/WhatsApp_Image_2026-10-23_at_3.25.13_PM_2-remove-the-price-and-bottum-text.jpg",
+    src: "/images/car decor/1.jpg",
     alt: "Yellow Mini Cooper Wedding Bonnet Floral Arrangement",
     title: "Mini Cooper Celebration Bonnet",
     price: 1500,
@@ -29,15 +29,7 @@ export const CAR_DECOR_GALLERY: CarDecorImageItem[] = [
       "A stunning floral arrangement featuring elegant red roses, soft pink roses, delicate white blooms, and fresh greenery. Perfect for wedding car decorations, romantic surprises, and special celebrations, this beautiful combination adds a touch of elegance and love to every memorable moment.",
   },
   {
-    src: "/images/car decor/Screenshot 2026-10-26 111726.png",
-    alt: "White Mercedes Bonnet Red Rose Posy Arrangement",
-    title: "Mercedes Signature Red Rose Posy",
-    price: 1800,
-    description:
-      "A rich dome of premium velvety red Dutch roses framed with delicate evergreen foliage. Designed specifically for luxury sedan bonnets, this timeless arrangement brings royal romance and classic wedding prestige to your ceremonial arrival.",
-  },
-  {
-    src: "/images/car decor/WhatsApp_Image_2026-10-23_at_3.25.15_PM_1-this-bocket-is-add-car-bonent-like-marriage-car-in-car-is.jpg",
+    src: "/images/car decor/3.jpg",
     alt: "White BMW Luxury Wedding Floral Bonnet",
     title: "BMW Pastel Rose & Lily Symphony",
     price: 2200,
@@ -45,7 +37,7 @@ export const CAR_DECOR_GALLERY: CarDecorImageItem[] = [
       "An opulent cluster of blush pink roses, pristine white oriental lilies, and baby's breath. Accented with lush eucalyptus leaves, this graceful design is crafted to complement luxury white BMW wedding cars with effortless elegance.",
   },
   {
-    src: "/images/car decor/WhatsApp_Image_2026-10-23_at_3.25.14_PM_5-please-change-the-text-car-in-to-stright-this-image-to-cre.jpg",
+    src: "/images/car decor/4.jpg",
     alt: "White Mercedes Luxury Wedding Ceremony Floral Decor",
     title: "Mercedes Grand Royal Cascade",
     price: 2500,
@@ -53,7 +45,7 @@ export const CAR_DECOR_GALLERY: CarDecorImageItem[] = [
       "An elongated cascading arrangement combining exotic peach roses, crimson blossoms, and fragrant jasmine sprigs. Designed to create a showstopping entrance at grand wedding mandaps and banquet receptions across Calicut.",
   },
   {
-    src: "/images/car decor/WhatsApp Image 2026-10-23 at 3.25.17 PM-remove-the-1500--text-make-this-silver-honda-neat-clean-and.jpg",
+    src: "/images/car decor/5.jpg",
     alt: "Silver Honda City Marriage Arrival Floral Decor",
     title: "Honda City Elegance Posy",
     price: 1400,
@@ -61,7 +53,7 @@ export const CAR_DECOR_GALLERY: CarDecorImageItem[] = [
       "A charming heart-shaped floral posy composed of soft blush roses, snow-white chrysanthemums, and fresh boxwood greens. Subtle yet striking, this design offers a neat and celebratory touch for wedding family arrivals.",
   },
   {
-    src: "/images/car decor/WhatsApp Image 2026-10-23 at 3.25.15 PM-remove-the-text-and-i-need-car-view-in-marriage-fu-view-in-t.jpg",
+    src: "/images/car decor/6.jpg",
     alt: "Black Audi A4 Nikah Mubarak Pink & White Floral Bonnet",
     title: "Audi Nikah Mubarak Royal Roses",
     price: 2400,
@@ -69,7 +61,7 @@ export const CAR_DECOR_GALLERY: CarDecorImageItem[] = [
       "Exquisite contrast styling crafted with two-tone pastel pink and ivory white roses for sleek black luxury sedans. A regal centerpiece designed for auspicious Nikah ceremonies and evening celebrations under ambient lights.",
   },
   {
-    src: "/images/car decor/WhatsApp_Image_2026-10-23_at_3.25.15_PM_3-change-in-to-car-bocket-the-car-is-innova-create-normal-in.jpg",
+    src: "/images/car decor/7.jpg",
     alt: "White Toyota Innova Wedding Stage Car Decor",
     title: "Innova Crysta Grand Varmala Cascade",
     price: 1900,
@@ -77,7 +69,7 @@ export const CAR_DECOR_GALLERY: CarDecorImageItem[] = [
       "A grand cascade arrangement crafted with deep red roses, fresh cream petals, and trailing floral greenery. Engineered with scratch-safe suction bases to withstand all-day wedding travel throughout Kerala.",
   },
   {
-    src: "/images/car decor/WhatsApp_Image_2026-10-23_at_3.25.17_PM_1-remove-the-text-main-focus-is-flower-bocket-and-ma-change.jpg",
+    src: "/images/car decor/8.jpg",
     alt: "Black Mahindra Thar Traditional Kerala Wedding Floral Decor",
     title: "Mahindra Thar Traditional White Posy",
     price: 1600,
@@ -85,7 +77,7 @@ export const CAR_DECOR_GALLERY: CarDecorImageItem[] = [
       "A bold, majestic dome of fresh white chrysanthemums, ivory roses, and golden-accented greenery. Perfectly tailored to enhance the rugged elegance of black Mahindra Thar bride and groom procession vehicles.",
   },
   {
-    src: "/images/car decor/WhatsApp_Image_2026-10-23_at_3.25.16_PM_1-remove-the-text-and-shutdown-the-wiper-in-the-car.jpg",
+    src: "/images/car decor/9.jpg",
     alt: "White Hyundai Verna Fresh Rose Bonnet Cascade",
     title: "Hyundai Verna Rose & Gypsophila Garland",
     price: 1500,
@@ -93,15 +85,23 @@ export const CAR_DECOR_GALLERY: CarDecorImageItem[] = [
       "A lush, spread-out floral bonnet featuring crimson and peach roses woven together with starry gypsophila and dark green ferns. Created for modern celebrations and memorable wedding send-offs.",
   },
   {
-    src: "/images/car decor/WhatsApp_Image_2026-10-23_at_3.25.14_PM_7-remove-the-text-and-the-car-palaced-in-to-marriage-remove.jpg",
+    src: "/images/car decor/10.jpg",
     alt: "Toyota Fortuner Wedding Entrance Car Decor",
     title: "Fortuner Executive Peach & Cream Bouquet",
     price: 2100,
     description:
       "A voluminous floral posy designed with premium peach roses, white Asiatic lilies, and tropical foliage. Bold and majestic, it creates a commanding VIP entrance for wedding couples.",
   },
+   {
+    src: "/images/car decor/2.png",
+    alt: "White Mercedes Bonnet Red Rose Posy Arrangement",
+    title: "Mercedes Signature Red Rose Posy",
+    price: 1800,
+    description:
+      "A rich dome of premium velvety red Dutch roses framed with delicate evergreen foliage. Designed specifically for luxury sedan bonnets, this timeless arrangement brings royal romance and classic wedding prestige to your ceremonial arrival.",
+  },
   {
-    src: "/images/car decor/WhatsApp_Image_2026-10-23_at_3.25.17_PM_2-change-background-in-make-the-marriage-background-a-minima.jpg",
+    src: "/images/car decor/11.jpg",
     alt: "Classic Turquoise Maruti 800 Retro Red Rose Decor",
     title: "Retro Classic Scarlet Rose Centerpiece",
     price: 1200,
@@ -109,12 +109,52 @@ export const CAR_DECOR_GALLERY: CarDecorImageItem[] = [
       "A vibrant circular cluster of deep red roses resting on fresh green cypress sprigs. Ideal for vintage bridal cars, photoshoot send-offs, and nostalgic retro wedding celebrations.",
   },
   {
-    src: "/images/car decor/WhatsApp_Image_2026-10-23_at_3.25.15_PM_2-create-this-image-in-to-neat-and-clean-and-straigh-create.jpg",
+    src: "/images/car decor/12.jpg",
     alt: "Mahindra XUV500 Wedding Convoy Car Decor",
     title: "XUV Luxury Convoy Floral Arrangement",
     price: 1750,
     description:
       "An elongated bridal bouquet featuring multi-colored roses, lilies, and ferns. Crafted for high-speed highway stability, making it the perfect choice for wedding party convoys and outstation bride arrivals.",
+  },
+  {
+    src: "/images/car decor/13.jpg",
+    alt: "White Toyota Fortuner Grand Mandap Wedding Car Decor",
+    title: "Fortuner Royal Orchid & Rose Cascade",
+    price: 2200,
+    description:
+      "A lavish cascade of imported orchids, scarlet roses, and blush carnations draped gracefully across the bonnet. Styled to harmonize with grand Kerala wedding mandaps and royal celebratory arrivals.",
+  },
+  {
+    src: "/images/car decor/14.jpg",
+    alt: "White KIA Seltos Heritage Home Wedding Car Decor",
+    title: "KIA Seltos Crimson & Blush Bonnet Swag",
+    price: 1850,
+    description:
+      "An elongated swag of vibrant red Dutch roses, soft pink blossoms, and delicate gypsophila. Tailored for modern compact SUVs celebrating traditional Kerala home weddings and tharavadu arrivals.",
+  },
+  {
+    src: "/images/car decor/15.jpg",
+    alt: "White Toyota Innova Heritage Illam Wedding Car Decor",
+    title: "Innova Heritage Temple Posy",
+    price: 1650,
+    description:
+      "A classic spherical posy crafted with blush pink roses, snow-white carnations, and vibrant green asparagus fern. Designed with protective suction mounts, making it ideal for sacred temple and illam wedding travels.",
+  },
+  {
+    src: "/images/car decor/16.jpg",
+    alt: "White Hyundai Verna Wedding Reception Car Decor",
+    title: "Hyundai Verna Reception Crest Bouquet",
+    price: 1700,
+    description:
+      "A wide, fan-style floral crest blending deep red roses with pristine ivory blooms and cascading palm greens. Designed to make a photogenic entrance at wedding reception halls and auditorium gates.",
+  },
+  {
+    src: "/images/car decor/17.jpg",
+    alt: "Red Volkswagen Polo Festive Nikah Wedding Car Decor",
+    title: "Volkswagen Polo Pastel Meadow Posy",
+    price: 1550,
+    description:
+      "A vibrant, multi-hued dome of lavender chrysanthemums, peach spray roses, and fresh ivory petals that pops brilliantly against red car hoods. Perfect for nikah celebrations, family processions, and candid photography.",
   },
 ];
 
@@ -194,7 +234,7 @@ export default function CarDecorModal({ isOpen, onClose }: CarDecorModalProps) {
   };
 
   const whatsAppHref = `https://wa.me/918606464700?text=${encodeURIComponent(
-    `Hello Occasions Florist Calicut, I would like to inquire about wedding Car Decoration arrangement (₹1500) - ${currentItem.title}.`
+    `Hello Occasions Florist Calicut, I would like to inquire about wedding Car Decoration arrangement (₹${currentItem.price}) - ${currentItem.title}.`
   )}`;
 
   return (
