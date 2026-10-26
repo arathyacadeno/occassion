@@ -303,10 +303,13 @@ export const BOUQUET_PRODUCTS: CategoryProduct[] = [
   {
     id: "bouquet-sunshine-pink-charm",
     title: "Sunshine & Pink Charm Bouquet",
-    image: "/images/flower-bouquet/WhatsApp Image 2026-10-26 at 11.51.32 AM.jpeg",
+    image: "/images/flower-bouquet/sunshine-pink-charm-bouquet.jpeg",
     images: [
-      "/images/flower-bouquet/WhatsApp Image 2026-10-26 at 11.51.32 AM.jpeg",
       "/images/flower-bouquet/sunshine-pink-charm-bouquet.jpeg",
+      "/images/flower-bouquet/side-view/49/WhatsApp Image 2026-10-26 at 12.06.14 PM.jpeg",
+      "/images/flower-bouquet/side-view/49/WhatsApp Image 2026-10-26 at 12.06.14 PM (1).jpeg",
+      "/images/flower-bouquet/side-view/49/WhatsApp Image 2026-10-26 at 12.06.14 PM (2).jpeg",
+      "/images/flower-bouquet/side-view/49/WhatsApp Image 2026-10-26 at 12.06.14 PM (3).jpeg",
     ],
     price: "₹1,350",
     tag: "Popular",
@@ -315,9 +318,12 @@ export const BOUQUET_PRODUCTS: CategoryProduct[] = [
   {
     id: "bouquet-golden-bloom-luxury",
     title: "Golden Bloom Luxury Bouquet",
-    image: "/images/flower-bouquet/WhatsApp Image 2026-10-26 at 11.51.25 AM.jpeg",
+    image: "/images/flower-bouquet/side-view/48/04_front_angle.jpeg",
     images: [
-      "/images/flower-bouquet/WhatsApp Image 2026-10-26 at 11.51.25 AM.jpeg",
+      "/images/flower-bouquet/side-view/48/04_front_angle.jpeg",
+      "/images/flower-bouquet/side-view/48/01_side_angle.jpeg",
+      "/images/flower-bouquet/side-view/48/02_side_view.jpeg",
+      "/images/flower-bouquet/side-view/48/03_close_up.jpeg",
       "/images/flower-bouquet/golden-bloom-luxury-bouquet.jpeg",
     ],
     price: "₹2,000",
@@ -330,7 +336,10 @@ export const BOUQUET_PRODUCTS: CategoryProduct[] = [
     image: "/images/flower-bouquet/Sunflower Bouquet with Ribbon Tag.png",
     images: [
       "/images/flower-bouquet/Sunflower Bouquet with Ribbon Tag.png",
-      "/images/flower-bouquet/sunflower-serenade.png",
+      "/images/flower-bouquet/side-view/50/sunflower_bouquet_front_view.png",
+      "/images/flower-bouquet/side-view/50/sunflower_bouquet_three_quarter_view.png",
+      "/images/flower-bouquet/side-view/50/sunflower_bouquet_side_view.png",
+      "/images/flower-bouquet/side-view/50/sunflower_bouquet_back_view.png",
     ],
     price: "₹800",
     tag: "Bestseller",
