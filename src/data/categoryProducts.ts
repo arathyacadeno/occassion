@@ -318,7 +318,7 @@ export const BOUQUET_PRODUCTS: CategoryProduct[] = [
   {
     id: "bouquet-golden-bloom-luxury",
     title: "Golden Bloom Luxury Bouquet",
-    image: "/images/flower-bouquet/side-view/48/04_front_angle.jpeg",
+    image: "/images/flower-bouquet/golden-bloom-luxury-bouquet.jpeg",
     images: [
       "/images/flower-bouquet/side-view/48/04_front_angle.jpeg",
       "/images/flower-bouquet/side-view/48/01_side_angle.jpeg",

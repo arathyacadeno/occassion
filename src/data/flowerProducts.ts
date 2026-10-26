@@ -566,7 +566,7 @@ export const FLOWER_PRODUCTS: FlowerProduct[] = [
     price: 2000,
     rating: 4.9,
     reviewsCount: 28,
-    image: "/images/flower-bouquet/side-view/48/04_front_angle.jpeg",
+    image: "/images/flower-bouquet/golden-bloom-luxury-bouquet.jpeg",
     images: [
       "/images/flower-bouquet/side-view/48/04_front_angle.jpeg",
       "/images/flower-bouquet/side-view/48/01_side_angle.jpeg",
