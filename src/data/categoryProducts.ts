@@ -301,6 +301,42 @@ export const BOUQUET_PRODUCTS: CategoryProduct[] = [
     description: "An elegant arrangement of pure white and soft pink roses, beautifully wrapped in soft cream paper with a pink ribbon bow.",
   },
   {
+    id: "bouquet-sunshine-pink-charm",
+    title: "Sunshine & Pink Charm Bouquet",
+    image: "/images/flower-bouquet/WhatsApp Image 2026-10-26 at 11.51.32 AM.jpeg",
+    images: [
+      "/images/flower-bouquet/WhatsApp Image 2026-10-26 at 11.51.32 AM.jpeg",
+      "/images/flower-bouquet/sunshine-pink-charm-bouquet.jpeg",
+    ],
+    price: "₹1,350",
+    tag: "Popular",
+    description: "A joyful celebration bouquet blending a striking golden sunflower, bright pink gerberas, and purple micro-blooms cushioned in airy clouds of white gypsophila, presented in gold-edged designer wrapping.",
+  },
+  {
+    id: "bouquet-golden-bloom-luxury",
+    title: "Golden Bloom Luxury Bouquet",
+    image: "/images/flower-bouquet/WhatsApp Image 2026-10-26 at 11.51.25 AM.jpeg",
+    images: [
+      "/images/flower-bouquet/WhatsApp Image 2026-10-26 at 11.51.25 AM.jpeg",
+      "/images/flower-bouquet/golden-bloom-luxury-bouquet.jpeg",
+    ],
+    price: "₹2,000",
+    tag: "Luxury Choice",
+    description: "A grand, opulent arrangement of blooming golden sunflowers complemented by exotic purple floral accents and fresh emerald greenery. Beautifully styled in crisp gold-edged designer wrapping and finished with a lavish satin bow.",
+  },
+  {
+    id: "bouquet-sunflower-serenade",
+    title: "Sunflower Serenade",
+    image: "/images/flower-bouquet/Sunflower Bouquet with Ribbon Tag.png",
+    images: [
+      "/images/flower-bouquet/Sunflower Bouquet with Ribbon Tag.png",
+      "/images/flower-bouquet/sunflower-serenade.png",
+    ],
+    price: "₹800",
+    tag: "Bestseller",
+    description: "A radiant sunflower bouquet showcasing bold golden blooms and lush greenery, enveloped in layered ivory wrap with a flowing yellow satin ribbon and keepsake gift tag.",
+  },
+  {
     id: "bouquet-sunshine-orchids",
     title: "Sunshine & Orchids",
     image: "/images/flower-bouquet/sunshine-orchids.jpg",
