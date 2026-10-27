@@ -5,6 +5,7 @@ import { MessageCircle, Phone, X, ArrowUpRight } from "lucide-react";
 import BloomingFlowerAnimation from "./BloomingFlowerAnimation";
 import CarDecorModal from "./CarDecorModal";
 import StageDecorModal from "./StageDecorModal";
+import GarlandsModal from "./GarlandsModal";
 import styles from "./HighlightSection.module.css";
 
 export interface HighlightCard {
@@ -73,7 +74,7 @@ const highlightCards: HighlightCard[] = [
     tag: "Tradition",
     title: "Garlands",
     subtitle: "Fresh Jasmine Varmala and Gift Baskets",
-    image: "/images/highlight-garlands.jpg",
+    image: "/images/garlands/1.jpg",
     desc: "Handcrafted traditional and contemporary bridal garlands, reception varmalas, and auspicious gift flower baskets meticulously strung with fresh fragrant jasmine, lotus buds, and Dutch roses.",
     features: [
       "Fragrant Madurai Jasmine",
@@ -90,6 +91,7 @@ export default function HighlightSection() {
   const [modalItem, setModalItem] = useState<HighlightCard | null>(null);
   const [isCarDecorModalOpen, setIsCarDecorModalOpen] = useState(false);
   const [isStageDecorModalOpen, setIsStageDecorModalOpen] = useState(false);
+  const [isGarlandsModalOpen, setIsGarlandsModalOpen] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
@@ -98,6 +100,8 @@ export default function HighlightSection() {
       setIsCarDecorModalOpen(true);
     } else if (card.id === "stage-decor") {
       setIsStageDecorModalOpen(true);
+    } else if (card.id === "garlands") {
+      setIsGarlandsModalOpen(true);
     } else {
       setModalItem(card);
     }
@@ -110,18 +114,23 @@ export default function HighlightSection() {
         setIsCarDecorModalOpen(true);
       } else if (window.location.hash === "#stage-decor") {
         setIsStageDecorModalOpen(true);
+      } else if (window.location.hash === "#garlands") {
+        setIsGarlandsModalOpen(true);
       }
     };
     checkHash();
     window.addEventListener("hashchange", checkHash);
     const handleCarOpen = () => setIsCarDecorModalOpen(true);
     const handleStageOpen = () => setIsStageDecorModalOpen(true);
+    const handleGarlandsOpen = () => setIsGarlandsModalOpen(true);
     window.addEventListener("open-car-decor-modal", handleCarOpen);
     window.addEventListener("open-stage-decor-modal", handleStageOpen);
+    window.addEventListener("open-garlands-modal", handleGarlandsOpen);
     return () => {
       window.removeEventListener("hashchange", checkHash);
       window.removeEventListener("open-car-decor-modal", handleCarOpen);
       window.removeEventListener("open-stage-decor-modal", handleStageOpen);
+      window.removeEventListener("open-garlands-modal", handleGarlandsOpen);
     };
   }, []);
 
@@ -330,6 +339,12 @@ export default function HighlightSection() {
       <StageDecorModal
         isOpen={isStageDecorModalOpen}
         onClose={() => setIsStageDecorModalOpen(false)}
+      />
+
+      {/* Garlands Dedicated Showcase Modal */}
+      <GarlandsModal
+        isOpen={isGarlandsModalOpen}
+        onClose={() => setIsGarlandsModalOpen(false)}
       />
     </section>
   );

@@ -1154,6 +1154,11 @@ export default function Header({
                           onClick={(e) => {
                             handleSectionNav(e, "highlights", "highlights");
                             setHighlightsHovered(false);
+                            if (typeof window !== "undefined") {
+                              setTimeout(() => {
+                                window.dispatchEvent(new CustomEvent("open-garlands-modal"));
+                              }, 350);
+                            }
                           }}
                         >
                           Garlands
@@ -2035,6 +2040,11 @@ export default function Header({
               onClick={(e) => {
                 handleSectionNav(e, "highlights", "highlights");
                 setDrawerOpen(false);
+                if (typeof window !== "undefined") {
+                  setTimeout(() => {
+                    window.dispatchEvent(new CustomEvent("open-garlands-modal"));
+                  }, 350);
+                }
               }}
               style={{ color: "inherit", textDecoration: "none" }}
             >
