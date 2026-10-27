@@ -24,7 +24,7 @@ export const CAR_DECOR_GALLERY: CarDecorImageItem[] = [
     src: "/images/car decor/1.jpg",
     alt: "Yellow Mini Cooper Wedding Bonnet Floral Arrangement",
     title: "Mini Cooper Celebration Bonnet",
-    price: 1500,
+    price: 1800,
     description:
       "A stunning floral arrangement featuring elegant red roses, soft pink roses, delicate white blooms, and fresh greenery. Perfect for wedding car decorations, romantic surprises, and special celebrations, this beautiful combination adds a touch of elegance and love to every memorable moment.",
   },
@@ -32,7 +32,7 @@ export const CAR_DECOR_GALLERY: CarDecorImageItem[] = [
     src: "/images/car decor/3.jpg",
     alt: "White BMW Luxury Wedding Floral Bonnet",
     title: "BMW Pastel Rose & Lily Symphony",
-    price: 2200,
+    price: 2800,
     description:
       "An opulent cluster of blush pink roses, pristine white oriental lilies, and baby's breath. Accented with lush eucalyptus leaves, this graceful design is crafted to complement luxury white BMW wedding cars with effortless elegance.",
   },
@@ -40,7 +40,7 @@ export const CAR_DECOR_GALLERY: CarDecorImageItem[] = [
     src: "/images/car decor/4.jpg",
     alt: "White Mercedes Luxury Wedding Ceremony Floral Decor",
     title: "Mercedes Grand Royal Cascade",
-    price: 2500,
+    price: 2800,
     description:
       "An elongated cascading arrangement combining exotic peach roses, crimson blossoms, and fragrant jasmine sprigs. Designed to create a showstopping entrance at grand wedding mandaps and banquet receptions across Calicut.",
   },
@@ -64,7 +64,7 @@ export const CAR_DECOR_GALLERY: CarDecorImageItem[] = [
     src: "/images/car decor/7.jpg",
     alt: "White Toyota Innova Wedding Stage Car Decor",
     title: "Innova Crysta Grand Varmala Cascade",
-    price: 1900,
+    price: 2300,
     description:
       "A grand cascade arrangement crafted with deep red roses, fresh cream petals, and trailing floral greenery. Engineered with scratch-safe suction bases to withstand all-day wedding travel throughout Kerala.",
   },
@@ -72,7 +72,7 @@ export const CAR_DECOR_GALLERY: CarDecorImageItem[] = [
     src: "/images/car decor/8.jpg",
     alt: "Black Mahindra Thar Traditional Kerala Wedding Floral Decor",
     title: "Mahindra Thar Traditional White Posy",
-    price: 2000,
+    price: 2300,
     description:
       "A bold, majestic dome of fresh white chrysanthemums, ivory roses, and golden-accented greenery. Perfectly tailored to enhance the rugged elegance of black Mahindra Thar bride and groom procession vehicles.",
   },

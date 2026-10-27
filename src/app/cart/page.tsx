@@ -381,10 +381,10 @@ export default function CartPage() {
       <Navbar />
 
       <main className={styles.mainContainer}>
-        {/* Breadcrumb Navigation: Home > Flowers > Shopping Cart */}
+        {/* Breadcrumb Navigation: Home > Flower Bouquet > Shopping Cart */}
         <Breadcrumb
           items={[
-            { label: "Flowers", href: "/flower-bouquets" },
+            { label: "Flower Bouquet", href: "/flower-bouquets" },
             { label: "Shopping Cart" },
           ]}
         />

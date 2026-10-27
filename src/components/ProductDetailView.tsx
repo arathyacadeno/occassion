@@ -141,40 +141,44 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
   // Strictly keep similar products within their own category
   similarProducts = similarProducts.slice(0, 10);
 
-  const categoryLabel =
-    product.category === "cakes"
-      ? "Cakes"
-      : product.category === "table-decor"
-      ? "Table Decor"
-      : product.category === "wreaths"
-      ? "Wreaths"
-      : product.category === "special-occasions"
-      ? "Special Occasions"
-      : product.category === "our-highlights"
-      ? "Our Highlights"
-      : "Flowers";
+  const categoryLabel = isFlowerBasket
+    ? "Flower Basket"
+    : isFlowerBouquet
+    ? "Flower Bouquet"
+    : isCakeProduct
+    ? "Cake"
+    : isWreath
+    ? "Wreath"
+    : isTableDecor
+    ? "Table Decor"
+    : product.category === "special-occasions" || isChocolate || isSoftToy
+    ? "Special Occasions"
+    : product.category === "our-highlights"
+    ? "Our Highlights"
+    : "Flower Bouquet";
 
-  const categoryHref =
-    product.category === "cakes"
-      ? "/cakes"
-      : product.category === "table-decor"
-      ? "/table-decor"
-      : product.category === "wreaths"
-      ? "/wreaths"
-      : product.category === "special-occasions"
-      ? "/special-occasions"
-      : product.category === "our-highlights"
-      ? "/#highlights"
-      : product.slug?.includes("basket") || product.name?.toLowerCase().includes("basket")
-      ? "/flower-baskets"
-      : "/flower-bouquets";
+  const categoryHref = isFlowerBasket
+    ? "/flower-baskets"
+    : isFlowerBouquet
+    ? "/flower-bouquets"
+    : isCakeProduct
+    ? "/cakes"
+    : isWreath
+    ? "/wreaths"
+    : isTableDecor
+    ? "/table-decor"
+    : product.category === "special-occasions" || isChocolate || isSoftToy
+    ? "/special-occasions"
+    : product.category === "our-highlights"
+    ? "/#highlights"
+    : "/flower-bouquets";
 
   return (
     <div className={styles.pageWrapper}>
       <Navbar />
 
       <main className={styles.mainContainer}>
-        {/* Breadcrumb Navigation: Home > Flowers > Product Name */}
+        {/* Breadcrumb Navigation: Home > Category > Product Name */}
         <Breadcrumb
           items={[
             { label: categoryLabel, href: categoryHref },
