@@ -611,14 +611,6 @@ export default function CartPage() {
                           </span>
                         </div>
                       )}
-
-                      {/* Sunday Hours Info */}
-                      {deliveryDate && parseDateString(deliveryDate).getDay() === 0 && !sundayCartNotice && (
-                        <div className={styles.sundayCartInfo}>
-                          <Clock size={13} />
-                          <span>Sunday deliveries operate strictly between <strong>8:00 AM – 10:00 AM</strong>.</span>
-                        </div>
-                      )}
                     </div>
 
                     <button

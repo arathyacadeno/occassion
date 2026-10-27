@@ -1184,14 +1184,6 @@ export default function SinglePageCheckoutPayment() {
                 </div>
               )}
 
-              {/* Sunday Delivery Active Hours Badge */}
-              {deliveryDate && parseDateString(deliveryDate).getDay() === 0 && !sundayAdjustmentReason && (
-                <div className={styles.sundayInfoCard}>
-                  <Clock size={15} className={styles.sundayInfoIcon} />
-                  <span>Sunday deliveries operate strictly between <strong>8:00 AM – 10:00 AM</strong>.</span>
-                </div>
-              )}
-
               <div className={styles.deliveryDropdownsRow}>
                 <div className={styles.deliveryDropdownCol}>
                   <label className={styles.dropdownLabel}>
