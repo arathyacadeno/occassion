@@ -255,9 +255,15 @@ export default function SinglePageCheckoutPayment() {
     }, 350);
   }, []);
 
-  // Check initial PIN code on mount
+  // Check initial PIN code & delivery date on mount
   useEffect(() => {
     setMounted(true);
+    try {
+      const storedDate = localStorage.getItem("occassions_delivery_date");
+      if (storedDate) {
+        setDeliveryDate(storedDate);
+      }
+    } catch {}
     try {
       const storedPin = localStorage.getItem("occassions_delivery_pincode");
       if (storedPin && storedPin.length === 6) {
@@ -1224,6 +1230,9 @@ export default function SinglePageCheckoutPayment() {
               selectedDate={deliveryDate}
               onConfirm={(date) => {
                 setDeliveryDate(date);
+                try {
+                  localStorage.setItem("occassions_delivery_date", date);
+                } catch {}
                 setDeliveryPrefError((prev) => (prev ? { ...prev, date: undefined } : null));
                 setShowDateModal(false);
               }}

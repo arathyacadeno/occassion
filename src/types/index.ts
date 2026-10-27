@@ -18,6 +18,7 @@ export interface Bouquet {
   badge?: string;
   dimensions: string;
   basketType?: 'cane' | 'bamboo' | 'container';
+  deliveryDate?: string;
 }
 
 export interface FlowerProduct extends Bouquet {
@@ -54,4 +55,5 @@ export interface CartItem {
   selectedSize: 'Petite' | 'Signature' | 'Grand Deluxe';
   customNote?: string;
   vaseOption: boolean;
+  deliveryDate?: string;
 }

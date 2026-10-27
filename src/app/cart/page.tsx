@@ -19,7 +19,9 @@ import {
   Plus,
   Lock,
   MapPin,
+  Calendar,
 } from "lucide-react";
+import DateModal from "@/components/DateModal";
 import CartItemAddons from "@/components/CartItemAddons";
 import styles from "./cart.module.css";
 
@@ -158,6 +160,63 @@ export default function CartPage() {
   const [deliveryLoading, setDeliveryLoading] = useState<boolean>(false);
   const [isEditingPin, setIsEditingPin] = useState<boolean>(false);
   const [pinInputError, setPinInputError] = useState<string | null>(null);
+
+  // Delivery Date state
+  const [deliveryDate, setDeliveryDate] = useState<string>("");
+  const [showDateModal, setShowDateModal] = useState<boolean>(false);
+
+  // Initialize delivery date from localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const storedDate = localStorage.getItem("occassions_delivery_date");
+        if (storedDate) {
+          setDeliveryDate(storedDate);
+        }
+      } catch {}
+    }
+  }, []);
+
+  const handleConfirmDate = (date: string) => {
+    setDeliveryDate(date);
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("occassions_delivery_date", date);
+      } catch {}
+    }
+    setShowDateModal(false);
+  };
+
+  const handleClearDate = () => {
+    setDeliveryDate("");
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.removeItem("occassions_delivery_date");
+      } catch {}
+    }
+  };
+
+  const formatDisplayDate = (dateStr?: string | null): string => {
+    if (!dateStr) return "";
+    const clean = dateStr.trim();
+    if (!clean) return "";
+    if (clean.toLowerCase().startsWith("delivery by ")) {
+      return clean.slice(12);
+    }
+    try {
+      const d = clean.includes("T")
+        ? new Date(clean)
+        : new Date(`${clean}T00:00:00`);
+      if (!isNaN(d.getTime())) {
+        return d.toLocaleDateString("en-US", {
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+        });
+      }
+    } catch {}
+    return clean;
+  };
 
   const checkDeliveryPin = useCallback(async (pin: string) => {
     const cleanPin = (pin || "").replace(/\D/g, "").trim();
@@ -349,6 +408,12 @@ export default function CartPage() {
       return;
     }
 
+    if (deliveryDate && typeof window !== "undefined") {
+      try {
+        localStorage.setItem("occassions_delivery_date", deliveryDate);
+      } catch {}
+    }
+
     const checkoutPayload = displayItems.map((item) => ({
       id: item.bouquet.id,
       slug: item.bouquet.id,
@@ -469,6 +534,53 @@ export default function CartPage() {
                           </span>
                         </div>
                       ) : null}
+
+                      {/* Delivery Date Selection Row */}
+                      <div className={styles.cartDeliveryDateRow}>
+                        <div className={styles.cartDeliveryDateLeft}>
+                          <Calendar size={15} color="#E40345" />
+                          <span className={styles.cartDeliveryDateLabel}>Delivery Date:</span>
+                          {deliveryDate ? (
+                            <span className={styles.cartDeliveryDateValue}>
+                              {formatDisplayDate(deliveryDate)}
+                            </span>
+                          ) : (
+                            <span className={styles.cartDeliveryDateEmpty}>
+                              Not selected
+                            </span>
+                          )}
+                        </div>
+                        <div className={styles.cartDeliveryDateActions}>
+                          {deliveryDate ? (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => setShowDateModal(true)}
+                                className={styles.selectDateBtn}
+                              >
+                                Change Date
+                              </button>
+                              <button
+                                type="button"
+                                onClick={handleClearDate}
+                                className={styles.clearDateBtn}
+                                title="Remove delivery date"
+                              >
+                                Remove
+                              </button>
+                            </>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => setShowDateModal(true)}
+                              className={styles.selectDateBtn}
+                            >
+                              <Calendar size={13} />
+                              <span>Select Date</span>
+                            </button>
+                          )}
+                        </div>
+                      </div>
                     </div>
 
                     <button
@@ -551,6 +663,10 @@ export default function CartPage() {
               {groupedCartItems.map((group) => {
                 const item = group.mainItem;
                 const idx = group.mainIndex;
+                const effectiveDeliveryDate =
+                  item.deliveryDate ||
+                  (item.bouquet as { deliveryDate?: string }).deliveryDate ||
+                  deliveryDate;
                 const origPrice =
                   item.bouquet.originalPrice ||
                   Math.round(item.bouquet.price * 1.45);
@@ -641,18 +757,31 @@ export default function CartPage() {
                           </span>
                         </div>
 
-                        <div className={styles.deliveryDate}>
-                          {("deliveryDate" in item.bouquet &&
-                            Boolean((item.bouquet as { deliveryDate?: string }).deliveryDate))
-                            ? (item.bouquet as { deliveryDate?: string }).deliveryDate
-                            : `Delivery by ${new Date(
-                              Date.now() + (idx + 2) * 86400000
-                            ).toLocaleDateString("en-US", {
-                              month: "short",
-                              day: "numeric",
-                              weekday: "short",
-                            })}`}
-                        </div>
+                        {/* Delivery Date: Only show when entered/selected by user */}
+                        {effectiveDeliveryDate ? (
+                          <div className={styles.deliveryDate}>
+                            <Calendar size={13} color="#E40345" />
+                            <span>Delivery by {formatDisplayDate(effectiveDeliveryDate)}</span>
+                            <button
+                              type="button"
+                              onClick={() => setShowDateModal(true)}
+                              className={styles.inlineChangeDateBtn}
+                              title="Change delivery date"
+                            >
+                              Change
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setShowDateModal(true)}
+                            className={styles.inlineSelectDateBtn}
+                            title="Select delivery date"
+                          >
+                            <Calendar size={13} />
+                            <span>Select Delivery Date</span>
+                          </button>
+                        )}
                       </div>
                     </div>
 
@@ -839,6 +968,14 @@ export default function CartPage() {
           </div>
         )}
       </main>
+
+      {/* Date Modal for selecting delivery date */}
+      <DateModal
+        isOpen={showDateModal}
+        onClose={() => setShowDateModal(false)}
+        selectedDate={deliveryDate}
+        onConfirm={handleConfirmDate}
+      />
 
       <Footer />
     </div>

@@ -451,9 +451,141 @@
 }
 
 .deliveryDate {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  width: fit-content;
+  max-width: max-content;
+  gap: 6px;
   font-size: 0.8rem;
-  color: #6b7280;
-  margin-top: 4px;
+  color: #4b5563;
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+.inlineChangeDateBtn {
+  background: none;
+  border: none;
+  color: #e11d48;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0 4px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.inlineChangeDateBtn:hover {
+  color: #be123c;
+}
+
+.inlineSelectDateBtn {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  width: fit-content;
+  max-width: max-content;
+  gap: 5px;
+  margin-top: 6px;
+  background: #fdf2f4;
+  border: 1px dashed #f43f5e;
+  color: #e11d48;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.inlineSelectDateBtn:hover {
+  background: #ffe4e6;
+  border-style: solid;
+}
+
+.cartDeliveryDateRow {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cartDeliveryDateLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.cartDeliveryDateLabel {
+  font-weight: 600;
+  color: #374151;
+}
+
+.cartDeliveryDateValue {
+  font-weight: 700;
+  color: #111827;
+  background-color: #fdf2f4;
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid #fecdd3;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.82rem;
+}
+
+.cartDeliveryDateEmpty {
+  color: #9ca3af;
+  font-size: 0.82rem;
+  font-style: italic;
+}
+
+.cartDeliveryDateActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.selectDateBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1.5px solid #fda4af;
+  color: #e11d48;
+  background-color: #ffffff;
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.selectDateBtn:hover {
+  background-color: #fff1f2;
+  border-color: #e11d48;
+}
+
+.clearDateBtn {
+  background: transparent;
+  color: #94a3b8;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: all 0.18s ease;
+}
+
+.clearDateBtn:hover {
+  color: #e11d48;
+  background-color: #fff1f2;
 }
 
 /* Bottom Actions in Cart Item */
