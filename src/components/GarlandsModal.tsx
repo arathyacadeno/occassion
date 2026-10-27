@@ -308,7 +308,7 @@ export default function GarlandsModal({
             <div className={styles.actionButtons}>
               <a href="tel:+918606464700" className={styles.callButton}>
                 <Phone size={15} strokeWidth={2.4} />
-                <span>Call Us (+91 8606464700)</span>
+                <span>Call Us</span>
               </a>
 
               <a
