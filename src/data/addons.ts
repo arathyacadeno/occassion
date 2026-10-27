@@ -130,6 +130,15 @@ export const ADDON_PRODUCTS: AddonProduct[] = [
 
   // ==================== CHOCOLATES ====================
   {
+    id: "addon-hersheys-kisses",
+    name: "Hershey's Kisses",
+    price: 50,
+    image: "/images/addons/hersheys-kisses.jpg",
+    category: "Chocolates",
+    href: "/special-occasions/hersheys-kisses",
+    sectionHref: "/special-occasions",
+  },
+  {
     id: "addon-ferrero-rocher-heart",
     name: "Ferrero Rocher 16 Pieces",
     price: 150,
