@@ -122,7 +122,6 @@
 .categoryBar {
   padding: 12px 32px 14px;
   background-color: #ffffff;
-  border-bottom: 1px solid #f1f5f9;
   display: flex;
   align-items: center;
   overflow-x: auto;
@@ -329,11 +328,11 @@
   text-align: left;
 }
 
-/* ADD Button - Teal Outline Button matching Reference Image */
+/* ADD Button - Pink Outline & Black Text */
 .addBtn {
   background-color: #ffffff;
-  border: 1.5px solid #00738c;
-  color: #00738c;
+  border: 1.5px solid #E40345;
+  color: #111827;
   border-radius: 6px;
   font-size: 0.82rem;
   font-weight: 700;
@@ -351,16 +350,16 @@
 }
 
 .addBtn:hover {
-  background-color: #f0fdfa;
-  border-color: #005f73;
-  color: #005f73;
+  background-color: #fff0f4;
+  border-color: #c7023c;
+  color: #E40345;
   transform: translateY(-1px);
 }
 
-/* Quantity Control - matching Reference Theme */
+/* Quantity Control - Pink Outline & Black Text with Pink Hover */
 .qtyControl {
   background-color: #ffffff;
-  border: 1.5px solid #00738c;
+  border: 1.5px solid #E40345;
   border-radius: 6px;
   height: 32px;
   width: 100%;
@@ -376,24 +375,25 @@
 .qtyBtn {
   background: none;
   border: none;
-  color: #00738c;
+  color: #111827;
   cursor: pointer;
   padding: 2px;
   border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.15s ease, transform 0.15s ease;
+  transition: background-color 0.15s ease, transform 0.15s ease, color 0.15s ease;
   outline: none;
 }
 
 .qtyBtn:hover {
-  background-color: #f0fdfa;
+  background-color: #fff0f4;
+  color: #E40345;
   transform: scale(1.15);
 }
 
 .qtyValue {
-  color: #00738c;
+  color: #111827;
   font-size: 0.82rem;
   font-weight: 700;
   letter-spacing: 0.02em;

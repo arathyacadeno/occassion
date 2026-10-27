@@ -135,6 +135,11 @@
   border-color: #cbd5e1;
 }
 
+.addonCardSelected {
+  border-color: #E40345;
+  box-shadow: 0 0 0 1px #E40345, 0 4px 14px rgba(228, 3, 69, 0.14);
+}
+
 /* =========================================================
    IMAGE
    ========================================================= */
@@ -252,7 +257,7 @@
 }
 
 .titleLink:hover {
-  color: #00738c;
+  color: #E40345;
 }
 
 /* =========================================================
@@ -279,7 +284,7 @@
 .addBtn {
   background-color: #ffffff;
 
-  border: 1.5px solid #00738c;
+  border: 1.5px solid #E40345;
 
   border-radius: 6px;
 
@@ -287,7 +292,7 @@
 
   width: 100%;
 
-  color: #00738c;
+  color: #111827;
 
   font-size: 13px;
   font-weight: 700;
@@ -312,11 +317,11 @@
 }
 
 .addBtn:hover {
-  background-color: #f0fdfa;
+  background-color: #fff0f4;
 
-  border-color: #005f73;
+  border-color: #c7023c;
 
-  color: #005f73;
+  color: #E40345;
 }
 
 /* =========================================================
@@ -326,7 +331,7 @@
 .qtyControl {
   background-color: #ffffff;
 
-  border: 1.5px solid #00738c;
+  border: 1.5px solid #E40345;
 
   border-radius: 6px;
 
@@ -352,7 +357,7 @@
 
   border: none;
 
-  color: #00738c;
+  color: #111827;
 
   cursor: pointer;
 
@@ -363,17 +368,20 @@
   align-items: center;
   justify-content: center;
 
-  transition: transform 0.15s ease;
+  transition: transform 0.15s ease, color 0.15s ease, background-color 0.15s ease;
 
   outline: none;
+  border-radius: 4px;
 }
 
 .qtyBtn:hover {
   transform: scale(1.15);
+  background-color: #fff0f4;
+  color: #E40345;
 }
 
 .qtyValue {
-  color: #00738c;
+  color: #111827;
 
   font-size: 13px;
 

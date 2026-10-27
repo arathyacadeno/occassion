@@ -132,7 +132,12 @@ export default function RecommendedAddons({
             const qty = quantities[product.id] || 0;
 
             return (
-              <div key={product.id} className={styles.addonCard}>
+              <div
+                key={product.id}
+                className={`${styles.addonCard} ${
+                  qty > 0 ? styles.addonCardSelected : ""
+                }`}
+              >
                 {/* Clean Image Container */}
                 <div className={styles.imageContainer}>
                   <img

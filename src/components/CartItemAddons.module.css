@@ -225,8 +225,8 @@
 }
 
 .addonCardAdded {
-  border-color: #00738c;
-  box-shadow: 0 0 0 1px #00738c, 0 2px 8px rgba(0, 115, 140, 0.12);
+  border-color: #E40345;
+  box-shadow: 0 0 0 1px #E40345, 0 2px 8px rgba(228, 3, 69, 0.14);
 }
 
 /* Image Tile with 8px radius */
@@ -293,14 +293,14 @@
   text-decoration: line-through;
 }
 
-/* ADD Button - Teal Outline Button matching Reference Image */
+/* ADD Button - Pink Outline & Black Text */
 .addBtn {
   background-color: #ffffff;
-  border: 1.5px solid #00738c;
+  border: 1.5px solid #E40345;
   border-radius: 6px;
   height: 34px;
   width: 100%;
-  color: #00738c;
+  color: #111827;
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -316,15 +316,15 @@
 }
 
 .addBtn:hover {
-  background-color: #f0fdfa;
-  border-color: #005f73;
-  color: #005f73;
+  background-color: #fff0f4;
+  border-color: #c7023c;
+  color: #E40345;
 }
 
 /* ADDED Button - Solid State */
 .addedBtn {
-  background-color: #00738c;
-  border: 1.5px solid #00738c;
+  background-color: #E40345;
+  border: 1.5px solid #E40345;
   border-radius: 6px;
   height: 34px;
   width: 100%;
@@ -344,8 +344,8 @@
 }
 
 .addedBtn:hover {
-  background-color: #005f73;
-  border-color: #005f73;
+  background-color: #c7023c;
+  border-color: #c7023c;
 }
 
 /* Mobile Responsiveness */
