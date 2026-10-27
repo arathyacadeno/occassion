@@ -199,101 +199,90 @@
   display: none;
 }
 
-/* Add-on Card (96px wide, no outer box) */
+/* Add-on Card (Clean white card matching reference image) */
 .addonCard {
-  flex: 0 0 96px;
-  width: 96px;
-  background: transparent;
-  border: none;
+  flex: 0 0 160px;
+  width: 160px;
+  min-width: 160px;
+  max-width: 160px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   user-select: none;
 }
 
-/* 96x96 White Image Tile with 8px radius and thin grey border */
+.addonCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  border-color: #cbd5e1;
+}
+
+.addonCardAdded {
+  border-color: #00738c;
+  box-shadow: 0 0 0 1px #00738c, 0 2px 8px rgba(0, 115, 140, 0.12);
+}
+
+/* Image Tile with 8px radius */
 .addonImageWrap {
   position: relative;
-  width: 96px;
-  height: 96px;
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  height: auto;
+  background-color: #f8fafc;
   border-radius: 8px;
   overflow: hidden;
   flex-shrink: 0;
-}
-
-.addonCardAdded .addonImageWrap {
-  border-color: #E40345;
-  box-shadow: 0 0 0 1px #E40345;
+  margin-bottom: 8px;
 }
 
 .addonImg {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 8px;
   display: block;
-}
-
-/* Square (6px radius) Outlined "+" Button in brand red at bottom-right */
-.quickAddBtn {
-  position: absolute;
-  bottom: 6px;
-  right: 6px;
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
-  border: 1.5px solid #E40345;
-  background-color: #ffffff;
-  color: #E40345;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  transition: all 0.18s ease;
-}
-
-.quickAddBtn:hover {
-  background-color: #fff1f2;
-}
-
-.quickAddBtnAdded {
-  background-color: #E40345;
-  border-color: #E40345;
-  color: #ffffff;
-}
-
-.quickAddBtnAdded:hover {
-  background-color: #c7023c;
-  border-color: #c7023c;
 }
 
 /* Text Content below tile */
 .cardContent {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  flex: 1;
+  min-width: 0;
 }
 
 .addonTitle {
-  font-size: 0.8rem;
+  font-size: 13px;
   font-weight: 500;
-  color: #111827;
-  line-height: 1.3;
-  white-space: nowrap;
+  color: #374151;
+  line-height: 1.35;
+  height: 36px;
+  min-height: 36px;
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-bottom: 6px;
 }
 
 .priceContainer {
   display: flex;
   align-items: baseline;
   gap: 6px;
+  margin-bottom: 10px;
 }
 
 .priceCurrent {
-  font-size: 0.92rem;
+  font-size: 15px;
   font-weight: 700;
   color: #111827;
 }
@@ -302,6 +291,61 @@
   font-size: 0.78rem;
   color: #9ca3af;
   text-decoration: line-through;
+}
+
+/* ADD Button - Teal Outline Button matching Reference Image */
+.addBtn {
+  background-color: #ffffff;
+  border: 1.5px solid #00738c;
+  border-radius: 6px;
+  height: 34px;
+  width: 100%;
+  color: #00738c;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s ease;
+  outline: none;
+  margin-top: auto;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.addBtn:hover {
+  background-color: #f0fdfa;
+  border-color: #005f73;
+  color: #005f73;
+}
+
+/* ADDED Button - Solid State */
+.addedBtn {
+  background-color: #00738c;
+  border: 1.5px solid #00738c;
+  border-radius: 6px;
+  height: 34px;
+  width: 100%;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s ease;
+  outline: none;
+  margin-top: auto;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.addedBtn:hover {
+  background-color: #005f73;
+  border-color: #005f73;
 }
 
 /* Mobile Responsiveness */

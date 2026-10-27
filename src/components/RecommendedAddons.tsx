@@ -133,7 +133,7 @@ export default function RecommendedAddons({
 
             return (
               <div key={product.id} className={styles.addonCard}>
-                {/* Image Container with signature chamfered ramp wave cutout */}
+                {/* Clean Image Container */}
                 <div className={styles.imageContainer}>
                   <img
                     src={product.image}
@@ -141,17 +141,6 @@ export default function RecommendedAddons({
                     className={styles.cardImage}
                     loading="lazy"
                   />
-                  <svg
-                    className={styles.waveDivider}
-                    viewBox="0 0 300 28"
-                    preserveAspectRatio="none"
-                    aria-hidden="true"
-                  >
-                    <path
-                      d="M -2,32 L -2,12 Q -2,0 16,0 L 185,0 C 208,0 216,20 242,20 L 304,20 L 304,32 Z"
-                      fill="#ffffff"
-                    />
-                  </svg>
                 </div>
 
                 {/* Card Details */}
@@ -160,7 +149,7 @@ export default function RecommendedAddons({
                     {product.name}
                   </h3>
                   <div className={styles.productPrice}>
-                    ₹ {product.price.toFixed(2)}
+                    ₹ {Math.round(product.price).toLocaleString("en-IN")}
                   </div>
 
                   {qty > 0 ? (

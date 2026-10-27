@@ -329,11 +329,11 @@
   text-align: left;
 }
 
-/* ADD Button - Pink Outline Button matching Theme */
+/* ADD Button - Teal Outline Button matching Reference Image */
 .addBtn {
   background-color: #ffffff;
-  border: 1.5px solid #E40345;
-  color: #E40345;
+  border: 1.5px solid #00738c;
+  color: #00738c;
   border-radius: 6px;
   font-size: 0.82rem;
   font-weight: 700;
@@ -351,16 +351,16 @@
 }
 
 .addBtn:hover {
-  background-color: #fff0f4;
-  border-color: #c7023c;
-  color: #c7023c;
+  background-color: #f0fdfa;
+  border-color: #005f73;
+  color: #005f73;
   transform: translateY(-1px);
 }
 
-/* Quantity Control - matching Pink Theme */
+/* Quantity Control - matching Reference Theme */
 .qtyControl {
-  background-color: #E40345;
-  border: 1.5px solid #E40345;
+  background-color: #ffffff;
+  border: 1.5px solid #00738c;
   border-radius: 6px;
   height: 32px;
   width: 100%;
@@ -370,13 +370,13 @@
   padding: 0 8px;
   box-sizing: border-box;
   margin-top: auto;
-  box-shadow: 0 2px 8px rgba(228, 3, 69, 0.25);
+  box-shadow: none;
 }
 
 .qtyBtn {
   background: none;
   border: none;
-  color: #ffffff;
+  color: #00738c;
   cursor: pointer;
   padding: 2px;
   border-radius: 4px;
@@ -388,13 +388,13 @@
 }
 
 .qtyBtn:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  transform: scale(1.1);
+  background-color: #f0fdfa;
+  transform: scale(1.15);
 }
 
 .qtyValue {
-  color: #ffffff;
-  font-size: 0.9rem;
+  color: #00738c;
+  font-size: 0.82rem;
   font-weight: 700;
   letter-spacing: 0.02em;
   user-select: none;

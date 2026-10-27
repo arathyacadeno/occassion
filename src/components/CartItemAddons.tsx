@@ -210,24 +210,6 @@ export default function CartItemAddons({ attachedAddons }: CartItemAddonsProps) 
                         className={styles.addonImg}
                         loading="lazy"
                       />
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleToggleAddon(addon);
-                        }}
-                        className={`${styles.quickAddBtn} ${
-                          isAdded ? styles.quickAddBtnAdded : ""
-                        }`}
-                        title={isAdded ? "Remove from cart" : "Add to cart"}
-                        aria-label={`${isAdded ? "Remove" : "Add"} ${addon.name}`}
-                      >
-                        {isAdded ? (
-                          <Check size={15} strokeWidth={2.6} />
-                        ) : (
-                          <Plus size={16} strokeWidth={2.2} />
-                        )}
-                      </button>
                     </div>
 
                     <div className={styles.cardContent}>
@@ -237,9 +219,37 @@ export default function CartItemAddons({ attachedAddons }: CartItemAddonsProps) 
 
                       <div className={styles.priceContainer}>
                         <span className={styles.priceCurrent}>
-                          ₹{addon.price.toLocaleString("en-IN")}
+                          ₹ {Math.round(addon.price).toLocaleString("en-IN")}
                         </span>
                       </div>
+
+                      {isAdded ? (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleToggleAddon(addon);
+                          }}
+                          className={styles.addedBtn}
+                          title="Remove from cart"
+                          aria-label={`Remove ${addon.name} from cart`}
+                        >
+                          ADDED ✓
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleToggleAddon(addon);
+                          }}
+                          className={styles.addBtn}
+                          title="Add to cart"
+                          aria-label={`Add ${addon.name} to cart`}
+                        >
+                          ADD
+                        </button>
+                      )}
                     </div>
                   </div>
                 );
