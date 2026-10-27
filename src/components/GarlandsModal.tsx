@@ -290,10 +290,6 @@ export default function GarlandsModal({
 
           {/* Right Column: Description, Price, Action buttons */}
           <div className={styles.detailsCol}>
-            <span className={styles.categoryTag}>
-              <Sparkles size={12} strokeWidth={2.5} />
-              Ceremonial Varmala Collection
-            </span>
 
             <h3 className={styles.title} key={`title-${currentItem.src}`}>
               {currentItem.title}
@@ -307,7 +303,6 @@ export default function GarlandsModal({
               <div className={styles.priceTag} key={`price-${currentItem.src}`}>
                 ₹ {formattedPrice}
               </div>
-              <span className={styles.pairLabel}>/ Ceremonial Pair</span>
             </div>
 
             <div className={styles.actionButtons}>
