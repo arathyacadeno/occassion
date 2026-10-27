@@ -1,8 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
-import { X, ChevronLeft, ChevronRight, Truck } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { X, ChevronLeft, ChevronRight, Truck, AlertCircle, Clock } from "lucide-react";
 import styles from "./DateModal.module.css";
+import {
+  resolveDeliverySchedule,
+  getNowIST,
+  formatDateString,
+  parseDateString,
+  SUNDAY_REASON_MESSAGE,
+} from "@/lib/delivery/schedule";
 
 interface DateModalProps {
   isOpen: boolean;
@@ -17,16 +24,38 @@ export default function DateModal({
   selectedDate,
   onConfirm,
 }: DateModalProps) {
-  // Use today's date to initialize calendar
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const ist = getNowIST();
 
-  const initialDate = selectedDate ? new Date(selectedDate) : today;
-  
-  const [currentMonth, setCurrentMonth] = useState(new Date(initialDate.getFullYear(), initialDate.getMonth(), 1));
-  const [selected, setSelected] = useState<Date | null>(selectedDate ? new Date(selectedDate) : null);
+  // Use resolved date to initialize calendar
+  const initialSchedule = resolveDeliverySchedule(selectedDate || undefined);
+  const initialDate = parseDateString(initialSchedule.effectiveDate);
+
+  const [currentMonth, setCurrentMonth] = useState(
+    new Date(initialDate.getFullYear(), initialDate.getMonth(), 1)
+  );
+  const [selected, setSelected] = useState<Date>(initialDate);
+  const [reasonNotice, setReasonNotice] = useState<string | null>(
+    initialSchedule.wasAutoAdjusted ? (initialSchedule.reason || SUNDAY_REASON_MESSAGE) : null
+  );
+
+  useEffect(() => {
+    if (isOpen) {
+      const schedule = resolveDeliverySchedule(selectedDate || undefined);
+      setSelected(parseDateString(schedule.effectiveDate));
+      if (schedule.wasAutoAdjusted) {
+        setReasonNotice(schedule.reason || SUNDAY_REASON_MESSAGE);
+        // Persist the adjusted Monday date back up
+        onConfirm(schedule.effectiveDate);
+      } else {
+        setReasonNotice(null);
+      }
+    }
+  }, [isOpen, selectedDate]);
 
   if (!isOpen) return null;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   const monthNames = [
     "January", "February", "March", "April", "May", "June",
@@ -35,7 +64,6 @@ export default function DateModal({
   
   const daysOfWeek = ["S", "M", "T", "W", "Th", "F", "S"];
 
-  // Calendar logic
   const year = currentMonth.getFullYear();
   const month = currentMonth.getMonth();
   
@@ -52,14 +80,19 @@ export default function DateModal({
 
   const handleDateClick = (day: number) => {
     const clickedDate = new Date(year, month, day);
-    if (clickedDate >= today) {
+    const clickedDateStr = formatDateString(clickedDate);
+    const schedule = resolveDeliverySchedule(clickedDateStr);
+
+    if (schedule.wasAutoAdjusted) {
+      // It was today's Sunday after 10 AM -> auto-shift to Monday and show reason
+      setReasonNotice(schedule.reason || SUNDAY_REASON_MESSAGE);
+      const adjustedDate = parseDateString(schedule.effectiveDate);
+      setSelected(adjustedDate);
+      onConfirm(schedule.effectiveDate);
+    } else {
+      setReasonNotice(null);
       setSelected(clickedDate);
-      
-      // Auto confirm on date select
-      const localDateString = new Date(clickedDate.getTime() - (clickedDate.getTimezoneOffset() * 60000))
-        .toISOString()
-        .split("T")[0];
-      onConfirm(localDateString);
+      onConfirm(schedule.effectiveDate);
     }
   };
 
@@ -75,6 +108,12 @@ export default function DateModal({
     for (let d = 1; d <= daysInMonth; d++) {
       const date = new Date(year, month, d);
       const isPast = date < today;
+      const dateStr = formatDateString(date);
+      const isTodaySundayPast10 =
+        date.getDay() === 0 &&
+        dateStr === ist.dateString &&
+        ist.isPast10Am;
+
       const isSelected = selected && 
                          selected.getDate() === d && 
                          selected.getMonth() === month && 
@@ -85,8 +124,15 @@ export default function DateModal({
           key={d}
           type="button"
           onClick={() => handleDateClick(d)}
-          disabled={isPast}
-          className={`${styles.dayCell} ${isPast ? styles.disabledDay : ""} ${isSelected ? styles.selectedDay : ""}`}
+          disabled={isPast || isTodaySundayPast10}
+          title={
+            isTodaySundayPast10
+              ? "Sunday deliveries close after 10:00 AM. Click to schedule for Monday."
+              : undefined
+          }
+          className={`${styles.dayCell} ${
+            isPast || isTodaySundayPast10 ? styles.disabledDay : ""
+          } ${isSelected ? styles.selectedDay : ""}`}
         >
           {d < 10 ? `0${d}` : d}
         </button>
@@ -105,6 +151,16 @@ export default function DateModal({
             <X size={18} />
           </button>
         </div>
+
+        {/* Reason banner when Sunday past 10 AM was automatically changed */}
+        {reasonNotice && (
+          <div className={styles.sundayAlertNotice}>
+            <AlertCircle size={18} className={styles.sundayAlertIcon} />
+            <div>
+              <strong>Order rescheduled to Monday:</strong> {reasonNotice}
+            </div>
+          </div>
+        )}
 
         {/* Calendar Card */}
         <div className={styles.calendarCard}>
@@ -131,11 +187,14 @@ export default function DateModal({
           </div>
           
           <div className={styles.bottomBanner}>
-            <Truck size={18} className={styles.bannerIcon} />
-            <span>Earliest delivery available by <strong>10 AM</strong> or choose your preferred delivery slot in the next step.</span>
+            <Clock size={18} className={styles.bannerIcon} />
+            <span>
+              Sunday deliveries: <strong>8:00 AM – 10:00 AM only</strong> (orders after 10 AM shift to Monday). Mon–Sat: 9:00 AM – 6:30 PM.
+            </span>
           </div>
         </div>
       </div>
     </div>
   );
 }
+

@@ -1,23 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
-import { X, Truck } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { X, Clock, AlertCircle } from "lucide-react";
 import styles from "./TimeSlotModal.module.css";
-
-const TIME_SLOTS = [
-  "9:00 AM – 2:00 PM",
-  "2:00 PM – 7:00 PM",
-  "9:00 – 10:00 AM",
-  "10:00 – 11:00 AM",
-  "11:00 AM – 12:00 PM",
-  "12:00 – 1:00 PM",
-  "1:00 – 2:00 PM",
-  "2:00 – 3:00 PM",
-  "3:00 – 4:00 PM",
-  "4:00 – 5:00 PM",
-  "5:00 – 6:00 PM",
-  "6:00 – 7:00 PM",
-];
+import {
+  resolveDeliverySchedule,
+  SUNDAY_TIME_SLOTS,
+  REGULAR_TIME_SLOTS,
+} from "@/lib/delivery/schedule";
 
 interface TimeSlotModalProps {
   isOpen: boolean;
@@ -32,13 +22,27 @@ export default function TimeSlotModal({
   selectedDate,
   onConfirm,
 }: TimeSlotModalProps) {
-  const [selectedSlot, setSelectedSlot] = useState<string>("9:00 AM – 2:00 PM");
+  const schedule = resolveDeliverySchedule(selectedDate || undefined);
+  const slotsToDisplay = schedule.availableSlots;
+
+  const [selectedSlot, setSelectedSlot] = useState<string>(schedule.defaultSlot);
+
+  // Synchronize slot if selectedDate changes between Sunday and non-Sunday
+  useEffect(() => {
+    if (isOpen) {
+      const updatedSchedule = resolveDeliverySchedule(selectedDate || undefined);
+      if (!updatedSchedule.availableSlots.includes(selectedSlot)) {
+        setSelectedSlot(updatedSchedule.defaultSlot);
+      }
+    }
+  }, [isOpen, selectedDate]);
 
   if (!isOpen) return null;
 
-  // Format date for display: "Tomorrow, 11 October"
+  // Format date for display: "Sunday, 11 October"
   const formattedDate = selectedDate
     ? new Date(selectedDate).toLocaleDateString("en-GB", {
+        weekday: "long",
         day: "numeric",
         month: "long",
       })
@@ -66,26 +70,65 @@ export default function TimeSlotModal({
           <span>Delivery: <strong>{formattedDate}</strong></span>
         </div>
 
-        {/* Flat List: Time Slots only */}
-        <div className={styles.slotsOnlyCol}>
-          {TIME_SLOTS.map((slot) => {
-            const isChecked = selectedSlot === slot;
-            return (
-              <label key={slot} className={styles.radioLabel}>
-                <span className={styles.slotText}>{slot}</span>
-                <input
-                  type="radio"
-                  name="timeSlot"
-                  value={slot}
-                  checked={isChecked}
-                  onChange={(e) => setSelectedSlot(e.target.value)}
-                  className={styles.radioInput}
-                />
-                <span className={styles.customRadio}></span>
-              </label>
-            );
-          })}
-        </div>
+        {/* Sunday Notification Banner */}
+        {schedule.isSunday && (
+          <div className={styles.sundayBanner}>
+            <Clock size={16} className={styles.sundayBannerIcon} />
+            <span>
+              <strong>Sunday Delivery Hours:</strong> Sunday orders are delivered strictly between <strong>8:00 AM and 10:00 AM</strong>.
+            </span>
+          </div>
+        )}
+
+        {/* Time Slots List */}
+        {schedule.isSunday ? (
+          <div className={styles.singleSundayCol}>
+            {slotsToDisplay.map((slot) => {
+              const isChecked = selectedSlot === slot;
+              return (
+                <label key={slot} className={styles.sundaySlotPill}>
+                  <div>
+                    <strong style={{ color: "#e4004b", display: "block", fontSize: "0.95rem" }}>
+                      {slot}
+                    </strong>
+                    <span style={{ fontSize: "0.78rem", color: "#64748b" }}>
+                      Exclusive Sunday Morning Delivery Slot
+                    </span>
+                  </div>
+                  <input
+                    type="radio"
+                    name="timeSlot"
+                    value={slot}
+                    checked={isChecked}
+                    onChange={(e) => setSelectedSlot(e.target.value)}
+                    className={styles.radioInput}
+                  />
+                  <span className={styles.customRadio}></span>
+                </label>
+              );
+            })}
+          </div>
+        ) : (
+          <div className={styles.slotsOnlyCol}>
+            {slotsToDisplay.map((slot) => {
+              const isChecked = selectedSlot === slot;
+              return (
+                <label key={slot} className={styles.radioLabel}>
+                  <span className={styles.slotText}>{slot}</span>
+                  <input
+                    type="radio"
+                    name="timeSlot"
+                    value={slot}
+                    checked={isChecked}
+                    onChange={(e) => setSelectedSlot(e.target.value)}
+                    className={styles.radioInput}
+                  />
+                  <span className={styles.customRadio}></span>
+                </label>
+              );
+            })}
+          </div>
+        )}
 
         {/* Footer */}
         <div className={styles.modalFooter}>
@@ -102,3 +145,4 @@ export default function TimeSlotModal({
     </div>
   );
 }
+

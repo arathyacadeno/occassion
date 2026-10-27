@@ -588,6 +588,39 @@
   background-color: #fff1f2;
 }
 
+.sundayCartNotice {
+  margin-top: 8px;
+  background-color: #fff1f2;
+  border-left: 3px solid #e11d48;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  color: #9f1239;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.4;
+}
+
+.sundayCartNoticeIcon {
+  color: #e11d48;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.sundayCartInfo {
+  margin-top: 6px;
+  background-color: #fdf2f5;
+  border: 1px solid #fecdd3;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  color: #881337;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 /* Bottom Actions in Cart Item */
 .itemDivider {
   border-top: 1px solid #f3f4f6;

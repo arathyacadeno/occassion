@@ -79,6 +79,49 @@
   border-bottom: 1px solid #f0f0f0;
 }
 
+/* Sunday Notice */
+.sundayBanner {
+  background-color: #fff1f2;
+  border-left: 4px solid #e11d48;
+  padding: 12px 20px;
+  color: #9f1239;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.sundayBannerIcon {
+  color: #e11d48;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.singleSundayCol {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sundaySlotPill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border: 2px solid #e4004b;
+  background-color: #fff5f7;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sundaySlotPill:hover {
+  background-color: #ffe4e9;
+}
+
+
 /* Single List Layout */
 .slotsOnlyCol {
   overflow-y: auto;

@@ -8,6 +8,11 @@ import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
 import TimeSlotModal from "@/components/TimeSlotModal";
 import DateModal from "@/components/DateModal";
+import {
+  resolveDeliverySchedule,
+  SUNDAY_REASON_MESSAGE,
+  parseDateString,
+} from "@/lib/delivery/schedule";
 import { useCheckout } from "@/context/CheckoutContext";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
@@ -128,6 +133,7 @@ export default function SinglePageCheckoutPayment() {
 
   const [deliveryDate, setDeliveryDate] = useState("");
   const [deliveryTime, setDeliveryTime] = useState("");
+  const [sundayAdjustmentReason, setSundayAdjustmentReason] = useState<string | null>(null);
   const [showTimeSlotModal, setShowTimeSlotModal] = useState(false);
   const [showDateModal, setShowDateModal] = useState(false);
   const [deliveryPrefError, setDeliveryPrefError] = useState<{ date?: string; time?: string } | null>(null);
@@ -261,7 +267,15 @@ export default function SinglePageCheckoutPayment() {
     try {
       const storedDate = localStorage.getItem("occassions_delivery_date");
       if (storedDate) {
-        setDeliveryDate(storedDate);
+        const schedule = resolveDeliverySchedule(storedDate);
+        setDeliveryDate(schedule.effectiveDate);
+        if (schedule.wasAutoAdjusted) {
+          setSundayAdjustmentReason(schedule.reason || SUNDAY_REASON_MESSAGE);
+          localStorage.setItem("occassions_delivery_date", schedule.effectiveDate);
+          setDeliveryTime(schedule.defaultSlot);
+        } else if (schedule.isSunday) {
+          setDeliveryTime("8:00 AM – 10:00 AM");
+        }
       }
     } catch {}
     try {
@@ -409,6 +423,19 @@ export default function SinglePageCheckoutPayment() {
         deliveryStatus.message ||
         "Sorry, delivery is not available to this location. Please enter another delivery location."
       );
+      return;
+    }
+
+    // Sunday cutoff validation (orders on Sunday after 10 AM shift to Monday)
+    const currentSchedule = resolveDeliverySchedule(deliveryDate);
+    if (currentSchedule.wasAutoAdjusted) {
+      setDeliveryDate(currentSchedule.effectiveDate);
+      setSundayAdjustmentReason(currentSchedule.reason || SUNDAY_REASON_MESSAGE);
+      alert(currentSchedule.reason || SUNDAY_REASON_MESSAGE);
+      const prefSection = document.getElementById("delivery-preference-section");
+      if (prefSection) {
+        prefSection.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
       return;
     }
 
@@ -1146,6 +1173,25 @@ export default function SinglePageCheckoutPayment() {
               <h2 className={styles.deliveryTimeHeading}>
                 Delivery Preference <span className={styles.requiredStar}>*</span>
               </h2>
+
+              {/* Sunday Adjustment Reason Notice */}
+              {sundayAdjustmentReason && (
+                <div className={styles.sundayNoticeCard}>
+                  <AlertCircle size={16} className={styles.sundayNoticeIcon} />
+                  <div>
+                    <strong>Order Rescheduled to Monday:</strong> {sundayAdjustmentReason}
+                  </div>
+                </div>
+              )}
+
+              {/* Sunday Delivery Active Hours Badge */}
+              {deliveryDate && parseDateString(deliveryDate).getDay() === 0 && !sundayAdjustmentReason && (
+                <div className={styles.sundayInfoCard}>
+                  <Clock size={15} className={styles.sundayInfoIcon} />
+                  <span>Sunday deliveries operate strictly between <strong>8:00 AM – 10:00 AM</strong>.</span>
+                </div>
+              )}
+
               <div className={styles.deliveryDropdownsRow}>
                 <div className={styles.deliveryDropdownCol}>
                   <label className={styles.dropdownLabel}>
@@ -1229,9 +1275,20 @@ export default function SinglePageCheckoutPayment() {
               onClose={() => setShowDateModal(false)}
               selectedDate={deliveryDate}
               onConfirm={(date) => {
-                setDeliveryDate(date);
+                const schedule = resolveDeliverySchedule(date);
+                setDeliveryDate(schedule.effectiveDate);
+                if (schedule.wasAutoAdjusted) {
+                  setSundayAdjustmentReason(schedule.reason || SUNDAY_REASON_MESSAGE);
+                } else {
+                  setSundayAdjustmentReason(null);
+                }
+                if (schedule.isSunday) {
+                  setDeliveryTime("8:00 AM – 10:00 AM");
+                } else if (deliveryTime === "8:00 AM – 10:00 AM") {
+                  setDeliveryTime(schedule.defaultSlot);
+                }
                 try {
-                  localStorage.setItem("occassions_delivery_date", date);
+                  localStorage.setItem("occassions_delivery_date", schedule.effectiveDate);
                 } catch {}
                 setDeliveryPrefError((prev) => (prev ? { ...prev, date: undefined } : null));
                 setShowDateModal(false);

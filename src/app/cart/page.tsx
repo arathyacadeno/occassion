@@ -20,8 +20,15 @@ import {
   Lock,
   MapPin,
   Calendar,
+  Clock,
+  AlertCircle,
 } from "lucide-react";
 import DateModal from "@/components/DateModal";
+import {
+  resolveDeliverySchedule,
+  SUNDAY_REASON_MESSAGE,
+  parseDateString,
+} from "@/lib/delivery/schedule";
 import CartItemAddons from "@/components/CartItemAddons";
 import styles from "./cart.module.css";
 
@@ -163,6 +170,7 @@ export default function CartPage() {
 
   // Delivery Date state
   const [deliveryDate, setDeliveryDate] = useState<string>("");
+  const [sundayCartNotice, setSundayCartNotice] = useState<string | null>(null);
   const [showDateModal, setShowDateModal] = useState<boolean>(false);
 
   // Initialize delivery date from localStorage
@@ -171,17 +179,28 @@ export default function CartPage() {
       try {
         const storedDate = localStorage.getItem("occassions_delivery_date");
         if (storedDate) {
-          setDeliveryDate(storedDate);
+          const schedule = resolveDeliverySchedule(storedDate);
+          setDeliveryDate(schedule.effectiveDate);
+          if (schedule.wasAutoAdjusted) {
+            setSundayCartNotice(schedule.reason || SUNDAY_REASON_MESSAGE);
+            localStorage.setItem("occassions_delivery_date", schedule.effectiveDate);
+          }
         }
       } catch {}
     }
   }, []);
 
   const handleConfirmDate = (date: string) => {
-    setDeliveryDate(date);
+    const schedule = resolveDeliverySchedule(date);
+    setDeliveryDate(schedule.effectiveDate);
+    if (schedule.wasAutoAdjusted) {
+      setSundayCartNotice(schedule.reason || SUNDAY_REASON_MESSAGE);
+    } else {
+      setSundayCartNotice(null);
+    }
     if (typeof window !== "undefined") {
       try {
-        localStorage.setItem("occassions_delivery_date", date);
+        localStorage.setItem("occassions_delivery_date", schedule.effectiveDate);
       } catch {}
     }
     setShowDateModal(false);
@@ -189,6 +208,7 @@ export default function CartPage() {
 
   const handleClearDate = () => {
     setDeliveryDate("");
+    setSundayCartNotice(null);
     if (typeof window !== "undefined") {
       try {
         localStorage.removeItem("occassions_delivery_date");
@@ -581,6 +601,24 @@ export default function CartPage() {
                           )}
                         </div>
                       </div>
+
+                      {/* Sunday Reschedule Reason Alert */}
+                      {sundayCartNotice && (
+                        <div className={styles.sundayCartNotice}>
+                          <AlertCircle size={14} className={styles.sundayCartNoticeIcon} />
+                          <span>
+                            <strong>Order Rescheduled to Monday:</strong> {sundayCartNotice}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Sunday Hours Info */}
+                      {deliveryDate && parseDateString(deliveryDate).getDay() === 0 && !sundayCartNotice && (
+                        <div className={styles.sundayCartInfo}>
+                          <Clock size={13} />
+                          <span>Sunday deliveries operate strictly between <strong>8:00 AM – 10:00 AM</strong>.</span>
+                        </div>
+                      )}
                     </div>
 
                     <button
