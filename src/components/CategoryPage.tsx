@@ -181,7 +181,9 @@ export default function CategoryPage({
         if (
           p.id === "bouquet-orchid-symphony" ||
           p.id === "bouquet-golden-blush" ||
-          p.id === "bouquet-pink-roses-purple-orchids"
+          p.id === "bouquet-pink-roses-purple-orchids" ||
+          p.id === "bouquet-orchid-fantasy" ||
+          p.slug === "orchid-fantasy"
         ) {
           return false;
         }
