@@ -979,19 +979,6 @@ export default function ProductInfo({
           </div>
         )}
 
-        {/* Success banner when delivery is available */}
-        {!deliveryStatus.loading && deliveryStatus.serviceable === true && (
-          <div className={styles.freeSlotBanner}>
-            <span className={styles.scooterIcon}>🛵</span>
-            <span>
-              <strong>Delivery Available!</strong>{" "}
-              {deliveryStatus.delivery_charge === 0
-                ? "Free Express Delivery to this area"
-                : `Delivery available (₹${deliveryStatus.delivery_charge})`}
-              {deliveryStatus.area ? ` • ${deliveryStatus.area}` : ""}
-            </span>
-          </div>
-        )}
 
         {/* Cake Message Input (Only for cakes) */}
         {isCake && (
