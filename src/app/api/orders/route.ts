@@ -4,6 +4,7 @@ import { sql } from "@/lib/db/neon";
 import { getAuthenticatedUser } from "@/lib/auth/jwt";
 import { checkDelivery } from "@/lib/delivery/service";
 import { ADDON_PRODUCTS } from "@/data/addons";
+import { sendWhatsAppToOwner } from "@/lib/whatsapp/service";
 
 export async function GET(request: Request) {
   try {
@@ -477,6 +478,44 @@ export async function POST(request: Request) {
       }
     }
 
+    // 11. Send WhatsApp notification to owner 9447446008 (Instant for COD; generated for all)
+    let whatsappResult: any = null;
+    try {
+      const isCod = paymentMethod?.type === "COD";
+      whatsappResult = await sendWhatsAppToOwner({
+        orderId,
+        customerName,
+        customerPhone,
+        customerEmail,
+        receiverName: delivery?.receiverName || delivery?.fullName || customerName,
+        receiverPhone: delivery?.receiverMobile || delivery?.phone || customerPhone,
+        houseBuilding: delivery?.houseBuilding || delivery?.house || "",
+        street: delivery?.street || "",
+        landmark: delivery?.landmark || delivery?.area || "",
+        city: delivery?.city || "Kozhikode (Calicut)",
+        state: delivery?.state || "Kerala",
+        pinCode: delivery?.pinCode || "",
+        deliveryDate: delivery?.deliveryDate || "",
+        deliveryTime: delivery?.deliveryTime || "",
+        items: validatedOrderItems.map((it) => ({
+          name: it.productName,
+          quantity: it.quantity,
+          price: it.productPrice,
+          subtotal: it.subtotal,
+        })),
+        subtotal: verifiedSubtotal,
+        deliveryCharge: verifiedDeliveryCharge,
+        discount: verifiedDiscount,
+        finalAmount,
+        paymentMethod: isCod ? "Cash on Delivery (COD)" : (paymentMethod?.type ? `${paymentMethod.type.toUpperCase()}` : "Online Payment"),
+        paymentStatus: isCod ? "pending" : "pending",
+        notes: notes || "",
+        createdAt: now,
+      });
+    } catch (wpErr) {
+      console.warn("WhatsApp notification error on order create:", wpErr);
+    }
+
     return NextResponse.json({
       success: true,
       orderId,
@@ -487,6 +526,8 @@ export async function POST(request: Request) {
       discount: verifiedDiscount,
       finalAmount,
       deliveryDistanceKm: deliveryCheck.distance_km,
+      whatsappSent: whatsappResult?.success || false,
+      whatsappUrl: whatsappResult?.whatsappUrl,
       createdAt: now,
     });
   } catch (error: any) {

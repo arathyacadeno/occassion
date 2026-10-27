@@ -316,9 +316,74 @@
   margin: 0;
 }
 
-/* Continue Shopping Button */
+/* WhatsApp Business Alert Banner */
+.whatsappNotice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-top: 10px;
+}
+
+.whatsappIconCircle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #dcfce7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.whatsappNoticeTitle {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #166534;
+  margin-bottom: 2px;
+}
+
+.whatsappNoticeText {
+  font-size: 0.8rem;
+  color: #15803d;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Action Buttons */
 .buttonActionGroup {
   display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.whatsappChatBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background-color: #25d366;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  height: 48px;
+  padding: 0 24px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.28);
+  width: 100%;
+  cursor: pointer;
+}
+
+.whatsappChatBtn:hover {
+  background-color: #1ebc57;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(37, 211, 102, 0.38);
 }
 
 .continueShoppingBtn {
@@ -330,9 +395,9 @@
   color: #ffffff;
   border: none;
   border-radius: 12px;
-  height: 52px;
-  padding: 0 32px;
-  font-size: 1rem;
+  height: 48px;
+  padding: 0 24px;
+  font-size: 0.95rem;
   font-weight: 600;
   text-decoration: none;
   transition: all 0.2s ease;

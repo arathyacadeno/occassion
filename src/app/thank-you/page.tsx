@@ -19,6 +19,7 @@ import {
   ShoppingBag,
   ArrowRight,
   Heart,
+  MessageCircle,
 } from "lucide-react";
 import styles from "./thank-you.module.css";
 
@@ -243,10 +244,37 @@ export default function ThankYouPage() {
                   tracking.
                 </p>
               </div>
+
+              {/* WhatsApp Notification confirmation to Owner */}
+              <div className={styles.whatsappNotice}>
+                <div className={styles.whatsappIconCircle}>
+                  <MessageCircle size={18} color="#15803d" />
+                </div>
+                <div>
+                  <div className={styles.whatsappNoticeTitle}>
+                    Order Dispatched to WhatsApp
+                  </div>
+                  <p className={styles.whatsappNoticeText}>
+                    Complete order details, recipient location &amp; contact info have been sent to Occasions business WhatsApp at <strong>+91 9447446008</strong>.
+                  </p>
+                </div>
+              </div>
             </div>
 
-            {/* Action Buttons: Continue Shopping */}
+            {/* Action Buttons: WhatsApp chat & Continue Shopping */}
             <div className={styles.buttonActionGroup}>
+              <a
+                href={`https://api.whatsapp.com/send?phone=919447446008&text=${encodeURIComponent(
+                  `Hi Occasions! I placed Order #${activeOrder.orderId} for ₹${activeOrder.price}. Could you please confirm the delivery details?`
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.whatsappChatBtn}
+              >
+                <MessageCircle size={18} />
+                <span>Message Owner on WhatsApp</span>
+              </a>
+
               <button
                 type="button"
                 onClick={() => router.push("/#categories")}

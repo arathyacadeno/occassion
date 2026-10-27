@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { verifyPaymentSignature } from "@/lib/payment/razorpay";
 import { getDb } from "@/lib/db";
 import { sql } from "@/lib/db/neon";
+import { sendWhatsAppToOwner } from "@/lib/whatsapp/service";
 
 export async function POST(request: Request) {
   try {
@@ -39,6 +40,8 @@ export async function POST(request: Request) {
       );
     }
 
+    let whatsappResult: any = null;
+
     // If an application order ID is provided, mark payment status as 'paid' in DB
     if (app_order_id) {
       const cleanOrderId = String(app_order_id).trim().replace(/^#+/, "");
@@ -66,6 +69,79 @@ export async function POST(request: Request) {
       } catch (sqliteErr) {
         console.warn("SQLite order status update warning:", sqliteErr);
       }
+
+      // 3. Query order data to send full WhatsApp confirmation to owner 9447446008
+      let order: any = null;
+      let orderItems: any[] = [];
+      try {
+        const db = getDb();
+        order = db.prepare("SELECT * FROM orders WHERE id = ? OR id = ?").get(cleanOrderId, `#${cleanOrderId}`);
+        if (order) {
+          orderItems = db.prepare("SELECT * FROM order_items WHERE order_id = ?").all(order.id);
+        }
+      } catch (err) {
+        console.warn("Could not query order for WhatsApp in SQLite:", err);
+      }
+
+      if (!order && process.env.DATABASE_URL) {
+        try {
+          const neonRes = await sql`SELECT * FROM orders WHERE id = ${cleanOrderId} OR id = ${"#" + cleanOrderId}`;
+          if (neonRes && neonRes.length > 0) {
+            order = neonRes[0];
+            orderItems = await sql`SELECT * FROM order_items WHERE order_id = ${order.id}`;
+          }
+        } catch (neonOrderErr) {
+          console.warn("Could not query order for WhatsApp in Neon:", neonOrderErr);
+        }
+      }
+
+      if (order) {
+        let deliveryAddr: any = {};
+        try {
+          deliveryAddr = typeof order.delivery_address === "string" ? JSON.parse(order.delivery_address) : (order.delivery_address || {});
+        } catch {}
+
+        let paymentMethod: any = {};
+        try {
+          paymentMethod = typeof order.payment_method === "string" ? JSON.parse(order.payment_method) : (order.payment_method || {});
+        } catch {}
+
+        try {
+          whatsappResult = await sendWhatsAppToOwner({
+            orderId: cleanOrderId,
+            customerName: order.customer_name || "Customer",
+            customerPhone: order.customer_phone || "",
+            customerEmail: order.customer_email || "",
+            receiverName: deliveryAddr.receiverName || deliveryAddr.fullName || order.customer_name,
+            receiverPhone: deliveryAddr.receiverMobile || deliveryAddr.phone || order.customer_phone,
+            houseBuilding: deliveryAddr.houseBuilding || deliveryAddr.house || "",
+            street: deliveryAddr.street || "",
+            landmark: deliveryAddr.landmark || deliveryAddr.area || "",
+            city: deliveryAddr.city || "Kozhikode (Calicut)",
+            state: deliveryAddr.state || "Kerala",
+            pinCode: deliveryAddr.pinCode || deliveryAddr.pin_code || "",
+            deliveryDate: deliveryAddr.deliveryDate || "",
+            deliveryTime: deliveryAddr.deliveryTime || "",
+            items: (orderItems || []).map((it: any) => ({
+              name: it.product_name,
+              quantity: it.quantity,
+              price: it.product_price,
+              subtotal: it.subtotal,
+            })),
+            subtotal: Number(order.subtotal) || 0,
+            deliveryCharge: Number(order.delivery_charge) || 0,
+            discount: Number(order.discount) || 0,
+            finalAmount: Number(order.final_amount) || 0,
+            paymentMethod: paymentMethod?.type ? `${paymentMethod.type.toUpperCase()}` : "Razorpay Online",
+            paymentStatus: "paid",
+            paymentId: payment_id,
+            notes: order.notes || "",
+            createdAt: order.created_at,
+          });
+        } catch (wpErr) {
+          console.warn("WhatsApp notification error in verify-payment:", wpErr);
+        }
+      }
     }
 
     return NextResponse.json({
@@ -73,6 +149,8 @@ export async function POST(request: Request) {
       message: "Payment verified successfully",
       order_id,
       payment_id,
+      whatsappSent: whatsappResult?.success || false,
+      whatsappUrl: whatsappResult?.whatsappUrl,
     });
   } catch (error: any) {
     console.error("Payment verification error:", error);
