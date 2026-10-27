@@ -424,7 +424,7 @@ function seedInitialData(db: any) {
     if (!existing) {
       let catId = "cat-cakes";
       if (a.category === "Chocolates") catId = "cat-flower-basket";
-      else if (a.category === "Gifts") catId = "cat-table-decor";
+      else if (a.category === "Soft Toys" || (a as any).category === "Gifts") catId = "cat-table-decor";
 
       insertProduct.run(
         a.id,

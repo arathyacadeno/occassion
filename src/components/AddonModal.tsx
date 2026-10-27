@@ -56,10 +56,10 @@ export default function AddonModal({
 
   const filteredAddons = useMemo(() => getAddonProducts(mainCategory), [mainCategory]);
 
-  // Categories list with order: All, Cakes, Chocolates, Gifts
+  // Categories list with order: All, Cakes, Chocolates, Soft Toys
   const categories = useMemo(() => {
     const cats = Array.from(new Set(filteredAddons.map((p) => p.category)));
-    const order = ["Cakes", "Chocolates", "Gifts"];
+    const order = ["Cakes", "Chocolates", "Soft Toys"];
     cats.sort((a, b) => {
       const iA = order.indexOf(a);
       const iB = order.indexOf(b);

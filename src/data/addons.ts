@@ -3,7 +3,7 @@ export interface AddonProduct {
   name: string;
   price: number;
   image: string;
-  category: "Cakes" | "Chocolates" | "Gifts";
+  category: "Cakes" | "Chocolates" | "Soft Toys";
   href: string;
   sectionHref: string;
 }
@@ -247,13 +247,13 @@ export const ADDON_PRODUCTS: AddonProduct[] = [
     sectionHref: "/special-occasions",
   },
 
-  // ==================== GIFTS ====================
+  // ==================== SOFT TOYS ====================
   {
     id: "addon-teddy-6-inch-pink",
     name: "6 Inch Teddy Bear (Pink)",
     price: 200,
     image: "/images/addons/6-inch-pink-teddy.png",
-    category: "Gifts",
+    category: "Soft Toys",
     href: "/special-occasions/6-inch-teddy-pink",
     sectionHref: "/special-occasions",
   },
@@ -262,7 +262,7 @@ export const ADDON_PRODUCTS: AddonProduct[] = [
     name: "6 Inch Teddy Bear (Orange)",
     price: 200,
     image: "/images/addons/6-inch-orange-teddy.png",
-    category: "Gifts",
+    category: "Soft Toys",
     href: "/special-occasions/6-inch-teddy-orange",
     sectionHref: "/special-occasions",
   },
@@ -271,7 +271,7 @@ export const ADDON_PRODUCTS: AddonProduct[] = [
     name: "6 Inch Teddy Bear (Yellow)",
     price: 200,
     image: "/images/addons/6-inch-yellow-teddy.png",
-    category: "Gifts",
+    category: "Soft Toys",
     href: "/special-occasions/6-inch-teddy-yellow",
     sectionHref: "/special-occasions",
   },
@@ -280,7 +280,7 @@ export const ADDON_PRODUCTS: AddonProduct[] = [
     name: "6 Inch Teddy Bear (Brown)",
     price: 200,
     image: "/images/addons/6-inch-brown-teddy.png",
-    category: "Gifts",
+    category: "Soft Toys",
     href: "/special-occasions/6-inch-teddy-brown",
     sectionHref: "/special-occasions",
   },
@@ -289,7 +289,7 @@ export const ADDON_PRODUCTS: AddonProduct[] = [
     name: "12 Inch Teddy Bear",
     price: 450,
     image: "/images/addons/12-inch-teddy.png",
-    category: "Gifts",
+    category: "Soft Toys",
     href: "/special-occasions/12-inch-teddy",
     sectionHref: "/special-occasions",
   },

@@ -25,15 +25,15 @@ export const getAddonProducts = (category?: string) => {
 
   const cakes = ADDON_PRODUCTS.filter((p) => p.category === "Cakes");
   const chocolates = ADDON_PRODUCTS.filter((p) => p.category === "Chocolates");
-  const gifts = ADDON_PRODUCTS.filter((p) => p.category === "Gifts");
+  const softToys = ADDON_PRODUCTS.filter((p) => p.category === "Soft Toys");
 
-  // If viewing a cake, prioritize chocolates and gifts before cakes
+  // If viewing a cake, prioritize chocolates and soft toys before cakes
   const groups = norm === "cakes"
-    ? [chocolates, gifts, cakes]
-    : [cakes, chocolates, gifts];
+    ? [chocolates, softToys, cakes]
+    : [cakes, chocolates, softToys];
 
   const mixed: AddonProduct[] = [];
-  const maxLen = Math.max(cakes.length, chocolates.length, gifts.length);
+  const maxLen = Math.max(cakes.length, chocolates.length, softToys.length);
 
   for (let i = 0; i < maxLen; i++) {
     for (const grp of groups) {
