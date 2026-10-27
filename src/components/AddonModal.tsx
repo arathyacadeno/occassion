@@ -32,7 +32,7 @@ export default function AddonModal({
   onProceed,
   onSkip,
   title = "Choose Your Add-ons",
-  subtitle = "Make the celebration extra special with thoughtful extras",
+  subtitle,
 }: AddonModalProps) {
   const [activeCategory, setActiveCategory] = useState<string>("All");
 
@@ -146,7 +146,7 @@ export default function AddonModal({
             <h3 id="addon-modal-title" className={styles.modalTitle}>
               {title}
             </h3>
-            <p className={styles.modalSubtitle}>{subtitle}</p>
+            {subtitle && <p className={styles.modalSubtitle}>{subtitle}</p>}
           </div>
           <button
             type="button"
