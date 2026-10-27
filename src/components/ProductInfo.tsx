@@ -348,13 +348,19 @@ export default function ProductInfo({
           : [];
         setSuggestions(list);
         setShowSuggestions(list.length > 0);
+        if (list.length === 0 && q.length >= 2) {
+          checkDelivery(q);
+        }
       } catch (err) {
         if ((err as Error).name === "AbortError") return;
         setSuggestions([]);
         setShowSuggestions(false);
+        if (q.length >= 2) {
+          checkDelivery(q);
+        }
       }
     }, 150);
-  }, []);
+  }, [checkDelivery]);
 
   const handleSelectLocation = (item: LocationSuggestion) => {
     // Cancel any pending search so it can't reopen the dropdown
@@ -785,6 +791,16 @@ export default function ProductInfo({
                   searchLocationQuery(q);
                 }
               }}
+              onBlur={() => {
+                setTimeout(() => {
+                  setIsPinFocused(false);
+                  setShowSuggestions(false);
+                  const trimmed = typedInput.trim();
+                  if (trimmed && trimmed.length >= 2 && !pinCode) {
+                    checkDelivery(trimmed);
+                  }
+                }, 200);
+              }}
               onChange={(e) => {
                 let val = e.target.value;
                 const cleanDigits = val.replace(/\D/g, "");
@@ -796,6 +812,14 @@ export default function ProductInfo({
 
                 setTypedInput(val);
                 setValidationErrors((prev) => ({ ...prev, location: undefined }));
+
+                if (!val.trim()) {
+                  setDeliveryStatus(EMPTY_DELIVERY_STATUS);
+                  setPinCode("");
+                  setSuggestions([]);
+                  setShowSuggestions(false);
+                  return;
+                }
 
                 searchLocationQuery(val);
 
@@ -949,8 +973,22 @@ export default function ProductInfo({
               color="#ffffff"
             />
             <span>
-              This item isn't available at this location. Tap below to explore
+              This item isn&apos;t available at this location. Tap below to explore
               available gifts.
+            </span>
+          </div>
+        )}
+
+        {/* Success banner when delivery is available */}
+        {!deliveryStatus.loading && deliveryStatus.serviceable === true && (
+          <div className={styles.freeSlotBanner}>
+            <span className={styles.scooterIcon}>🛵</span>
+            <span>
+              <strong>Delivery Available!</strong>{" "}
+              {deliveryStatus.delivery_charge === 0
+                ? "Free Express Delivery to this area"
+                : `Delivery available (₹${deliveryStatus.delivery_charge})`}
+              {deliveryStatus.area ? ` • ${deliveryStatus.area}` : ""}
             </span>
           </div>
         )}
