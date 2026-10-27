@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Breadcrumb from "@/components/Breadcrumb";
 import { useCart, isLegacyDemoItem } from "@/context/CartContext";
 import { useCheckout } from "@/context/CheckoutContext";
 import { useAuth } from "@/context/AuthContext";
@@ -381,14 +380,6 @@ export default function CartPage() {
       <Navbar />
 
       <main className={styles.mainContainer}>
-        {/* Breadcrumb Navigation: Home > Flower Bouquet > Shopping Cart */}
-        <Breadcrumb
-          items={[
-            { label: "Flower Bouquet", href: "/flower-bouquets" },
-            { label: "Shopping Cart" },
-          ]}
-        />
-
         {/* Centered Heading: displayed when cart has items */}
         {displayItems.length > 0 && (
           <div className={styles.headerBlock}>

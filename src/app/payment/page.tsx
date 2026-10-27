@@ -649,10 +649,10 @@ export default function SinglePageCheckoutPayment() {
       <Navbar />
 
       <main className={styles.mainContainer}>
-        {/* Breadcrumb Navigation: Home > Flower Bouquet > Delivery Information */}
+        {/* Breadcrumb Navigation: Home > Cart > Delivery Information */}
         <Breadcrumb
           items={[
-            { label: "Flower Bouquet", href: "/flower-bouquets" },
+            { label: "Cart", href: "/cart" },
             { label: "Delivery Information" },
           ]}
         />

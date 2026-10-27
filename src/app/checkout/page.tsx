@@ -86,10 +86,10 @@ export default function CheckoutPage() {
       <Navbar />
 
       <main className={styles.mainContainer}>
-        {/* Breadcrumb Navigation: Home > Flower Bouquet > Checkout */}
+        {/* Breadcrumb Navigation: Home > Cart > Checkout */}
         <Breadcrumb
           items={[
-            { label: "Flower Bouquet", href: "/flower-bouquets" },
+            { label: "Cart", href: "/cart" },
             { label: "Checkout" },
           ]}
         />
