@@ -26,27 +26,27 @@ export default function DateModal({
 }: DateModalProps) {
   const ist = getNowIST();
 
-  // Use resolved date to initialize calendar
-  const initialSchedule = resolveDeliverySchedule(selectedDate || undefined);
-  const initialDate = parseDateString(initialSchedule.effectiveDate);
+  // Use selected date or current IST date for viewing month
+  const initialDate = selectedDate ? parseDateString(selectedDate) : parseDateString(ist.dateString);
 
   const [currentMonth, setCurrentMonth] = useState(
     new Date(initialDate.getFullYear(), initialDate.getMonth(), 1)
   );
-  const [selected, setSelected] = useState<Date>(initialDate);
-  const [reasonNotice, setReasonNotice] = useState<string | null>(
-    initialSchedule.wasAutoAdjusted ? (initialSchedule.reason || SUNDAY_REASON_MESSAGE) : null
-  );
+  const [selected, setSelected] = useState<Date | null>(selectedDate ? initialDate : null);
+  const [reasonNotice, setReasonNotice] = useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen) {
-      const schedule = resolveDeliverySchedule(selectedDate || undefined);
-      setSelected(parseDateString(schedule.effectiveDate));
-      if (schedule.wasAutoAdjusted) {
-        setReasonNotice(schedule.reason || SUNDAY_REASON_MESSAGE);
-        // Persist the adjusted Monday date back up
-        onConfirm(schedule.effectiveDate);
+      if (selectedDate) {
+        const schedule = resolveDeliverySchedule(selectedDate);
+        setSelected(parseDateString(schedule.effectiveDate));
+        if (schedule.wasAutoAdjusted) {
+          setReasonNotice(schedule.reason || SUNDAY_REASON_MESSAGE);
+        } else {
+          setReasonNotice(null);
+        }
       } else {
+        setSelected(null);
         setReasonNotice(null);
       }
     }

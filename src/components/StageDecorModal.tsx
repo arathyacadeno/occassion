@@ -21,21 +21,21 @@ export const STAGE_DECOR_GALLERY: StageDecorImageItem[] = [
   {
     src: "/images/stage decor/1.jpg",
     alt: "Imperial Marble Arch and Bloom Wall Wedding Stage",
-    price: 28000,
+    price: 45000,
     description:
       "An architectural masterpiece featuring sleek Italian-veined marble panels framing two dense floral garden alcoves in soft pink, lavender, and ivory blooms. Complete with an overhead arch floral swag, plush gold velvet chaise lounge, and gilded ruffled stage skirting with matching front posies.",
   },
   {
     src: "/images/stage decor/2.jpg",
     alt: "Enchanted Circular Golden Ring Arch Wedding Stage",
-    price: 24000,
+    price: 40000,
     description:
       "A contemporary circular metallic gold floral ring intertwined with fresh blush garden roses, custom couple monogram medallion, romantic golden tubular candlelight pillars, and a tufted mauve velvet loveseat resting over rich crimson carpets.",
   },
   {
     src: "/images/stage decor/3.jpg",
     alt: "Royal Victorian White Chaise and Crystal Candelabra Stage",
-    price: 32000,
+    price: 45000,
     description:
       "A regal wedding stage styled with an antique white tufted scroll-arm chaise, suspended rustic wooden floral beams, multi-tier crystal candelabras, and opulent golden satin stage borders adorned with wild baby's breath and pastel peach Dutch roses.",
   },
@@ -49,38 +49,46 @@ export const STAGE_DECOR_GALLERY: StageDecorImageItem[] = [
   {
     src: "/images/stage decor/5.jpg",
     alt: "Grand Celestial Fairy Light Canopy Multi-Arch Wedding Stage",
-    price: 38000,
+    price: 55000,
     description:
       "A breathtaking ballroom installation featuring a sprawling starry fairy light ceiling canopy, cascading sheer drapery, five interlocking golden floral arches with warm hanging chandeliers, and a traditional hand-carved Kerala teak diwan.",
   },
   {
+    src: "/images/stage decor/10.jpg",
+    alt: "Golden Sunburst Floral Arch and Hanging Rings Stage",
+    price: 20000,
+    description:
+      "An elegant golden floral stage featuring a circular sunburst arch, vibrant coral roses, delicate pastel blooms, cascading greenery, and warm hanging lights, creating a romantic and sophisticated backdrop for memorable wedding celebrations.",
+  },
+  {
     src: "/images/stage decor/6.jpeg",
     alt: "Geometric Suspended Golden Rings Wedding Stage",
-    price: 22000,
+    price: 18000,
     description:
       "Modern symmetry meets botanical luxury with tiered suspended golden ring lights, lush rose and carnation mini-swags, glowing geometric side towers with miniature lanterns, and a comfortable contemporary couple sofa.",
   },
   {
     src: "/images/stage decor/7.jpg",
     alt: "Heritage Rosewood Bench and Pristine White Floral Arch Stage",
-    price: 25000,
+    price: 35000,
     description:
       "Honoring Kerala tradition with an authentic antique carved rosewood tharavadu bench set against a minimalist circular arch of pure white chrysanthemums, ivory Dutch roses, and cascading English ivy on an all-white carpeted platform.",
   },
   {
     src: "/images/stage decor/8.jpg",
     alt: "Majestic Grand Palace Five Arch Wedding Stage Decor",
-    price: 36000,
+    price: 65000,
     description:
       "A grand palace-inspired stage facade featuring five monumental architectural white arches, two floor-to-ceiling multi-color flower walls, a couple monogram crest, and shimmering gold satin pleated borders with lush stage-front floral clusters.",
   },
   {
     src: "/images/stage decor/9.jpg",
     alt: "Golden Sunburst Floral Arch and Hanging Rings Stage",
-    price: 23000,
+    price: 22000,
     description:
       "A radiant circular golden arch densely garlanded in coral roses, pastel daisies, and eucalyptus, complemented by floating floral hoops and warm Edison pendants that create magical, bokeh-filled wedding photographs.",
   },
+  
 ];
 
 interface StageDecorModalProps {
@@ -220,7 +228,7 @@ export default function StageDecorModal({ isOpen, onClose }: StageDecorModalProp
             <p className={styles.description}>{currentItem.description}</p>
 
             <div className={styles.priceTag}>
-              Starts at ₹{formattedPrice}/-
+              ₹{formattedPrice}/-
             </div>
 
             <div className={styles.actionButtons}>

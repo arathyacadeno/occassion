@@ -134,27 +134,35 @@ export const CAR_DECOR_GALLERY: CarDecorImageItem[] = [
   },
   {
     src: "/images/car decor/15.jpg",
-    alt: "White Toyota Innova Heritage Illam Wedding Car Decor",
-    title: "Innova Heritage Temple Posy",
-    price: 1650,
+    alt: "Silver Honda City Heritage Wedding Floral Corner Posy",
+    title: "Honda City Silver Rose Corner Posy",
+    price: 1800,
     description:
       "A classic spherical posy crafted with blush pink roses, snow-white carnations, and vibrant green asparagus fern. Designed with protective suction mounts, making it ideal for sacred temple and illam wedding travels.",
   },
   {
     src: "/images/car decor/16.jpg",
-    alt: "White Hyundai Verna Wedding Reception Car Decor",
-    title: "Hyundai Verna Reception Crest Bouquet",
+    alt: "Dark Metallic Honda City Crimson and Blush Rose Bonnet Crest",
+    title: "Honda City Crimson & Blush Grand Crest",
     price: 1700,
     description:
       "A wide, fan-style floral crest blending deep red roses with pristine ivory blooms and cascading palm greens. Designed to make a photogenic entrance at wedding reception halls and auditorium gates.",
   },
   {
     src: "/images/car decor/17.jpg",
-    alt: "Red Volkswagen Polo Festive Nikah Wedding Car Decor",
-    title: "Volkswagen Polo Pastel Meadow Posy",
+    alt: "Metallic Grey Sedan Lavender Chrysanthemum & Peach Posy",
+    title: "Metallic Grey Pastel Meadow Posy",
     price: 1550,
     description:
-      "A vibrant, multi-hued dome of lavender chrysanthemums, peach spray roses, and fresh ivory petals that pops brilliantly against red car hoods. Perfect for nikah celebrations, family processions, and candid photography.",
+      "A vibrant, multi-hued dome of lavender chrysanthemums, peach spray roses, and fresh ivory petals that pops brilliantly against metallic car hoods. Perfect for nikah celebrations, family processions, and candid photography.",
+  },
+  {
+    src: "/images/car decor/18.jpg",
+    alt: "Dark Grey Honda City Wedding Car Decor with Peach and Pastel Pink Roses",
+    title: "Honda City Peach & Pastel Rose Bonnet Swag",
+    price: 2100,
+    description:
+      "An elegant horizontal crest arrangement featuring luscious peach roses, delicate blush pink blossoms, and pristine ivory roses nestled among glossy emerald greens. Beautifully contoured to create a mesmerizing contrast on dark sedan bonnets for modern wedding celebrations.",
   },
 ];
 
@@ -299,19 +307,19 @@ export default function CarDecorModal({ isOpen, onClose }: CarDecorModalProps) {
             </div>
 
             <div className={styles.actionButtons}>
-              <a href="tel:+918606464700" className={styles.callButton}>
-                <Phone size={16} strokeWidth={2.5} />
-                <span>Call Us Directly</span>
-              </a>
-
               <a
                 href={whatsAppHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.whatsappButton}
               >
-                <MessageCircle size={17} strokeWidth={2.4} />
-                <span>Enquiry On Whatsapp</span>
+                <MessageCircle size={16} />
+                <span>Inquire on WhatsApp</span>
+              </a>
+
+              <a href="tel:+918606464700" className={styles.callButton}>
+                <Phone size={14} color="#ec4899" />
+                <span>Call Atelier Directly</span>
               </a>
             </div>
 

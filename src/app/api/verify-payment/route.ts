@@ -3,6 +3,7 @@ import { verifyPaymentSignature } from "@/lib/payment/razorpay";
 import { getDb } from "@/lib/db";
 import { sql } from "@/lib/db/neon";
 import { sendWhatsAppToOwner } from "@/lib/whatsapp/service";
+import { isSpecificOrCustomSlot } from "@/lib/delivery/schedule";
 
 export async function POST(request: Request) {
   try {
@@ -130,6 +131,10 @@ export async function POST(request: Request) {
             })),
             subtotal: Number(order.subtotal) || 0,
             deliveryCharge: Number(order.delivery_charge) || 0,
+            isCustomDelivery: Boolean(
+              deliveryAddr.isCustomDelivery ||
+              isSpecificOrCustomSlot(deliveryAddr.deliveryTime)
+            ),
             discount: Number(order.discount) || 0,
             finalAmount: Number(order.final_amount) || 0,
             paymentMethod: paymentMethod?.type ? `${paymentMethod.type.toUpperCase()}` : "Razorpay Online",

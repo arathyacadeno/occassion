@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { sql } from "@/lib/db/neon";
 import { getAuthenticatedUser } from "@/lib/auth/jwt";
-import { checkDelivery } from "@/lib/delivery/service";
+import { checkDeliveryAsync } from "@/lib/delivery/service";
+import { isSpecificOrCustomSlot, CUSTOM_DELIVERY_FEE } from "@/lib/delivery/schedule";
 import { ADDON_PRODUCTS } from "@/data/addons";
 import { sendWhatsAppToOwner } from "@/lib/whatsapp/service";
 
@@ -112,12 +113,25 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: "Delivery PIN code is required" }, { status: 400 });
     }
 
-    const deliveryCheck = checkDelivery({ pinCode });
-    if (!deliveryCheck.serviceable) {
+    const deliveryCheck = await checkDeliveryAsync({
+      pinCode,
+      address: {
+        houseBuilding: delivery?.houseBuilding || delivery?.house,
+        street: delivery?.street,
+        landmark: delivery?.landmark || delivery?.area,
+        city: delivery?.city,
+        state: delivery?.state,
+        pinCode,
+      },
+    });
+
+    if (!deliveryCheck.serviceable || deliveryCheck.delivery_charge === null) {
       return NextResponse.json(
         {
           success: false,
-          error: deliveryCheck.message || "Sorry, delivery is not available to this location. Please enter another delivery location.",
+          error:
+            deliveryCheck.message ||
+            "Sorry, delivery is not available to this location. Please enter another delivery location.",
           deliveryCheck,
         },
         { status: 400 }
@@ -125,7 +139,13 @@ export async function POST(request: Request) {
     }
 
     // Backend verified delivery charge
-    const verifiedDeliveryCharge = deliveryCheck.delivery_charge ?? 0;
+    const baseDeliveryCharge = deliveryCheck.delivery_charge ?? 0;
+    const isCustomDelivery = Boolean(
+      delivery?.isCustomDelivery ||
+      isSpecificOrCustomSlot(delivery?.deliveryTime)
+    );
+    const customDeliveryFee = isCustomDelivery ? CUSTOM_DELIVERY_FEE : 0;
+    const verifiedDeliveryCharge = baseDeliveryCharge + customDeliveryFee;
 
     const db = getDb();
 
@@ -505,6 +525,7 @@ export async function POST(request: Request) {
         })),
         subtotal: verifiedSubtotal,
         deliveryCharge: verifiedDeliveryCharge,
+        isCustomDelivery,
         discount: verifiedDiscount,
         finalAmount,
         paymentMethod: isCod ? "Cash on Delivery (COD)" : (paymentMethod?.type ? `${paymentMethod.type.toUpperCase()}` : "Online Payment"),

@@ -11,20 +11,33 @@
 
 export const SUNDAY_TIME_SLOTS = ["8:00 AM – 10:00 AM"];
 
-export const REGULAR_TIME_SLOTS = [
-  "9:00 AM – 2:00 PM",
-  "2:00 PM – 7:00 PM",
-  "9:00 – 10:00 AM",
-  "10:00 – 11:00 AM",
-  "11:00 AM – 12:00 PM",
-  "12:00 – 1:00 PM",
-  "1:00 – 2:00 PM",
-  "2:00 – 3:00 PM",
-  "3:00 – 4:00 PM",
-  "4:00 – 5:00 PM",
-  "5:00 – 6:00 PM",
-  "6:00 – 7:00 PM",
+export const MORNING_SLOT = "9:00 AM – 2:00 PM";
+export const AFTERNOON_SLOT = "2:00 PM – 7:00 PM";
+
+export const STANDARD_TIME_SLOTS = [
+  MORNING_SLOT,
+  AFTERNOON_SLOT,
 ];
+
+export const SPECIFIC_ONE_HOUR_SLOTS = [
+  "9:00 AM – 10:00 AM",
+  "10:00 AM – 11:00 AM",
+  "11:00 AM – 12:00 PM",
+  "12:00 PM – 1:00 PM",
+  "1:00 PM – 2:00 PM",
+  "2:00 PM – 3:00 PM",
+  "3:00 PM – 4:00 PM",
+  "4:00 PM – 5:00 PM",
+  "5:00 PM – 6:00 PM",
+  "6:00 PM – 7:00 PM",
+];
+
+export const REGULAR_TIME_SLOTS = [
+  ...STANDARD_TIME_SLOTS,
+  ...SPECIFIC_ONE_HOUR_SLOTS,
+];
+
+export const CUSTOM_DELIVERY_FEE = 100;
 
 export const SUNDAY_REASON_MESSAGE =
   "Sunday deliveries operate strictly between 8:00 AM and 10:00 AM. Since it is past 10:00 AM, your delivery has been automatically scheduled for Monday.";
@@ -199,3 +212,168 @@ export function resolveDeliverySchedule(requestedDateStr?: string | null): Deliv
     defaultSlot: "9:00 AM – 2:00 PM",
   };
 }
+
+/**
+ * Returns whether a slot represents a specific 1-hour slot or custom delivery time
+ */
+export function isSpecificOrCustomSlot(slot?: string | null): boolean {
+  if (!slot) return false;
+  return (
+    SPECIFIC_ONE_HOUR_SLOTS.includes(slot) ||
+    slot.toLowerCase().startsWith("custom") ||
+    slot.includes("Specific") ||
+    slot.includes("+₹100")
+  );
+}
+
+/**
+ * Parse standard or 1-hour slot string to its starting minute of the day (0-1439).
+ */
+export function getSlotStartMinutes(slot: string): number | null {
+  const match = slot.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  if (!match) return null;
+  let hour = parseInt(match[1], 10);
+  const minute = parseInt(match[2], 10);
+  const meridiem = match[3].toUpperCase();
+
+  if (meridiem === "PM" && hour < 12) hour += 12;
+  if (meridiem === "AM" && hour === 12) hour = 0;
+
+  return hour * 60 + minute;
+}
+
+/**
+ * Check if a time slot has already passed for today given current IST hour and minute.
+ * For 1-hour specific slots, they pass when the slot start time has arrived.
+ * For broad slots (Morning 9am-2pm, Afternoon 2pm-7pm), they pass when the window ends.
+ */
+export function isSlotPassedToday(
+  slot: string,
+  istHour: number,
+  istMinute: number
+): boolean {
+  const currentMinutes = istHour * 60 + istMinute;
+
+  // Broad slots cutoff:
+  if (slot === MORNING_SLOT) {
+    // 2:00 PM = 14:00 (840 mins)
+    return currentMinutes >= 14 * 60;
+  }
+  if (slot === AFTERNOON_SLOT) {
+    // 7:00 PM = 19:00 (1140 mins)
+    return currentMinutes >= 19 * 60;
+  }
+  if (slot === "8:00 AM – 10:00 AM") {
+    // 10:00 AM = 600 mins
+    return currentMinutes >= 10 * 60;
+  }
+
+  // One-hour specific slots pass as soon as the start time has arrived
+  const startMinutes = getSlotStartMinutes(slot);
+  if (startMinutes !== null) {
+    return currentMinutes >= startMinutes;
+  }
+
+  return false;
+}
+
+/**
+ * Parse time string like "14:30" or "2:30 PM" into minutes from midnight (0..1439).
+ */
+export function parseTimeToMinutes(timeStr: string): number | null {
+  const clean = timeStr.trim();
+  const match24 = clean.match(/^(\d{1,2}):(\d{2})$/);
+  if (match24) {
+    const h = parseInt(match24[1], 10);
+    const m = parseInt(match24[2], 10);
+    if (h >= 0 && h < 24 && m >= 0 && m < 60) {
+      return h * 60 + m;
+    }
+    return null;
+  }
+
+  const match12 = clean.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (match12) {
+    let h = parseInt(match12[1], 10);
+    const m = parseInt(match12[2], 10);
+    const meridiem = match12[3].toUpperCase();
+    if (h < 1 || h > 12 || m < 0 || m >= 60) return null;
+    if (meridiem === "PM" && h < 12) h += 12;
+    if (meridiem === "AM" && h === 12) h = 0;
+    return h * 60 + m;
+  }
+
+  return null;
+}
+
+/**
+ * Convert minutes from midnight to a 12-hour formatted string (e.g. 870 -> "2:30 PM")
+ */
+export function formatMinutesTo12Hour(minutes: number): string {
+  let h = Math.floor(minutes / 60) % 24;
+  const m = minutes % 60;
+  const meridiem = h >= 12 ? "PM" : "AM";
+  if (h === 0) h = 12;
+  else if (h > 12) h -= 12;
+  const mStr = String(m).padStart(2, "0");
+  return `${h}:${mStr} ${meridiem}`;
+}
+
+/**
+ * Validates a custom delivery time.
+ * For today's delivery: custom time must be strictly after the current IST time ("except current time").
+ * Operating hours: 9:00 AM to 7:00 PM (or 8:00 AM to 10:00 AM on Sunday).
+ */
+export function validateCustomDeliveryTime(
+  deliveryDateStr: string,
+  timeStr: string
+): { isValid: boolean; error?: string; formattedTime?: string; minutes?: number } {
+  const minutes = parseTimeToMinutes(timeStr);
+  if (minutes === null) {
+    return { isValid: false, error: "Please enter a valid time (e.g., 2:30 PM)." };
+  }
+
+  const ist = getNowIST();
+  const schedule = resolveDeliverySchedule(deliveryDateStr);
+  const isSunday = schedule.isSunday;
+
+  if (isSunday) {
+    const sundayOpen = 8 * 60;
+    const sundayClose = 10 * 60;
+    if (minutes < sundayOpen || minutes > sundayClose) {
+      return {
+        isValid: false,
+        error: "Sunday delivery time must be between 8:00 AM and 10:00 AM.",
+      };
+    }
+  } else {
+    // 9:00 AM to 7:00 PM
+    const openMin = 9 * 60;
+    const closeMin = 19 * 60;
+    if (minutes < openMin || minutes > closeMin) {
+      return {
+        isValid: false,
+        error: "Custom delivery time must be between 9:00 AM and 7:00 PM.",
+      };
+    }
+  }
+
+  // If ordering for TODAY, time must be after the current IST time
+  if (schedule.effectiveDate === ist.dateString) {
+    const currentMinutes = ist.hour * 60 + ist.minute;
+    if (minutes <= currentMinutes) {
+      const currentFormatted = formatMinutesTo12Hour(currentMinutes);
+      return {
+        isValid: false,
+        error: `For today's delivery, time must be after the current time (${currentFormatted}).`,
+      };
+    }
+  }
+
+  return {
+    isValid: true,
+    formattedTime: formatMinutesTo12Hour(minutes),
+    minutes,
+  };
+}
+

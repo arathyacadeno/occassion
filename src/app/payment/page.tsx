@@ -12,6 +12,8 @@ import {
   resolveDeliverySchedule,
   SUNDAY_REASON_MESSAGE,
   parseDateString,
+  isSpecificOrCustomSlot,
+  CUSTOM_DELIVERY_FEE,
 } from "@/lib/delivery/schedule";
 import { useCheckout } from "@/context/CheckoutContext";
 import { useCart } from "@/context/CartContext";
@@ -34,6 +36,7 @@ import {
   Home,
   Plus,
   ExternalLink,
+  X,
 } from "lucide-react";
 import styles from "./payment.module.css";
 
@@ -86,7 +89,7 @@ export default function SinglePageCheckoutPayment() {
   const [senderLandmark, setSenderLandmark] = useState("");
   const [senderCity, setSenderCity] = useState("Kozhikode (Calicut)");
   const [senderState, setSenderState] = useState("Kerala");
-  const [senderPinCode, setSenderPinCode] = useState("673602");
+  const [senderPinCode, setSenderPinCode] = useState("");
 
   const [receiverName, setReceiverName] = useState("");
   const [receiverMobile, setReceiverMobile] = useState("");
@@ -95,7 +98,7 @@ export default function SinglePageCheckoutPayment() {
   const [landmark, setLandmark] = useState("");
   const [city, setCity] = useState("Kozhikode (Calicut)");
   const [state, setState] = useState("Kerala");
-  const [pinCode, setPinCode] = useState("673602");
+  const [pinCode, setPinCode] = useState("");
 
   // Saved Addresses State
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
@@ -112,9 +115,16 @@ export default function SinglePageCheckoutPayment() {
     setLandmark(addr.area || "");
     setCity(addr.city || "Kozhikode (Calicut)");
     setState(addr.state || "Kerala");
-    setPinCode(addr.pinCode || "673602");
-    if (addr.pinCode) {
-      checkDeliveryPin(addr.pinCode);
+    const addrPin = addr.pinCode || "";
+    setPinCode(addrPin);
+    if (addrPin && addrPin.length === 6) {
+      checkDeliveryPin(addrPin, {
+        houseBuilding: addr.house,
+        street: addr.street,
+        landmark: addr.area,
+        city: addr.city,
+        state: addr.state,
+      });
     }
   };
 
@@ -127,12 +137,22 @@ export default function SinglePageCheckoutPayment() {
     setLandmark("");
     setCity("Kozhikode (Calicut)");
     setState("Kerala");
-    setPinCode("673602");
-    checkDeliveryPin("673602");
+    setPinCode("");
+    setDeliveryStatus({
+      loading: false,
+      serviceable: null,
+      distance_km: null,
+      delivery_charge: null,
+      area: null,
+      district: null,
+      tier_label: null,
+      message: null,
+    });
   };
 
   const [deliveryDate, setDeliveryDate] = useState("");
   const [deliveryTime, setDeliveryTime] = useState("");
+  const [isCustomDelivery, setIsCustomDelivery] = useState(false);
   const [sundayAdjustmentReason, setSundayAdjustmentReason] = useState<string | null>(null);
   const [showTimeSlotModal, setShowTimeSlotModal] = useState(false);
   const [showDateModal, setShowDateModal] = useState(false);
@@ -197,6 +217,7 @@ export default function SinglePageCheckoutPayment() {
     delivery_charge: number | null;
     area: string | null;
     district: string | null;
+    tier_label: string | null;
     message: string | null;
   }>({
     loading: false,
@@ -205,12 +226,13 @@ export default function SinglePageCheckoutPayment() {
     delivery_charge: null,
     area: null,
     district: null,
+    tier_label: null,
     message: null,
   });
 
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const checkDeliveryPin = useCallback((pin: string) => {
+  const checkDeliveryPin = useCallback((pin: string, addrOverride?: any) => {
     if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
     const cleanPin = pin.replace(/\D/g, "");
 
@@ -222,6 +244,7 @@ export default function SinglePageCheckoutPayment() {
         delivery_charge: null,
         area: null,
         district: null,
+        tier_label: null,
         message: cleanPin.length > 0 ? "Please enter a valid 6-digit PIN code." : null,
       });
       return;
@@ -231,10 +254,22 @@ export default function SinglePageCheckoutPayment() {
 
     debounceTimerRef.current = setTimeout(async () => {
       try {
+        const addressPayload = addrOverride || {
+          houseBuilding,
+          street,
+          landmark,
+          city,
+          state,
+          pinCode: cleanPin,
+        };
+
         const res = await fetch("/api/delivery/check", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ pinCode: cleanPin }),
+          body: JSON.stringify({
+            pinCode: cleanPin,
+            address: addressPayload,
+          }),
         });
         const data = await res.json();
         setDeliveryStatus({
@@ -244,8 +279,14 @@ export default function SinglePageCheckoutPayment() {
           delivery_charge: data.delivery_charge,
           area: data.area,
           district: data.district,
+          tier_label: data.tier_label,
           message: data.message,
         });
+        if (data.serviceable && cleanPin) {
+          try {
+            localStorage.setItem("occassions_delivery_pincode", cleanPin);
+          } catch {}
+        }
       } catch {
         setDeliveryStatus({
           loading: false,
@@ -254,27 +295,41 @@ export default function SinglePageCheckoutPayment() {
           delivery_charge: null,
           area: null,
           district: null,
+          tier_label: null,
           message:
             "Sorry, delivery is not available to this location. Please enter another delivery location.",
         });
       }
     }, 350);
-  }, []);
+  }, [houseBuilding, street, landmark, city, state]);
 
   // Check initial PIN code & delivery date on mount
   useEffect(() => {
     setMounted(true);
     try {
       const storedDate = localStorage.getItem("occassions_delivery_date");
+      const storedTime = localStorage.getItem("occassions_delivery_time");
+      const storedIsCustom = localStorage.getItem("occassions_delivery_is_custom");
+
       if (storedDate) {
-        const schedule = resolveDeliverySchedule(storedDate);
-        setDeliveryDate(schedule.effectiveDate);
-        if (schedule.wasAutoAdjusted) {
-          setSundayAdjustmentReason(schedule.reason || SUNDAY_REASON_MESSAGE);
-          localStorage.setItem("occassions_delivery_date", schedule.effectiveDate);
-          setDeliveryTime(schedule.defaultSlot);
-        } else if (schedule.isSunday) {
-          setDeliveryTime("8:00 AM – 10:00 AM");
+        const parsedStored = parseDateString(storedDate);
+        const todayZero = new Date();
+        todayZero.setHours(0, 0, 0, 0);
+
+        if (parsedStored < todayZero) {
+          localStorage.removeItem("occassions_delivery_date");
+          localStorage.removeItem("occassions_delivery_time");
+          localStorage.removeItem("occassions_delivery_is_custom");
+        } else {
+          const schedule = resolveDeliverySchedule(storedDate);
+          setDeliveryDate(schedule.effectiveDate);
+          if (schedule.wasAutoAdjusted) {
+            setSundayAdjustmentReason(schedule.reason || SUNDAY_REASON_MESSAGE);
+          }
+          if (storedTime) {
+            setDeliveryTime(storedTime);
+            setIsCustomDelivery(storedIsCustom === "true" || isSpecificOrCustomSlot(storedTime));
+          }
         }
       }
     } catch {}
@@ -325,9 +380,15 @@ export default function SinglePageCheckoutPayment() {
               setLandmark(defaultAddr.area || "");
               setCity(defaultAddr.city || "Kozhikode (Calicut)");
               setState(defaultAddr.state || "Kerala");
-              setPinCode(defaultAddr.pinCode || "673602");
+              setPinCode(defaultAddr.pinCode || "");
               if (defaultAddr.pinCode) {
-                checkDeliveryPin(defaultAddr.pinCode);
+                checkDeliveryPin(defaultAddr.pinCode, {
+                  houseBuilding: defaultAddr.house,
+                  street: defaultAddr.street,
+                  landmark: defaultAddr.area,
+                  city: defaultAddr.city,
+                  state: defaultAddr.state,
+                });
               }
             }
           }
@@ -339,10 +400,12 @@ export default function SinglePageCheckoutPayment() {
 
   // Compute discount and final total with verified delivery charge
   const discountAmount = 0;
-  const deliveryCharge =
+  const baseDeliveryCharge =
     deliveryStatus.serviceable && deliveryStatus.delivery_charge !== null
       ? deliveryStatus.delivery_charge
       : 0;
+  const customDeliveryFee = isCustomDelivery ? CUSTOM_DELIVERY_FEE : 0;
+  const deliveryCharge = baseDeliveryCharge + customDeliveryFee;
   const finalTotal = subtotal + deliveryCharge;
 
   // Format Card Number into groups of 4
@@ -418,6 +481,16 @@ export default function SinglePageCheckoutPayment() {
       }
     }
 
+    if (!pinCode || pinCode.length !== 6) {
+      alert("Please enter a valid 6-digit delivery PIN code.");
+      return;
+    }
+
+    if (deliveryStatus.loading) {
+      alert("Please wait while we verify delivery serviceability for your address.");
+      return;
+    }
+
     if (deliveryStatus.serviceable === false) {
       alert(
         deliveryStatus.message ||
@@ -473,6 +546,7 @@ export default function SinglePageCheckoutPayment() {
       pinCode,
       deliveryDate,
       deliveryTime,
+      isCustomDelivery,
     };
 
     const paymentPayload = {
@@ -878,7 +952,7 @@ export default function SinglePageCheckoutPayment() {
                   maxLength={6}
                   pattern="[0-9]{6}"
                   title="6-digit PIN code"
-                  placeholder="e.g. 673602"
+                  placeholder="e.g. 673001"
                   value={senderPinCode}
                   onChange={(e) => setSenderPinCode(e.target.value.replace(/\D/g, ""))}
                   className={styles.inputField}
@@ -968,6 +1042,15 @@ export default function SinglePageCheckoutPayment() {
                       setCity(senderCity);
                       setState(senderState);
                       setPinCode(senderPinCode);
+                      if (senderPinCode && senderPinCode.length === 6) {
+                        checkDeliveryPin(senderPinCode, {
+                          houseBuilding: senderHouseBuilding,
+                          street: senderStreet,
+                          landmark: senderLandmark,
+                          city: senderCity,
+                          state: senderState,
+                        });
+                      }
                     } else {
                       setReceiverName("");
                       setReceiverMobile("");
@@ -976,7 +1059,17 @@ export default function SinglePageCheckoutPayment() {
                       setLandmark("");
                       setCity("Kozhikode (Calicut)");
                       setState("Kerala");
-                      setPinCode("673602");
+                      setPinCode("");
+                      setDeliveryStatus({
+                        loading: false,
+                        serviceable: null,
+                        distance_km: null,
+                        delivery_charge: null,
+                        area: null,
+                        district: null,
+                        tier_label: null,
+                        message: null,
+                      });
                     }
                   }}
                   style={{ accentColor: "#e4004b", width: "18px", height: "18px", cursor: "pointer" }}
@@ -1037,6 +1130,9 @@ export default function SinglePageCheckoutPayment() {
                   placeholder="Flat, House no., Apartment name"
                   value={houseBuilding}
                   onChange={(e) => setHouseBuilding(e.target.value)}
+                  onBlur={() => {
+                    if (pinCode && pinCode.length === 6) checkDeliveryPin(pinCode);
+                  }}
                   className={styles.inputField}
                 />
               </div>
@@ -1052,6 +1148,9 @@ export default function SinglePageCheckoutPayment() {
                   placeholder="Street, Area name"
                   value={street}
                   onChange={(e) => setStreet(e.target.value)}
+                  onBlur={() => {
+                    if (pinCode && pinCode.length === 6) checkDeliveryPin(pinCode);
+                  }}
                   className={styles.inputField}
                 />
               </div>
@@ -1066,6 +1165,9 @@ export default function SinglePageCheckoutPayment() {
                   placeholder="Near something (optional)"
                   value={landmark}
                   onChange={(e) => setLandmark(e.target.value)}
+                  onBlur={() => {
+                    if (pinCode && pinCode.length === 6) checkDeliveryPin(pinCode);
+                  }}
                   className={styles.inputField}
                 />
               </div>
@@ -1080,7 +1182,10 @@ export default function SinglePageCheckoutPayment() {
                   id="city"
                   required
                   value={city}
-                  onChange={(e) => setCity(e.target.value)}
+                  onChange={(e) => {
+                    setCity(e.target.value);
+                    if (pinCode && pinCode.length === 6) checkDeliveryPin(pinCode);
+                  }}
                   className={styles.selectField}
                 >
                   {KERALA_CITIES.map((c) => (
@@ -1139,17 +1244,26 @@ export default function SinglePageCheckoutPayment() {
                 {/* Serviceability feedback note */}
                 {deliveryStatus.loading && (
                   <p className={styles.pinCheckingText}>
-                    Checking delivery serviceability...
+                    Calculating road distance from shop...
                   </p>
                 )}
 
+                {!deliveryStatus.loading && deliveryStatus.serviceable === true && deliveryStatus.distance_km !== null && (
+                  <p style={{ fontSize: "0.82rem", color: "#059669", marginTop: "6px", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <CheckCircle2 size={14} color="#059669" />
+                    <span>
+                      {deliveryStatus.area ? `${deliveryStatus.area}: ` : ""}
+                      Road distance {deliveryStatus.distance_km} km ({deliveryStatus.tier_label || (deliveryStatus.delivery_charge === 0 ? "Free delivery" : `₹${deliveryStatus.delivery_charge} delivery`)})
+                    </span>
+                  </p>
+                )}
 
                 {!deliveryStatus.loading && deliveryStatus.serviceable === false && (
                   <div className={styles.pinErrorText} role="alert">
                     <AlertCircle size={14} className={styles.feedbackIcon} />
                     <span>
                       {deliveryStatus.message ||
-                        "Sorry, delivery is not available to this location. Please enter another delivery location."}
+                        "Sorry, delivery is not available beyond 50 km. Please enter another delivery location."}
                     </span>
                   </div>
                 )}
@@ -1209,7 +1323,26 @@ export default function SinglePageCheckoutPayment() {
                         })
                         : "Select Date"}
                     </div>
-                    <Calendar size={14} className={styles.dropdownChevron} />
+                    {deliveryDate ? (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDeliveryDate("");
+                          setSundayAdjustmentReason(null);
+                          try {
+                            localStorage.removeItem("occassions_delivery_date");
+                          } catch {}
+                        }}
+                        style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", display: "flex", padding: 0 }}
+                        title="Clear delivery date"
+                        aria-label="Clear delivery date"
+                      >
+                        <X size={14} />
+                      </button>
+                    ) : (
+                      <Calendar size={14} className={styles.dropdownChevron} />
+                    )}
                   </div>
                   {deliveryPrefError?.date && (
                     <span className={styles.fieldErrorText}>
@@ -1234,10 +1367,41 @@ export default function SinglePageCheckoutPayment() {
                     }}
                     style={{ cursor: "pointer" }}
                   >
-                    <div className={styles.dropdownSelect} style={{ display: "flex", alignItems: "center" }}>
-                      {deliveryTime ? deliveryTime : "Select Time"}
+                    <div className={styles.dropdownSelect} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                      {deliveryTime ? (
+                        <>
+                          <span>{deliveryTime}</span>
+                          {isCustomDelivery && (
+                            <span style={{ fontSize: "0.72rem", color: "#e4004b", fontWeight: 700, backgroundColor: "#fff1f2", padding: "1px 6px", borderRadius: "4px" }}>
+                              +₹100
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        "Select Time"
+                      )}
                     </div>
-                    <Clock size={14} className={styles.dropdownChevron} />
+                    {deliveryTime ? (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDeliveryTime("");
+                          setIsCustomDelivery(false);
+                          try {
+                            localStorage.removeItem("occassions_delivery_time");
+                            localStorage.removeItem("occassions_delivery_is_custom");
+                          } catch {}
+                        }}
+                        style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", display: "flex", padding: 0 }}
+                        title="Clear time slot"
+                        aria-label="Clear time slot"
+                      >
+                        <X size={14} />
+                      </button>
+                    ) : (
+                      <Clock size={14} className={styles.dropdownChevron} />
+                    )}
                   </div>
                   {deliveryPrefError?.time && (
                     <span className={styles.fieldErrorText}>
@@ -1254,8 +1418,15 @@ export default function SinglePageCheckoutPayment() {
               isOpen={showTimeSlotModal}
               onClose={() => setShowTimeSlotModal(false)}
               selectedDate={deliveryDate}
+              currentSlot={deliveryTime}
               onConfirm={(deliveryType, slot, price) => {
                 setDeliveryTime(slot);
+                const isCustom = deliveryType === "Specific" || price === 100 || isSpecificOrCustomSlot(slot);
+                setIsCustomDelivery(isCustom);
+                try {
+                  localStorage.setItem("occassions_delivery_time", slot);
+                  localStorage.setItem("occassions_delivery_is_custom", String(isCustom));
+                } catch {}
                 setDeliveryPrefError((prev) => (prev ? { ...prev, time: undefined } : null));
                 setShowTimeSlotModal(false);
               }}
@@ -1273,11 +1444,6 @@ export default function SinglePageCheckoutPayment() {
                   setSundayAdjustmentReason(schedule.reason || SUNDAY_REASON_MESSAGE);
                 } else {
                   setSundayAdjustmentReason(null);
-                }
-                if (schedule.isSunday) {
-                  setDeliveryTime("8:00 AM – 10:00 AM");
-                } else if (deliveryTime === "8:00 AM – 10:00 AM") {
-                  setDeliveryTime(schedule.defaultSlot);
                 }
                 try {
                   localStorage.setItem("occassions_delivery_date", schedule.effectiveDate);
@@ -1492,20 +1658,65 @@ export default function SinglePageCheckoutPayment() {
                 <span>Quantity</span>
                 <span className={styles.breakdownValue}>x {quantity}</span>
               </div>
-              <div className={styles.breakdownRow}>
-                <span>Delivery Charge</span>
-                <span className={styles.breakdownValue}>
-                  {deliveryStatus.loading ? (
-                    <span className={styles.calculatingText}>Calculating...</span>
-                  ) : deliveryStatus.serviceable === false ? (
-                    <span className={styles.unavailableText}>Unavailable</span>
-                  ) : deliveryCharge === 0 ? (
-                    <span className={styles.freeDeliveryBadge}>Free</span>
-                  ) : (
-                    `₹${deliveryCharge.toFixed(2)}`
-                  )}
-                </span>
-              </div>
+              {isCustomDelivery ? (
+                <>
+                  <div className={styles.breakdownRow}>
+                    <span>Base Delivery</span>
+                    <span className={styles.breakdownValue}>
+                      {deliveryStatus.loading ? (
+                        <span className={styles.calculatingText}>Calculating...</span>
+                      ) : !pinCode || pinCode.length !== 6 ? (
+                        <span style={{ color: "#64748b", fontSize: "0.85rem" }}>Enter PIN code</span>
+                      ) : deliveryStatus.serviceable === false ? (
+                        <span className={styles.unavailableText}>Unavailable</span>
+                      ) : baseDeliveryCharge === 0 ? (
+                        <span className={styles.freeDeliveryBadge}>Free</span>
+                      ) : (
+                        `₹${baseDeliveryCharge.toFixed(2)}`
+                      )}
+                    </span>
+                  </div>
+                  <div className={styles.breakdownRow}>
+                    <span>Specific Time Add-on</span>
+                    <span className={styles.breakdownValue} style={{ color: "#e4004b", fontWeight: 600 }}>
+                      +₹100.00
+                    </span>
+                  </div>
+                  <div className={styles.breakdownRow}>
+                    <span>Total Delivery Charge</span>
+                    <span className={styles.breakdownValue}>
+                      {deliveryStatus.loading ? (
+                        <span className={styles.calculatingText}>Calculating...</span>
+                      ) : !pinCode || pinCode.length !== 6 ? (
+                        <span style={{ color: "#64748b", fontSize: "0.85rem" }}>Enter PIN code</span>
+                      ) : deliveryStatus.serviceable === false ? (
+                        <span className={styles.unavailableText}>Unavailable</span>
+                      ) : deliveryCharge === 0 ? (
+                        <span className={styles.freeDeliveryBadge}>Free</span>
+                      ) : (
+                        `₹${deliveryCharge.toFixed(2)}`
+                      )}
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <div className={styles.breakdownRow}>
+                  <span>Delivery Charge</span>
+                  <span className={styles.breakdownValue}>
+                    {deliveryStatus.loading ? (
+                      <span className={styles.calculatingText}>Calculating...</span>
+                    ) : !pinCode || pinCode.length !== 6 ? (
+                      <span style={{ color: "#64748b", fontSize: "0.85rem" }}>Enter PIN code</span>
+                    ) : deliveryStatus.serviceable === false ? (
+                      <span className={styles.unavailableText}>Unavailable</span>
+                    ) : deliveryCharge === 0 ? (
+                      <span className={styles.freeDeliveryBadge}>Free</span>
+                    ) : (
+                      `₹${deliveryCharge.toFixed(2)}`
+                    )}
+                  </span>
+                </div>
+              )}
               <div className={styles.breakdownRow}>
                 <span>Subtotal</span>
                 <span className={styles.breakdownValue}>
@@ -1531,11 +1742,15 @@ export default function SinglePageCheckoutPayment() {
               disabled={
                 isSubmitting ||
                 deliveryStatus.serviceable === false ||
-                deliveryStatus.loading
+                deliveryStatus.loading ||
+                !pinCode ||
+                pinCode.length !== 6
               }
               className={styles.placeOrderBtn}
               title={
-                deliveryStatus.serviceable === false
+                !pinCode || pinCode.length !== 6
+                  ? "Please enter a valid 6-digit delivery PIN code."
+                  : deliveryStatus.serviceable === false
                   ? "Sorry, delivery is not available to this location. Please enter another delivery location."
                   : undefined
               }
@@ -1547,6 +1762,8 @@ export default function SinglePageCheckoutPayment() {
                 </>
               ) : deliveryStatus.serviceable === false ? (
                 <span>Location Not Serviceable</span>
+              ) : !pinCode || pinCode.length !== 6 ? (
+                <span>Enter Delivery PIN Code</span>
               ) : !isAuthenticated ? (
                 <>
                   <Lock size={16} />

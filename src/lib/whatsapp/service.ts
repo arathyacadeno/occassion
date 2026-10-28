@@ -30,6 +30,7 @@ export interface OrderNotificationPayload {
   items: OrderNotificationItem[];
   subtotal: number;
   deliveryCharge: number;
+  isCustomDelivery?: boolean;
   discount?: number;
   finalAmount: number;
   paymentMethod: string;
@@ -133,7 +134,7 @@ export function buildOrderWhatsAppMessage(data: OrderNotificationPayload): strin
 ${deliveryDateInfo}
 💰 *PRICE & PAYMENT:*
 • Items Subtotal: ₹${data.subtotal.toLocaleString("en-IN")}
-• Delivery Fee: ${data.deliveryCharge === 0 ? "FREE" : `₹${data.deliveryCharge.toLocaleString("en-IN")}`}
+• Delivery Fee: ${data.deliveryCharge === 0 ? "FREE" : `₹${data.deliveryCharge.toLocaleString("en-IN")}`}${data.isCustomDelivery ? " _(Includes ₹100 Specific Time Slot Add-on)_" : ""}
 ${discountText}• *TOTAL AMOUNT:* ₹${data.finalAmount.toLocaleString("en-IN")}
 • Payment: *${paymentStatusBadge}* via ${data.paymentMethod}${paymentRef}
 

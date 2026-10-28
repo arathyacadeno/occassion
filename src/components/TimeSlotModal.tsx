@@ -1,18 +1,22 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, Clock, AlertCircle } from "lucide-react";
+import { X, Clock } from "lucide-react";
 import styles from "./TimeSlotModal.module.css";
 import {
   resolveDeliverySchedule,
-  SUNDAY_TIME_SLOTS,
-  REGULAR_TIME_SLOTS,
+  STANDARD_TIME_SLOTS,
+  SPECIFIC_ONE_HOUR_SLOTS,
+  isSpecificOrCustomSlot,
+  isSlotPassedToday,
+  getNowIST,
 } from "@/lib/delivery/schedule";
 
 interface TimeSlotModalProps {
   isOpen: boolean;
   onClose: () => void;
   selectedDate: string;
+  currentSlot?: string;
   onConfirm: (deliveryType: string, slot: string, price: number | "FREE") => void;
 }
 
@@ -20,26 +24,29 @@ export default function TimeSlotModal({
   isOpen,
   onClose,
   selectedDate,
+  currentSlot,
   onConfirm,
 }: TimeSlotModalProps) {
+  const ist = getNowIST();
   const schedule = resolveDeliverySchedule(selectedDate || undefined);
-  const slotsToDisplay = schedule.availableSlots;
+  const isToday = schedule.effectiveDate === ist.dateString;
 
-  const [selectedSlot, setSelectedSlot] = useState<string>(schedule.defaultSlot);
+  const [selectedSlot, setSelectedSlot] = useState<string>(currentSlot || "");
 
-  // Synchronize slot if selectedDate changes between Sunday and non-Sunday
+  // Synchronize slot when opened
   useEffect(() => {
     if (isOpen) {
-      const updatedSchedule = resolveDeliverySchedule(selectedDate || undefined);
-      if (!updatedSchedule.availableSlots.includes(selectedSlot)) {
-        setSelectedSlot(updatedSchedule.defaultSlot);
+      if (currentSlot && schedule.availableSlots.includes(currentSlot)) {
+        setSelectedSlot(currentSlot);
+      } else if (!currentSlot) {
+        setSelectedSlot("");
       }
     }
-  }, [isOpen, selectedDate]);
+  }, [isOpen, currentSlot, schedule.availableSlots]);
 
   if (!isOpen) return null;
 
-  // Format date for display: "Sunday, 11 October"
+  // Format date for display: "Wednesday, 28 October"
   const formattedDate = selectedDate
     ? new Date(selectedDate).toLocaleDateString("en-GB", {
         weekday: "long",
@@ -50,7 +57,12 @@ export default function TimeSlotModal({
 
   const handleConfirm = () => {
     if (selectedSlot) {
-      onConfirm("Custom", selectedSlot, "FREE");
+      const isSpecific = isSpecificOrCustomSlot(selectedSlot);
+      onConfirm(
+        isSpecific ? "Specific" : "Standard",
+        selectedSlot,
+        isSpecific ? 100 : "FREE"
+      );
     }
   };
 
@@ -60,7 +72,7 @@ export default function TimeSlotModal({
         {/* Header */}
         <div className={styles.modalHeader}>
           <h2 className={styles.modalTitle}>Choose Time-slot</h2>
-          <button type="button" onClick={onClose} className={styles.closeBtn}>
+          <button type="button" onClick={onClose} className={styles.closeBtn} aria-label="Close modal">
             <X size={18} />
           </button>
         </div>
@@ -80,10 +92,10 @@ export default function TimeSlotModal({
           </div>
         )}
 
-        {/* Time Slots List */}
+        {/* Time Slots */}
         {schedule.isSunday ? (
           <div className={styles.singleSundayCol}>
-            {slotsToDisplay.map((slot) => {
+            {schedule.availableSlots.map((slot) => {
               const isChecked = selectedSlot === slot;
               return (
                 <label key={slot} className={styles.sundaySlotPill}>
@@ -109,24 +121,80 @@ export default function TimeSlotModal({
             })}
           </div>
         ) : (
-          <div className={styles.slotsOnlyCol}>
-            {slotsToDisplay.map((slot) => {
-              const isChecked = selectedSlot === slot;
-              return (
-                <label key={slot} className={styles.radioLabel}>
-                  <span className={styles.slotText}>{slot}</span>
-                  <input
-                    type="radio"
-                    name="timeSlot"
-                    value={slot}
-                    checked={isChecked}
-                    onChange={(e) => setSelectedSlot(e.target.value)}
-                    className={styles.radioInput}
-                  />
-                  <span className={styles.customRadio}></span>
-                </label>
-              );
-            })}
+          <div className={styles.slotsContainer}>
+            {/* Standard Slots: Morning & Afternoon */}
+            <div className={styles.slotSection}>
+              <div className={styles.sectionHeader}>
+                <span className={styles.sectionTitle}>Standard Slots</span>
+                <span className={styles.includedTag}>Standard</span>
+              </div>
+              <div className={styles.slotsGrid}>
+                {STANDARD_TIME_SLOTS.map((slot) => {
+                  const isPassed = isToday && isSlotPassedToday(slot, ist.hour, ist.minute);
+                  const isChecked = selectedSlot === slot;
+                  return (
+                    <label
+                      key={slot}
+                      className={`${styles.radioLabel} ${isPassed ? styles.slotPassed : ""}`}
+                    >
+                      <span className={styles.slotText}>
+                        {slot}
+                        {isPassed && <span className={styles.passedBadge}>(Passed)</span>}
+                      </span>
+                      <input
+                        type="radio"
+                        name="timeSlot"
+                        value={slot}
+                        checked={isChecked}
+                        disabled={isPassed}
+                        onChange={(e) => {
+                          if (!isPassed) setSelectedSlot(e.target.value);
+                        }}
+                        className={styles.radioInput}
+                      />
+                      <span className={styles.customRadio}></span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Specific Time Slots: One-hour slots (9:00 AM to 7:00 PM) */}
+            <div className={styles.slotSection}>
+              <div className={styles.sectionHeader}>
+                <span className={styles.sectionTitle}>Specific Time Slots</span>
+                <span className={styles.addonTag}>+₹100 Add-on</span>
+              </div>
+              <div className={styles.slotsGrid}>
+                {SPECIFIC_ONE_HOUR_SLOTS.map((slot) => {
+                  const isPassed = isToday && isSlotPassedToday(slot, ist.hour, ist.minute);
+                  const isChecked = selectedSlot === slot;
+                  return (
+                    <label
+                      key={slot}
+                      className={`${styles.radioLabel} ${isPassed ? styles.slotPassed : ""}`}
+                    >
+                      <span className={styles.slotText}>
+                        {slot}
+                        {isPassed && <span className={styles.passedBadge}>(Passed)</span>}
+                      </span>
+                      <input
+                        type="radio"
+                        name="timeSlot"
+                        value={slot}
+                        checked={isChecked}
+                        disabled={isPassed}
+                        onChange={(e) => {
+                          if (!isPassed) setSelectedSlot(e.target.value);
+                        }}
+                        className={styles.radioInput}
+                      />
+                      <span className={styles.customRadio}></span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         )}
 
@@ -145,4 +213,3 @@ export default function TimeSlotModal({
     </div>
   );
 }
-
