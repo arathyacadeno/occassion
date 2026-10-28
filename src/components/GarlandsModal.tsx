@@ -306,19 +306,19 @@ export default function GarlandsModal({
             </div>
 
             <div className={styles.actionButtons}>
-              <a href="tel:+918606464700" className={styles.callButton}>
-                <Phone size={15} strokeWidth={2.4} />
-                <span>Call Us</span>
-              </a>
-
               <a
                 href={whatsAppHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.whatsappButton}
               >
-                <MessageCircle size={16} strokeWidth={2.4} />
+                <MessageCircle size={16} />
                 <span>Inquire on WhatsApp</span>
+              </a>
+
+              <a href="tel:+918606464700" className={styles.callButton}>
+                <Phone size={14} color="#ec4899" />
+                <span>Call Atelier Directly</span>
               </a>
             </div>
 
@@ -326,7 +326,7 @@ export default function GarlandsModal({
               <span className={styles.guaranteeIcon}>
                 <ShieldCheck size={16} strokeWidth={2.2} />
               </span>
-              <span>100% Fresh Flower Guarantee • Custom Sizing Available</span>
+              <span>100% Freshness Guarantee</span>
             </div>
           </div>
         </div>

@@ -105,8 +105,10 @@ export default function SinglePageCheckoutPayment() {
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
   const [saveToProfile, setSaveToProfile] = useState<boolean>(true);
   const [loadingAddresses, setLoadingAddresses] = useState<boolean>(false);
+  const [isSameAsSender, setIsSameAsSender] = useState<boolean>(false);
 
   const handleSelectSavedAddress = (addr: any) => {
+    setIsSameAsSender(false);
     setSelectedAddressId(addr.id);
     setReceiverName(addr.fullName || "");
     setReceiverMobile((addr.phone || "").replace(/^\+91\s*/, ""));
@@ -124,11 +126,13 @@ export default function SinglePageCheckoutPayment() {
         landmark: addr.area,
         city: addr.city,
         state: addr.state,
+        pinCode: addrPin,
       });
     }
   };
 
   const handleUseNewAddress = () => {
+    setIsSameAsSender(false);
     setSelectedAddressId("new");
     setReceiverName("");
     setReceiverMobile("");
@@ -232,6 +236,17 @@ export default function SinglePageCheckoutPayment() {
 
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const addressRef = useRef({
+    houseBuilding,
+    street,
+    landmark,
+    city,
+    state,
+  });
+  useEffect(() => {
+    addressRef.current = { houseBuilding, street, landmark, city, state };
+  }, [houseBuilding, street, landmark, city, state]);
+
   const checkDeliveryPin = useCallback((pin: string, addrOverride?: any) => {
     if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
     const cleanPin = pin.replace(/\D/g, "");
@@ -255,11 +270,11 @@ export default function SinglePageCheckoutPayment() {
     debounceTimerRef.current = setTimeout(async () => {
       try {
         const addressPayload = addrOverride || {
-          houseBuilding,
-          street,
-          landmark,
-          city,
-          state,
+          houseBuilding: addressRef.current.houseBuilding,
+          street: addressRef.current.street,
+          landmark: addressRef.current.landmark,
+          city: addressRef.current.city,
+          state: addressRef.current.state,
           pinCode: cleanPin,
         };
 
@@ -301,7 +316,7 @@ export default function SinglePageCheckoutPayment() {
         });
       }
     }, 350);
-  }, [houseBuilding, street, landmark, city, state]);
+  }, []);
 
   // Check initial PIN code & delivery date on mount
   useEffect(() => {
@@ -361,9 +376,11 @@ export default function SinglePageCheckoutPayment() {
     }
   }, [user]);
 
-  // Load saved addresses and populate receiver details
+  // Load saved addresses and populate receiver details once on mount
+  const addressLoadedRef = useRef(false);
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !addressLoadedRef.current) {
+      addressLoadedRef.current = true;
       setLoadingAddresses(true);
       fetch("/api/addresses", { credentials: "include" })
         .then((res) => res.json())
@@ -388,6 +405,7 @@ export default function SinglePageCheckoutPayment() {
                   landmark: defaultAddr.area,
                   city: defaultAddr.city,
                   state: defaultAddr.state,
+                  pinCode: defaultAddr.pinCode,
                 });
               }
             }
@@ -397,6 +415,86 @@ export default function SinglePageCheckoutPayment() {
         .finally(() => setLoadingAddresses(false));
     }
   }, [isAuthenticated, checkDeliveryPin]);
+
+  // Handle "Same as Sender" toggle
+  const handleToggleSameAsSender = (checked: boolean) => {
+    setIsSameAsSender(checked);
+    if (checked) {
+      setSelectedAddressId(null);
+      setReceiverName(senderName);
+      setReceiverMobile(senderMobile);
+      setHouseBuilding(senderHouseBuilding);
+      setStreet(senderStreet);
+      setLandmark(senderLandmark);
+      setCity(senderCity);
+      setState(senderState);
+      setPinCode(senderPinCode);
+      if (senderPinCode && senderPinCode.length === 6) {
+        checkDeliveryPin(senderPinCode, {
+          houseBuilding: senderHouseBuilding,
+          street: senderStreet,
+          landmark: senderLandmark,
+          city: senderCity,
+          state: senderState,
+          pinCode: senderPinCode,
+        });
+      }
+    } else {
+      setReceiverName("");
+      setReceiverMobile("");
+      setHouseBuilding("");
+      setStreet("");
+      setLandmark("");
+      setCity("Kozhikode (Calicut)");
+      setState("Kerala");
+      setPinCode("");
+      setDeliveryStatus({
+        loading: false,
+        serviceable: null,
+        distance_km: null,
+        delivery_charge: null,
+        area: null,
+        district: null,
+        tier_label: null,
+        message: null,
+      });
+    }
+  };
+
+  // Automatically sync to receiver whenever sender inputs change while sameAsSender is active
+  useEffect(() => {
+    if (isSameAsSender) {
+      setReceiverName(senderName);
+      setReceiverMobile(senderMobile);
+      setHouseBuilding(senderHouseBuilding);
+      setStreet(senderStreet);
+      setLandmark(senderLandmark);
+      setCity(senderCity);
+      setState(senderState);
+      setPinCode(senderPinCode);
+      if (senderPinCode && senderPinCode.length === 6) {
+        checkDeliveryPin(senderPinCode, {
+          houseBuilding: senderHouseBuilding,
+          street: senderStreet,
+          landmark: senderLandmark,
+          city: senderCity,
+          state: senderState,
+          pinCode: senderPinCode,
+        });
+      }
+    }
+  }, [
+    isSameAsSender,
+    senderName,
+    senderMobile,
+    senderHouseBuilding,
+    senderStreet,
+    senderLandmark,
+    senderCity,
+    senderState,
+    senderPinCode,
+    checkDeliveryPin,
+  ]);
 
   // Compute discount and final total with verified delivery charge
   const discountAmount = 0;
@@ -625,7 +723,7 @@ export default function SinglePageCheckoutPayment() {
             type: "Home",
             isDefault: savedAddresses.length === 0,
           };
-          if (selectedAddressId && selectedAddressId !== "new") {
+          if (selectedAddressId && selectedAddressId !== "new" && !isSameAsSender) {
             fetch(`/api/addresses/${selectedAddressId}`, {
               method: "PUT",
               headers: { "Content-Type": "application/json" },
@@ -1032,49 +1130,11 @@ export default function SinglePageCheckoutPayment() {
               <label style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.95rem", cursor: "pointer", color: "#3b2a22", fontWeight: 500 }}>
                 <input
                   type="checkbox"
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setReceiverName(senderName);
-                      setReceiverMobile(senderMobile);
-                      setHouseBuilding(senderHouseBuilding);
-                      setStreet(senderStreet);
-                      setLandmark(senderLandmark);
-                      setCity(senderCity);
-                      setState(senderState);
-                      setPinCode(senderPinCode);
-                      if (senderPinCode && senderPinCode.length === 6) {
-                        checkDeliveryPin(senderPinCode, {
-                          houseBuilding: senderHouseBuilding,
-                          street: senderStreet,
-                          landmark: senderLandmark,
-                          city: senderCity,
-                          state: senderState,
-                        });
-                      }
-                    } else {
-                      setReceiverName("");
-                      setReceiverMobile("");
-                      setHouseBuilding("");
-                      setStreet("");
-                      setLandmark("");
-                      setCity("Kozhikode (Calicut)");
-                      setState("Kerala");
-                      setPinCode("");
-                      setDeliveryStatus({
-                        loading: false,
-                        serviceable: null,
-                        distance_km: null,
-                        delivery_charge: null,
-                        area: null,
-                        district: null,
-                        tier_label: null,
-                        message: null,
-                      });
-                    }
-                  }}
+                  checked={isSameAsSender}
+                  onChange={(e) => handleToggleSameAsSender(e.target.checked)}
                   style={{ accentColor: "#e4004b", width: "18px", height: "18px", cursor: "pointer" }}
                 />
-                Same as Sender
+                <span>Same as Sender</span>
               </label>
             </div>
 

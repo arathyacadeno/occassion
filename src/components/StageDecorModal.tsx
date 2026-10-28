@@ -7,6 +7,7 @@ import {
   ChevronRight,
   Phone,
   MessageCircle,
+  ShieldCheck,
 } from "lucide-react";
 import styles from "./StageDecorModal.module.css";
 
@@ -232,20 +233,27 @@ export default function StageDecorModal({ isOpen, onClose }: StageDecorModalProp
             </div>
 
             <div className={styles.actionButtons}>
-              <a href="tel:+918606464700" className={styles.callButton}>
-                <Phone size={13} />
-                <span>Call Us (+91 8606464700)</span>
-              </a>
-
               <a
                 href={whatsAppHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.whatsappButton}
               >
-                <MessageCircle size={13} />
+                <MessageCircle size={16} />
                 <span>Inquire on WhatsApp</span>
               </a>
+
+              <a href="tel:+918606464700" className={styles.callButton}>
+                <Phone size={14} color="#ec4899" />
+                <span>Call Atelier Directly</span>
+              </a>
+            </div>
+
+            <div className={styles.guaranteeBadge}>
+              <span className={styles.guaranteeIcon}>
+                <ShieldCheck size={16} strokeWidth={2.2} />
+              </span>
+              <span>100% Freshness Guarantee</span>
             </div>
           </div>
         </div>

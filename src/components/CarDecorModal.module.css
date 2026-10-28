@@ -114,8 +114,9 @@
 .detailsCol {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   padding: 34px 48px 34px 34px;
+  box-sizing: border-box;
+  height: 100%;
 }
 
 .description {
@@ -133,7 +134,7 @@
   font-weight: 700;
   color: #e91e63;
   line-height: 1.2;
-  margin: 26px 0 20px;
+  margin: 20px 0 0;
 }
 
 .actionButtons {
@@ -141,6 +142,8 @@
   flex-direction: column;
   gap: 10px;
   width: 100%;
+  margin-top: auto;
+  padding-top: 20px;
 }
 
 .whatsappButton {
