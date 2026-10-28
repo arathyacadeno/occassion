@@ -3,17 +3,7 @@
 import React, { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import {
-  Star,
-  Heart,
-  Leaf,
-  Sparkles,
-  Cake,
-  Smartphone,
-  Package,
-  Truck,
-  Check,
-} from "lucide-react";
+import { Star, Heart, Check } from "lucide-react";
 import styles from "./about.module.css";
 
 export default function AboutClient() {
@@ -142,11 +132,25 @@ export default function AboutClient() {
       <Navbar />
 
       <main className={styles.mainContent}>
-        {/* ================= SECTION 1: HERO BANNER ================= */}
+        {/* ================= SECTION 1: HERO (BRUSH-STROKE TITLE) ================= */}
         <section className={styles.heroBanner} aria-label="About Us Hero">
-          <div className={styles.heroOverlay} />
           <div className={styles.heroContent}>
-            <h1 className={styles.heroTitle}>About Us</h1>
+            <div className={styles.heroTitleWrap}>
+              {/* Pink brush-stroke shape behind the title */}
+              <svg
+                className={styles.heroBrush}
+                viewBox="0 0 1000 300"
+                preserveAspectRatio="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  className={styles.heroBrushPath}
+                  d="M40 170C20 140 60 100 110 70C150 40 210 20 260 12C290 8 310 30 300 50C330 42 355 48 365 60C420 30 470 8 520 6C560 4 585 28 565 62C610 40 660 28 700 30C735 32 750 55 745 70C780 62 800 66 810 74C850 50 900 40 940 42C975 44 990 70 975 100L955 135C985 140 995 170 975 195C940 235 880 270 820 285C790 292 770 275 770 250C740 262 700 272 665 268C650 266 640 250 645 238C600 252 560 262 520 258C500 255 490 240 495 225C430 255 360 285 300 290C260 292 245 270 255 245C210 262 170 270 150 265C130 262 120 240 130 225C110 232 80 240 60 235C30 232 25 200 40 170Z"
+                />
+              </svg>
+              <h1 className={styles.heroTitle}>About Us</h1>
+            </div>
           </div>
         </section>
 
@@ -217,7 +221,7 @@ export default function AboutClient() {
                   <div className={styles.featureTextWrap}>
                     <h3 className={styles.featureTitle}>Made with Love</h3>
                     <p className={styles.featureDesc}>
-                      Beautiful flowers and delicious cakes, made with care..
+                      Beautiful flowers and delicious cakes, made with care.
                     </p>
                   </div>
                 </div>
@@ -259,9 +263,7 @@ export default function AboutClient() {
             <div className={styles.whyGrid}>
               {whyChooseFeatures.map((item, idx) => (
                 <div key={idx} className={styles.whyItem}>
-                  <div className={styles.whyIconCircle}>
-                    {item.icon}
-                  </div>
+                  <div className={styles.whyIconCircle}>{item.icon}</div>
                   <div className={styles.whyTextWrap}>
                     <h3 className={styles.whyTitle}>{item.title}</h3>
                     <p className={styles.whyDesc}>{item.desc}</p>
@@ -286,7 +288,9 @@ export default function AboutClient() {
                 <button
                   type="button"
                   role="tab"
+                  id="tab-mission"
                   aria-selected={activeTab === "mission"}
+                  aria-controls="panel-mission"
                   onClick={() => setActiveTab("mission")}
                   className={`${styles.tabBtn} ${
                     activeTab === "mission" ? styles.tabBtnActive : ""
@@ -297,7 +301,9 @@ export default function AboutClient() {
                 <button
                   type="button"
                   role="tab"
+                  id="tab-vision"
                   aria-selected={activeTab === "vision"}
+                  aria-controls="panel-vision"
                   onClick={() => setActiveTab("vision")}
                   className={`${styles.tabBtn} ${
                     activeTab === "vision" ? styles.tabBtnActive : ""
@@ -309,7 +315,13 @@ export default function AboutClient() {
 
               {/* Tab Content */}
               {activeTab === "mission" ? (
-                <div key="mission" className={styles.tabContent}>
+                <div
+                  key="mission"
+                  id="panel-mission"
+                  role="tabpanel"
+                  aria-labelledby="tab-mission"
+                  className={styles.tabContent}
+                >
                   <p className={styles.missionQuote}>
                     &ldquo;To bloom where love is planted and provide the most exquisite floral experiences.&rdquo;
                   </p>
@@ -341,7 +353,13 @@ export default function AboutClient() {
                   </div>
                 </div>
               ) : (
-                <div key="vision" className={styles.tabContent}>
+                <div
+                  key="vision"
+                  id="panel-vision"
+                  role="tabpanel"
+                  aria-labelledby="tab-vision"
+                  className={styles.tabContent}
+                >
                   <p className={styles.missionQuote}>
                     &ldquo;To be the most cherished destination for heartfelt celebrations, blooming across every memory.&rdquo;
                   </p>
