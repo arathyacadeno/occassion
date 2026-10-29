@@ -121,7 +121,7 @@ export const OCCASIONS_LIST = [
     id: "flower-baskets",
     name: "Artisanal Flower Baskets",
     tagline: "Handwoven Cane Baskets Brimmed with Fresh Blooms",
-    image: "/images/artisanal-flower-basket.jpg",
+    image: "/images/flower-basket/pastel-rose-wicker-basket.jpg",
     count: "Handcrafted Daily in Calicut"
   },
   {
