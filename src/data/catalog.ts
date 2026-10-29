@@ -345,6 +345,31 @@ export const CATALOG_PRODUCTS: Product[] = [
     ],
     badge: "Premium Choice",
   },
+  {
+    id: "flower-basket-14",
+    slug: "30-pink-10-white-roses-gypsophilla-bamboo-basket",
+    name: "30 pink/ 10 white roses with gypsophilla arranged in bamboo basket",
+    price: 2000,
+    category: "flower",
+    categoryLabel: "Flowers",
+    basketType: "bamboo",
+    image: "/images/flower-basket/30-pink-10-white-roses-bamboo-basket.jpg",
+    images: [
+      "/images/flower-basket/30-pink-10-white-roses-bamboo-basket.jpg",
+    ],
+    rating: 4.9,
+    reviewsCount: 18,
+    description: "30 pink and 10 white roses with gypsophilla delicately arranged in a classic bamboo basket with keepsake ribbon.",
+    deliveryInfo: "Delivered fresh from botanical farms in insulated floristry vans.",
+    offers: ["Free customized greeting card"],
+    includes: [
+      "30 Fresh Pink Roses",
+      "10 Fresh White Roses",
+      "Gypsophila Fillers",
+      "Handcrafted Bamboo Basket",
+    ],
+    badge: "Bestseller",
+  },
 
   // ==================== BOUQUET PRODUCTS (/flower-bouquets) ====================
   {
