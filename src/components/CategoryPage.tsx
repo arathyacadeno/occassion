@@ -235,7 +235,7 @@ export default function CategoryPage({
         f.includes("cane")
       ) {
         if (p.basketType) return p.basketType === "cane";
-        return text.includes("cane") || text.includes("wicker");
+        return (text.includes("cane") || text.includes("wicker")) && !text.includes("container") && p.id !== "flower-basket-9";
       }
       if (
         f === "bamboo" ||
