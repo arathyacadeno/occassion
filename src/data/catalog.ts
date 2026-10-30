@@ -217,7 +217,10 @@ export const CATALOG_PRODUCTS: Product[] = [
     basketType: "bamboo",
     image: "/images/flower-basket/40-pink-white-roses-chrysanthemum-basket.jpg",
     images: [
-      "/images/flower-basket/40-pink-white-roses-chrysanthemum-basket.jpg",
+      "/images/flower-basket/side-view/40-pink-white-roses-chrysanthemum-basket/image_1_top_left.jpg",
+      "/images/flower-basket/side-view/40-pink-white-roses-chrysanthemum-basket/image_2_top_right.jpg",
+      "/images/flower-basket/side-view/40-pink-white-roses-chrysanthemum-basket/image_3_bottom_left.jpg",
+      "/images/flower-basket/side-view/40-pink-white-roses-chrysanthemum-basket/image_4_bottom_right.jpg",
     ],
     rating: 5.0,
     reviewsCount: 12,
@@ -340,7 +343,10 @@ export const CATALOG_PRODUCTS: Product[] = [
     basketType: "bamboo",
     image: "/images/flower-basket/30-white-yellow-roses-premium-basket-2.jpg",
     images: [
-      "/images/flower-basket/30-white-yellow-roses-premium-basket-2.jpg",
+      "/images/flower-basket/side-view/30-white-yellow-roses-premium-basket-2/image_1_top_left.jpg",
+      "/images/flower-basket/side-view/30-white-yellow-roses-premium-basket-2/image_2_top_right.jpg",
+      "/images/flower-basket/side-view/30-white-yellow-roses-premium-basket-2/image_3_bottom_left.jpg",
+      "/images/flower-basket/side-view/30-white-yellow-roses-premium-basket-2/image_4_bottom_right.jpg",
     ],
     rating: 4.8,
     reviewsCount: 20,
