@@ -75,6 +75,32 @@ export default function ProductInfo({
     product.name.toLowerCase().includes("orchid") ||
     product.name.toLowerCase().includes("orchids");
 
+  const isChrysanthemum =
+    (product.category as string) === "chrysanthemums" ||
+    (product.category as string) === "chrysanthemum" ||
+    product.name.toLowerCase().includes("chrysanthemum") ||
+    product.name.toLowerCase().includes("chrysanthemums");
+
+  const isSunflower =
+    (product.category as string) === "sunflowers" ||
+    (product.category as string) === "sunflower" ||
+    product.name.toLowerCase().includes("sunflower") ||
+    product.name.toLowerCase().includes("sunflowers");
+
+  const isRose =
+    (product.category as string) === "roses" ||
+    (product.category as string) === "rose" ||
+    product.name.toLowerCase().includes("rose") ||
+    product.name.toLowerCase().includes("roses");
+
+  const isCarnation =
+    (product.category as string) === "carnations" ||
+    (product.category as string) === "carnation" ||
+    product.name.toLowerCase().includes("carnation") ||
+    product.name.toLowerCase().includes("carnations");
+
+  const isStemBased = isOrchid || isChrysanthemum || isSunflower || isRose || isCarnation;
+
   const isBouquet = isFlowerBouquet(product);
   const pricePerFlower = getPricePerFlower(product);
   const [isCustomMode, setIsCustomMode] = useState<boolean>(false);
@@ -131,24 +157,24 @@ export default function ProductInfo({
             image: product.image,
           },
         ]
-      : isOrchid
+      : isStemBased
       ? [
           {
             id: "6-stems",
             name: "6 Stems",
-            price: 695,
+            price: pricePerFlower * 6,
             image: product.images?.[0] || product.image,
           },
           {
             id: "12-stems",
             name: "12 Stems",
-            price: 1195,
+            price: pricePerFlower * 12,
             image: product.images?.[0] || product.image,
           },
           {
             id: "custom",
             name: "Custom",
-            price: 695,
+            price: pricePerFlower * 12,
             image: product.images?.[0] || product.image,
           },
         ]
@@ -435,22 +461,22 @@ export default function ProductInfo({
   const handleAddToCart = () => {
     if (!validateForm()) return;
 
-    if (isCustomMode && isBouquet) {
+    if (isCustomMode && (isBouquet || isStemBased)) {
       addItem(
         {
           id: `${product.id}-custom-${customFlowerQty}`,
           slug: product.slug,
           category: product.category,
           name: `${product.name} (Custom Bouquet)`,
-          subtitle: `${customFlowerQty} Flowers @ ₹${pricePerFlower}/flower`,
+          subtitle: `${customFlowerQty} ${isStemBased ? "Stems" : "Flowers"} @ ₹${pricePerFlower}/${isStemBased ? "stem" : "flower"}`,
           price: activePrice,
           image: product.image,
           occasion: "celebration",
           rating: product.rating,
           reviewsCount: product.reviewsCount,
-          stems: [`${customFlowerQty} Hand-Picked Fresh Blooms`],
-          description: `Customized arrangement with ${customFlowerQty} flowers. (Price: ₹${pricePerFlower}/flower × ${customFlowerQty} = ₹${activePrice})`,
-          flowerCount: `${customFlowerQty} Flowers`,
+          stems: [`${customFlowerQty} Hand-Picked Fresh ${isOrchid ? "Orchid Stems" : isChrysanthemum ? "Chrysanthemum Stems" : isSunflower ? "Sunflower Stems" : isRose ? "Rose Stems" : isCarnation ? "Carnation Stems" : "Blooms"}`],
+          description: `Customized arrangement with ${customFlowerQty} ${isStemBased ? "stems" : "flowers"}. (Price: ₹${pricePerFlower}/${isStemBased ? "stem" : "flower"} × ${customFlowerQty} = ₹${activePrice})`,
+          flowerCount: `${customFlowerQty} ${isStemBased ? "Stems" : "Flowers"}`,
           scent: "Fresh & Green",
           badge: "Custom Bouquet",
           dimensions: "45cm H × 35cm W",
@@ -553,10 +579,10 @@ export default function ProductInfo({
     const activeAddonsMap = customAddons !== undefined ? customAddons : (selectedAddons || {});
 
     const mainItem: CheckoutItem = {
-      id: isCustomMode && isBouquet ? `${product.id}-custom-${customFlowerQty}` : product.id,
+      id: isCustomMode && (isBouquet || isStemBased) ? `${product.id}-custom-${customFlowerQty}` : product.id,
       slug: product.slug,
-      name: isCustomMode && isBouquet
-        ? `${product.name} (Custom: ${customFlowerQty} Flowers)`
+      name: isCustomMode && (isBouquet || isStemBased)
+        ? `${product.name} (Custom: ${customFlowerQty} ${isStemBased ? "Stems" : "Flowers"})`
         : product.name,
       category: product.category,
       price: activePrice,
@@ -636,7 +662,7 @@ export default function ProductInfo({
                   <div className={styles.giftCardInfo}>
                     <span className={styles.giftCardName}>{v.name}</span>
                     <span className={styles.giftCardPrice}>
-                      ₹{v.price.toLocaleString("en-IN")}
+                      ₹{(v.id === "custom" && isCustomMode ? customBouquetPrice : v.price).toLocaleString("en-IN")}
                     </span>
                   </div>
                 </button>
@@ -651,15 +677,15 @@ export default function ProductInfo({
         <div className={styles.customBouquetSection}>
           <div className={styles.customPanel}>
             <div className={styles.customInfoRow}>
-              <span className={styles.pricePerFlowerLabel}>Flower Unit Price:</span>
+              <span className={styles.pricePerFlowerLabel}>{isStemBased ? "Price per Stem:" : "Flower Unit Price:"}</span>
               <span className={styles.pricePerFlowerValue}>
                 ₹ {pricePerFlower}{" "}
-                <span className={styles.perUnitText}>/ flower</span>
+                <span className={styles.perUnitText}>{isStemBased ? "/ stem" : "/ flower"}</span>
               </span>
             </div>
 
             <div className={styles.stemStepperRow}>
-              <span className={styles.stepperLabel}>Select Number of Flowers:</span>
+              <span className={styles.stepperLabel}>{isStemBased ? "Select Number of Stems:" : "Select Number of Flowers:"}</span>
               <div className={styles.stepperControls}>
                 <button
                   type="button"

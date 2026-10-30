@@ -3959,16 +3959,18 @@ export function getPricePerFlower(product: {
   const name = (product.name || "").toLowerCase();
   const desc = (product.description || "").toLowerCase();
 
+  if (name.includes("chrysanthemum") || desc.includes("chrysanthemum")) return 100;
+  if (name.includes("sonia") || desc.includes("sonia")) return 80;
+  if (name.includes("orchid") || desc.includes("orchid")) return 80;
   if (name.includes("lily") || desc.includes("lily")) return 110;
-  if (name.includes("orchid") || desc.includes("orchid")) return 120;
   if (name.includes("tulip") || desc.includes("tulip")) return 95;
-  if (name.includes("rose") || desc.includes("rose")) return 75;
-  if (name.includes("sunflower") || desc.includes("sunflower")) return 85;
+  if (name.includes("rose") || desc.includes("rose")) return 60;
+  if (name.includes("sunflower") || desc.includes("sunflower")) return 250;
   if (name.includes("carnation") || desc.includes("carnation")) return 60;
 
   if (product.price && product.price > 0) {
     return Math.max(50, Math.round(product.price / 16));
   }
-  return 75;
+  return 60;
 }
 
