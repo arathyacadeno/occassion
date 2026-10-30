@@ -33,7 +33,7 @@ export const CATALOG_PRODUCTS: Product[] = [
   {
     id: "flower-9",
     slug: "white-pink-roses-gypsophilla-bamboo-basket",
-    name: "White /pink roses with gypsophilla in a cane basket",
+    name: "White /pink roses with gypsophilla in a Bamboo basket",
     price: 1800,
     category: "flower",
     categoryLabel: "Flowers",
@@ -61,7 +61,7 @@ export const CATALOG_PRODUCTS: Product[] = [
   {
     id: "flower-10",
     slug: "15-pink-carnations-gypsophilla-bamboo-basket",
-    name: "15 pink carnations with gypsophilla arranged in cane basket",
+    name: "15 pink carnations with gypsophilla arranged in Bamboo basket",
     price: 1095,
     category: "flower",
     categoryLabel: "Flowers",
@@ -117,7 +117,7 @@ export const CATALOG_PRODUCTS: Product[] = [
   {
     id: "flower-basket-4",
     slug: "red-roses-chrysanthemum-bamboo-basket",
-    name: "20 Red Roses, white chrysanthemum n gypsophilla arranged in cane basket",
+    name: "20 Red Roses, white chrysanthemum n gypsophilla arranged in Bamboo basket",
     price: 1395,
     category: "flower",
     categoryLabel: "Flowers",
