@@ -14,6 +14,7 @@ interface ProductCardProps {
   showDelete?: boolean;
   onDelete?: () => void;
   showAddToCart?: boolean;
+  imageFit?: "cover" | "contain";
 }
 
 export default function ProductCard({
@@ -22,7 +23,16 @@ export default function ProductCard({
   showDelete = false,
   onDelete,
   showAddToCart,
+  imageFit,
 }: ProductCardProps) {
+  const isFlowerBasket =
+    imageFit === "contain" ||
+    Boolean(
+      product.basketType ||
+      product.id.startsWith("flower-basket-") ||
+      (product.image && product.image.includes("/flower-basket/")) ||
+      (product.category === "flower" && (product.id === "flower-9" || product.id === "flower-10"))
+    );
   const shouldShowAddToCart = showAddToCart ?? !compact;
   const { isInWishlist, toggleItem } = useWishlist();
   const isWishlisted = isInWishlist(product.id);
@@ -67,17 +77,21 @@ export default function ProductCard({
       {/* Top Image Container with Wave Scoop Cutout */}
       <div
         className={`${styles.imageContainer} ${
+          isFlowerBasket ? styles.basketImageContainer : ""
+        } ${
           compact ? "similar-product-image-container" : ""
         }`}>
         <Link
           href={productHref}
-          className={styles.imageLink}
+          className={`${styles.imageLink} ${isFlowerBasket ? styles.basketImageLink : ""}`}
           aria-label={product.name}
         >
           <img
             src={product.image}
             alt={product.name}
             className={`${styles.productImage} ${
+              isFlowerBasket ? styles.basketProductImage : ""
+            } ${
               compact ? "similar-product-image" : ""
             }`}
             loading="lazy"

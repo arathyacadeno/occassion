@@ -356,7 +356,7 @@ export default function CategoryPage({
             <div className={styles.productGrid}>
               {visibleProducts.length > 0 ? (
                 visibleProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                  <ProductCard key={product.id} product={product} imageFit={title?.toLowerCase().includes("basket") ? "contain" : undefined} />
                 ))
               ) : (
                 <p className={styles.emptyState}>

@@ -137,6 +137,15 @@ export default function ProductGallery({
     if (Math.abs(dx) > 40) (dx < 0 ? goNext : goPrev)();
   };
 
+  const isFlowerBasket = Boolean(
+    product && (
+      product.basketType ||
+      product.id.startsWith("flower-basket-") ||
+      (product.image && product.image.includes("/flower-basket/")) ||
+      (product.category === "flower" && (product.id === "flower-9" || product.id === "flower-10"))
+    )
+  );
+
   const currentImage = thumbnails[selectedIndex];
 
   return (
@@ -166,7 +175,7 @@ export default function ProductGallery({
               <img
                 src={img}
                 alt={`${productName} thumbnail ${idx + 1}`}
-                className={styles.thumbnailImg}
+                className={`${styles.thumbnailImg} ${isFlowerBasket ? styles.basketThumbnailImg : ""}`}
               />
             </button>
           ))}
@@ -184,7 +193,7 @@ export default function ProductGallery({
           <img
             src={currentImage}
             alt={productName}
-            className={styles.mainImage}
+            className={`${styles.mainImage} ${isFlowerBasket ? styles.basketMainImage : ""}`}
             draggable={false}
             style={{
               transformOrigin: `${zoom.x}% ${zoom.y}%`,

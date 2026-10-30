@@ -449,3 +449,44 @@
     height: auto;
   }
 }
+
+
+/* ================= FLOWER BASKET SPECIFIC PRESENTATION ================= */
+.basketImageContainer {
+  background-color: #FFFFFF !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 10px !important;
+  box-sizing: border-box !important;
+}
+
+/* Remove wave notch overlay for flower baskets so handle, base, and sides are 100% visible */
+.basketImageContainer::after {
+  display: none !important;
+}
+
+.basketImageLink {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.basketProductImage {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  display: block !important;
+  border-radius: 12px;
+}
+
+@media (max-width: 640px) {
+  .basketImageContainer {
+    padding: 6px !important;
+  }
+}

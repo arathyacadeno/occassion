@@ -384,3 +384,18 @@
     transition: none;
   }
 }
+
+/* Flower basket presentation override */
+.basketMainImage {
+  object-fit: contain !important;
+  object-position: center !important;
+  padding: 16px !important;
+  box-sizing: border-box !important;
+}
+
+.basketThumbnailImg {
+  object-fit: contain !important;
+  object-position: center !important;
+  padding: 4px !important;
+  box-sizing: border-box !important;
+}
