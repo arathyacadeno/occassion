@@ -166,7 +166,10 @@ export const CATALOG_PRODUCTS: Product[] = [
     basketType: "cane",
     image: "/images/flower-basket/30-white-yellow-roses-premium-basket.jpg",
     images: [
-      "/images/flower-basket/30-white-yellow-roses-premium-basket.jpg",
+      "/images/flower-basket/side-view/30-white-yellow-roses-premium-basket/image_1_top_left.jpg",
+      "/images/flower-basket/side-view/30-white-yellow-roses-premium-basket/image_2_top_right.jpg",
+      "/images/flower-basket/side-view/30-white-yellow-roses-premium-basket/image_3_bottom_left.jpg",
+      "/images/flower-basket/side-view/30-white-yellow-roses-premium-basket/image_4_bottom_right.jpg",
     ],
     rating: 4.9,
     reviewsCount: 18,
