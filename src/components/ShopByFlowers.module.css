@@ -176,10 +176,15 @@
   padding: 18px;
   box-sizing: border-box;
   margin: 0 auto;
+  overflow: hidden;
   box-shadow: 0 8px 24px rgba(255, 90, 154, 0.12);
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
     box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
     border-color 0.35s ease;
+}
+
+.circleCoverFull {
+  padding: 0 !important;
 }
 
 .itemInner:hover .circleContainer {
@@ -198,9 +203,19 @@
     filter 0.35s ease;
 }
 
+.imgCoverFull {
+  object-fit: cover !important;
+  object-position: center center;
+  transform: scale(1.08);
+}
+
 .itemInner:hover .bouquetImg {
   transform: scale(1.05);
   filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.12));
+}
+
+.itemInner:hover .circleCoverFull .imgCoverFull {
+  transform: scale(1.15);
 }
 
 /* ================= FLOWER LABELS ================= */

@@ -11,6 +11,7 @@ interface FlowerCategory {
   description: string;
   image: string;
   href: string;
+  coverFull?: boolean;
 }
 
 const FLOWER_CATEGORIES: FlowerCategory[] = [
@@ -23,7 +24,7 @@ const FLOWER_CATEGORIES: FlowerCategory[] = [
   { id: "lilies", title: "Lilies", description: "Elegant & graceful", image: "/images/lilies.png", href: "/flowers/lilies" },
   { id: "gladiolus", title: "Gladiolus", description: "Majestic & stately", image: "/images/Gladiolus.png", href: "/flowers/gladiolus" },
   { id: "rajnigandha", title: "Rajnigandha", description: "Aromatic & traditional", image: "/images/Rajnigandha.png", href: "/flowers/rajnigandha" },
-  { id: "heliconia", title: "Heliconia", description: "Tropical & exotic", image: "/images/Heliconia.png", href: "/flowers/heliconia" },
+  { id: "heliconia", title: "Heliconia", description: "Tropical & exotic", image: "/images/Heliconia.png", href: "/flowers/heliconia", coverFull: true },
 ];
 
 const ORIGINAL_COUNT = FLOWER_CATEGORIES.length;
@@ -205,11 +206,11 @@ export default function ShopByFlowers() {
                     aria-label={`Shop ${cat.title} bouquets`}
                     draggable={false}
                   >
-                    <div className={styles.circleContainer}>
+                    <div className={`${styles.circleContainer} ${cat.coverFull ? styles.circleCoverFull : ""}`}>
                       <img
                         src={cat.image}
                         alt={`${cat.title} bouquet`}
-                        className={styles.bouquetImg}
+                        className={`${styles.bouquetImg} ${cat.coverFull ? styles.imgCoverFull : ""}`}
                         draggable={false}
                       />
                     </div>
