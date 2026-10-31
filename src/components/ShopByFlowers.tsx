@@ -14,14 +14,16 @@ interface FlowerCategory {
 }
 
 const FLOWER_CATEGORIES: FlowerCategory[] = [
-  { id: "roses", title: "Roses", description: "Romantic & timeless", image: "/images/flowers-roses-nobg.png", href: "/flowers/roses" },
-  { id: "lilies", title: "Lilies", description: "Elegant & graceful", image: "/images/flowers-lilies-nobg.png", href: "/flowers/lilies" },
-  { id: "sunflowers", title: "Sunflowers", description: "Bright & joyful", image: "/images/flowers-sunflowers-nobg.png", href: "/flowers/sunflowers" },
-  { id: "tulips", title: "Tulips", description: "Sweet & charming", image: "/images/flowers-tulips-nobg.png", href: "/flowers/tulips" },
-  { id: "carnations", title: "Carnations", description: "Charming & delicate", image: "/images/flowers-carnations-nobg.png", href: "/flowers/carnations" },
-  { id: "peonies", title: "Peonies", description: "Lush & enchanting", image: "/images/flowers-peonies-nobg.png", href: "/flowers/peonies" },
-  { id: "orchids", title: "Orchids", description: "Exotic & graceful", image: "/images/flowers-orchids-nobg.png", href: "/flowers/orchids" },
-  { id: "pastel-tulips", title: "Pastel Tulips", description: "Sweet & poetic", image: "/images/flowers-pasteltulips-nobg.png", href: "/flowers/tulips" },
+  { id: "roses", title: "Roses", description: "Romantic & timeless", image: "/images/rose.png", href: "/flowers/roses" },
+  { id: "orchids", title: "Orchids", description: "Exotic & graceful", image: "/images/orchid.png", href: "/flowers/orchids" },
+  { id: "chrysanthemums", title: "Chrysanthemums", description: "Vibrant & cheerful", image: "/images/Chrysanthemum.png", href: "/flowers/chrysanthemums" },
+  { id: "gerberas", title: "Gerberas", description: "Playful & vivid", image: "/images/Gerbera.png", href: "/flowers/gerberas" },
+  { id: "sunflowers", title: "Sunflowers", description: "Bright & joyful", image: "/images/sunflower.png", href: "/flowers/sunflowers" },
+  { id: "carnations", title: "Carnations", description: "Charming & delicate", image: "/images/Carnations.png", href: "/flowers/carnations" },
+  { id: "lilies", title: "Lilies", description: "Elegant & graceful", image: "/images/lilies.png", href: "/flowers/lilies" },
+  { id: "gladiolus", title: "Gladiolus", description: "Majestic & stately", image: "/images/Gladiolus.png", href: "/flowers/gladiolus" },
+  { id: "rajnigandha", title: "Rajnigandha", description: "Aromatic & traditional", image: "/images/Rajnigandha.png", href: "/flowers/rajnigandha" },
+  { id: "heliconia", title: "Heliconia", description: "Tropical & exotic", image: "/images/Heliconia.png", href: "/flowers/heliconia" },
 ];
 
 const ORIGINAL_COUNT = FLOWER_CATEGORIES.length;

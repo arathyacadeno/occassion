@@ -67,8 +67,10 @@ export default function ProductInfo({
 
   const isLily =
     (product.category as string) === "lilies" ||
+    (product.category as string) === "lily" ||
     product.name.toLowerCase().includes("lily") ||
-    product.name.toLowerCase().includes("lilies");
+    product.name.toLowerCase().includes("lilies") ||
+    product.name.toLowerCase().includes("lilium");
 
   const isOrchid =
     (product.category as string) === "orchids" ||
@@ -99,7 +101,20 @@ export default function ProductInfo({
     product.name.toLowerCase().includes("carnation") ||
     product.name.toLowerCase().includes("carnations");
 
-  const isStemBased = isOrchid || isChrysanthemum || isSunflower || isRose || isCarnation;
+  const isGladiolus =
+    (product.category as string) === "gladiolus" ||
+    (product.category as string) === "gladioli" ||
+    product.name.toLowerCase().includes("gladiol") ||
+    (product.description && product.description.toLowerCase().includes("gladiol"));
+
+  const isRajnigandha =
+    (product.category as string) === "rajnigandha" ||
+    (product.category as string) === "tuberose" ||
+    product.name.toLowerCase().includes("rajnigandha") ||
+    product.name.toLowerCase().includes("tuberose") ||
+    (product.description && (product.description.toLowerCase().includes("rajnigandha") || product.description.toLowerCase().includes("tuberose")));
+
+  const isStemBased = isOrchid || isChrysanthemum || isSunflower || isRose || isCarnation || isLily || isGladiolus || isRajnigandha;
 
   const isBouquet = isFlowerBouquet(product);
   const pricePerFlower = getPricePerFlower(product);
@@ -474,7 +489,7 @@ export default function ProductInfo({
           occasion: "celebration",
           rating: product.rating,
           reviewsCount: product.reviewsCount,
-          stems: [`${customFlowerQty} Hand-Picked Fresh ${isOrchid ? "Orchid Stems" : isChrysanthemum ? "Chrysanthemum Stems" : isSunflower ? "Sunflower Stems" : isRose ? "Rose Stems" : isCarnation ? "Carnation Stems" : "Blooms"}`],
+          stems: [`${customFlowerQty} Hand-Picked Fresh ${isOrchid ? "Orchid Stems" : isChrysanthemum ? "Chrysanthemum Stems" : isSunflower ? "Sunflower Stems" : isRose ? "Rose Stems" : isCarnation ? "Carnation Stems" : isLily ? "Lily Stems" : isGladiolus ? "Gladiolus Stems" : isRajnigandha ? "Rajnigandha Stems" : "Blooms"}`],
           description: `Customized arrangement with ${customFlowerQty} ${isStemBased ? "stems" : "flowers"}. (Price: ₹${pricePerFlower}/${isStemBased ? "stem" : "flower"} × ${customFlowerQty} = ₹${activePrice})`,
           flowerCount: `${customFlowerQty} ${isStemBased ? "Stems" : "Flowers"}`,
           scent: "Fresh & Green",

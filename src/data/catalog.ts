@@ -29,6 +29,69 @@ export interface Product {
 }
 
 export const CATALOG_PRODUCTS: Product[] = [
+  {
+    id: "flower-oriental-sunset-lily-bouquet",
+    slug: "sunset-oriental-lily-bouquet",
+    name: "Sunset Oriental Lily Bouquet",
+    price: 1800,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/oriental-lily.png",
+    images: ["/images/oriental-lily.png", "/images/Green World Lily.png"],
+    rating: 5.0,
+    reviewsCount: 38,
+    description: "Multi-bloom Stargazer Sunset Oriental lilies featuring radiant magenta-orange petals and intoxicating fragrance. Curated at ₹300 per stem with full custom stem arrangement.",
+    deliveryInfo: "Delivered fresh from botanical highlands in hydration wraps.",
+    offers: ["Free customized greeting card"],
+    includes: [
+      "6 Multi-Bloom Sunset Oriental Lily Stems (18+ Flowers)",
+      "Broad Emerald Lily Foliage",
+      "Luxe Matte Floral Wrapping & Gold Satin Ribbon",
+    ],
+    badge: "Bestseller",
+  },
+  {
+    id: "flower-rajnigandha-fragrant-bunch",
+    slug: "fragrant-rajnigandha-tuberose-bunch",
+    name: "Fragrant Rajnigandha (Tuberose) Bunch",
+    price: 900,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/Rajnigandha.png",
+    images: ["/images/Rajnigandha.png"],
+    rating: 5.0,
+    reviewsCount: 34,
+    description: "Heavenly fragrant white Rajnigandha (tuberose) flower spikes tied with natural green foliage. Celebrated for poojas, auspicious occasions, and traditional floral gifting at ₹90 per stem.",
+    deliveryInfo: "Delivered fresh with closed and blooming buds for maximum natural fragrance.",
+    offers: ["Free customized greeting card"],
+    includes: [
+      "10 Fresh Fragrant Rajnigandha Stems",
+      "Fresh Sword Leaves & Foliage",
+      "Traditional Eco-friendly Wrap & Ribbon",
+    ],
+    badge: "Most Fragrant",
+  },
+  {
+    id: "flower-gladiolus-pink-stately-bouquet",
+    slug: "stately-pink-gladiolus-bouquet",
+    name: "Stately Pink Gladiolus Bouquet",
+    price: 500,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/Gladiolus.png",
+    images: ["/images/Gladiolus.png"],
+    rating: 4.9,
+    reviewsCount: 22,
+    description: "Towering stems of vibrant blush pink and white gladiolus blossoms paired with fresh greenery. Priced at ₹50 per stem with full custom stem selection.",
+    deliveryInfo: "Delivered fresh from botanical farms in insulated floristry packaging.",
+    offers: ["Free customized greeting card"],
+    includes: [
+      "10 Fresh Pink Gladiolus Stems",
+      "Emerald Sword Foliage",
+      "Signature Designer Wrap & Ribbon",
+    ],
+    badge: "Fresh Arrival",
+  },
   // ==================== FLOWER PRODUCTS (/flower) ====================
   {
     id: "flower-9",
@@ -3848,11 +3911,16 @@ export function getProductsForFlower(flower: string): Product[] {
       }
       return text.includes("rose");
     }
-    if (norm === "lili" || norm === "lily") return text.includes("lil");
+    if (norm === "lili" || norm === "lily" || norm === "lilie") return text.includes("lil");
     if (norm === "orchid") return text.includes("orchid");
     if (norm === "tulip") return text.includes("tulip");
     if (norm === "carnation") return text.includes("carnation");
     if (norm === "peoni" || norm === "peony") return text.includes("peon");
+    if (norm === "chrysanthemum") return text.includes("chrysanthemum");
+    if (norm === "gerbera") return text.includes("gerbera");
+    if (norm.startsWith("gladiol")) return text.includes("gladiol");
+    if (norm.startsWith("rajnigandha") || norm.startsWith("tuberose")) return text.includes("rajnigandha") || text.includes("tuberose");
+    if (norm.startsWith("heliconia")) return text.includes("heliconia");
     return text.includes(norm);
   });
 
@@ -3962,7 +4030,24 @@ export function getPricePerFlower(product: {
   if (name.includes("chrysanthemum") || desc.includes("chrysanthemum")) return 100;
   if (name.includes("sonia") || desc.includes("sonia")) return 80;
   if (name.includes("orchid") || desc.includes("orchid")) return 80;
-  if (name.includes("lily") || desc.includes("lily")) return 110;
+  if (
+    name.includes("oriental") ||
+    desc.includes("oriental") ||
+    name.includes("stargazer") ||
+    desc.includes("stargazer") ||
+    name.includes("tiger lily") ||
+    desc.includes("tiger lily") ||
+    name.includes("green world") ||
+    desc.includes("green world") ||
+    name.includes("sunset lily") ||
+    desc.includes("sunset lily")
+  ) {
+    return 300;
+  }
+  if (name.includes("asiatic") || desc.includes("asiatic")) return 200;
+  if (name.includes("lily") || desc.includes("lily") || name.includes("lilium") || desc.includes("lilium")) return 300;
+  if (name.includes("gladiolus") || desc.includes("gladiolus") || name.includes("gladiol") || desc.includes("gladiol")) return 50;
+  if (name.includes("rajnigandha") || desc.includes("rajnigandha") || name.includes("tuberose") || desc.includes("tuberose")) return 90;
   if (name.includes("tulip") || desc.includes("tulip")) return 95;
   if (name.includes("rose") || desc.includes("rose")) return 60;
   if (name.includes("sunflower") || desc.includes("sunflower")) return 250;
