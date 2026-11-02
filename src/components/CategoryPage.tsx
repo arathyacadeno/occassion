@@ -22,6 +22,7 @@ interface CategoryPageProps {
   filterTabs?: { id: string; label: string }[];
   initialFilterId?: string;
   initialSearch?: string;
+  flowerCategory?: string;
 }
 
 export default function CategoryPage({
@@ -31,6 +32,7 @@ export default function CategoryPage({
   filterTabs,
   initialFilterId,
   initialSearch,
+  flowerCategory,
 }: CategoryPageProps) {
   const tabs = filterTabs && filterTabs.length > 0 ? filterTabs : DEFAULT_FILTER_TABS;
   const [activeFilterId, setActiveFilterId] = useState<string>(
@@ -134,6 +136,9 @@ export default function CategoryPage({
       return list;
     }
     const f = activeFilterId.toLowerCase();
+    if (f === "customize") {
+      return list.filter((p) => p.customizable !== false);
+    }
     return products.filter((p) => {
       const text = `${p.name} ${p.description ?? ""} ${p.slug ?? ""} ${p.badge ?? ""}`.toLowerCase();
       if (f === "birthday")
@@ -355,9 +360,20 @@ export default function CategoryPage({
           <div className={styles.gridContainer}>
             <div className={styles.productGrid}>
               {visibleProducts.length > 0 ? (
-                visibleProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} imageFit={title?.toLowerCase().includes("basket") ? "contain" : undefined} />
-                ))
+                visibleProducts.map((product) => {
+                  const isCustomizeTab = activeFilterId.toLowerCase() === "customize";
+                  const catSlug = flowerCategory || (product.category === "flower" ? "chrysanthemums" : product.category);
+                  const customizeLink = `/flowers/${catSlug}/customize/${product.id}`;
+                  return (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      actionType={isCustomizeTab ? "customize" : "cart"}
+                      customizeHref={customizeLink}
+                      imageFit={title?.toLowerCase().includes("basket") ? "contain" : undefined}
+                    />
+                  );
+                })
               ) : (
                 <p className={styles.emptyState}>
                   No products in this category yet.

@@ -74,7 +74,7 @@ const highlightCards: HighlightCard[] = [
     tag: "Tradition",
     title: "Garlands",
     subtitle: "Fresh Jasmine Varmala and Gift Baskets",
-    image: "/images/garlands/1.jpg",
+    image: "/images/garlands/1.png",
     desc: "Handcrafted traditional and contemporary bridal garlands, reception varmalas, and auspicious gift flower baskets meticulously strung with fresh fragrant jasmine, lotus buds, and Dutch roses.",
     features: [
       "Fragrant Madurai Jasmine",

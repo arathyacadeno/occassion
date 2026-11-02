@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { Bouquet, CartItem } from "@/types";
+import { Bouquet, CartItem, ItemCustomization } from "@/types";
 interface CartContextType {
   items: CartItem[];
   addItem: (
@@ -9,7 +9,8 @@ interface CartContextType {
     size?: "Petite" | "Signature" | "Grand Deluxe",
     vaseOption?: boolean,
     customNote?: string,
-    qty?: number
+    qty?: number,
+    customization?: ItemCustomization
   ) => void;
   updateQty: (index: number, newQty: number) => void;
   removeItem: (index: number) => void;
@@ -126,13 +127,25 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     size: "Petite" | "Signature" | "Grand Deluxe" = "Signature",
     vaseOption: boolean = false,
     customNote?: string,
-    qty: number = 1
+    qty: number = 1,
+    customization?: ItemCustomization
   ) => {
     const addQuantity = Math.max(1, qty);
     setItems((prev) => {
-      const existingIdx = prev.findIndex(
-        (i) => i.bouquet.id === bouquet.id && i.selectedSize === size && i.vaseOption === vaseOption
-      );
+      const existingIdx = prev.findIndex((i) => {
+        if (customization || i.customization) {
+          return (
+            i.bouquet.id === bouquet.id &&
+            i.customization?.summaryText === customization?.summaryText &&
+            i.customization?.finalPrice === customization?.finalPrice
+          );
+        }
+        return (
+          i.bouquet.id === bouquet.id &&
+          i.selectedSize === size &&
+          i.vaseOption === vaseOption
+        );
+      });
       if (existingIdx > -1) {
         const next = [...prev];
         next[existingIdx].quantity += addQuantity;
@@ -145,7 +158,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           quantity: addQuantity,
           selectedSize: size,
           vaseOption,
-          customNote,
+          customNote: customNote || customization?.customNote,
+          customization,
         },
       ];
     });
@@ -189,9 +203,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const subtotal = items.reduce((acc, item) => {
-    let itemPrice = item.bouquet.price;
-    if (item.selectedSize === "Petite") itemPrice = Math.round(item.bouquet.price * 0.8);
-    if (item.selectedSize === "Grand Deluxe") itemPrice = Math.round(item.bouquet.price * 1.35);
+    let itemPrice = item.customization?.finalPrice ?? item.bouquet.price;
+    if (!item.customization) {
+      if (item.selectedSize === "Petite") itemPrice = Math.round(item.bouquet.price * 0.8);
+      if (item.selectedSize === "Grand Deluxe") itemPrice = Math.round(item.bouquet.price * 1.35);
+    }
     const vasePrice = item.vaseOption ? 299 : 0;
     return acc + (itemPrice + vasePrice) * item.quantity;
   }, 0);

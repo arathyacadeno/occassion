@@ -6,6 +6,8 @@ import Footer from "@/components/Footer";
 import { useAuth } from "@/context/AuthContext";
 import {
   ShieldCheck,
+  Sparkles,
+  Sliders,
   Package,
   ShoppingBag,
   Users,
@@ -29,7 +31,7 @@ export default function AdminPage() {
   const [loggingIn, setLoggingIn] = useState(false);
 
   // Tab
-  const [activeTab, setActiveTab] = useState<"orders" | "stock" | "coupons" | "delivery" | "users">("orders");
+  const [activeTab, setActiveTab] = useState<"orders" | "stock" | "customization" | "coupons" | "delivery" | "users">("orders");
 
   // Admin stats & data
   const [stats, setStats] = useState<any>(null);
@@ -52,6 +54,42 @@ export default function AdminPage() {
     maxDiscount: 200,
   });
   const [couponMsg, setCouponMsg] = useState<string | null>(null);
+
+  // Customization state
+  const [customConfig, setCustomConfig] = useState<any>({
+    sizes: [
+      { id: "small", name: "Small (Standard)", stemsText: "12 - 15 Stems", extraPrice: 0 },
+      { id: "medium", name: "Medium", stemsText: "18 - 22 Stems", extraPrice: 200 },
+      { id: "large", name: "Large Deluxe", stemsText: "26 - 30 Stems", extraPrice: 450 },
+      { id: "premium", name: "Premium Luxe Atelier", stemsText: "36 - 42 Stems", extraPrice: 750 },
+    ],
+    wrappingPapers: [
+      { id: "craft-natural", name: "Classic Natural Craft Wrap", extraPrice: 0 },
+      { id: "blush-pink-matte", name: "Blush Pink Matte Luxury Wrap", extraPrice: 80 },
+      { id: "champagne-gold-foil", name: "Champagne Gold Foil Border", extraPrice: 120 },
+      { id: "midnight-black-gold", name: "Midnight Onyx & Gold Accent", extraPrice: 100 },
+      { id: "frosted-pearl", name: "Frosted Pearl Minimalist Wrap", extraPrice: 90 },
+    ],
+    ribbonColors: [
+      { id: "champagne-gold", name: "Champagne Gold Ribbon", colorCode: "#d4af37", extraPrice: 0 },
+      { id: "blush-pink", name: "Blush Rose Pink Ribbon", colorCode: "#f472b6", extraPrice: 30 },
+      { id: "royal-crimson", name: "Royal Crimson Red Ribbon", colorCode: "#be185d", extraPrice: 30 },
+      { id: "deep-maroon", name: "Deep Maroon Satin Ribbon", colorCode: "#831843", extraPrice: 40 },
+      { id: "lavender-violet", name: "Lavender Violet Ribbon", colorCode: "#a855f7", extraPrice: 30 },
+      { id: "emerald-green", name: "Forest Emerald Ribbon", colorCode: "#059669", extraPrice: 30 },
+      { id: "ivory-silk", name: "Ivory Silk Ribbon", colorCode: "#fef3c7", extraPrice: 30 },
+    ],
+    decorations: [
+      { id: "babys-breath", name: "Fresh Baby's Breath (Gypsophila)", extraPrice: 100 },
+      { id: "ruscus-greens", name: "Italian Ruscus Greenery", extraPrice: 70 },
+      { id: "eucalyptus", name: "Fragrant Silver Dollar Eucalyptus", extraPrice: 90 },
+      { id: "golden-fillers", name: "Decorative Floral Sparkle Fillers", extraPrice: 120 },
+    ],
+    disabledProductIds: [],
+  });
+  const [customCatFilter, setCustomCatFilter] = useState("all");
+  const [customSaveMsg, setCustomSaveMsg] = useState<string | null>(null);
+  const [customSaving, setCustomSaving] = useState(false);
 
   const fetchAdminData = useCallback(async () => {
     if (!isAdmin) return;
@@ -92,6 +130,19 @@ export default function AdminPage() {
         if (data.success && Array.isArray(data.coupons)) {
           setCoupons(data.coupons);
         }
+      }
+
+      // 5. Customization Settings
+      try {
+        const customRes = await fetch("/api/admin/customization", { credentials: "include" });
+        if (customRes.ok) {
+          const data = await customRes.json();
+          if (data.success && data.config) {
+            setCustomConfig(data.config);
+          }
+        }
+      } catch (err) {
+        console.warn("Could not fetch customization settings", err);
       }
     } catch (e) {
       console.error("Admin data fetch error:", e);
@@ -155,6 +206,41 @@ export default function AdminPage() {
       }
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleToggleProductCustomizable = (productId: string) => {
+    setCustomConfig((prev: any) => {
+      const disabledList: string[] = Array.isArray(prev.disabledProductIds) ? prev.disabledProductIds : [];
+      const isCurrentlyDisabled = disabledList.includes(productId);
+      const nextDisabled = isCurrentlyDisabled
+        ? disabledList.filter((id) => id !== productId)
+        : [...disabledList, productId];
+      return { ...prev, disabledProductIds: nextDisabled };
+    });
+  };
+
+  const handleSaveCustomization = async () => {
+    setCustomSaving(true);
+    setCustomSaveMsg(null);
+    try {
+      const res = await fetch("/api/admin/customization", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(customConfig),
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (data.success) {
+        setCustomSaveMsg("Customization settings and charges saved successfully!");
+        setTimeout(() => setCustomSaveMsg(null), 3500);
+      } else {
+        setCustomSaveMsg(data.error || "Failed to save settings");
+      }
+    } catch {
+      setCustomSaveMsg("Network error saving customization settings");
+    } finally {
+      setCustomSaving(false);
     }
   };
 
@@ -516,6 +602,242 @@ export default function AdminPage() {
                   })}
                 </tbody>
               </table>
+            </div>
+          </div>
+        )}
+
+        {/* TAB: Customization Settings */}
+        {activeTab === "customization" && (
+          <div className={styles.panelCard}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
+              <div>
+                <h2 style={{ fontFamily: "var(--font-serif)", color: "#831843", fontSize: "1.4rem", margin: "0 0 6px" }}>
+                  Flower Customization Management
+                </h2>
+                <p style={{ color: "#64748b", fontSize: "0.88rem", margin: 0 }}>
+                  Enable or disable customization for individual products, and configure bouquet sizes, wraps, ribbons, and decorative botanical fillers.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className={styles.submitBtn}
+                onClick={handleSaveCustomization}
+                disabled={customSaving}
+                style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 22px" }}
+              >
+                <Sparkles size={16} />
+                <span>{customSaving ? "Saving..." : "Save Customization Settings"}</span>
+              </button>
+            </div>
+
+            {customSaveMsg && (
+              <div style={{ padding: 14, borderRadius: 10, background: "#ecfdf5", border: "1px solid #a7f3d0", color: "#065f46", fontWeight: 600, marginBottom: 20 }}>
+                ✓ {customSaveMsg}
+              </div>
+            )}
+
+            {/* Category Filter Pills */}
+            <div className={styles.customCatTabs}>
+              {[
+                { id: "all", label: "All Flower Types" },
+                { id: "chrysanthemums", label: "Chrysanthemums" },
+                { id: "roses", label: "Roses" },
+                { id: "orchids", label: "Orchids" },
+                { id: "gerberas", label: "Gerberas" },
+                { id: "sunflowers", label: "Sunflowers" },
+                { id: "carnations", label: "Carnations" },
+                { id: "lilies", label: "Lilies" },
+                { id: "gladiolus", label: "Gladiolus" },
+                { id: "rajnigandha", label: "Rajnigandha" },
+                { id: "heliconia", label: "Heliconia" },
+              ].map((cat) => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  className={`${styles.customCatPill} ${customCatFilter === cat.id ? styles.customCatPillActive : ""}`}
+                  onClick={() => setCustomCatFilter(cat.id)}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Product Customization Toggles Table */}
+            <h3 style={{ margin: "20px 0 12px", color: "#831843", fontSize: "1.1rem" }}>
+              Customizable Products ({
+                products.filter((p) => {
+                  if (customCatFilter === "all") return p.category_slug?.includes("flower") || p.category_id?.includes("flower") || p.name?.toLowerCase().includes("flower") || p.name?.toLowerCase().includes("rose") || p.name?.toLowerCase().includes("bouquet");
+                  return (p.name + " " + (p.description || "")).toLowerCase().includes(customCatFilter.replace(/s$/, ""));
+                }).length
+              })
+            </h3>
+
+            <div className={styles.tableResponsive}>
+              <table className={styles.dataTable}>
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Base Price (₹)</th>
+                    <th>Stock</th>
+                    <th>Customization Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {products
+                    .filter((p) => {
+                      if (customCatFilter === "all") return true;
+                      const text = (p.name + " " + (p.description || "") + " " + (p.slug || "")).toLowerCase();
+                      return text.includes(customCatFilter.replace(/s$/, ""));
+                    })
+                    .slice(0, 40)
+                    .map((p) => {
+                      const disabledList: string[] = customConfig.disabledProductIds || [];
+                      const isCustomizable = !disabledList.includes(p.id) && !disabledList.includes(p.slug);
+                      return (
+                        <tr key={p.id}>
+                          <td>
+                            <div style={{ fontWeight: 600, color: "#111827" }}>{p.name}</div>
+                            <div style={{ fontSize: "0.76rem", color: "#64748b" }}>ID: {p.id}</div>
+                          </td>
+                          <td style={{ fontWeight: 700, color: "#be185d" }}>
+                            ₹{p.price}
+                          </td>
+                          <td>{p.stock} in stock</td>
+                          <td>
+                            <span className={`${styles.statusBadge} ${isCustomizable ? styles.statusDelivered : styles.statusCancelled}`}>
+                              {isCustomizable ? "Customization Enabled" : "Disabled"}
+                            </span>
+                          </td>
+                          <td>
+                            <button
+                              type="button"
+                              className={`${styles.toggleBtn} ${isCustomizable ? styles.toggleDisabled : styles.toggleEnabled}`}
+                              onClick={() => handleToggleProductCustomizable(p.id)}
+                            >
+                              {isCustomizable ? "Disable" : "Enable"}
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Global Customization Charges Configuration */}
+            <h3 style={{ margin: "36px 0 14px", color: "#831843", fontSize: "1.1rem" }}>
+              Customization Options &amp; Extra Charges (₹)
+            </h3>
+
+            <div className={styles.customPriceGrid}>
+              {/* Bouquet Sizes */}
+              <div className={styles.customPriceCard}>
+                <h4 style={{ margin: "0 0 10px", color: "#831843", fontSize: "0.95rem" }}>Bouquet Sizes</h4>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {customConfig.sizes?.map((size: any, idx: number) => (
+                    <div key={size.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.85rem" }}>
+                      <span>{size.name}</span>
+                      <input
+                        type="number"
+                        min="0"
+                        style={{ width: 80, padding: "4px 8px", borderRadius: 6, border: "1px solid #cbd5e1", textAlign: "right" }}
+                        value={size.extraPrice}
+                        onChange={(e) => {
+                          const val = Number(e.target.value);
+                          setCustomConfig((prev: any) => {
+                            const nextSizes = [...prev.sizes];
+                            nextSizes[idx] = { ...nextSizes[idx], extraPrice: val };
+                            return { ...prev, sizes: nextSizes };
+                          });
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Wrapping Paper */}
+              <div className={styles.customPriceCard}>
+                <h4 style={{ margin: "0 0 10px", color: "#831843", fontSize: "0.95rem" }}>Luxury Wrapping Papers</h4>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {customConfig.wrappingPapers?.map((wrap: any, idx: number) => (
+                    <div key={wrap.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.85rem" }}>
+                      <span style={{ maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{wrap.name}</span>
+                      <input
+                        type="number"
+                        min="0"
+                        style={{ width: 80, padding: "4px 8px", borderRadius: 6, border: "1px solid #cbd5e1", textAlign: "right" }}
+                        value={wrap.extraPrice}
+                        onChange={(e) => {
+                          const val = Number(e.target.value);
+                          setCustomConfig((prev: any) => {
+                            const nextWraps = [...prev.wrappingPapers];
+                            nextWraps[idx] = { ...nextWraps[idx], extraPrice: val };
+                            return { ...prev, wrappingPapers: nextWraps };
+                          });
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Ribbon Colors */}
+              <div className={styles.customPriceCard}>
+                <h4 style={{ margin: "0 0 10px", color: "#831843", fontSize: "0.95rem" }}>Satin Ribbon Accents</h4>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {customConfig.ribbonColors?.map((rib: any, idx: number) => (
+                    <div key={rib.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.85rem" }}>
+                      <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <span style={{ width: 12, height: 12, borderRadius: "50%", background: rib.colorCode, display: "inline-block" }} />
+                        {rib.name.replace(" Ribbon", "")}
+                      </span>
+                      <input
+                        type="number"
+                        min="0"
+                        style={{ width: 80, padding: "4px 8px", borderRadius: 6, border: "1px solid #cbd5e1", textAlign: "right" }}
+                        value={rib.extraPrice}
+                        onChange={(e) => {
+                          const val = Number(e.target.value);
+                          setCustomConfig((prev: any) => {
+                            const nextRib = [...prev.ribbonColors];
+                            nextRib[idx] = { ...nextRib[idx], extraPrice: val };
+                            return { ...prev, ribbonColors: nextRib };
+                          });
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Botanical Decorations */}
+              <div className={styles.customPriceCard}>
+                <h4 style={{ margin: "0 0 10px", color: "#831843", fontSize: "0.95rem" }}>Botanical Fillers</h4>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {customConfig.decorations?.map((dec: any, idx: number) => (
+                    <div key={dec.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.85rem" }}>
+                      <span style={{ maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{dec.name.split(" (")[0]}</span>
+                      <input
+                        type="number"
+                        min="0"
+                        style={{ width: 80, padding: "4px 8px", borderRadius: 6, border: "1px solid #cbd5e1", textAlign: "right" }}
+                        value={dec.extraPrice}
+                        onChange={(e) => {
+                          const val = Number(e.target.value);
+                          setCustomConfig((prev: any) => {
+                            const nextDec = [...prev.decorations];
+                            nextDec[idx] = { ...nextDec[idx], extraPrice: val };
+                            return { ...prev, decorations: nextDec };
+                          });
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         )}

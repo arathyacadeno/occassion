@@ -227,7 +227,111 @@ function initSchema(db: any) {
       expires_at INTEGER NOT NULL,
       created_at TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS product_customizations (
+      id TEXT PRIMARY KEY,
+      enabled INTEGER DEFAULT 1,
+      config_json TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS stem_prices (
+      id TEXT PRIMARY KEY,
+      flower_name TEXT UNIQUE NOT NULL,
+      slug TEXT UNIQUE NOT NULL,
+      price_per_stem REAL NOT NULL,
+      min_stems INTEGER DEFAULT 6,
+      max_stems INTEGER DEFAULT 50,
+      active INTEGER DEFAULT 1,
+      updated_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS media (
+      id TEXT PRIMARY KEY,
+      url TEXT NOT NULL,
+      public_id TEXT,
+      filename TEXT,
+      format TEXT,
+      size INTEGER,
+      width INTEGER,
+      height INTEGER,
+      folder TEXT DEFAULT 'products',
+      created_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS homepage_banners (
+      id TEXT PRIMARY KEY,
+      type TEXT NOT NULL,
+      title TEXT,
+      subtitle TEXT,
+      button_text TEXT,
+      button_link TEXT,
+      desktop_image TEXT NOT NULL,
+      mobile_image TEXT,
+      badge TEXT,
+      active INTEGER DEFAULT 1,
+      display_order INTEGER DEFAULT 0,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS homepage_sections (
+      key TEXT PRIMARY KEY,
+      title TEXT,
+      subtitle TEXT,
+      product_ids TEXT,
+      active INTEGER DEFAULT 1,
+      display_order INTEGER DEFAULT 0,
+      updated_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS delivery_tiers (
+      id TEXT PRIMARY KEY,
+      min_km REAL NOT NULL,
+      max_km REAL NOT NULL,
+      charge REAL NOT NULL,
+      label TEXT,
+      active INTEGER DEFAULT 1,
+      display_order INTEGER DEFAULT 0
+    );
+
+    CREATE TABLE IF NOT EXISTS website_content (
+      slug TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      content TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS store_settings (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL
+    );
   `);
+
+  // Safe idempotent column additions
+  function addColumnIfNotExists(table: string, column: string, typeDef: string) {
+    try {
+      const cols: any[] = db.prepare(`PRAGMA table_info("${table}")`).all();
+      const exists = cols.some((c) => c.name === column);
+      if (!exists) {
+        db.exec(`ALTER TABLE "${table}" ADD COLUMN ${column} ${typeDef};`);
+      }
+    } catch (err) {
+      console.warn(`Could not add column ${column} to ${table}:`, err);
+    }
+  }
+
+  addColumnIfNotExists("products", "type", "TEXT DEFAULT 'general'");
+  addColumnIfNotExists("products", "short_description", "TEXT");
+  addColumnIfNotExists("products", "tags", "TEXT");
+  addColumnIfNotExists("products", "status", "TEXT DEFAULT 'published'");
+  addColumnIfNotExists("products", "low_stock_threshold", "INTEGER DEFAULT 5");
+  addColumnIfNotExists("products", "seo_title", "TEXT");
+  addColumnIfNotExists("products", "seo_description", "TEXT");
+  addColumnIfNotExists("products", "attributes", "TEXT");
+
+  addColumnIfNotExists("categories", "display_order", "INTEGER DEFAULT 0");
+  addColumnIfNotExists("categories", "active", "INTEGER DEFAULT 1");
 }
 
 function seedInitialData(db: any) {
@@ -614,5 +718,189 @@ function seedInitialData(db: any) {
         );
       }
     }
+  }
+
+  // 8. Stem Prices
+  const defaultStemPrices = [
+    { id: "sp-rose", name: "Rose", slug: "rose", price: 60, minStems: 6, maxStems: 100 },
+    { id: "sp-carnation", name: "Carnation", slug: "carnation", price: 60, minStems: 6, maxStems: 50 },
+    { id: "sp-orchid", name: "Orchid", slug: "orchid", price: 80, minStems: 4, maxStems: 50 },
+    { id: "sp-sunflower", name: "Sunflower", slug: "sunflower", price: 250, minStems: 2, maxStems: 30 },
+    { id: "sp-lily", name: "Lily / Stargazer", slug: "lily", price: 300, minStems: 2, maxStems: 30 },
+    { id: "sp-rajnigandha", name: "Rajnigandha (Tuberose)", slug: "rajnigandha", price: 90, minStems: 6, maxStems: 50 },
+    { id: "sp-gerbera", name: "Gerbera", slug: "gerbera", price: 50, minStems: 6, maxStems: 50 },
+    { id: "sp-gladiolus", name: "Gladiolus", slug: "gladiolus", price: 200, minStems: 4, maxStems: 40 },
+    { id: "sp-chrysanthemum", name: "Chrysanthemum", slug: "chrysanthemum", price: 50, minStems: 6, maxStems: 50 },
+    { id: "sp-heliconia", name: "Heliconia", slug: "heliconia", price: 200, minStems: 2, maxStems: 20 },
+  ];
+  const insertStemPrice = db.prepare(`
+    INSERT OR IGNORE INTO stem_prices (id, flower_name, slug, price_per_stem, min_stems, max_stems, active, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, 1, ?)
+  `);
+  for (const sp of defaultStemPrices) {
+    insertStemPrice.run(sp.id, sp.name, sp.slug, sp.price, sp.minStems, sp.maxStems, now);
+  }
+
+  // 9. Delivery Tiers
+  const defaultTiers = [
+    { id: "tier-1", minKm: 0, maxKm: 5, charge: 0, label: "0 – 5 km (Free Express)", order: 1 },
+    { id: "tier-2", minKm: 5, maxKm: 20, charge: 150, label: "5 – 20 km (Standard City)", order: 2 },
+    { id: "tier-3", minKm: 20, maxKm: 30, charge: 300, label: "20 – 30 km (Outer District)", order: 3 },
+    { id: "tier-4", minKm: 30, maxKm: 40, charge: 400, label: "30 – 40 km (Suburban Express)", order: 4 },
+    { id: "tier-5", minKm: 40, maxKm: 50, charge: 500, label: "40 – 50 km (Regional)", order: 5 },
+  ];
+  const insertTier = db.prepare(`
+    INSERT OR IGNORE INTO delivery_tiers (id, min_km, max_km, charge, label, active, display_order)
+    VALUES (?, ?, ?, ?, ?, 1, ?)
+  `);
+  for (const dt of defaultTiers) {
+    insertTier.run(dt.id, dt.minKm, dt.maxKm, dt.charge, dt.label, dt.order);
+  }
+
+  // 10. Delivery Settings
+  const defaultDeliverySettings = [
+    { key: "allow_sunday_delivery", value: "false" },
+    { key: "store_latitude", value: "11.2588" },
+    { key: "store_longitude", value: "75.7804" },
+    { key: "delivery_slots", value: JSON.stringify(["Morning (9:00 AM - 1:00 PM)", "Afternoon (1:00 PM - 5:00 PM)", "Evening (5:00 PM - 9:00 PM)"]) },
+  ];
+  const insertDeliverySetting = db.prepare(`
+    INSERT OR IGNORE INTO delivery_settings (key, value) VALUES (?, ?)
+  `);
+  for (const ds of defaultDeliverySettings) {
+    insertDeliverySetting.run(ds.key, ds.value);
+  }
+
+  // 11. Homepage Banners
+  const defaultBanners = [
+    {
+      id: "banner-hero-1",
+      type: "hero",
+      title: "Bespoke Floral Atelier & Luxury Celebrations",
+      subtitle: "Handcrafted fresh flower bouquets, artisanal flower baskets, gourmet cakes & decor in Calicut.",
+      button_text: "Shop Flowers",
+      button_link: "/flower-bouquets",
+      desktop_image: "/images/rose.jpg",
+      mobile_image: "/images/rose.jpg",
+      badge: "Premium Handcrafted",
+      order: 1,
+    },
+    {
+      id: "banner-promo-1",
+      type: "promo",
+      title: "Express Same-Day Floral Delivery",
+      subtitle: "Freshly cut blooms delivered in hydration wraps with personalized cards.",
+      button_text: "Explore Bouquets",
+      button_link: "/flower-bouquets",
+      desktop_image: "/images/lilies.jpg",
+      mobile_image: "/images/lilies.jpg",
+      badge: "Fresh Blooms",
+      order: 2,
+    },
+  ];
+  const insertBanner = db.prepare(`
+    INSERT OR IGNORE INTO homepage_banners (id, type, title, subtitle, button_text, button_link, desktop_image, mobile_image, badge, active, display_order, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?)
+  `);
+  for (const b of defaultBanners) {
+    insertBanner.run(b.id, b.type, b.title, b.subtitle, b.button_text, b.button_link, b.desktop_image, b.mobile_image, b.badge, b.order, now, now);
+  }
+
+  // 12. Homepage Sections
+  const defaultSections = [
+    {
+      key: "featured_products",
+      title: "Featured Masterpieces",
+      subtitle: "Our florists' hand-picked bestsellers",
+      product_ids: JSON.stringify(["flower-oriental-sunset-lily-bouquet", "flower-rajnigandha-fragrant-bunch", "flower-3", "cake-chocolate-truffle"]),
+      order: 1,
+    },
+    {
+      key: "new_arrivals",
+      title: "New Seasonal Arrivals",
+      subtitle: "Freshly sourced from botanical highlands",
+      product_ids: JSON.stringify(["flower-oriental-sunset-lily-bouquet", "flower-rajnigandha-fragrant-bunch"]),
+      order: 2,
+    },
+  ];
+  const insertSection = db.prepare(`
+    INSERT OR IGNORE INTO homepage_sections (key, title, subtitle, product_ids, active, display_order, updated_at)
+    VALUES (?, ?, ?, ?, 1, ?, ?)
+  `);
+  for (const s of defaultSections) {
+    insertSection.run(s.key, s.title, s.subtitle, s.product_ids, s.order, now);
+  }
+
+  // 13. Website Content
+  const defaultContent = [
+    {
+      slug: "about",
+      title: "About Occassions Florist",
+      content: "Welcome to Occassions, Kozhikode's premier boutique floral design studio. We specialize in handcrafted fresh floral bouquets, elegant gift baskets, gourmet cakes, and bespoke event decorations. Every bouquet is crafted with care, passion, and botanical precision to celebrate your most cherished moments.",
+    },
+    {
+      slug: "contact",
+      title: "Contact Information",
+      content: "Phone: +91 8606464700 | WhatsApp: +91 9447446008 | Email: occassions.flowers@gmail.com | Location: Mavoor Road, Arayidathupalam, Kozhikode (Calicut), Kerala 673004. Open 9:00 AM - 9:00 PM every day.",
+    },
+    {
+      slug: "faqs",
+      title: "Frequently Asked Questions",
+      content: "Q: Do you offer same-day delivery? Yes, orders placed before 5:00 PM are eligible for same-day refrigerated express delivery across Kozhikode.\n\nQ: Can I customize my bouquet stems? Absolutely! Use our Flower Customizer to select custom stems, wrapping, and ribbon colors.",
+    },
+    {
+      slug: "privacy",
+      title: "Privacy Policy",
+      content: "At Occassions, your privacy is our top priority. We only collect the necessary information required to process and deliver your orders securely.",
+    },
+    {
+      slug: "terms",
+      title: "Terms and Conditions",
+      content: "All orders placed on Occassions are subject to product availability and delivery schedule confirmation. Cancellations are permitted up to 4 hours prior to scheduled delivery.",
+    },
+    {
+      slug: "refund",
+      title: "Refund Policy",
+      content: "If you receive damaged or unsatisfactory flowers, contact us within 2 hours of delivery with photographic evidence for an immediate replacement or full refund.",
+    },
+  ];
+  const insertContent = db.prepare(`
+    INSERT OR IGNORE INTO website_content (slug, title, content, updated_at)
+    VALUES (?, ?, ?, ?)
+  `);
+  for (const c of defaultContent) {
+    insertContent.run(c.slug, c.title, c.content, now);
+  }
+
+  // 14. Store Settings
+  const defaultSettings = [
+    { key: "store_name", value: "Occassions" },
+    { key: "store_tagline", value: "Luxury Florist & Celebration Atelier" },
+    { key: "store_phone", value: "+91 8606464700" },
+    { key: "store_whatsapp", value: "919447446008" },
+    { key: "store_email", value: "occassions.flowers@gmail.com" },
+    { key: "store_address", value: "Mavoor Road, Kozhikode (Calicut), Kerala 673004" },
+    { key: "opening_hours", value: "9:00 AM - 9:00 PM Daily" },
+    { key: "currency_symbol", value: "₹" },
+    { key: "tax_percentage", value: "0" },
+  ];
+  const insertSetting = db.prepare(`
+    INSERT OR IGNORE INTO store_settings (key, value) VALUES (?, ?)
+  `);
+  for (const st of defaultSettings) {
+    insertSetting.run(st.key, st.value);
+  }
+
+  // 15. Safe classification migration for existing products
+  try {
+    db.prepare(`UPDATE products SET status = 'published' WHERE status IS NULL OR status = ''`).run();
+    db.prepare(`UPDATE products SET low_stock_threshold = 5 WHERE low_stock_threshold IS NULL`).run();
+    db.prepare(`UPDATE products SET type = 'cake' WHERE (type IS NULL OR type = 'general') AND (category_id = 'cat-cakes' OR id LIKE 'cake-%' OR slug LIKE '%cake%')`).run();
+    db.prepare(`UPDATE products SET type = 'basket' WHERE (type IS NULL OR type = 'general') AND (category_id = 'cat-flower-basket' OR slug LIKE '%basket%' OR name LIKE '%basket%')`).run();
+    db.prepare(`UPDATE products SET type = 'wreath' WHERE (type IS NULL OR type = 'general') AND (category_id = 'cat-wreath' OR slug LIKE '%wreath%' OR name LIKE '%wreath%')`).run();
+    db.prepare(`UPDATE products SET type = 'decor' WHERE (type IS NULL OR type = 'general') AND (category_id = 'cat-table-decor' OR slug LIKE '%table%' OR slug LIKE '%decor%')`).run();
+    db.prepare(`UPDATE products SET type = 'flower' WHERE (type IS NULL OR type = 'general') AND (category_id = 'cat-flower-bouquet' OR category_id = 'flower' OR id LIKE 'flower-%')`).run();
+  } catch (err) {
+    console.warn("Product classification migration warning:", err);
   }
 }

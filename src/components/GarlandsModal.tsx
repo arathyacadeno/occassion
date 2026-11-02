@@ -22,108 +22,100 @@ export interface GarlandImageItem {
 
 export const GARLANDS_GALLERY: GarlandImageItem[] = [
   {
-    src: "/images/garlands/1.jpg",
-    alt: "Pastel Pink Dutch Roses and White Chrysanthemum Wedding Varmala Pair",
-    title: "Royal Pastel Rose & White Sevanthi Varmala",
-    price: 3500,
+    src: "/images/garlands/1.png",
+    alt: "Handcrafted Sacred Pink Lotus Buds and Crimson Jasmine Wedding Varmala Pair",
+    title: "Royal Sacred Lotus & Crimson Jasmine Varmala",
+    price: 6000,
     description:
-      "An exquisite pair of handcrafted wedding varmalas woven with soft pink Dutch roses, fresh white chrysanthemums (sevanthi), and subtle golden bead accents. Perfect for elegant Hindu and Christian weddings, temple rituals, and reception ceremonies.",
+      "A regal ceremonial varmala pair harmonizing deep crimson folded rose petals, pristine white jasmine bud cylinders, gilded rosettes, and folded pink lotus bud centerpieces with golden bead drops.",
   },
   {
     src: "/images/garlands/2.jpg",
-    alt: "Pastel Pink Roses and White Sevanthi Varmala with Pearl String Tassels",
-    title: "Heritage Pearl Tassel Pink Rose Varmala",
-    price: 4200,
+    alt: "Full Magenta Rose Petal Cylindrical Varmala with Diagonal Gold Rosette Spirals",
+    title: "Imperial Magenta Rose & Spiral Gold Varmala",
+    price: 5200,
     description:
-      "Graceful bridal varmalas intricately layered with fresh pastel pink roses, delicate white chrysanthemums, and majestic hanging pearl string tassels tipped with rose blossom pendants for a regal royal look.",
+      "A showstopping royal varmala pair densely woven with vibrant magenta rose petals in an unbroken cylinder, wrapped in diagonal spirals of shimmering gold rosettes and completed with floral tassel drops.",
   },
   {
     src: "/images/garlands/3.jpg",
+    alt: "Classic Scarlet Dutch Roses and Yellow Chrysanthemums with Beaded Gold Tassels",
+    title: "Grand Marigold & Scarlet Rose Varmala",
+    price: 4400,
+    description:
+      "A celebratory ceremonial varmala combining rich scarlet Dutch roses, golden-yellow chrysanthemums, delicate gypsophila sprigs, and ornate beaded gold chain accents.",
+  },
+  {
+    src: "/images/garlands/4.jpg",
+    alt: "Pristine White Jasmine Cylindrical Garland with Gold Accents and Rosebud Tassels",
+    title: "Pure White Jasmine & Scarlet Cuff Varmala",
+    price: 4200,
+    description:
+      "Classic bridal elegance handcrafted from pure white jasmine and chrysanthemum strands, accented by golden weave spacers, crimson rose bands, and floral cuffs with hanging jasmine tassels.",
+  },
+  {
+    src: "/images/garlands/5.png",
+    alt: "South Indian Coral Pink Petal Weave Varmala with Jasmine Bands and Gold Rosettes",
+    title: "South Indian Coral & Jasmine Petal Varmala",
+    price: 5500,
+    description:
+      "Traditional South Indian craftsmanship featuring tightly folded ombre coral rose petals, fragrant white jasmine bands, golden embroidered rosettes, and beaded bell tassels.",
+  },
+  {
+    src: "/images/garlands/6.png",
+    alt: "Pastel Pink Dutch Roses and White Sevanthi Varmala with Pearl String Tassels",
+    title: "Heritage Pearl Tassel Blush Rose Varmala",
+    price: 7000,
+    description:
+      "Graceful bridal varmalas intricately layered with fresh pastel pink roses, delicate white chrysanthemums, baby's breath, and majestic hanging pearl string tassels tipped with rose blossom pendants.",
+  },
+  {
+    src: "/images/garlands/7.png",
     alt: "Dense Cloud Gypsophila Baby's Breath and Pink Rose Wedding Garland Pair",
     title: "Ethereal Gypsophila & Pastel Rose Varmala",
-    price: 4800,
+    price: 6500,
     description:
       "A modern, feather-light wedding varmala crafted with continuous dense clouds of fresh white baby's breath (gypsophila) interspersed with clusters of tender blush pink roses and hanging rosebud finials.",
   },
   {
-    src: "/images/garlands/4.jpg",
-    alt: "Dual-Tone Pink Rose Petal Weave Varmala with Jasmine Bands and Golden Rosettes",
-    title: "South Indian Rose Petal Weave Varmala",
-    price: 3800,
-    description:
-      "Traditional South Indian craftsmanship featuring tightly woven ombre pink rose petals, fragrant white jasmine bands, golden embroidered rosettes, and beaded bell tassels.",
-  },
-  {
-    src: "/images/garlands/5.jpg",
-    alt: "Dense Fragrant Madurai Jasmine and Crimson Red Rose Petal Varmala with Golden Ruffles",
-    title: "Royal Jasmine & Crimson Petal Varmala",
-    price: 4500,
-    description:
-      "A majestic traditional Kerala wedding varmala blending aromatic Madurai jasmine coils, textured crimson rose petal weaves adorned with pearl droplets, and golden ribbon spacers.",
-  },
-  {
-    src: "/images/garlands/6.jpg",
-    alt: "Auspicious White Jasmine and Deep Crimson Rose Petal Wedding Garland Pair",
-    title: "Traditional Madurai Jasmine & Rose Garland",
-    price: 4500,
-    description:
-      "Handwoven with fragrant Madurai jasmine buds and folded deep crimson rose petals, accented with gilded rosettes and elegant hanging rose clusters. Designed for sacred mangalyam ceremonies.",
-  },
-  {
-    src: "/images/garlands/7.jpg",
-    alt: "Crimson Petal and White Jasmine Varmala with Fresh Rose Chrysanthemum Medallion",
-    title: "Crimson & Jasmine Medallion Varmala",
-    price: 4200,
-    description:
-      "A magnificent ceremonial garland showcasing alternating bands of folded red rose petals and pristine jasmine, finished with an ornate floral medallion of scarlet roses, white chrysanthemums, and fresh asparagus greens.",
-  },
-  {
     src: "/images/garlands/8.jpg",
-    alt: "Full Crimson Red Folded Rose Petal Varmala with Diagonal Gold Rosette Spirals",
-    title: "Imperial Crimson Rose & Gold Spiral Varmala",
-    price: 4900,
-    description:
-      "A showstopping royal varmala densely woven with deep scarlet rose petals in an unbroken cylinder, wrapped in diagonal spirals of shimmering gold rosettes and completed with pearl cluster tassels.",
-  },
-  {
-    src: "/images/garlands/9.jpg",
-    alt: "Vibrant Fuchsia Magenta Rose Petal Garland with Spiral Gold Ribbon and Pom-Pom Center",
-    title: "Magenta Bliss Gold Ribbon Varmala",
-    price: 3600,
-    description:
-      "A vibrant celebratory garland woven from vivid magenta rose petals accented with delicate golden ribbons and crowned with a plush floral pom-pom pendant and scarlet satin ties.",
-  },
-  {
-    src: "/images/garlands/10.jpg",
-    alt: "Sacred Pink Lotus Petal Buds and White Jasmine Varmala with Pearl Pendants",
+    alt: "Sacred Pink Lotus Petal Buds and White Jasmine Varmala with Pearl and Flower Pendants",
     title: "Divine Lotus Bud & Fragrant Jasmine Varmala",
     price: 5500,
     description:
       "An auspicious, divine wedding varmala featuring sacred pink lotus petals (kamal / thamara), dense strands of aromatic jasmine buds, crimson petal spacers, and dangling triple lotus blossom pendants.",
   },
   {
-    src: "/images/garlands/11.jpg",
-    alt: "Pristine White Tuberose Jasmine Garland with Scarlet Rose Clusters and Gold Bands",
-    title: "Pure Tuberose & Scarlet Rosebud Varmala",
-    price: 3800,
-    description:
-      "Classic bridal elegance handcrafted from pure white tuberose and jasmine buds, punctuated by vibrant scarlet rose clusters, metallic gold ribbon rings, and fresh tuberose pendant tassels.",
-  },
-  {
-    src: "/images/garlands/12.jpg",
-    alt: "Classic Scarlet Dutch Roses and Golden Yellow Chrysanthemums with Beaded Gold Chains",
-    title: "Grand Marigold & Scarlet Rose Varmala",
-    price: 3200,
-    description:
-      "A traditional celebratory varmala combining rich scarlet Dutch roses, golden-yellow chrysanthemums, delicate gypsophila sprigs, and ornate beaded gold chain accents.",
-  },
-  {
-    src: "/images/garlands/13.jpg",
-    alt: "Traditional Crimson Rose Petal Weave and White Jasmine Varmala with Folded Lotus Finials",
-    title: "Royal Lotus & Crimson Petal Weave Varmala",
+    src: "/images/garlands/9.png",
+    alt: "Ceremonial Crimson Rose Petal and Jasmine Bud Varmala Pair with Gold Accents",
+    title: "Ceremonial Crimson & Jasmine Rosette Varmala",
     price: 5200,
     description:
-      "A regal ceremonial garland harmonizing deep crimson folded petals, white jasmine bud cylinders, gilded rosettes, and folded pink lotus bud centerpieces with golden bead drops.",
+      "A stunning ceremonial wedding varmala pair featuring tightly layered crimson rose petals embedded with gilded miniature rosettes, contrasting white jasmine bud cylinders, and hanging floral cuffs.",
+  },
+  {
+    src: "/images/garlands/10.png",
+    alt: "Auspicious White Jasmine and Deep Crimson Rose Petal Wedding Garland Pair",
+    title: "Traditional Madurai Jasmine & Crimson Varmala",
+    price: 5000,
+    description:
+      "Handwoven with fragrant Madurai jasmine buds and folded deep crimson rose petals, accented with gilded rosettes, pearl neckbands, and elegant hanging rose clusters.",
+  },
+  {
+    src: "/images/garlands/11.png",
+    alt: "Full Crimson Red Folded Rose Petal Varmala with Diagonal Gold Rosette Spirals",
+    title: "Imperial Crimson Rose & Gold Spiral Varmala",
+    price: 4800,
+    description:
+      "A showstopping royal varmala densely woven with deep scarlet rose petals in an unbroken cylinder, wrapped in diagonal spirals of shimmering gold rosettes and completed with pearl cluster tassels.",
+  },
+  {
+    src: "/images/garlands/12.jpeg",
+    alt: "Pastel Pink Dutch Roses and White Chrysanthemum Wedding Varmala Pair",
+    title: "Pastel Rose & Sevanthi Harmony Varmala",
+    price: 4500,
+    description:
+      "An exquisite pair of handcrafted wedding varmalas woven with soft pink Dutch roses, fresh white chrysanthemums (sevanthi), delicate baby's breath, and subtle golden bead accents.",
   },
 ];
 

@@ -103,7 +103,7 @@ export default function CartDrawer({
                 <div className={styles.itemInfo}>
                   <h4 className={styles.itemName}>{item.bouquet.name}</h4>
                   <div className={styles.itemDetail}>
-                    {item.selectedSize} • {item.bouquet.flowerCount}
+                    {item.customization ? item.customization.summaryText : `${item.selectedSize} • ${item.bouquet.flowerCount}`}
                   </div>
                   {item.customNote && (
                     <div className={styles.itemDetail} style={{ fontStyle: "italic" }}>
@@ -129,7 +129,7 @@ export default function CartDrawer({
                     </div>
 
                     <span className={styles.itemPrice}>
-                      ${item.bouquet.price * item.quantity}
+                      ₹{(item.customization?.finalPrice ?? item.bouquet.price) * item.quantity}
                     </span>
 
                     <button

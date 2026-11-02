@@ -26,6 +26,7 @@ export interface Product {
   }[];
   ratingsCount?: number;
   basketType?: "cane" | "bamboo" | "container";
+  customizable?: boolean;
 }
 
 export const CATALOG_PRODUCTS: Product[] = [
@@ -91,6 +92,29 @@ export const CATALOG_PRODUCTS: Product[] = [
       "Signature Designer Wrap & Ribbon",
     ],
     badge: "Fresh Arrival",
+    customizable: true,
+  },
+  {
+    id: "flower-tropical-heliconia-cascade-bouquet",
+    slug: "tropical-heliconia-cascade-bouquet",
+    name: "Tropical Heliconia Cascade Bouquet",
+    price: 1500,
+    category: "flower",
+    categoryLabel: "Flowers",
+    image: "/images/Heliconia.png",
+    images: ["/images/Heliconia.png"],
+    rating: 5.0,
+    reviewsCount: 26,
+    description: "Spectacular tropical hanging lobster-claw heliconias paired with broad rainforest greens. Exotic architectural blooms hand-tied for celebrations and upscale floral statements.",
+    deliveryInfo: "Harvested fresh and hand-delivered in premium hydration wrap across Calicut.",
+    offers: ["Free customized greeting card"],
+    includes: [
+      "5 Tropical Hanging Heliconia Stems",
+      "Broad Emerald Rainforest Foliage",
+      "Luxe Artisanal Matte Wrap & Satin Ribbon",
+    ],
+    badge: "Exotic Highlight",
+    customizable: true,
   },
   // ==================== FLOWER PRODUCTS (/flower) ====================
   {
@@ -3859,10 +3883,24 @@ export function getWreathProducts(): Product[] {
   return CATALOG_PRODUCTS.filter((p) => p.category === "wreaths");
 }
 
+
+export const EXCLUDED_FROM_GENERAL_BOUQUETS = new Set([
+  "flower-oriental-sunset-lily-bouquet",
+  "sunset-oriental-lily-bouquet",
+  "flower-gladiolus-pink-stately-bouquet",
+  "stately-pink-gladiolus-bouquet",
+  "flower-tropical-heliconia-cascade-bouquet",
+  "tropical-heliconia-cascade-bouquet",
+  "flower-rajnigandha-fragrant-bunch",
+  "fragrant-rajnigandha-tuberose-bunch",
+]);
+
 export function getFlowerBaskets(): Product[] {
   return CATALOG_PRODUCTS.filter(
     (p) =>
       p.category === "flower" &&
+      !EXCLUDED_FROM_GENERAL_BOUQUETS.has(p.id) &&
+      !EXCLUDED_FROM_GENERAL_BOUQUETS.has(p.slug) &&
       (p.basketType !== undefined ||
         p.id === "flower-9" ||
         p.id === "flower-10" ||
@@ -3878,6 +3916,8 @@ export function getFlowerBouquets(): Product[] {
   return CATALOG_PRODUCTS.filter(
     (p) =>
       p.category === "flower" &&
+      !EXCLUDED_FROM_GENERAL_BOUQUETS.has(p.id) &&
+      !EXCLUDED_FROM_GENERAL_BOUQUETS.has(p.slug) &&
       p.basketType === undefined &&
       !p.name.toLowerCase().includes("basket") &&
       !p.slug.toLowerCase().includes("basket") &&

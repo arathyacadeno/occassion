@@ -141,13 +141,13 @@
 /* ================= FLOWER CATEGORY ITEM ================= */
 .flowerItem {
   position: relative;
-  flex: 0 0 calc((100% - (var(--visible-count, 4) - 1) * var(--gap, 28px)) / var(--visible-count, 4));
-  width: calc((100% - (var(--visible-count, 4) - 1) * var(--gap, 28px)) / var(--visible-count, 4));
+  flex: 0 0 calc((100% - (var(--visible-count, 5) - 1) * var(--gap, 24px)) / var(--visible-count, 5));
+  width: calc((100% - (var(--visible-count, 5) - 1) * var(--gap, 24px)) / var(--visible-count, 5));
   display: flex;
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
-  padding: 0 6px;
+  padding: 0 4px;
   background: transparent;
 }
 
@@ -160,24 +160,23 @@
   color: inherit;
 }
 
-/* ================= ROUND WHITE CONTAINER ================= */
+/* ================= ROUNDED RECTANGLE CARD CONTAINER ================= */
 .circleContainer {
   position: relative;
-  width: 216px;
-  height: 216px;
-  max-width: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: 50%;
+  width: 100%;
+  max-width: 228px;
+  aspect-ratio: 4 / 5;
+  border-radius: 20px;
   background-color: #FFFFFF;
-  border: 1.5px solid #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.04);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 18px;
+  padding: 0;
   box-sizing: border-box;
   margin: 0 auto;
   overflow: hidden;
-  box-shadow: 0 8px 24px rgba(255, 90, 154, 0.12);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(219, 39, 119, 0.05);
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
     box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
     border-color 0.35s ease;
@@ -188,34 +187,29 @@
 }
 
 .itemInner:hover .circleContainer {
-  transform: translateY(-6px) scale(1.03);
-  box-shadow: 0 14px 30px rgba(255, 90, 154, 0.22);
-  border-color: #ffffff;
+  transform: translateY(-6px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(219, 39, 119, 0.12);
+  border-color: rgba(219, 39, 119, 0.2);
 }
 
 .bouquetImg {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center center;
   display: block;
-  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.08));
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-    filter 0.35s ease;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .imgCoverFull {
   object-fit: cover !important;
   object-position: center center;
-  transform: scale(1.08);
+  transform: scale(1);
 }
 
-.itemInner:hover .bouquetImg {
-  transform: scale(1.05);
-  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.12));
-}
-
+.itemInner:hover .bouquetImg,
 .itemInner:hover .circleCoverFull .imgCoverFull {
-  transform: scale(1.15);
+  transform: scale(1.06);
 }
 
 /* ================= FLOWER LABELS ================= */
@@ -224,15 +218,15 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-top: 16px;
+  margin-top: 14px;
   width: 100%;
   overflow: visible;
 }
 
 .flowerTitle {
   font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: 1.05rem;
+  font-weight: 600;
   letter-spacing: -0.01em;
   color: #1f2937;
   margin: 0;
@@ -243,7 +237,7 @@
 }
 
 .itemInner:hover .flowerTitle {
-  color: #FF5A9A;
+  color: #db2777;
 }
 
 /* ================= RESPONSIVE ================= */
@@ -253,9 +247,8 @@
   }
 
   .circleContainer {
-    width: 196px;
-    height: 196px;
-    padding: 16px;
+    max-width: 210px;
+    border-radius: 18px;
   }
 }
 
@@ -269,13 +262,12 @@
   }
 
   .circleContainer {
-    width: 176px;
-    height: 176px;
-    padding: 14px;
+    max-width: 190px;
+    border-radius: 16px;
   }
 
   .flowerTitle {
-    font-size: 1.15rem;
+    font-size: 1rem;
   }
 
   .navBtn {
@@ -298,13 +290,12 @@
   }
 
   .circleContainer {
-    width: 130px;
-    height: 130px;
-    padding: 10px;
+    max-width: 160px;
+    border-radius: 14px;
   }
 
   .flowerTitle {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
   }
 
   /* arrows would cover the flowers on small screens; swipe still works */

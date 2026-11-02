@@ -68,7 +68,7 @@ export default async function FlowerTypeCategoryPage({ params }: PageProps) {
     { id: "all", label: `All ${flowerName}` },
     { id: "baskets", label: "Flower Baskets" },
     { id: "bouquets", label: "Flower Bouquets" },
-  ];
+      ];
 
   return (
     <CategoryPage
@@ -79,6 +79,7 @@ export default async function FlowerTypeCategoryPage({ params }: PageProps) {
       }
       products={products}
       filterTabs={tabs}
+      flowerCategory={category}
     />
   );
 }

@@ -393,12 +393,14 @@ export default function CartPage() {
 
   // Compute pricing totals
   const totalMRP = displayItems.reduce((acc, item) => {
-    const orig = item.bouquet.originalPrice || item.bouquet.price * 1.35;
+    const unitPrice = item.customization?.finalPrice ?? item.bouquet.price;
+    const orig = item.bouquet.originalPrice || Math.round(unitPrice * 1.35);
     return acc + Math.round(orig) * item.quantity;
   }, 0);
 
   const totalCurrentPrice = displayItems.reduce((acc, item) => {
-    return acc + item.bouquet.price * item.quantity;
+    const unitPrice = item.customization?.finalPrice ?? item.bouquet.price;
+    return acc + unitPrice * item.quantity;
   }, 0);
 
   const totalDiscount = Math.max(0, totalMRP - totalCurrentPrice);
@@ -438,12 +440,13 @@ export default function CartPage() {
       id: item.bouquet.id,
       slug: item.bouquet.id,
       name: item.bouquet.name,
-      subtitle: item.bouquet.subtitle || "Fresh flower arrangement",
+      subtitle: item.customization ? item.customization.summaryText : (item.bouquet.subtitle || "Fresh flower arrangement"),
       category: "flower",
-      price: item.bouquet.price,
+      price: item.customization?.finalPrice ?? item.bouquet.price,
       originalPrice: item.bouquet.originalPrice,
       image: item.bouquet.image,
       quantity: item.quantity,
+      customization: item.customization,
     }));
 
     startCartCheckout(checkoutPayload);
@@ -780,11 +783,49 @@ export default function CartPage() {
                           <span>{Number(item.bouquet.rating || 4.4).toFixed(1)}</span>
                         </div>
 
+                        {/* Customization Details (if customized) */}
+                        {item.customization && (
+                          <div className={styles.customizationDetails}>
+                            <span className={styles.customBadge}>✨ Custom Choice</span>
+                            <div className={styles.customOptionsList}>
+                              {item.customization.flowerVariety && (
+                                <div className={styles.customOptionRow}>
+                                  <span className={styles.customOptionLabel}>Variety:</span>
+                                  <span className={styles.customOptionVal}>{item.customization.flowerVariety.name}</span>
+                                </div>
+                              )}
+                              <div className={styles.customOptionRow}>
+                                <span className={styles.customOptionLabel}>Size:</span>
+                                <span className={styles.customOptionVal}>{item.customization.size.name}</span>
+                              </div>
+                              <div className={styles.customOptionRow}>
+                                <span className={styles.customOptionLabel}>Wrap:</span>
+                                <span className={styles.customOptionVal}>{item.customization.wrapping.name}</span>
+                              </div>
+                              <div className={styles.customOptionRow}>
+                                <span className={styles.customOptionLabel}>Ribbon:</span>
+                                <span className={styles.customOptionVal}>{item.customization.ribbon.name}</span>
+                              </div>
+                              {item.customization.decorations?.length > 0 && (
+                                <div className={styles.customOptionRow}>
+                                  <span className={styles.customOptionLabel}>Fillers:</span>
+                                  <span className={styles.customOptionVal}>{item.customization.decorations.map((d: any) => d.name).join(", ")}</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
                         {/* Price Row */}
                         <div className={styles.priceRow}>
                           <span className={styles.currentPrice}>
-                            ₹{(item.bouquet.price * item.quantity).toLocaleString("en-IN")}
+                            ₹{(((item.customization?.finalPrice ?? item.bouquet.price)) * item.quantity).toLocaleString("en-IN")}
                           </span>
+                          {item.customization && (
+                            <span className={styles.customPriceNote}>
+                              (Base ₹{item.customization.basePrice} + Customization ₹{item.customization.customizationCharges})
+                            </span>
+                          )}
                         </div>
 
                         {/* Delivery Date: Only show when entered/selected by user */}

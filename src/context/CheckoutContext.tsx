@@ -13,6 +13,7 @@ export interface CheckoutItem {
   image: string;
   quantity: number;
   subtitle?: string;
+  customization?: any;
 }
 
 export interface CompletedOrder {

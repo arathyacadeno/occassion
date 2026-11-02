@@ -49,6 +49,9 @@ export interface CategoryInfo {
   heroImage?: string;
 }
 
+export * from "./customization";
+import { ItemCustomization } from "./customization";
+
 export interface CartItem {
   bouquet: Bouquet;
   quantity: number;
@@ -56,4 +59,5 @@ export interface CartItem {
   customNote?: string;
   vaseOption: boolean;
   deliveryDate?: string;
+  customization?: ItemCustomization;
 }

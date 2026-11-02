@@ -15,6 +15,8 @@ interface ProductCardProps {
   onDelete?: () => void;
   showAddToCart?: boolean;
   imageFit?: "cover" | "contain";
+  actionType?: "cart" | "customize";
+  customizeHref?: string;
 }
 
 export default function ProductCard({
@@ -24,6 +26,8 @@ export default function ProductCard({
   onDelete,
   showAddToCart,
   imageFit,
+  actionType = "cart",
+  customizeHref,
 }: ProductCardProps) {
   const isFlowerBasket =
     imageFit === "contain" ||
@@ -191,10 +195,20 @@ export default function ProductCard({
           )}
         </div>
 
-        {/* Optional Add To Cart Button */}
+        {/* Optional Add To Cart or Customize Button */}
         {shouldShowAddToCart && (
           <div className={styles.cartActionWrapper}>
-            <AddToCartButton product={product} variant="pill" />
+            {actionType === "customize" ? (
+              <Link
+                href={customizeHref || `/customize/${product.id}`}
+                className={styles.customizePillBtn}
+                aria-label={`Customize ${product.name}`}
+              >
+                Customize
+              </Link>
+            ) : (
+              <AddToCartButton product={product} variant="pill" />
+            )}
           </div>
         )}
       </div>

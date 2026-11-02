@@ -15,15 +15,15 @@ interface FlowerCategory {
 }
 
 const FLOWER_CATEGORIES: FlowerCategory[] = [
-  { id: "roses", title: "Roses", description: "Romantic & timeless", image: "/images/rose.png", href: "/flowers/roses" },
-  { id: "orchids", title: "Orchids", description: "Exotic & graceful", image: "/images/orchid.png", href: "/flowers/orchids" },
-  { id: "chrysanthemums", title: "Chrysanthemums", description: "Vibrant & cheerful", image: "/images/Chrysanthemum.png", href: "/flowers/chrysanthemums" },
-  { id: "gerberas", title: "Gerberas", description: "Playful & vivid", image: "/images/Gerbera.png", href: "/flowers/gerberas" },
-  { id: "sunflowers", title: "Sunflowers", description: "Bright & joyful", image: "/images/sunflower.png", href: "/flowers/sunflowers" },
-  { id: "carnations", title: "Carnations", description: "Charming & delicate", image: "/images/Carnations.png", href: "/flowers/carnations" },
-  { id: "lilies", title: "Lilies", description: "Elegant & graceful", image: "/images/lilies.png", href: "/flowers/lilies" },
-  { id: "gladiolus", title: "Gladiolus", description: "Majestic & stately", image: "/images/Gladiolus.png", href: "/flowers/gladiolus" },
-  { id: "rajnigandha", title: "Rajnigandha", description: "Aromatic & traditional", image: "/images/Rajnigandha.png", href: "/flowers/rajnigandha" },
+  { id: "roses", title: "Roses", description: "Romantic & timeless", image: "/images/rose.jpg", href: "/flowers/roses", coverFull: true },
+  { id: "orchids", title: "Orchids", description: "Exotic & graceful", image: "/images/orchid.jpg", href: "/flowers/orchids", coverFull: true },
+  { id: "chrysanthemums", title: "Chrysanthemums", description: "Vibrant & cheerful", image: "/images/Chrysanthemum.jpg", href: "/flowers/chrysanthemums", coverFull: true },
+  { id: "gerberas", title: "Gerberas", description: "Playful & vivid", image: "/images/Gerbera.jpg", href: "/flowers/gerberas", coverFull: true },
+  { id: "sunflowers", title: "Sunflowers", description: "Bright & joyful", image: "/images/sunflower.jpg", href: "/flowers/sunflowers", coverFull: true },
+  { id: "carnations", title: "Carnations", description: "Charming & delicate", image: "/images/Carnations.jpg", href: "/flowers/carnations", coverFull: true },
+  { id: "lilies", title: "Lilies", description: "Elegant & graceful", image: "/images/lilies.jpg", href: "/flowers/lilies", coverFull: true },
+  { id: "gladiolus", title: "Gladiolus", description: "Majestic & stately", image: "/images/Gladiolus.jpg", href: "/flowers/gladiolus", coverFull: true },
+  { id: "rajnigandha", title: "Rajnigandha", description: "Aromatic & traditional", image: "/images/Rajnigandha.jpg", href: "/flowers/rajnigandha", coverFull: true },
   { id: "heliconia", title: "Heliconia", description: "Tropical & exotic", image: "/images/Heliconia.png", href: "/flowers/heliconia", coverFull: true },
 ];
 
@@ -53,9 +53,9 @@ export default function ShopByFlowers() {
     const handleResize = () => {
       const w = window.innerWidth;
       if (w < 560) setVisibleCount(2); // 2 cards on mobile
-      else if (w < 860) setVisibleCount(2);
-      else if (w < 1180) setVisibleCount(3);
-      else setVisibleCount(4);
+      else if (w < 860) setVisibleCount(3);
+      else if (w < 1180) setVisibleCount(4);
+      else setVisibleCount(5);
     };
     handleResize();
     window.addEventListener("resize", handleResize);
@@ -194,7 +194,7 @@ export default function ShopByFlowers() {
               style={
                 {
                   "--visible-count": visibleCount,
-                  "--gap": "28px",
+                  "--gap": "24px",
                 } as React.CSSProperties
               }
             >
