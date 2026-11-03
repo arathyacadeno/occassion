@@ -60,7 +60,7 @@ export default function CategoryManager({ categories, onRefresh }: CategoryManag
     setName("");
     setSlug("");
     setDescription("");
-    setImage("/images/sunflower-bouquet.jpg");
+    setImage("/images/cat-flower-bouquet-luxe.jpg");
     setDisplayOrder(categories.length);
     setActive(true);
     setError(null);
@@ -72,7 +72,7 @@ export default function CategoryManager({ categories, onRefresh }: CategoryManag
     setName(cat.name || "");
     setSlug(cat.slug || "");
     setDescription(cat.description || "");
-    setImage(cat.image || "/images/sunflower-bouquet.jpg");
+    setImage(cat.image || "/images/cat-flower-bouquet-luxe.jpg");
     setDisplayOrder(cat.display_order ?? 0);
     setActive(cat.active !== 0);
     setError(null);
@@ -134,7 +134,7 @@ export default function CategoryManager({ categories, onRefresh }: CategoryManag
         name: name.trim(),
         slug: cleanSlug,
         description: description.trim(),
-        image: image || "/images/sunflower-bouquet.jpg",
+        image: image || "/images/cat-flower-bouquet-luxe.jpg",
         displayOrder: Number(displayOrder) || 0,
         active: active ? 1 : 0,
       };
@@ -464,9 +464,13 @@ export default function CategoryManager({ categories, onRefresh }: CategoryManag
                 </label>
                 <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
                   <img
-                    src={image || "/images/sunflower-bouquet.jpg"}
+                    src={image || "/images/cat-flower-bouquet-luxe.jpg"}
                     alt="Category preview"
                     style={{ width: 56, height: 56, borderRadius: 8, objectFit: "cover", border: "1px solid #e2e8f0" }}
+                    onError={(e: any) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24' fill='%23fdf2f8' stroke='%23db2777' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='100%25' height='100%25' fill='%23fdf2f8' rx='8'/%3E%3Cpath d='M12 3a4 4 0 0 0-4 4c0 2 4 6 4 6s4-4 4-6a4 4 0 0 0-4-4z' fill='%23fce7f3'/%3E%3Cpath d='M12 13v7' stroke='%23be185d'/%3E%3Cpath d='M9 17c1.5 0 3-1.5 3-1.5s1.5 1.5 3 1.5' stroke='%23be185d'/%3E%3C/svg%3E";
+                    }}
                   />
                   <div style={{ flex: 1 }}>
                     <label

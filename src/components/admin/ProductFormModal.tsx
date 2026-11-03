@@ -106,7 +106,7 @@ export default function ProductFormModal({
           parsedImgs = [product.images];
         }
       }
-      setImages(parsedImgs.length > 0 ? parsedImgs : [product.image || "/images/sunflower-bouquet.jpg"]);
+      setImages(parsedImgs.length > 0 ? parsedImgs : [product.image || "/images/cat-flower-bouquet-luxe.jpg"]);
 
       const attrs = typeof product.attributes === "object" ? product.attributes : {};
       setFlavour(attrs?.flavour || "");
@@ -180,7 +180,7 @@ export default function ProductFormModal({
         const data = await res.json();
         if (data.success && data.url) {
           setImages((prev) => {
-            const filtered = prev.filter((img) => img !== "/images/lily-6-stems.png" && img !== "/images/sunflower-bouquet.jpg");
+            const filtered = prev.filter((img) => img !== "/images/lily-6-stems.png" && img !== "/images/cat-flower-bouquet-luxe.jpg");
             return [data.url, ...filtered];
           });
         } else {
@@ -260,7 +260,7 @@ export default function ProductFormModal({
         featured,
         badge: badge.trim() || null,
         deliveryInfo: deliveryInfo.trim(),
-        images: images.length > 0 ? images : ["/images/sunflower-bouquet.jpg"],
+        images: images.length > 0 ? images : ["/images/cat-flower-bouquet-luxe.jpg"],
         attributes,
       };
 

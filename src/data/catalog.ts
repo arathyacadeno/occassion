@@ -3945,11 +3945,17 @@ export function getProductsForFlower(flower: string): Product[] {
         p.id === "bouquet-golden-blush" ||
         p.id === "bouquet-pink-roses-purple-orchids" ||
         p.id === "bouquet-orchid-fantasy" ||
-        p.slug === "orchid-fantasy"
+        p.slug === "orchid-fantasy" ||
+        p.id === "flower-rajnigandha-fragrant-bunch" ||
+        p.slug === "fragrant-rajnigandha-tuberose-bunch" ||
+        p.name.toLowerCase().includes("rajnigandha") ||
+        p.name.toLowerCase().includes("tuberose") ||
+        p.slug.includes("rajnigandha") ||
+        p.slug.includes("tuberose")
       ) {
         return false;
       }
-      return text.includes("rose");
+      return /\brose(s)?\b/i.test(text);
     }
     if (norm === "lili" || norm === "lily" || norm === "lilie") return text.includes("lil");
     if (norm === "orchid") return text.includes("orchid");

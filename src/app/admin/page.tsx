@@ -532,36 +532,7 @@ export default function AdminPage() {
               💡 Default demo credentials: <strong>admin@occasions.com</strong> / <strong>admin123</strong>
             </div>
           </div>
-        {/* Modals for Product Management */}
-        <ProductFormModal
-          isOpen={isFormModalOpen}
-          onClose={() => setIsFormModalOpen(false)}
-          product={selectedProductForEdit}
-          categories={categoriesList.length > 0 ? categoriesList : [
-            { id: "cat-flower-bouquet", name: "Flower Bouquet", slug: "flower-bouquet" },
-            { id: "cat-flower-basket", name: "Flower Basket", slug: "flower-basket" },
-            { id: "cat-cakes", name: "Cakes", slug: "cakes" },
-            { id: "cat-table-decor", name: "Table Decor", slug: "table-decor" },
-            { id: "cat-wreath", name: "Wreath", slug: "wreath" },
-          ]}
-          onSave={handleCreateOrUpdateProduct}
-        />
-
-        <DeleteConfirmModal
-          isOpen={isDeleteModalOpen}
-          onClose={() => setIsDeleteModalOpen(false)}
-          product={selectedProductForDelete}
-          onConfirm={handleConfirmDelete}
-        />
-
-        <ProductQuickViewModal
-          isOpen={isQuickViewOpen}
-          onClose={() => setIsQuickViewOpen(false)}
-          product={selectedProductForQuickView}
-          onEdit={handleOpenEditProduct}
-          onDuplicate={handleDuplicateProduct}
-        />
-      </main>
+        </main>
         <Footer />
       </div>
     );
@@ -1605,8 +1576,38 @@ export default function AdminPage() {
             </div>
           </div>
         )}
-                </div>
+          </div>
         </div>
+
+        {/* Modals for Product Management */}
+        <ProductFormModal
+          isOpen={isFormModalOpen}
+          onClose={() => setIsFormModalOpen(false)}
+          product={selectedProductForEdit}
+          categories={categoriesList.length > 0 ? categoriesList : [
+            { id: "cat-flower-bouquet", name: "Flower Bouquet", slug: "flower-bouquet" },
+            { id: "cat-flower-basket", name: "Flower Basket", slug: "flower-basket" },
+            { id: "cat-cakes", name: "Cakes", slug: "cakes" },
+            { id: "cat-table-decor", name: "Table Decor", slug: "table-decor" },
+            { id: "cat-wreath", name: "Wreath", slug: "wreath" },
+          ]}
+          onSave={handleCreateOrUpdateProduct}
+        />
+
+        <DeleteConfirmModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          product={selectedProductForDelete}
+          onConfirm={handleConfirmDelete}
+        />
+
+        <ProductQuickViewModal
+          isOpen={isQuickViewOpen}
+          onClose={() => setIsQuickViewOpen(false)}
+          product={selectedProductForQuickView}
+          onEdit={handleOpenEditProduct}
+          onDuplicate={handleDuplicateProduct}
+        />
       </main>
 
       <Footer />

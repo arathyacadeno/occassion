@@ -33,7 +33,7 @@ export default function ProductQuickViewModal({
     }
   }
   if (images.length === 0) {
-    images = [product.image || "/images/sunflower-bouquet.jpg"];
+    images = [product.image || "/images/cat-flower-bouquet-luxe.jpg"];
   }
 
   const liveUrl = product.type === "cake" ? `/cakes` : `/flower-bouquets`;
