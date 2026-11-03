@@ -49,6 +49,7 @@ export default function ProductFormModal({
 
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
+  const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
   const [sku, setSku] = useState("");
   const [shortDescription, setShortDescription] = useState("");
   const [description, setDescription] = useState("");
@@ -88,12 +89,14 @@ export default function ProductFormModal({
     if (!isOpen) {
       setSku("");
       setError(null);
+      setIsSlugManuallyEdited(false);
       return;
     }
 
     if (product) {
       setName(product.name || "");
       setSlug(product.slug || "");
+      setIsSlugManuallyEdited(Boolean(product.slug));
       setSku(product.sku || "");
       setShortDescription(product.shortDescription || product.short_description || "");
       setDescription(product.description || "");
@@ -133,6 +136,7 @@ export default function ProductFormModal({
       // Reset for new product
       setName("");
       setSlug("");
+      setIsSlugManuallyEdited(false);
       // Generate a stable SKU once if not already present
       setSku((current) => (current ? current : `SKU-OCC-${Math.floor(100000 + Math.random() * 900000)}`));
       setShortDescription("");
@@ -164,11 +168,21 @@ export default function ProductFormModal({
 
   if (!isOpen) return null;
 
-  // Auto slug generation on name change when adding new
+  // Slug generator helper
+  const formatSlug = (val: string) => {
+    return val
+      .toLowerCase()
+      .trim()
+      .replace(/['"]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  };
+
+  // Auto slug generation on name change when adding new or when slug hasn't been manually detached
   const handleNameChange = (val: string) => {
     setName(val);
-    if (!isEditing && (!slug || slug === name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""))) {
-      setSlug(val.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""));
+    if (!isEditing && !isSlugManuallyEdited) {
+      setSlug(formatSlug(val));
     }
   };
 
@@ -258,9 +272,11 @@ export default function ProductFormModal({
         attributes.maxStems = Number(maxStems) || 42;
       }
 
+      const finalSlug = formatSlug(slug.trim() || name.trim()) || `item-${Date.now().toString().slice(-6)}`;
+
       const payload = {
         name: name.trim(),
-        slug: slug.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""),
+        slug: finalSlug,
         sku: sku.trim(),
         shortDescription: shortDescription.trim(),
         description: description.trim(),
@@ -445,14 +461,39 @@ export default function ProductFormModal({
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 14 }}>
               <div>
-                <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, color: "#475569", marginBottom: 6 }}>
-                  URL Slug
-                </label>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                  <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "#475569" }}>
+                    URL Slug
+                  </label>
+                  {isSlugManuallyEdited && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsSlugManuallyEdited(false);
+                        setSlug(formatSlug(name));
+                      }}
+                      style={{
+                        fontSize: "0.72rem",
+                        color: "#c2185b",
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        textDecoration: "underline",
+                        padding: 0,
+                      }}
+                    >
+                      Reset to auto
+                    </button>
+                  )}
+                </div>
                 <input
                   type="text"
-                  placeholder="scarlet-whisper-rose-bouquet"
+                  placeholder="Auto-generated from product name..."
                   value={slug}
-                  onChange={(e) => setSlug(e.target.value)}
+                  onChange={(e) => {
+                    setSlug(e.target.value);
+                    setIsSlugManuallyEdited(true);
+                  }}
                   style={{
                     width: "100%",
                     padding: "10px 14px",
@@ -461,8 +502,12 @@ export default function ProductFormModal({
                     fontSize: "0.92rem",
                     boxSizing: "border-box",
                     fontFamily: "monospace",
+                    backgroundColor: !isSlugManuallyEdited && !slug ? "#f8fafc" : "#ffffff",
                   }}
                 />
+                <div style={{ marginTop: 5, fontSize: "0.74rem", color: "#64748b" }}>
+                  Storefront URL: <span style={{ fontFamily: "monospace", color: slug ? "#c2185b" : "#94a3b8", fontWeight: 600 }}>/{slug || (name ? formatSlug(name) : "your-product-slug")}</span>
+                </div>
               </div>
 
               <div>
