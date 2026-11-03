@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import MediaLibrary from "@/components/admin/MediaLibrary";
 import {
   X,
@@ -17,6 +17,15 @@ import {
   Package,
 } from "lucide-react";
 
+const EMPTY_ARRAY: any[] = [];
+const DEFAULT_CATEGORIES = [
+  { id: "cat-flower-bouquet", name: "Flower Bouquet", slug: "flower-bouquet" },
+  { id: "cat-flower-basket", name: "Flower Basket", slug: "flower-basket" },
+  { id: "cat-cakes", name: "Cakes", slug: "cakes" },
+  { id: "cat-table-decor", name: "Table Decor", slug: "table-decor" },
+  { id: "cat-wreath", name: "Wreath", slug: "wreath" },
+];
+
 interface ProductFormModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -31,9 +40,9 @@ export default function ProductFormModal({
   isOpen,
   onClose,
   product,
-  categories,
-  flowerTypes = [],
-  occasions = [],
+  categories = DEFAULT_CATEGORIES,
+  flowerTypes = EMPTY_ARRAY,
+  occasions = EMPTY_ARRAY,
   onSave,
 }: ProductFormModalProps) {
   const isEditing = Boolean(product?.id);
@@ -72,10 +81,15 @@ export default function ProductFormModal({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isMediaPickerOpen, setIsMediaPickerOpen] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
 
   // Initialize or reset form
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      setSku("");
+      setError(null);
+      return;
+    }
 
     if (product) {
       setName(product.name || "");
@@ -119,7 +133,8 @@ export default function ProductFormModal({
       // Reset for new product
       setName("");
       setSlug("");
-      setSku(`SKU-OCC-${Date.now().toString().slice(-6)}`);
+      // Generate a stable SKU once if not already present
+      setSku((current) => (current ? current : `SKU-OCC-${Math.floor(100000 + Math.random() * 900000)}`));
       setShortDescription("");
       setDescription("");
       setCategoryId(categories[0]?.id || "cat-flower-bouquet");
@@ -145,7 +160,7 @@ export default function ProductFormModal({
     setError(null);
     setShowNewCatInput(false);
     setNewCatName("");
-  }, [isOpen, product, categories, flowerTypes, occasions]);
+  }, [isOpen, product]);
 
   if (!isOpen) return null;
 
@@ -220,11 +235,13 @@ export default function ProductFormModal({
 
     if (!name.trim()) {
       setError("Product name is required");
+      formRef.current?.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
     const numPrice = Number(price);
     if (isNaN(numPrice) || numPrice < 0 || price === "") {
       setError("Please provide a valid selling price");
+      formRef.current?.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
 
@@ -355,7 +372,7 @@ export default function ProductFormModal({
         </div>
 
         {/* Scrollable Form Body */}
-        <form onSubmit={handleSubmit} style={{ overflowY: "auto", padding: "24px", flex: 1 }}>
+        <form ref={formRef} onSubmit={handleSubmit} style={{ overflowY: "auto", padding: "24px", flex: 1 }}>
           {error && (
             <div
               style={{

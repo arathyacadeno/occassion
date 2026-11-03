@@ -42,6 +42,14 @@ import DeliveryManager from "@/components/admin/DeliveryManager";
 import { Layers, Palette, LayoutTemplate, Image as ImageIcon } from "lucide-react";
 import styles from "./admin.module.css";
 
+const DEFAULT_CATEGORIES_LIST = [
+  { id: "cat-flower-bouquet", name: "Flower Bouquet", slug: "flower-bouquet" },
+  { id: "cat-flower-basket", name: "Flower Basket", slug: "flower-basket" },
+  { id: "cat-cakes", name: "Cakes", slug: "cakes" },
+  { id: "cat-table-decor", name: "Table Decor", slug: "table-decor" },
+  { id: "cat-wreath", name: "Wreath", slug: "wreath" },
+];
+
 export default function AdminPage() {
   const { user, isAdmin, isAuthenticated, login } = useAuth();
 
