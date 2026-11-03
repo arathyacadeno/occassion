@@ -295,6 +295,31 @@ export async function POST(request: Request) {
     const customerEmail = (delivery?.email || auth?.email || "customer@occasions.com").trim();
     const customerPhone = (delivery?.mobile || delivery?.phone || "+91 8606464700").trim();
 
+    // 6a. Duplicate Order Prevention (Idempotency check within last 60 seconds)
+    const sixtySecsAgo = new Date(Date.now() - 60000).toISOString();
+    const existingRecentOrder = db.prepare(`
+      SELECT id, final_amount, created_at FROM orders 
+      WHERE (customer_phone = ? OR customer_email = ? OR (user_id IS NOT NULL AND user_id = ?))
+        AND final_amount = ?
+        AND created_at >= ?
+      ORDER BY created_at DESC LIMIT 1
+    `).get(customerPhone, customerEmail, auth?.userId || null, finalAmount, sixtySecsAgo) as { id: string; final_amount: number; created_at: string } | undefined;
+
+    if (existingRecentOrder) {
+      console.log(`[Order Dedup] Returning existing order #${existingRecentOrder.id} to prevent duplicate submission`);
+      return NextResponse.json({
+        success: true,
+        orderId: existingRecentOrder.id,
+        message: "Order placed successfully",
+        status: "confirmed",
+        subtotal: verifiedSubtotal,
+        deliveryCharge: verifiedDeliveryCharge,
+        discount: verifiedDiscount,
+        finalAmount,
+        createdAt: existingRecentOrder.created_at,
+      });
+    }
+
     const trackingTimeline = [
       {
         status: "confirmed",

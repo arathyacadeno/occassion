@@ -115,7 +115,7 @@ export default function AdminPage() {
       }
 
       // 3. Products
-      const prodRes = await fetch("/api/products?limit=100", { credentials: "include" });
+      const prodRes = await fetch("/api/products?limit=250", { credentials: "include" });
       if (prodRes.ok) {
         const data = await prodRes.json();
         if (data.success && Array.isArray(data.products)) {
@@ -386,7 +386,7 @@ export default function AdminPage() {
               <Package size={24} />
             </div>
             <div>
-              <div className={styles.statValue}>{orders.length}</div>
+              <div className={styles.statValue}>{stats?.totalOrders ?? orders.length}</div>
               <div className={styles.statLabel}>Total Orders Placed</div>
             </div>
           </div>
@@ -396,7 +396,7 @@ export default function AdminPage() {
               <ShoppingBag size={24} />
             </div>
             <div>
-              <div className={styles.statValue}>{products.length}</div>
+              <div className={styles.statValue}>{stats?.activeProducts ?? products.length}</div>
               <div className={styles.statLabel}>Active Catalog Products</div>
             </div>
           </div>
@@ -406,7 +406,7 @@ export default function AdminPage() {
               <Users size={24} />
             </div>
             <div>
-              <div className={styles.statValue}>{usersList.length}</div>
+              <div className={styles.statValue}>{stats?.totalCustomers ?? usersList.length}</div>
               <div className={styles.statLabel}>Registered Customers</div>
             </div>
           </div>
@@ -420,7 +420,7 @@ export default function AdminPage() {
             onClick={() => setActiveTab("orders")}
           >
             <Package size={17} />
-            <span>Orders ({orders.length})</span>
+            <span>Orders ({stats?.totalOrders ?? orders.length})</span>
           </button>
 
           <button
@@ -429,7 +429,7 @@ export default function AdminPage() {
             onClick={() => setActiveTab("stock")}
           >
             <ShoppingBag size={17} />
-            <span>Products &amp; Stock ({products.length})</span>
+            <span>Products &amp; Stock ({stats?.activeProducts ?? products.length})</span>
           </button>
 
           <button
@@ -456,7 +456,7 @@ export default function AdminPage() {
             onClick={() => setActiveTab("users")}
           >
             <Users size={17} />
-            <span>Customers ({usersList.length})</span>
+            <span>Customers ({stats?.totalCustomers ?? usersList.length})</span>
           </button>
         </div>
 

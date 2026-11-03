@@ -26,10 +26,11 @@ export async function GET(request: Request) {
       LIMIT 10
     `).all();
 
-    // Users list
+    // Users list (customers only)
     const users = db.prepare(`
       SELECT id, name, email, phone, role, created_at
       FROM users
+      WHERE role = 'customer'
       ORDER BY created_at DESC
       LIMIT 50
     `).all();
