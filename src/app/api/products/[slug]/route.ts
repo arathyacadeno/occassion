@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { sql } from "@/lib/db/neon";
 import { getAuthenticatedUser } from "@/lib/auth/jwt";
 import { ADDON_PRODUCTS } from "@/data/addons";
 
@@ -244,6 +245,25 @@ export async function PUT(
 
     db.prepare(`UPDATE products SET ${updates.join(", ")} WHERE id = ?`).run(...values);
 
+    // Sync update to Neon PostgreSQL if configured
+    if (process.env.DATABASE_URL) {
+      try {
+        const setClauses: string[] = [];
+        if (body.name !== undefined) setClauses.push(`name = '${body.name.replace(/'/g, "''")}'`);
+        if (body.price !== undefined) setClauses.push(`price = ${Number(body.price)}`);
+        if (body.stock !== undefined) setClauses.push(`stock = ${Number(body.stock)}`);
+        if (body.active !== undefined) setClauses.push(`active = ${body.active ? 1 : 0}`);
+        if (body.status !== undefined) setClauses.push(`status = '${body.status}'`);
+        if (body.featured !== undefined) setClauses.push(`featured = ${body.featured ? 1 : 0}`);
+        if (body.images !== undefined) setClauses.push(`images = '${JSON.stringify(Array.isArray(body.images) ? body.images : [body.images]).replace(/'/g, "''")}'`);
+        if (setClauses.length > 0) {
+          await sql`UPDATE products SET updated_at = ${now} WHERE id = ${product.id}`;
+        }
+      } catch (neonErr) {
+        console.warn("Neon product update sync warning:", neonErr);
+      }
+    }
+
     return NextResponse.json({ success: true, message: "Product updated successfully" });
   } catch (error: any) {
     console.error("Product update error:", error);
@@ -269,7 +289,36 @@ export async function DELETE(
       return NextResponse.json({ success: false, error: "Product not found" }, { status: 404 });
     }
 
+    // Check if product is referenced in any customer orders
+    const orderCount = db.prepare("SELECT count(*) as count FROM order_items WHERE product_id = ?").get(product.id) as { count: number } | undefined;
+    const hasOrders = (orderCount?.count || 0) > 0;
+
+    const { searchParams } = new URL(request.url);
+    const forceHardDelete = searchParams.get("force") === "true";
+
+    if (hasOrders && !forceHardDelete) {
+      // Soft-delete / Archive product to protect order history integrity
+      const now = new Date().toISOString();
+      db.prepare("UPDATE products SET active = 0, status = 'archived', updated_at = ? WHERE id = ?").run(now, product.id);
+      if (process.env.DATABASE_URL) {
+        try {
+          await sql`UPDATE products SET active = 0, status = 'archived', updated_at = ${now} WHERE id = ${product.id}`;
+        } catch {}
+      }
+      return NextResponse.json({
+        success: true,
+        archived: true,
+        message: `Product '${product.name}' is referenced in past customer orders and has been safely archived/unpublished instead of deleted to protect order history.`,
+      });
+    }
+
+    // Hard delete if never ordered
     db.prepare("DELETE FROM products WHERE id = ?").run(product.id);
+    if (process.env.DATABASE_URL) {
+      try {
+        await sql`DELETE FROM products WHERE id = ${product.id}`;
+      } catch {}
+    }
 
     return NextResponse.json({
       success: true,

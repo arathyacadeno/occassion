@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { sql } from "@/lib/db/neon";
 import { getAuthenticatedUser } from "@/lib/auth/jwt";
 
 export async function GET(request: Request) {
@@ -362,6 +363,37 @@ export async function POST(request: Request) {
       now,
       now
     );
+
+    // Sync newly created product to Neon DB if configured
+    if (process.env.DATABASE_URL) {
+      try {
+        await sql`
+          INSERT INTO products (
+            id, name, slug, description, short_description, images, price, discount_price,
+            stock, low_stock_threshold, sku, category_id, flower_type_id, occasion_id,
+            featured, active, rating, reviews_count, delivery_info,
+            offers, includes, badge, type, status, tags, seo_title, seo_description,
+            attributes, created_at, updated_at
+          ) VALUES (
+            ${id}, ${name.trim()}, ${cleanSlug}, ${description || ""}, ${shortDescription || ""},
+            ${JSON.stringify(imageArray)}, ${numPrice}, ${originalPrice ? Number(originalPrice) : null},
+            ${stock !== undefined ? Number(stock) : 45}, ${lowStockThreshold !== undefined ? Number(lowStockThreshold) : 5},
+            ${sku || `SKU-${id.toUpperCase()}`}, ${categoryId || "cat-flower-bouquet"}, ${flowerTypeId || "ft-mixed-flowers"},
+            ${occasionId || "occ-birthday"}, ${featured ? 1 : 0}, ${active !== undefined ? (active ? 1 : 0) : 1},
+            5.0, 1, ${deliveryInfo || "Same-day Calicut express delivery available"},
+            ${JSON.stringify(Array.isArray(offers) ? offers : [])},
+            ${JSON.stringify(Array.isArray(includes) ? includes : [])},
+            ${badge || null}, ${inferredType}, ${status || "published"},
+            ${JSON.stringify(Array.isArray(tags) ? tags : [])},
+            ${seoTitle || ""}, ${seoDescription || ""},
+            ${JSON.stringify(typeof attributes === "object" && attributes !== null ? attributes : {})},
+            ${now}, ${now}
+          )
+        `;
+      } catch (neonErr) {
+        console.warn("Neon product insert sync warning:", neonErr);
+      }
+    }
 
     return NextResponse.json({
       success: true,

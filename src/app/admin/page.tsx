@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/context/AuthContext";
@@ -19,6 +19,21 @@ import {
   Clock,
   RefreshCw,
 } from "lucide-react";
+import {
+  Plus,
+  Search,
+  Eye,
+  Edit,
+  Trash2,
+  Copy,
+  ChevronLeft,
+  ChevronRight,
+  Filter,
+  Globe,
+} from "lucide-react";
+import ProductFormModal from "@/components/admin/ProductFormModal";
+import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
+import ProductQuickViewModal from "@/components/admin/ProductQuickViewModal";
 import styles from "./admin.module.css";
 
 export default function AdminPage() {
@@ -44,6 +59,25 @@ export default function AdminPage() {
   // Stock edit state
   const [stockChanges, setStockChanges] = useState<Record<string, number>>({});
   const [stockSaveMsg, setStockSaveMsg] = useState<string | null>(null);
+
+  // Product Management CRUD & Filters state
+  const [categoriesList, setCategoriesList] = useState<any[]>([]);
+  const [productSearch, setProductSearch] = useState("");
+  const [productCategoryFilter, setProductCategoryFilter] = useState("all");
+  const [productStatusFilter, setProductStatusFilter] = useState("all");
+  const [productStockFilter, setProductStockFilter] = useState("all");
+  const [productSort, setProductSort] = useState("newest");
+  const [productPage, setProductPage] = useState(1);
+  const productPageSize = 20;
+
+  // Modals state
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [selectedProductForEdit, setSelectedProductForEdit] = useState<any | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedProductForDelete, setSelectedProductForDelete] = useState<any | null>(null);
+  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
+  const [selectedProductForQuickView, setSelectedProductForQuickView] = useState<any | null>(null);
+  const [productActionMsg, setProductActionMsg] = useState<string | null>(null);
 
   // Coupon form
   const [newCoupon, setNewCoupon] = useState({
@@ -130,6 +164,19 @@ export default function AdminPage() {
         if (data.success && Array.isArray(data.coupons)) {
           setCoupons(data.coupons);
         }
+      }
+
+      // 6. Categories
+      try {
+        const catRes = await fetch("/api/categories", { credentials: "include" });
+        if (catRes.ok) {
+          const data = await catRes.json();
+          if (data.success && Array.isArray(data.categories)) {
+            setCategoriesList(data.categories);
+          }
+        }
+      } catch (err) {
+        console.warn("Could not fetch categories", err);
       }
 
       // 5. Customization Settings
@@ -273,6 +320,149 @@ export default function AdminPage() {
     }
   };
 
+  // Product CRUD Action Handlers
+  const handleOpenAddProduct = () => {
+    setSelectedProductForEdit(null);
+    setIsFormModalOpen(true);
+  };
+
+  const handleOpenEditProduct = (p: any) => {
+    setSelectedProductForEdit(p);
+    setIsFormModalOpen(true);
+  };
+
+  const handleOpenQuickView = (p: any) => {
+    setSelectedProductForQuickView(p);
+    setIsQuickViewOpen(true);
+  };
+
+  const handleOpenDelete = (p: any) => {
+    setSelectedProductForDelete(p);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleCreateOrUpdateProduct = async (productData: any): Promise<boolean> => {
+    const isEdit = Boolean(selectedProductForEdit?.slug || selectedProductForEdit?.id);
+    const targetSlug = selectedProductForEdit?.slug || selectedProductForEdit?.id;
+    const url = isEdit ? `/api/products/${encodeURIComponent(targetSlug)}` : `/api/products`;
+    const method = isEdit ? "PUT" : "POST";
+
+    const res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(productData),
+      credentials: "include",
+    });
+
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || "Failed to save product");
+    }
+
+    setProductActionMsg(`✓ Product '${productData.name}' ${isEdit ? "updated" : "published"} successfully`);
+    setTimeout(() => setProductActionMsg(null), 5000);
+    await fetchAdminData();
+    return true;
+  };
+
+  const handleTogglePublishProduct = async (p: any) => {
+    const newActive = !p.active;
+    const newStatus = newActive ? "published" : "draft";
+
+    const res = await fetch(`/api/products/${encodeURIComponent(p.slug || p.id)}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ active: newActive, status: newStatus }),
+      credentials: "include",
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      setProducts((prev) =>
+        prev.map((item) => (item.id === p.id ? { ...item, active: newActive, status: newStatus } : item))
+      );
+      setProductActionMsg(`✓ '${p.name}' is now ${newActive ? "Published" : "Draft"}`);
+      setTimeout(() => setProductActionMsg(null), 4000);
+    } else {
+      alert(data.error || "Failed to update product status");
+    }
+  };
+
+  const handleDuplicateProduct = async (slug: string) => {
+    const res = await fetch(`/api/products/${encodeURIComponent(slug)}/duplicate`, {
+      method: "POST",
+      credentials: "include",
+    });
+    const data = await res.json();
+    if (data.success) {
+      setProductActionMsg("✓ Product duplicated successfully as Draft");
+      setTimeout(() => setProductActionMsg(null), 4000);
+      await fetchAdminData();
+    } else {
+      alert(data.error || "Failed to duplicate product");
+    }
+  };
+
+  const handleConfirmDelete = async (slug: string, force?: boolean): Promise<boolean> => {
+    const res = await fetch(`/api/products/${encodeURIComponent(slug)}?force=${force ? "true" : "false"}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+    const data = await res.json();
+    if (data.success) {
+      setProducts((prev) => prev.filter((item) => item.slug !== slug && item.id !== slug));
+      setProductActionMsg(`✓ ${data.message || "Product removed successfully"}`);
+      setTimeout(() => setProductActionMsg(null), 5000);
+      await fetchAdminData();
+      return true;
+    } else {
+      throw new Error(data.error || "Failed to remove product");
+    }
+  };
+
+  // Filtered & Paginated Products for Product Management
+  const filteredProducts = useMemo(() => {
+    return products
+      .filter((p: any) => {
+        if (productSearch.trim()) {
+          const q = productSearch.toLowerCase();
+          const matchName = (p.name || "").toLowerCase().includes(q);
+          const matchSku = (p.sku || "").toLowerCase().includes(q);
+          const matchSlug = (p.slug || "").toLowerCase().includes(q);
+          if (!matchName && !matchSku && !matchSlug) return false;
+        }
+
+        if (productCategoryFilter !== "all") {
+          const cat = (p.categoryId || p.categorySlug || p.category || "").toLowerCase();
+          if (cat !== productCategoryFilter.toLowerCase()) return false;
+        }
+
+        if (productStatusFilter !== "all") {
+          const st = p.status || (p.active ? "published" : "draft");
+          if (st !== productStatusFilter) return false;
+        }
+
+        if (productStockFilter === "instock" && (p.stock || 0) <= 0) return false;
+        if (productStockFilter === "low" && ((p.stock || 0) > 10 || (p.stock || 0) <= 0)) return false;
+        if (productStockFilter === "out" && (p.stock || 0) > 0) return false;
+
+        return true;
+      })
+      .sort((a: any, b: any) => {
+        if (productSort === "price_asc") return (a.price || 0) - (b.price || 0);
+        if (productSort === "price_desc") return (b.price || 0) - (a.price || 0);
+        if (productSort === "name_asc") return (a.name || "").localeCompare(b.name || "");
+        if (productSort === "stock_asc") return (a.stock || 0) - (b.stock || 0);
+        return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+      });
+  }, [products, productSearch, productCategoryFilter, productStatusFilter, productStockFilter, productSort]);
+
+  const totalProductPages = Math.max(1, Math.ceil(filteredProducts.length / productPageSize));
+  const paginatedProducts = filteredProducts.slice(
+    (productPage - 1) * productPageSize,
+    productPage * productPageSize
+  );
+
   if (!isAuthenticated || !isAdmin) {
     return (
       <div className={styles.pageWrapper}>
@@ -336,7 +526,36 @@ export default function AdminPage() {
               💡 Default demo credentials: <strong>admin@occasions.com</strong> / <strong>admin123</strong>
             </div>
           </div>
-        </main>
+        {/* Modals for Product Management */}
+        <ProductFormModal
+          isOpen={isFormModalOpen}
+          onClose={() => setIsFormModalOpen(false)}
+          product={selectedProductForEdit}
+          categories={categoriesList.length > 0 ? categoriesList : [
+            { id: "cat-flower-bouquet", name: "Flower Bouquet", slug: "flower-bouquet" },
+            { id: "cat-flower-basket", name: "Flower Basket", slug: "flower-basket" },
+            { id: "cat-cakes", name: "Cakes", slug: "cakes" },
+            { id: "cat-table-decor", name: "Table Decor", slug: "table-decor" },
+            { id: "cat-wreath", name: "Wreath", slug: "wreath" },
+          ]}
+          onSave={handleCreateOrUpdateProduct}
+        />
+
+        <DeleteConfirmModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          product={selectedProductForDelete}
+          onConfirm={handleConfirmDelete}
+        />
+
+        <ProductQuickViewModal
+          isOpen={isQuickViewOpen}
+          onClose={() => setIsQuickViewOpen(false)}
+          product={selectedProductForQuickView}
+          onEdit={handleOpenEditProduct}
+          onDuplicate={handleDuplicateProduct}
+        />
+      </main>
         <Footer />
       </div>
     );
@@ -535,74 +754,343 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* TAB 2: Products & Stock */}
+        {/* TAB 2: Products & Catalog Management */}
         {activeTab === "stock" && (
           <div className={styles.panelCard}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-              <h2 style={{ fontFamily: "var(--font-serif)", color: "#831843", fontSize: "1.3rem", margin: 0 }}>
-                Inventory &amp; Stock Levels
-              </h2>
-              {stockSaveMsg && (
-                <div style={{ color: "#047857", fontWeight: 600, fontSize: "0.88rem" }}>
-                  ✓ {stockSaveMsg}
-                </div>
-              )}
+            {/* Header */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 14 }}>
+              <div>
+                <h2 style={{ fontFamily: "var(--font-serif)", color: "#831843", fontSize: "1.45rem", margin: "0 0 4px" }}>
+                  Product Catalog &amp; Inventory Management
+                </h2>
+                <p style={{ margin: 0, fontSize: "0.85rem", color: "#64748b" }}>
+                  Add new items, upload high-res imagery to Cloudinary, edit pricing, manage stock, and publish to the storefront.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className={styles.primaryBtn}
+                onClick={handleOpenAddProduct}
+              >
+                <Plus size={18} />
+                <span>Add New Product</span>
+              </button>
             </div>
 
+            {/* Toast feedback */}
+            {productActionMsg && (
+              <div style={{ padding: "12px 18px", borderRadius: 10, background: "#ecfdf5", border: "1px solid #a7f3d0", color: "#065f46", fontWeight: 600, fontSize: "0.9rem", marginBottom: 18 }}>
+                {productActionMsg}
+              </div>
+            )}
+            {stockSaveMsg && (
+              <div style={{ padding: "10px 16px", borderRadius: 10, background: "#ecfdf5", border: "1px solid #a7f3d0", color: "#065f46", fontWeight: 600, fontSize: "0.88rem", marginBottom: 16 }}>
+                ✓ {stockSaveMsg}
+              </div>
+            )}
+
+            {/* Filter & Search Toolbar */}
+            <div className={styles.catalogToolbar}>
+              <div className={styles.toolbarGroup}>
+                <div style={{ position: "relative" }}>
+                  <input
+                    type="text"
+                    placeholder="Search name, SKU, slug..."
+                    className={styles.searchInput}
+                    value={productSearch}
+                    onChange={(e) => {
+                      setProductSearch(e.target.value);
+                      setProductPage(1);
+                    }}
+                  />
+                </div>
+
+                <select
+                  className={styles.filterSelect}
+                  value={productCategoryFilter}
+                  onChange={(e) => {
+                    setProductCategoryFilter(e.target.value);
+                    setProductPage(1);
+                  }}
+                >
+                  <option value="all">All Categories</option>
+                  <option value="cat-flower-bouquet">Flower Bouquets</option>
+                  <option value="cat-flower-basket">Flower Baskets</option>
+                  <option value="cat-cakes">Cakes</option>
+                  <option value="cat-table-decor">Table Decor</option>
+                  <option value="cat-wreath">Wreaths</option>
+                  {categoriesList.filter((c: any) => !["cat-flower-bouquet", "cat-flower-basket", "cat-cakes", "cat-table-decor", "cat-wreath"].includes(c.id)).map((c: any) => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+
+                <select
+                  className={styles.filterSelect}
+                  value={productStatusFilter}
+                  onChange={(e) => {
+                    setProductStatusFilter(e.target.value);
+                    setProductPage(1);
+                  }}
+                >
+                  <option value="all">All Status</option>
+                  <option value="published">Published</option>
+                  <option value="draft">Draft</option>
+                  <option value="archived">Archived</option>
+                </select>
+
+                <select
+                  className={styles.filterSelect}
+                  value={productStockFilter}
+                  onChange={(e) => {
+                    setProductStockFilter(e.target.value);
+                    setProductPage(1);
+                  }}
+                >
+                  <option value="all">All Stock Levels</option>
+                  <option value="instock">In Stock (&gt; 0)</option>
+                  <option value="low">Low Stock (≤ 10)</option>
+                  <option value="out">Out of Stock (= 0)</option>
+                </select>
+
+                <select
+                  className={styles.filterSelect}
+                  value={productSort}
+                  onChange={(e) => setProductSort(e.target.value)}
+                >
+                  <option value="newest">Sort: Newest Added</option>
+                  <option value="price_asc">Price: Low to High</option>
+                  <option value="price_desc">Price: High to Low</option>
+                  <option value="name_asc">Name: A to Z</option>
+                  <option value="stock_asc">Stock: Low to High</option>
+                </select>
+              </div>
+
+              <div style={{ fontSize: "0.85rem", color: "#64748b", fontWeight: 600 }}>
+                Found {filteredProducts.length} product{filteredProducts.length !== 1 ? "s" : ""}
+              </div>
+            </div>
+
+            {/* Products Table */}
             <div className={styles.tableResponsive}>
               <table className={styles.dataTable}>
                 <thead>
                   <tr>
                     <th>Product</th>
                     <th>Category</th>
-                    <th>Flower Type</th>
                     <th>Price</th>
-                    <th>Current Stock</th>
-                    <th>Update</th>
+                    <th>Stock</th>
+                    <th>Status</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {products.map((p) => {
-                    const currentVal =
-                      stockChanges[p.slug] !== undefined ? stockChanges[p.slug] : p.stock;
-                    return (
-                      <tr key={p.id}>
-                        <td>
-                          <div style={{ fontWeight: 600 }}>{p.name}</div>
-                          <div style={{ fontSize: "0.75rem", color: "#64748b" }}>SKU: {p.sku}</div>
-                        </td>
-                        <td>{p.categoryLabel || p.category}</td>
-                        <td>{p.flowerTypeLabel || p.flowerType || "Mixed Flowers"}</td>
-                        <td style={{ fontWeight: 700 }}>₹{p.price}</td>
-                        <td>
-                          <input
-                            type="number"
-                            min="0"
-                            className={styles.stockInput}
-                            value={currentVal}
-                            onChange={(e) =>
-                              setStockChanges({
-                                ...stockChanges,
-                                [p.slug]: Number(e.target.value),
-                              })
-                            }
-                          />
-                        </td>
-                        <td>
-                          <button
-                            type="button"
-                            className={styles.actionBtn}
-                            onClick={() => handleSaveStock(p.slug, currentVal)}
-                          >
-                            Save
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                  {paginatedProducts.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} style={{ textAlign: "center", padding: "40px 20px", color: "#64748b" }}>
+                        No products match the selected filters or search query.
+                      </td>
+                    </tr>
+                  ) : (
+                    paginatedProducts.map((p: any) => {
+                      const currentVal =
+                        stockChanges[p.slug] !== undefined ? stockChanges[p.slug] : p.stock;
+
+                      let mainImg = p.image;
+                      if (!mainImg && p.images) {
+                        try {
+                          mainImg = Array.isArray(p.images) ? p.images[0] : JSON.parse(p.images)[0];
+                        } catch {
+                          mainImg = typeof p.images === "string" ? p.images : "/images/lily-6-stems.png";
+                        }
+                      }
+                      if (!mainImg) mainImg = "/images/sunflower-bouquet.jpg";
+
+                      const isPublished = p.active === 1 || p.status === "published";
+
+                      return (
+                        <tr key={p.id}>
+                          <td>
+                            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                              <img
+                                src={mainImg}
+                                alt={p.name}
+                                className={styles.productThumb}
+                                onError={(e: any) => {
+                                  e.target.src = "/images/sunflower-bouquet.jpg";
+                                }}
+                              />
+                              <div>
+                                <div style={{ fontWeight: 600, color: "#1e293b", fontSize: "0.92rem" }}>
+                                  {p.name}
+                                </div>
+                                <div style={{ display: "flex", gap: 8, fontSize: "0.75rem", color: "#64748b", marginTop: 2 }}>
+                                  <span>SKU: {p.sku || "—"}</span>
+                                  <span>•</span>
+                                  <span style={{ fontFamily: "monospace" }}>/{p.slug}</span>
+                                </div>
+                                {p.badge && (
+                                  <span style={{ display: "inline-block", fontSize: "0.68rem", fontWeight: 700, background: "#fdf2f8", color: "#db2777", padding: "1px 6px", borderRadius: 4, marginTop: 3 }}>
+                                    {p.badge}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </td>
+
+                          <td>
+                            <span style={{ display: "inline-block", padding: "4px 8px", borderRadius: 6, background: "#f1f5f9", fontSize: "0.8rem", color: "#334155", fontWeight: 600 }}>
+                              {p.categoryLabel || p.category || "Bouquet"}
+                            </span>
+                          </td>
+
+                          <td>
+                            <div style={{ fontWeight: 700, color: "#1e293b", fontSize: "0.92rem" }}>₹{p.price}</div>
+                            {p.originalPrice && p.originalPrice > p.price && (
+                              <div style={{ fontSize: "0.75rem", color: "#94a3b8", textDecoration: "line-through" }}>
+                                ₹{p.originalPrice}
+                              </div>
+                            )}
+                          </td>
+
+                          <td>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                              <input
+                                type="number"
+                                min="0"
+                                className={styles.stockInput}
+                                value={currentVal}
+                                onChange={(e) =>
+                                  setStockChanges({
+                                    ...stockChanges,
+                                    [p.slug]: Number(e.target.value),
+                                  })
+                                }
+                              />
+                              {stockChanges[p.slug] !== undefined && stockChanges[p.slug] !== p.stock && (
+                                <button
+                                  type="button"
+                                  className={styles.actionBtn}
+                                  onClick={() => handleSaveStock(p.slug, currentVal)}
+                                  title="Save Stock"
+                                >
+                                  Save
+                                </button>
+                              )}
+                            </div>
+                            {currentVal <= 5 && (
+                              <div style={{ fontSize: "0.7rem", color: "#dc2626", fontWeight: 700, marginTop: 2 }}>
+                                Low Stock
+                              </div>
+                            )}
+                          </td>
+
+                          <td>
+                            <span
+                              className={styles.statusBadge}
+                              style={{
+                                background: isPublished ? "#dcfce7" : p.status === "archived" ? "#f1f5f9" : "#fef3c7",
+                                color: isPublished ? "#166534" : p.status === "archived" ? "#64748b" : "#92400e",
+                              }}
+                            >
+                              {p.status || (isPublished ? "published" : "draft")}
+                            </span>
+                          </td>
+
+                          <td>
+                            <div className={styles.actionBtnGroup}>
+                              <button
+                                type="button"
+                                className={styles.iconActionBtn}
+                                onClick={() => handleOpenQuickView(p)}
+                                title="Quick Preview"
+                              >
+                                <Eye size={14} />
+                                <span>View</span>
+                              </button>
+
+                              <button
+                                type="button"
+                                className={styles.iconActionBtn}
+                                onClick={() => handleOpenEditProduct(p)}
+                                title="Edit Product"
+                              >
+                                <Edit size={14} />
+                                <span>Edit</span>
+                              </button>
+
+                              <button
+                                type="button"
+                                className={styles.iconActionBtn}
+                                onClick={() => handleDuplicateProduct(p.slug || p.id)}
+                                title="Duplicate as Draft"
+                              >
+                                <Copy size={14} />
+                              </button>
+
+                              <button
+                                type="button"
+                                className={styles.iconActionBtn}
+                                onClick={() => handleTogglePublishProduct(p)}
+                                title={isPublished ? "Unpublish (Move to Draft)" : "Publish to Storefront"}
+                                style={{
+                                  color: isPublished ? "#059669" : "#d97706",
+                                }}
+                              >
+                                <Globe size={14} />
+                              </button>
+
+                              <button
+                                type="button"
+                                className={`${styles.iconActionBtn} ${styles.deleteActionBtn}`}
+                                onClick={() => handleOpenDelete(p)}
+                                title="Remove / Archive Product"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
                 </tbody>
               </table>
             </div>
+
+            {/* Pagination Controls */}
+            {filteredProducts.length > productPageSize && (
+              <div className={styles.paginationBar}>
+                <div>
+                  Showing {(productPage - 1) * productPageSize + 1} to{" "}
+                  {Math.min(productPage * productPageSize, filteredProducts.length)} of {filteredProducts.length} items
+                </div>
+
+                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                  <button
+                    type="button"
+                    className={styles.pageBtn}
+                    disabled={productPage === 1}
+                    onClick={() => setProductPage((p) => Math.max(1, p - 1))}
+                  >
+                    Previous
+                  </button>
+
+                  <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#1e293b", padding: "0 6px" }}>
+                    Page {productPage} of {totalProductPages}
+                  </span>
+
+                  <button
+                    type="button"
+                    className={styles.pageBtn}
+                    disabled={productPage >= totalProductPages}
+                    onClick={() => setProductPage((p) => Math.min(totalProductPages, p + 1))}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
