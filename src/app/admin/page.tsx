@@ -989,10 +989,10 @@ export default function AdminPage() {
                         try {
                           mainImg = Array.isArray(p.images) ? p.images[0] : JSON.parse(p.images)[0];
                         } catch {
-                          mainImg = typeof p.images === "string" ? p.images : "/images/lily-6-stems.png";
+                          mainImg = typeof p.images === "string" ? p.images : "/images/cat-flower-bouquet-luxe.jpg";
                         }
                       }
-                      if (!mainImg) mainImg = "/images/sunflower-bouquet.jpg";
+                      if (!mainImg) mainImg = "/images/cat-flower-bouquet-luxe.jpg";
 
                       const isPublished = p.active === 1 || p.status === "published";
 
@@ -1005,7 +1005,8 @@ export default function AdminPage() {
                                 alt={p.name}
                                 className={styles.productThumb}
                                 onError={(e: any) => {
-                                  e.target.src = "/images/sunflower-bouquet.jpg";
+                                  e.currentTarget.onerror = null;
+                                  e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24' fill='%23fdf2f8' stroke='%23db2777' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='100%25' height='100%25' fill='%23fdf2f8' rx='8'/%3E%3Cpath d='M12 3a4 4 0 0 0-4 4c0 2 4 6 4 6s4-4 4-6a4 4 0 0 0-4-4z' fill='%23fce7f3'/%3E%3Cpath d='M12 13v7' stroke='%23be185d'/%3E%3Cpath d='M9 17c1.5 0 3-1.5 3-1.5s1.5 1.5 3 1.5' stroke='%23be185d'/%3E%3C/svg%3E";
                                 }}
                               />
                               <div>

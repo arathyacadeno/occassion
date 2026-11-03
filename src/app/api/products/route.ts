@@ -201,7 +201,7 @@ export async function GET(request: Request) {
         shortDescription: r.short_description || "",
         price: r.price,
         originalPrice: r.discount_price,
-        image: parsedImages[0] || "/images/sunflower-bouquet.jpg",
+        image: parsedImages[0] || "/images/cat-flower-bouquet-luxe.jpg",
         images: parsedImages,
         stock: r.stock,
         lowStockThreshold: r.low_stock_threshold ?? 5,

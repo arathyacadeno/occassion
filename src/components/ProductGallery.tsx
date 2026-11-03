@@ -14,7 +14,7 @@ interface ProductGalleryProps {
   selectedImageOverride?: string | null;
 }
 
-const FALLBACK_IMAGE = "/images/sunflower-bouquet.jpg";
+const FALLBACK_IMAGE = "/images/cat-flower-bouquet-luxe.jpg";
 const ZOOM_SCALE = 2.2;
 
 export default function ProductGallery({

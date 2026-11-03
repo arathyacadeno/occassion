@@ -281,10 +281,13 @@ export default function CategoryManager({ categories, onRefresh }: CategoryManag
                 <td style={{ padding: 14 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                     <img
-                      src={c.image || "/images/sunflower-bouquet.jpg"}
+                      src={c.image || "/images/cat-flower-bouquet-luxe.jpg"}
                       alt={c.name}
                       style={{ width: 44, height: 44, borderRadius: 8, objectFit: "cover", border: "1px solid #e2e8f0", background: "#f8fafc" }}
-                      onError={(e: any) => { e.target.src = "/images/sunflower-bouquet.jpg"; }}
+                      onError={(e: any) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24' fill='%23fdf2f8' stroke='%23db2777' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='100%25' height='100%25' fill='%23fdf2f8' rx='8'/%3E%3Cpath d='M12 3a4 4 0 0 0-4 4c0 2 4 6 4 6s4-4 4-6a4 4 0 0 0-4-4z' fill='%23fce7f3'/%3E%3Cpath d='M12 13v7' stroke='%23be185d'/%3E%3Cpath d='M9 17c1.5 0 3-1.5 3-1.5s1.5 1.5 3 1.5' stroke='%23be185d'/%3E%3C/svg%3E";
+                      }}
                     />
                     <div>
                       <div style={{ fontWeight: 700, color: "#1e293b", fontSize: "0.92rem" }}>{c.name}</div>
