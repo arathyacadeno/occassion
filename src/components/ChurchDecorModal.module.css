@@ -1,0 +1,321 @@
+/* ==========================================================
+   CHURCH DECOR SHOWCASE MODAL - matches StageDecorModal & CarDecorModal
+   ========================================================== */
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(17, 17, 17, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+  animation: modalFadeIn 0.24s ease;
+  overflow-y: auto;
+}
+
+.modalCard {
+  position: relative;
+  background: #ffffff;
+  border-radius: 28px;
+  max-width: 1100px;
+  width: 100%;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.12), 0 10px 25px rgba(190, 24, 93, 0.1);
+  box-sizing: border-box;
+  animation: modalCardPop 0.28s ease;
+  margin: auto;
+}
+
+.closeButton {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: none;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 20;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.closeButton:hover {
+  background: #fdf2f8;
+  color: #e91e63;
+}
+
+/* ── Top: image (flush) + details ── */
+.topGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  align-items: stretch;
+}
+
+.heroImageWrapper {
+  position: relative;
+  width: 100%;
+  height: 485px;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+.heroImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.navArrowBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(229, 231, 235, 0.92);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #111827;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.2s ease;
+}
+
+.navArrowBtn:hover {
+  background: #ffffff;
+}
+
+.navArrowPrev {
+  left: 16px;
+}
+
+.navArrowNext {
+  right: 16px;
+}
+
+/* ── Details ── */
+.detailsCol {
+  display: flex;
+  flex-direction: column;
+  padding: 34px 48px 34px 34px;
+  box-sizing: border-box;
+  height: 100%;
+}
+
+.description {
+  font-family: var(--font-sans, "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  font-size: 15px;
+  line-height: 1.8;
+  color: #374151;
+  margin: 0;
+  font-weight: 400;
+}
+
+.priceTag {
+  font-family: var(--font-sans, "Inter", sans-serif);
+  font-size: 26px;
+  font-weight: 700;
+  color: #e91e63;
+  line-height: 1.2;
+  margin: 20px 0 0;
+}
+
+.actionButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+.whatsappButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #25d366;
+  color: #fff;
+  padding: 13px 22px;
+  border-radius: 8px;
+  font-family: var(--font-sans, sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.22);
+}
+
+.whatsappButton:hover {
+  background: #1fba59;
+  transform: translateY(-1px);
+  color: #fff;
+}
+
+.callButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #fff0f5;
+  color: #111;
+  padding: 11px 22px;
+  border-radius: 8px;
+  font-family: var(--font-sans, sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid #fce7f3;
+  transition: all 0.22s ease;
+  cursor: pointer;
+}
+
+.callButton:hover {
+  background: #fce7f3;
+  color: #ec4899;
+}
+
+.guaranteeBadge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  font-family: var(--font-sans, sans-serif);
+  font-size: 11px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.guaranteeIcon {
+  color: #e91e63;
+  display: flex;
+  align-items: center;
+}
+
+.guaranteeIcon svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* ── Thumbnail strip ── */
+.bottomThumbnailsRow {
+  position: relative;
+  padding: 16px 20px 22px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.thumbnailsTrack {
+  position: relative;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.thumbCard {
+  flex: 0 0 130px;
+  height: 84px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  background: #f3f4f6;
+  padding: 0;
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.thumbCardActive {
+  border-color: #e91e63;
+  box-shadow: 0 4px 12px rgba(233, 30, 99, 0.2);
+}
+
+.thumbImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalCardPop {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modalBackdrop,
+  .modalCard {
+    animation: none;
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
+  .topGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .heroImageWrapper {
+    height: 320px;
+  }
+
+  .detailsCol {
+    padding: 20px;
+  }
+
+  .description {
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+  .priceTag {
+    margin: 18px 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .modalBackdrop {
+    padding: 12px;
+  }
+
+  .heroImageWrapper {
+    height: 260px;
+  }
+
+  .thumbCard {
+    flex: 0 0 92px;
+    height: 64px;
+  }
+}

@@ -6,6 +6,7 @@ import BloomingFlowerAnimation from "./BloomingFlowerAnimation";
 import CarDecorModal from "./CarDecorModal";
 import StageDecorModal from "./StageDecorModal";
 import GarlandsModal from "./GarlandsModal";
+import ChurchDecorModal from "./ChurchDecorModal";
 import styles from "./HighlightSection.module.css";
 
 export interface HighlightCard {
@@ -92,6 +93,7 @@ export default function HighlightSection() {
   const [isCarDecorModalOpen, setIsCarDecorModalOpen] = useState(false);
   const [isStageDecorModalOpen, setIsStageDecorModalOpen] = useState(false);
   const [isGarlandsModalOpen, setIsGarlandsModalOpen] = useState(false);
+  const [isChurchDecorModalOpen, setIsChurchDecorModalOpen] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
@@ -102,6 +104,8 @@ export default function HighlightSection() {
       setIsStageDecorModalOpen(true);
     } else if (card.id === "garlands") {
       setIsGarlandsModalOpen(true);
+    } else if (card.id === "church-arrangement" || card.id === "church-decor") {
+      setIsChurchDecorModalOpen(true);
     } else {
       setModalItem(card);
     }
@@ -116,6 +120,8 @@ export default function HighlightSection() {
         setIsStageDecorModalOpen(true);
       } else if (window.location.hash === "#garlands") {
         setIsGarlandsModalOpen(true);
+      } else if (window.location.hash === "#church-decor" || window.location.hash === "#church-arrangement") {
+        setIsChurchDecorModalOpen(true);
       }
     };
     checkHash();
@@ -123,14 +129,17 @@ export default function HighlightSection() {
     const handleCarOpen = () => setIsCarDecorModalOpen(true);
     const handleStageOpen = () => setIsStageDecorModalOpen(true);
     const handleGarlandsOpen = () => setIsGarlandsModalOpen(true);
+    const handleChurchOpen = () => setIsChurchDecorModalOpen(true);
     window.addEventListener("open-car-decor-modal", handleCarOpen);
     window.addEventListener("open-stage-decor-modal", handleStageOpen);
     window.addEventListener("open-garlands-modal", handleGarlandsOpen);
+    window.addEventListener("open-church-decor-modal", handleChurchOpen);
     return () => {
       window.removeEventListener("hashchange", checkHash);
       window.removeEventListener("open-car-decor-modal", handleCarOpen);
       window.removeEventListener("open-stage-decor-modal", handleStageOpen);
       window.removeEventListener("open-garlands-modal", handleGarlandsOpen);
+      window.removeEventListener("open-church-decor-modal", handleChurchOpen);
     };
   }, []);
 
@@ -345,6 +354,12 @@ export default function HighlightSection() {
       <GarlandsModal
         isOpen={isGarlandsModalOpen}
         onClose={() => setIsGarlandsModalOpen(false)}
+      />
+
+      {/* Church Decor Dedicated Showcase Modal */}
+      <ChurchDecorModal
+        isOpen={isChurchDecorModalOpen}
+        onClose={() => setIsChurchDecorModalOpen(false)}
       />
     </section>
   );

@@ -1144,6 +1144,11 @@ export default function Header({
                           onClick={(e) => {
                             handleSectionNav(e, "highlights", "highlights");
                             setHighlightsHovered(false);
+                            if (typeof window !== "undefined") {
+                              setTimeout(() => {
+                                window.dispatchEvent(new CustomEvent("open-church-decor-modal"));
+                              }, 350);
+                            }
                           }}
                         >
                           Church Decor
