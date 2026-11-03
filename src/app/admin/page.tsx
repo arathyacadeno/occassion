@@ -34,6 +34,12 @@ import {
 import ProductFormModal from "@/components/admin/ProductFormModal";
 import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
 import ProductQuickViewModal from "@/components/admin/ProductQuickViewModal";
+import CategoryManager from "@/components/admin/CategoryManager";
+import MediaLibrary from "@/components/admin/MediaLibrary";
+import StoreBrandingManager from "@/components/admin/StoreBrandingManager";
+import HomepageManager from "@/components/admin/HomepageManager";
+import DeliveryManager from "@/components/admin/DeliveryManager";
+import { Layers, Palette, LayoutTemplate, Image as ImageIcon } from "lucide-react";
 import styles from "./admin.module.css";
 
 export default function AdminPage() {
@@ -46,7 +52,7 @@ export default function AdminPage() {
   const [loggingIn, setLoggingIn] = useState(false);
 
   // Tab
-  const [activeTab, setActiveTab] = useState<"orders" | "stock" | "customization" | "coupons" | "delivery" | "users">("orders");
+  const [activeTab, setActiveTab] = useState<"orders" | "stock" | "categories" | "media" | "branding" | "homepage" | "customization" | "coupons" | "delivery" | "users">("orders");
 
   // Admin stats & data
   const [stats, setStats] = useState<any>(null);
@@ -631,55 +637,137 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Tabs Bar */}
-        <div className={styles.tabsBar}>
-          <button
-            type="button"
-            className={`${styles.tabBtn} ${activeTab === "orders" ? styles.tabBtnActive : ""}`}
-            onClick={() => setActiveTab("orders")}
-          >
-            <Package size={17} />
-            <span>Orders ({stats?.totalOrders ?? orders.length})</span>
-          </button>
+                {/* Two-Column Sidebar Dashboard Layout */}
+        <div className={styles.dashboardLayout}>
+          {/* Left Sidebar Navigation */}
+          <aside className={styles.sidebar} aria-label="Admin Navigation">
+            {/* Group 1: Store & Orders */}
+            <div className={styles.sidebarSection}>
+              <div className={styles.sidebarSectionTitle}>Store &amp; Orders</div>
+              <button
+                type="button"
+                className={`${styles.sidebarBtn} ${activeTab === "orders" ? styles.sidebarBtnActive : ""}`}
+                onClick={() => setActiveTab("orders")}
+              >
+                <div className={styles.sidebarBtnLeft}>
+                  <Package size={17} />
+                  <span>Orders</span>
+                </div>
+                <span className={`${styles.sidebarBadge} ${activeTab === "orders" ? styles.sidebarBadgeActive : ""}`}>
+                  {stats?.totalOrders ?? orders.length}
+                </span>
+              </button>
 
-          <button
-            type="button"
-            className={`${styles.tabBtn} ${activeTab === "stock" ? styles.tabBtnActive : ""}`}
-            onClick={() => setActiveTab("stock")}
-          >
-            <ShoppingBag size={17} />
-            <span>Products &amp; Stock ({stats?.activeProducts ?? products.length})</span>
-          </button>
+              <button
+                type="button"
+                className={`${styles.sidebarBtn} ${activeTab === "users" ? styles.sidebarBtnActive : ""}`}
+                onClick={() => setActiveTab("users")}
+              >
+                <div className={styles.sidebarBtnLeft}>
+                  <Users size={17} />
+                  <span>Customers</span>
+                </div>
+                <span className={`${styles.sidebarBadge} ${activeTab === "users" ? styles.sidebarBadgeActive : ""}`}>
+                  {stats?.totalCustomers ?? usersList.length}
+                </span>
+              </button>
+            </div>
 
-          <button
-            type="button"
-            className={`${styles.tabBtn} ${activeTab === "coupons" ? styles.tabBtnActive : ""}`}
-            onClick={() => setActiveTab("coupons")}
-          >
-            <Tag size={17} />
-            <span>Coupons</span>
-          </button>
+            {/* Group 2: Catalog Management */}
+            <div className={styles.sidebarSection}>
+              <div className={styles.sidebarSectionTitle}>Catalog Management</div>
+              <button
+                type="button"
+                className={`${styles.sidebarBtn} ${activeTab === "stock" ? styles.sidebarBtnActive : ""}`}
+                onClick={() => setActiveTab("stock")}
+              >
+                <div className={styles.sidebarBtnLeft}>
+                  <ShoppingBag size={17} />
+                  <span>Products &amp; Stock</span>
+                </div>
+                <span className={`${styles.sidebarBadge} ${activeTab === "stock" ? styles.sidebarBadgeActive : ""}`}>
+                  {stats?.activeProducts ?? products.length}
+                </span>
+              </button>
 
-          <button
-            type="button"
-            className={`${styles.tabBtn} ${activeTab === "delivery" ? styles.tabBtnActive : ""}`}
-            onClick={() => setActiveTab("delivery")}
-          >
-            <Truck size={17} />
-            <span>Delivery Settings</span>
-          </button>
+              <button
+                type="button"
+                className={`${styles.sidebarBtn} ${activeTab === "categories" ? styles.sidebarBtnActive : ""}`}
+                onClick={() => setActiveTab("categories")}
+              >
+                <div className={styles.sidebarBtnLeft}>
+                  <Layers size={17} />
+                  <span>Categories</span>
+                </div>
+                <span className={`${styles.sidebarBadge} ${activeTab === "categories" ? styles.sidebarBadgeActive : ""}`}>
+                  {categoriesList.length}
+                </span>
+              </button>
 
-          <button
-            type="button"
-            className={`${styles.tabBtn} ${activeTab === "users" ? styles.tabBtnActive : ""}`}
-            onClick={() => setActiveTab("users")}
-          >
-            <Users size={17} />
-            <span>Customers ({stats?.totalCustomers ?? usersList.length})</span>
-          </button>
-        </div>
+              <button
+                type="button"
+                className={`${styles.sidebarBtn} ${activeTab === "media" ? styles.sidebarBtnActive : ""}`}
+                onClick={() => setActiveTab("media")}
+              >
+                <div className={styles.sidebarBtnLeft}>
+                  <ImageIcon size={17} />
+                  <span>Media Library</span>
+                </div>
+              </button>
+            </div>
 
-        {/* TAB 1: Orders */}
+            {/* Group 3: Store Settings & CMS */}
+            <div className={styles.sidebarSection}>
+              <div className={styles.sidebarSectionTitle}>Settings &amp; Content</div>
+              <button
+                type="button"
+                className={`${styles.sidebarBtn} ${activeTab === "branding" ? styles.sidebarBtnActive : ""}`}
+                onClick={() => setActiveTab("branding")}
+              >
+                <div className={styles.sidebarBtnLeft}>
+                  <Palette size={17} />
+                  <span>Store Branding</span>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                className={`${styles.sidebarBtn} ${activeTab === "homepage" ? styles.sidebarBtnActive : ""}`}
+                onClick={() => setActiveTab("homepage")}
+              >
+                <div className={styles.sidebarBtnLeft}>
+                  <LayoutTemplate size={17} />
+                  <span>Homepage CMS</span>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                className={`${styles.sidebarBtn} ${activeTab === "delivery" ? styles.sidebarBtnActive : ""}`}
+                onClick={() => setActiveTab("delivery")}
+              >
+                <div className={styles.sidebarBtnLeft}>
+                  <Truck size={17} />
+                  <span>Delivery Settings</span>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                className={`${styles.sidebarBtn} ${activeTab === "coupons" ? styles.sidebarBtnActive : ""}`}
+                onClick={() => setActiveTab("coupons")}
+              >
+                <div className={styles.sidebarBtnLeft}>
+                  <Tag size={17} />
+                  <span>Coupons</span>
+                </div>
+              </button>
+            </div>
+          </aside>
+
+          {/* Right Main Content Area */}
+          <div className={styles.contentArea}>
+{/* TAB 1: Orders */}
         {activeTab === "orders" && (
           <div className={styles.panelCard}>
             <h2 style={{ fontFamily: "var(--font-serif)", color: "#831843", fontSize: "1.3rem", margin: "0 0 16px" }}>
@@ -1447,79 +1535,27 @@ export default function AdminPage() {
 
         {/* TAB 4: Delivery Settings */}
         {activeTab === "delivery" && (
-          <div className={styles.panelCard}>
-            <h2 style={{ fontFamily: "var(--font-serif)", color: "#831843", fontSize: "1.3rem", margin: "0 0 8px" }}>
-              Calicut Delivery Zones &amp; Haversine Distance Rates
-            </h2>
-            <p style={{ color: "#64748b", fontSize: "0.88rem", marginBottom: 20 }}>
-              All delivery charges are calculated mathematically on the server using Haversine Great-Circle distance from the shop hub.
-            </p>
+          <DeliveryManager />
+        )}
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 18, marginBottom: 24 }}>
-              <div style={{ padding: 18, background: "#f8fafc", borderRadius: 12, border: "1px solid #e2e8f0" }}>
-                <div style={{ fontSize: "0.8rem", color: "#64748b" }}>Shop Base Location</div>
-                <div style={{ fontSize: "1.2rem", fontWeight: 700, color: "#831843" }}>Kozhikode Head Post Office</div>
-                <div style={{ fontSize: "0.88rem", color: "#334155" }}>Shop PIN: <strong>673001</strong></div>
-              </div>
+        {/* TAB 6: Categories */}
+        {activeTab === "categories" && (
+          <CategoryManager categories={categoriesList} onRefresh={fetchAdminData} />
+        )}
 
-              <div style={{ padding: 18, background: "#f8fafc", borderRadius: 12, border: "1px solid #e2e8f0" }}>
-                <div style={{ fontSize: "0.8rem", color: "#64748b" }}>Serviceable Radius</div>
-                <div style={{ fontSize: "1.2rem", fontWeight: 700, color: "#047857" }}>Up to 50 km</div>
-                <div style={{ fontSize: "0.88rem", color: "#334155" }}>&gt; 50 km: Automatic non-serviceable reject</div>
-              </div>
-            </div>
+        {/* TAB 7: Media Library */}
+        {activeTab === "media" && (
+          <MediaLibrary />
+        )}
 
-            <div className={styles.tableResponsive}>
-              <table className={styles.dataTable}>
-                <thead>
-                  <tr>
-                    <th>Radial Distance</th>
-                    <th>Delivery Charge</th>
-                    <th>Service Level</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>0 – 5 km</td>
-                    <td style={{ fontWeight: 700, color: "#047857" }}>FREE Delivery</td>
-                    <td>Local Express (Within 90 mins)</td>
-                    <td>Active</td>
-                  </tr>
-                  <tr>
-                    <td>&gt; 5 – 20 km</td>
-                    <td style={{ fontWeight: 700 }}>₹150</td>
-                    <td>Calicut Suburbs (Same-day)</td>
-                    <td>Active</td>
-                  </tr>
-                  <tr>
-                    <td>&gt; 20 – 30 km</td>
-                    <td style={{ fontWeight: 700 }}>₹300</td>
-                    <td>Greater Calicut Area</td>
-                    <td>Active</td>
-                  </tr>
-                  <tr>
-                    <td>&gt; 30 – 40 km</td>
-                    <td style={{ fontWeight: 700 }}>₹400</td>
-                    <td>Outlying Districts</td>
-                    <td>Active</td>
-                  </tr>
-                  <tr>
-                    <td>&gt; 40 – 50 km</td>
-                    <td style={{ fontWeight: 700 }}>₹500</td>
-                    <td>Perimeter Delivery</td>
-                    <td>Active</td>
-                  </tr>
-                  <tr>
-                    <td>&gt; 50 km</td>
-                    <td style={{ color: "#e11d48", fontWeight: 700 }}>Not Serviceable</td>
-                    <td>Outside Delivery Zone</td>
-                    <td>Active</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+        {/* TAB 8: Store Branding */}
+        {activeTab === "branding" && (
+          <StoreBrandingManager />
+        )}
+
+        {/* TAB 9: Homepage CMS */}
+        {activeTab === "homepage" && (
+          <HomepageManager />
         )}
 
         {/* TAB 5: Users */}
@@ -1568,6 +1604,8 @@ export default function AdminPage() {
             </div>
           </div>
         )}
+                </div>
+        </div>
       </main>
 
       <Footer />

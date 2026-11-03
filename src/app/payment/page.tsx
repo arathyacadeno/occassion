@@ -178,6 +178,7 @@ export default function SinglePageCheckoutPayment() {
   const [appliedCouponCode, setAppliedCouponCode] = useState("");
   const [couponError, setCouponError] = useState<string | null>(null);
   const [couponSuccess, setCouponSuccess] = useState<string | null>(null);
+  const [couponDiscount, setCouponDiscount] = useState(0);
 
   // Load cart / product items or fallback to mockup reference
   const primaryItem =
@@ -497,14 +498,14 @@ export default function SinglePageCheckoutPayment() {
   ]);
 
   // Compute discount and final total with verified delivery charge
-  const discountAmount = 0;
+  const discountAmount = couponApplied ? couponDiscount : 0;
   const baseDeliveryCharge =
     deliveryStatus.serviceable && deliveryStatus.delivery_charge !== null
       ? deliveryStatus.delivery_charge
       : 0;
   const customDeliveryFee = isCustomDelivery ? CUSTOM_DELIVERY_FEE : 0;
   const deliveryCharge = baseDeliveryCharge + customDeliveryFee;
-  const finalTotal = subtotal + deliveryCharge;
+  const finalTotal = Math.max(0, subtotal - discountAmount) + deliveryCharge;
 
   // Format Card Number into groups of 4
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -522,8 +523,8 @@ export default function SinglePageCheckoutPayment() {
     setCardExpiry(raw);
   };
 
-  // Apply Coupon Logic
-  const handleApplyCoupon = (e: React.MouseEvent) => {
+  // Apply Coupon Logic via Database API
+  const handleApplyCoupon = async (e: React.MouseEvent) => {
     e.preventDefault();
     const clean = couponCode.trim().toUpperCase();
 
@@ -533,19 +534,28 @@ export default function SinglePageCheckoutPayment() {
       return;
     }
 
-    if (
-      clean === "OCCASIONS" ||
-      clean === "OCCASIONS10" ||
-      clean === "SAVE100" ||
-      clean === "WELCOME" ||
-      clean === "FLOWER10"
-    ) {
-      setCouponApplied(true);
-      setAppliedCouponCode(clean);
-      setCouponError(null);
-      setCouponSuccess(`Coupon '${clean}' applied successfully!`);
-    } else {
-      setCouponError("Invalid coupon code. Try 'OCCASIONS' or 'SAVE100'.");
+    try {
+      const res = await fetch("/api/coupons/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: clean, subtotal }),
+      });
+      const data = await res.json();
+
+      if (data.success && data.valid) {
+        setCouponApplied(true);
+        setAppliedCouponCode(clean);
+        setCouponDiscount(Number(data.discount) || 0);
+        setCouponError(null);
+        setCouponSuccess(data.message || `Coupon '${clean}' applied successfully!`);
+      } else {
+        setCouponApplied(false);
+        setCouponDiscount(0);
+        setCouponError(data.error || "Invalid coupon code.");
+        setCouponSuccess(null);
+      }
+    } catch {
+      setCouponError("Network error validating coupon code.");
       setCouponSuccess(null);
     }
   };
@@ -1783,6 +1793,14 @@ export default function SinglePageCheckoutPayment() {
                   ₹{subtotal.toFixed(2)}
                 </span>
               </div>
+              {couponApplied && discountAmount > 0 && (
+                <div className={styles.breakdownRow} style={{ color: "#059669" }}>
+                  <span>Coupon Discount ({appliedCouponCode})</span>
+                  <span className={styles.breakdownValue} style={{ color: "#059669" }}>
+                    -₹{discountAmount.toFixed(2)}
+                  </span>
+                </div>
+              )}
               </div>
             <div className={styles.summaryDivider} />
 

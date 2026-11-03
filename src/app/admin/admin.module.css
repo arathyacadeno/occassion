@@ -9,7 +9,7 @@
 
 .mainContainer {
   flex: 1;
-  max-width: 1240px;
+  max-width: 1420px;
   width: 100%;
   margin: 0 auto;
   padding: 32px 24px 64px;
@@ -482,4 +482,124 @@
 .pageBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+
+/* Dashboard Two-Column Sidebar Layout */
+.dashboardLayout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.sidebar {
+  width: 260px;
+  min-width: 260px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  padding: 16px 12px;
+  position: sticky;
+  top: 86px;
+  max-height: calc(100vh - 105px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sidebarSection {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sidebarSectionTitle {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  padding: 6px 12px 4px;
+}
+
+.sidebarBtn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.16s ease;
+  box-sizing: border-box;
+}
+
+.sidebarBtnLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebarBtn:hover {
+  color: #be185d;
+  background: #fdf2f8;
+}
+
+.sidebarBtnActive {
+  color: #be185d;
+  background: #fdf2f8;
+  font-weight: 700;
+  box-shadow: inset 3px 0 0 #be185d;
+}
+
+.sidebarBadge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  color: #64748b;
+  min-width: 18px;
+  text-align: center;
+}
+
+.sidebarBadgeActive {
+  background: #fce7f3;
+  color: #be185d;
+}
+
+.contentArea {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .dashboardLayout {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    min-width: 100%;
+    position: static;
+    max-height: none;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .sidebarSection {
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+  }
 }

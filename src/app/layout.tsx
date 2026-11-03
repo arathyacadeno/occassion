@@ -29,6 +29,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { CheckoutProvider } from "@/context/CheckoutContext";
+import { StoreSettingsProvider } from "@/context/StoreSettingsContext";
 
 export default function RootLayout({
   children,
@@ -75,13 +76,15 @@ export default function RootLayout({
         />
       </head>
       <body suppressHydrationWarning>
-        <AuthProvider>
-          <CartProvider>
-            <WishlistProvider>
-              <CheckoutProvider>{children}</CheckoutProvider>
-            </WishlistProvider>
-          </CartProvider>
-        </AuthProvider>
+        <StoreSettingsProvider>
+          <AuthProvider>
+            <CartProvider>
+              <WishlistProvider>
+                <CheckoutProvider>{children}</CheckoutProvider>
+              </WishlistProvider>
+            </CartProvider>
+          </AuthProvider>
+        </StoreSettingsProvider>
       </body>
     </html>
   );

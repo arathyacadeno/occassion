@@ -23,6 +23,7 @@ import { getSearchRoute } from "@/lib/searchRoutes";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { useAuth } from "@/context/AuthContext";
+import { useStoreSettings } from "@/context/StoreSettingsContext";
 import { auth, initRecaptchaVerifier, cleanupRecaptchaVerifier, formatPhoneNumber } from "@/lib/firebase";
 import { signInWithPhoneNumber, ConfirmationResult, RecaptchaVerifier } from "firebase/auth";
 
@@ -45,6 +46,7 @@ export default function Header({
   const { items: cartItems, cartCount, subtotal: cartSubtotal } = useCart();
   const { wishlistCount } = useWishlist();
   const { user, isAuthenticated, isAdmin, login, signup, loginWithGoogle, loginWithPhone, sendPhoneOtp, verifyPhoneOtp, logout } = useAuth();
+  const { settings } = useStoreSettings();
   const [internalDrawerOpen, setInternalDrawerOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -752,11 +754,11 @@ export default function Header({
           <Link
             href="/"
             className={styles.brandArea}
-            aria-label="Occasions - Do it with flowers"
+            aria-label={settings.store_name || "Occasions - Do it with flowers"}
           >
             <img
-              src="/images/logo.png"
-              alt="Occasions - Do it with flowers"
+              src={settings.header_logo || "/images/logo.png"}
+              alt={settings.store_name || "Occasions - Do it with flowers"}
               className={styles.brandMasterLogo}
             />
           </Link>
@@ -1717,136 +1719,6 @@ export default function Header({
               <span>or</span>
             </div>
 
-            {/* Firebase reCAPTCHA container (kept in DOM for both initial Send & Resend OTP) */}
-            <div id="recaptcha-phone-container"></div>
-
-            {/* Phone OTP flow */}
-            {phoneFlow === "idle" && (
-              <button
-                type="button"
-                className={styles.phoneBtn}
-                onClick={() => { setPhoneFlow("enter"); setPhoneError(null); }}
-                disabled={authLoading}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.36 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 5.49 5.49l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
-                </svg>
-                <span>Continue with Phone Number</span>
-              </button>
-            )}
-
-            {phoneFlow === "enter" && (
-              <div className={styles.phoneFlowBox}>
-                <p className={styles.phoneFlowLabel}>Enter your mobile number</p>
-                <div className={styles.phoneInputRow}>
-                  <select
-                    className={styles.countrySelect}
-                    value={countryCode}
-                    onChange={(e) => setCountryCode(e.target.value)}
-                    aria-label="Country Code"
-                  >
-                    <option value="+91">🇮🇳 +91</option>
-                    <option value="+1">🇺🇸 +1</option>
-                    <option value="+44">🇬🇧 +44</option>
-                    <option value="+971">🇦🇪 +971</option>
-                    <option value="+966">🇸🇦 +966</option>
-                    <option value="+65">🇸🇬 +65</option>
-                  </select>
-                  <input
-                    type="tel"
-                    className={styles.phoneInput}
-                    placeholder="10-digit mobile number"
-                    value={phoneNumber}
-                    maxLength={10}
-                    onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ""))}
-                    autoFocus
-                  />
-                </div>
-                {phoneError && <p className={styles.phoneError}>{phoneError}</p>}
-                <button
-                  type="button"
-                  className={styles.primaryBtn}
-                  style={{ marginTop: 12 }}
-                  onClick={handleSendOtp}
-                  disabled={phoneLoading || phoneNumber.replace(/\D/g, "").length < 10}
-                >
-                  {phoneLoading ? "Sending OTP…" : "Send OTP"}
-                </button>
-                <button type="button" className={styles.phoneCancelBtn} onClick={resetPhoneFlow}>
-                  Use email instead
-                </button>
-              </div>
-            )}
-
-            {phoneFlow === "otp" && (
-              <div className={styles.phoneFlowBox}>
-                <p className={styles.phoneFlowLabel}>
-                  OTP sent to <strong>{countryCode} {phoneNumber}</strong>
-                </p>
-                <div
-                  className={styles.otpInputRow}
-                  onPaste={(e) => {
-                    e.preventDefault();
-                    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
-                    if (pasted) {
-                      setOtpValue(pasted);
-                      const inputs = (e.currentTarget as HTMLElement).querySelectorAll("input");
-                      const nextIdx = Math.min(pasted.length, 5);
-                      (inputs[nextIdx] as HTMLInputElement)?.focus();
-                    }
-                  }}
-                >
-                  {[0, 1, 2, 3, 4, 5].map((i) => (
-                    <input
-                      key={i}
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={1}
-                      className={styles.otpDigit}
-                      value={otpValue[i] || ""}
-                      onChange={(e) => {
-                        const val = e.target.value.replace(/\D/g, "");
-                        const arr = otpValue.split("");
-                        arr[i] = val.slice(-1);
-                        const nextOtp = arr.join("").slice(0, 6);
-                        setOtpValue(nextOtp);
-                        if (val && e.target.nextElementSibling) {
-                          (e.target.nextElementSibling as HTMLInputElement).focus();
-                        }
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === "Backspace" && !otpValue[i] && e.currentTarget.previousElementSibling) {
-                          (e.currentTarget.previousElementSibling as HTMLInputElement).focus();
-                        }
-                      }}
-                    />
-                  ))}
-                </div>
-                {phoneError && <p className={styles.phoneError}>{phoneError}</p>}
-                <button
-                  type="button"
-                  className={styles.primaryBtn}
-                  style={{ marginTop: 14 }}
-                  onClick={handleVerifyOtp}
-                  disabled={phoneLoading || otpValue.replace(/\D/g, "").length < 6}
-                >
-                  {phoneLoading ? "Verifying…" : "Verify OTP"}
-                </button>
-                <div className={styles.otpResend}>
-                  {otpResendTimer > 0 ? (
-                    <span>Resend OTP in {otpResendTimer}s</span>
-                  ) : (
-                    <button type="button" className={styles.phoneCancelBtn} onClick={handleSendOtp}>
-                      Resend OTP
-                    </button>
-                  )}
-                  <button type="button" className={styles.phoneCancelBtn} onClick={resetPhoneFlow}>
-                    Change number
-                  </button>
-                </div>
-              </div>
-            )}
-
             <button
               type="button"
               className={styles.googleBtn}
@@ -1895,8 +1767,8 @@ export default function Header({
           <div className={styles.drawerBrand}>
             <div style={{ marginBottom: 12 }}>
               <img
-                src="/images/logo.png"
-                alt="Occassions - Do it with flowers"
+                src={settings.header_logo || "/images/logo.png"}
+                alt={settings.store_name || "Occassions - Do it with flowers"}
                 style={{
                   height: 72,
                   width: "auto",

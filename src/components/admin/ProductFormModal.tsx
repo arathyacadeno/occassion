@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import MediaLibrary from "@/components/admin/MediaLibrary";
 import {
   X,
   Upload,
@@ -70,6 +71,7 @@ export default function ProductFormModal({
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isMediaPickerOpen, setIsMediaPickerOpen] = useState(false);
 
   // Initialize or reset form
   useEffect(() => {
@@ -779,6 +781,27 @@ export default function ProductFormModal({
                 />
               </label>
 
+              <button
+                type="button"
+                onClick={() => setIsMediaPickerOpen(true)}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "10px 18px",
+                  borderRadius: 10,
+                  background: "#fdf2f8",
+                  color: "#be185d",
+                  border: "1px solid #fbcfe8",
+                  fontSize: "0.88rem",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                <ImageIcon size={16} />
+                <span>Browse Media Library</span>
+              </button>
+
               <div style={{ display: "flex", gap: 8, flex: 1, minWidth: 260 }}>
                 <input
                   type="text"
@@ -1092,6 +1115,69 @@ export default function ProductFormModal({
           </button>
         </div>
       </div>
+
+      {isMediaPickerOpen && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.7)",
+            zIndex: 10000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 24,
+          }}
+        >
+          <div
+            style={{
+              background: "#fff",
+              borderRadius: 16,
+              maxWidth: 960,
+              width: "100%",
+              maxHeight: "88vh",
+              overflowY: "auto",
+              padding: 24,
+              boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)",
+              display: "flex",
+              flexDirection: "column",
+              gap: 16,
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <h3 style={{ margin: 0, fontSize: "1.2rem", color: "#831843" }}>
+                Select Image from Cloudinary Media Library
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsMediaPickerOpen(false)}
+                style={{
+                  background: "#f1f5f9",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: 32,
+                  height: 32,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <X size={16} />
+              </button>
+            </div>
+            <MediaLibrary
+              isPickerMode={true}
+              onSelectImage={(url) => {
+                if (!images.includes(url)) {
+                  setImages([...images, url]);
+                }
+                setIsMediaPickerOpen(false);
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

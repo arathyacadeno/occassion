@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { getAuthenticatedUser } from "@/lib/auth/jwt";
+import { sql } from "@/lib/db/neon";
 
 export async function GET(request: Request) {
   try {
@@ -59,6 +60,32 @@ export async function POST(request: Request) {
       expiryDate || null,
       usageLimit ? Number(usageLimit) : 1000
     );
+
+    // Dual-write to Neon PostgreSQL
+    if (process.env.DATABASE_URL) {
+      try {
+        await sql`
+          INSERT INTO coupons (
+            id, code, discount_type, discount_value, min_order_value, max_discount, expiry_date, usage_limit, active
+          ) VALUES (
+            ${id}, ${cleanCode}, ${discountType}, ${Number(discountValue)}, 
+            ${minOrderValue ? Number(minOrderValue) : 0}, ${maxDiscount ? Number(maxDiscount) : null}, 
+            ${expiryDate || null}, ${usageLimit ? Number(usageLimit) : 1000}, 1
+          )
+          ON CONFLICT (id) DO UPDATE SET
+            code = EXCLUDED.code,
+            discount_type = EXCLUDED.discount_type,
+            discount_value = EXCLUDED.discount_value,
+            min_order_value = EXCLUDED.min_order_value,
+            max_discount = EXCLUDED.max_discount,
+            expiry_date = EXCLUDED.expiry_date,
+            usage_limit = EXCLUDED.usage_limit,
+            active = EXCLUDED.active;
+        `;
+      } catch (neonErr) {
+        console.warn("Neon coupons sync warning:", neonErr);
+      }
+    }
 
     return NextResponse.json({ success: true, message: `Coupon ${cleanCode} created successfully` });
   } catch (error: any) {

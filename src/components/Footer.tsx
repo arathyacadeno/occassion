@@ -5,9 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./Footer.module.css";
 import { Send } from "lucide-react";
+import { useStoreSettings } from "@/context/StoreSettingsContext";
 
 export default function Footer() {
   const pathname = usePathname();
+  const { settings } = useStoreSettings();
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
 
@@ -44,10 +46,10 @@ export default function Footer() {
         <div className={styles.mainGrid}>
           {/* Brand */}
           <div className={styles.brandCol}>
-            <Link href="/" className={styles.logoLink} aria-label="Occasions Home">
+            <Link href="/" className={styles.logoLink} aria-label={settings.store_name || "Occasions Home"}>
               <img
-                src="/images/logo.png"
-                alt="Occasions - Do it with flowers"
+                src={settings.footer_logo || "/images/logo.png"}
+                alt={settings.store_name || "Occasions - Do it with flowers"}
                 className={styles.logoImg}
               />
             </Link>
@@ -116,14 +118,12 @@ export default function Footer() {
             <h4 className={styles.colTitle}>Address</h4>
             <div className={styles.addressContent}>
               <p className={styles.addressText}>
-                Near CH Flyover, Kannur Road
-                <br />
-                Calicut, Kerala, 673001
+                {settings.store_address || "Near CH Flyover, Kannur Road, Calicut, Kerala 673001"}
               </p>
               <p className={styles.helpText}>
                 Help support:
-                <a href="tel:+918606464700" className={styles.phoneLink}>
-                  +91 8606 464 700
+                <a href={`tel:${settings.store_phone?.replace(/\s+/g, '') || "+918606464700"}`} className={styles.phoneLink}>
+                  {settings.store_phone || "+91 8606 464 700"}
                 </a>
               </p>
             </div>

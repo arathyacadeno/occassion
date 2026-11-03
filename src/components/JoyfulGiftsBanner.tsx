@@ -49,18 +49,41 @@ export const FESTIVE_BANNERS: BannerSlide[] = [
 ];
 
 export default function JoyfulGiftsBanner() {
+  const [banners, setBanners] = useState<BannerSlide[]>(FESTIVE_BANNERS);
   const [currentIndex, setCurrentIndex] = useState(0);
   const touchStartXRef = useRef<number | null>(null);
   const touchEndXRef = useRef<number | null>(null);
 
-  const total = FESTIVE_BANNERS.length;
+  // Fetch dynamic banners from database CMS
+  useEffect(() => {
+    fetch("/api/homepage")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.banners) && data.banners.length > 0) {
+          const dynamicBanners: BannerSlide[] = data.banners.map((b: any) => ({
+            id: b.id,
+            title: b.title || "Occasions Special",
+            subtitle: b.subtitle || "Fresh Celebration Blooms",
+            image: b.desktop_image,
+            href: b.button_link || "/flower-bouquets",
+            accent: "#be185d",
+          }));
+          setBanners(dynamicBanners);
+        }
+      })
+      .catch((err) => {
+        console.warn("Could not load dynamic homepage banners, using fallback", err);
+      });
+  }, []);
+
+  const total = banners.length;
 
   const goToNext = useCallback(() => {
-    setCurrentIndex((prev) => (prev + 1) % total);
+    setCurrentIndex((prev) => (prev + 1) % (total || 1));
   }, [total]);
 
   const goToPrev = useCallback(() => {
-    setCurrentIndex((prev) => (prev - 1 + total) % total);
+    setCurrentIndex((prev) => (prev - 1 + (total || 1)) % (total || 1));
   }, [total]);
 
   // Continuous automatic scrolling every 3.5 seconds
@@ -93,7 +116,7 @@ export default function JoyfulGiftsBanner() {
     touchEndXRef.current = null;
   };
 
-  const currentSlide = FESTIVE_BANNERS[currentIndex];
+  const currentSlide = banners[currentIndex] || FESTIVE_BANNERS[0];
 
   return (
     <section
@@ -109,7 +132,7 @@ export default function JoyfulGiftsBanner() {
           <div
             className={styles.sliderViewport}
             style={{
-              boxShadow: `0 12px 32px ${currentSlide.accent}26`
+              boxShadow: `0 12px 32px ${currentSlide.accent || "#be185d"}26`
             }}
           >
             <div
@@ -118,7 +141,7 @@ export default function JoyfulGiftsBanner() {
                 transform: `translateX(-${currentIndex * 100}%)`
               }}
             >
-              {FESTIVE_BANNERS.map((slide, idx) => (
+              {banners.map((slide, idx) => (
                 <Link
                   key={`${slide.id}-${idx}`}
                   href={slide.href}
