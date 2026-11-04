@@ -37,15 +37,16 @@ interface MediaItem {
 interface MediaLibraryProps {
   onSelectImage?: (url: string) => void;
   isPickerMode?: boolean;
+  preferredFolder?: string;
 }
 
-export default function MediaLibrary({ onSelectImage, isPickerMode = false }: MediaLibraryProps) {
+export default function MediaLibrary({ onSelectImage, isPickerMode = false, preferredFolder }: MediaLibraryProps) {
   const [mediaList, setMediaList] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [search, setSearch] = useState("");
-  const [selectedFolder, setSelectedFolder] = useState("all");
+  const [selectedFolder, setSelectedFolder] = useState(preferredFolder || "all");
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
 
   // Selected item detail modal
@@ -208,10 +209,12 @@ export default function MediaLibrary({ onSelectImage, isPickerMode = false }: Me
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           {[
             { id: "all", label: "All Assets" },
-            { id: "products", label: "Products" },
-            { id: "categories", label: "Categories" },
-            { id: "banners", label: "Banners" },
-            { id: "branding", label: "Branding" },
+            { id: "flower-bouquet", label: "Flower Bouquets" },
+            { id: "flower-basket", label: "Flower Baskets" },
+            { id: "table-decor", label: "Table Decor" },
+            { id: "cakes", label: "Cakes" },
+            { id: "uploads", label: "Uploads" },
+            { id: "wreaths", label: "Wreaths" },
           ].map((f) => (
             <button
               key={f.id}

@@ -166,10 +166,10 @@ export default function ProductCard({
         {/* Green Rating Pill Badge (★ 4.5) */}
         <div
           className={styles.ratingBadge}
-          aria-label={`Rated ${(product.rating || 4.5).toFixed(1)} out of 5 stars`}
+          aria-label={`Rated ${Number(product.rating || 4.5).toFixed(1)} out of 5 stars`}
         >
           <Star size={9.5} fill="#ffffff" color="#ffffff" strokeWidth={0} />
-          <span>{(product.rating || 4.5).toFixed(1)}</span>
+          <span>{Number(product.rating || 4.5).toFixed(1)}</span>
         </div>
 
         {/* Optional Description (max 2 lines) */}

@@ -4,6 +4,7 @@ import {
   getFlowerBaskets,
   getProductsByCategory,
   getAllProducts,
+  CATALOG_PRODUCTS,
   Product,
 } from "@/data/catalog";
 import { getDb } from "@/lib/db";
@@ -57,8 +58,8 @@ export function mapDbToProduct(dbProduct: any): Product {
     categoryLabel: dbProduct.category_name || "Flower Bouquet",
     image: images[0],
     images,
-    rating: dbProduct.rating || 4.9,
-    reviewsCount: dbProduct.reviews_count || 18,
+    rating: Number(dbProduct.rating) || 4.9,
+    reviewsCount: Number(dbProduct.reviews_count) || 18,
     description: dbProduct.description || "Freshly handpicked flowers arranged with care by Occasions artisans.",
     deliveryInfo: dbProduct.delivery_info || "Same-day delivery available across Kerala",
     offers,
@@ -121,14 +122,16 @@ export async function getProduct(category: string, slug: string): Promise<Produc
 }
 
 export async function getStorefrontCategoryProducts(categoryType: string): Promise<Product[]> {
-  // 1. Get base static products
+  // 1. Get base curated products (identical to original verified catalog)
   let baseProducts: Product[] = [];
   if (categoryType === "flower-bouquets" || categoryType === "bouquets") {
     baseProducts = getFlowerBouquets();
   } else if (categoryType === "flower-baskets" || categoryType === "baskets") {
     baseProducts = getFlowerBaskets();
   } else if (categoryType === "cakes") {
-    baseProducts = getProductsByCategory("cakes").filter((p) => !p.id.startsWith("addon-"));
+    baseProducts = getProductsByCategory("cakes").filter(
+      (p) => !p.id.startsWith("addon-") && !p.slug.startsWith("addon-")
+    );
   } else if (categoryType === "table-decor") {
     baseProducts = getProductsByCategory("table-decor");
   } else if (categoryType === "wreaths") {
@@ -175,89 +178,101 @@ export async function getStorefrontCategoryProducts(categoryType: string): Promi
     return baseProducts;
   }
 
-  // Filter dbRows matching this category
-  const filteredDbProducts = dbRows.filter((row: any) => {
-    const catId = (row.category_id || "").toLowerCase();
-    const catSlug = (row.category_slug || "").toLowerCase();
+  // Map of live published DB rows by ID and Slug
+  const dbRowById = new Map<string, any>();
+  const dbRowBySlug = new Map<string, any>();
+  for (const r of dbRows) {
+    if (r.id) dbRowById.set(r.id, r);
+    if (r.slug) dbRowBySlug.set(r.slug.toLowerCase(), r);
+  }
+
+  // 3. Update base products with live edits from database (e.g. image replacements, price changes)
+  // or suppress if marked inactive/drafted
+  const updatedBaseProducts: Product[] = [];
+  for (const bp of baseProducts) {
+    const dbMatch = dbRowById.get(bp.id) || dbRowBySlug.get(bp.slug.toLowerCase());
+    if (dbMatch) {
+      if (dbMatch.active === 0 || dbMatch.status === "draft" || dbMatch.status === "archived") {
+        continue;
+      }
+      const mapped = mapDbToProduct(dbMatch);
+      updatedBaseProducts.push({
+        ...bp,
+        ...mapped,
+        category: bp.category,
+      });
+    } else {
+      updatedBaseProducts.push(bp);
+    }
+  }
+
+  // Deduplication sets based on updated base products
+  const seenIds = new Set(updatedBaseProducts.map((p) => p.id));
+  const seenSlugs = new Set(updatedBaseProducts.map((p) => p.slug.toLowerCase()));
+  const seenNames = new Set(updatedBaseProducts.map((p) => p.name.trim().toLowerCase()));
+
+  // 4. Filter ONLY newly created admin products (created via Admin Dashboard with 'prod-' or 'prod_' prefix)
+  const newlyCreatedAdminProducts: Product[] = [];
+
+  for (const row of dbRows) {
+    // Skip all addon items
+    if (row.id.startsWith("addon-") || (row.slug || "").startsWith("addon-")) {
+      continue;
+    }
+
+    // Must be a genuinely new product added via Admin (starts with 'prod-' or 'prod_')
+    const isNewAdminProduct = row.id.startsWith("prod-") || row.id.startsWith("prod_");
+
+    if (!isNewAdminProduct) {
+      continue;
+    }
+
+    const cat = (row.category_id || "").toLowerCase().replace(/^cat-/, "");
     const name = (row.name || "").toLowerCase();
     const desc = (row.description || "").toLowerCase();
 
+    let matchesCategory = false;
     if (categoryType === "flower-bouquets" || categoryType === "bouquets") {
-      return (
-        catId === "cat-flower-bouquet" ||
-        catSlug === "flower-bouquet" ||
-        catId.includes("bouquet") ||
-        catSlug.includes("bouquet") ||
-        name.includes("bouquet") ||
-        desc.includes("bouquet")
-      );
+      matchesCategory =
+        (cat === "flower-bouquet" || cat === "bouquet" || (!cat.includes("cake") && !cat.includes("table") && !cat.includes("wreath") && !cat.includes("basket"))) &&
+        !name.includes("basket") &&
+        !desc.includes("in a basket") &&
+        !name.includes("cake") &&
+        !name.includes("table") &&
+        !name.includes("wreath") &&
+        !name.includes("runner") &&
+        !name.includes("centerpiece") &&
+        !name.includes("box") &&
+        !name.includes("bear");
+    } else if (categoryType === "flower-baskets" || categoryType === "baskets") {
+      matchesCategory = cat === "flower-basket" || cat === "basket" || name.includes("basket");
+    } else if (categoryType === "cakes") {
+      matchesCategory = (cat === "cakes" || cat === "cake" || name.includes("cake")) && !name.includes("basket");
+    } else if (categoryType === "table-decor") {
+      matchesCategory = cat === "table-decor" || name.includes("table") || name.includes("centerpiece") || name.includes("runner");
+    } else if (categoryType === "wreaths") {
+      matchesCategory = cat === "wreath" || cat === "wreaths" || name.includes("wreath") || name.includes("cross") || name.includes("ring");
+    } else if (categoryType === "special-occasions") {
+      matchesCategory = cat.includes("occ") || cat === "special-occasions";
     }
-    if (categoryType === "flower-baskets" || categoryType === "baskets") {
-      return (
-        catId === "cat-flower-basket" ||
-        catSlug === "flower-basket" ||
-        catId.includes("basket") ||
-        catSlug.includes("basket") ||
-        name.includes("basket")
-      );
-    }
-    if (categoryType === "cakes") {
-      return (
-        catId === "cat-cake" ||
-        catSlug === "cakes" ||
-        catSlug === "cake" ||
-        catId.includes("cake") ||
-        name.includes("cake")
-      );
-    }
-    if (categoryType === "table-decor") {
-      return (
-        catId === "cat-table-decor" ||
-        catSlug === "table-decor" ||
-        catId.includes("table") ||
-        name.includes("table") ||
-        name.includes("centerpiece")
-      );
-    }
-    if (categoryType === "wreaths") {
-      return (
-        catId === "cat-wreath" ||
-        catSlug === "wreaths" ||
-        catSlug === "wreath" ||
-        catId.includes("wreath") ||
-        name.includes("wreath")
-      );
-    }
-    if (categoryType === "special-occasions") {
-      return (
-        catId.startsWith("occ-") ||
-        row.occasion_id !== null ||
-        catSlug === "special-occasions"
-      );
-    }
-    return true;
-  });
 
-  const mappedDb = filteredDbProducts.map(mapDbToProduct);
+    if (!matchesCategory) {
+      continue;
+    }
 
-  // Merge: Database products first, avoiding duplicates
-  const seenIds = new Set<string>();
-  const seenSlugs = new Set<string>();
-  const merged: Product[] = [];
+    const normName = row.name.trim().toLowerCase();
+    const normSlug = (row.slug || "").trim().toLowerCase();
 
-  for (const p of mappedDb) {
-    seenIds.add(p.id.toLowerCase());
-    seenSlugs.add(p.slug.toLowerCase());
-    merged.push(p);
+    if (seenIds.has(row.id) || seenSlugs.has(normSlug) || seenNames.has(normName)) {
+      continue;
+    }
+
+    seenIds.add(row.id);
+    seenSlugs.add(normSlug);
+    seenNames.add(normName);
+    newlyCreatedAdminProducts.push(mapDbToProduct(row));
   }
 
-  for (const p of baseProducts) {
-    if (!seenIds.has(p.id.toLowerCase()) && !seenSlugs.has(p.slug.toLowerCase())) {
-      seenIds.add(p.id.toLowerCase());
-      seenSlugs.add(p.slug.toLowerCase());
-      merged.push(p);
-    }
-  }
-
-  return merged;
+  // New admin-created products are placed at the beginning, followed by the curated catalog products
+  return [...newlyCreatedAdminProducts, ...updatedBaseProducts];
 }

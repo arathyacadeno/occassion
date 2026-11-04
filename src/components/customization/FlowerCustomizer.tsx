@@ -248,7 +248,7 @@ export default function FlowerCustomizer({
               <div className={styles.metaRow}>
                 <div className={styles.ratingPill}>
                   <Star size={11} fill="#ffffff" color="#ffffff" strokeWidth={0} />
-                  <span>{(product.rating || 4.8).toFixed(1)}</span>
+                  <span>{Number(product.rating || 4.8).toFixed(1)}</span>
                 </div>
                 <span className={styles.reviewsCount}>
                   ({product.reviewsCount || 24} Verified Reviews)

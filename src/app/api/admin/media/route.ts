@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 import { getDb } from "@/lib/db";
+import { sql } from "@/lib/db/neon";
 import { getAuthenticatedUser } from "@/lib/auth/jwt";
 import { v2 as cloudinary } from "cloudinary";
 
@@ -10,6 +11,27 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
+
+function resolveCategoryStorage(folderOrCat: string | null): { subDir: string; folderName: string } {
+  const norm = (folderOrCat || "").toLowerCase().replace(/^cat-/, "").trim();
+
+  if (norm.includes("bouquet")) {
+    return { subDir: "flower-bouquet", folderName: "flower-bouquet" };
+  }
+  if (norm.includes("basket")) {
+    return { subDir: "flower-basket", folderName: "flower-basket" };
+  }
+  if (norm.includes("cake")) {
+    return { subDir: "cakes", folderName: "cakes" };
+  }
+  if (norm.includes("table") || norm.includes("decor")) {
+    return { subDir: "table decor", folderName: "table-decor" };
+  }
+  if (norm.includes("wreath")) {
+    return { subDir: "wreaths", folderName: "wreaths" };
+  }
+  return { subDir: "uploads", folderName: "uploads" };
+}
 
 export async function GET(request: Request) {
   try {
@@ -21,69 +43,49 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search")?.trim().toLowerCase() || "";
     const folder = searchParams.get("folder") || "all";
-    const syncCloudinary = searchParams.get("sync") === "true";
+    const hideSideViews = searchParams.get("sideViews") === "false";
 
     const db = getDb();
 
-    // 1. Optional sync from Cloudinary directly to local media table
-    if (syncCloudinary) {
-      try {
-        const cldRes = await cloudinary.api.resources({
-          type: "upload",
-          prefix: "occasions/",
-          max_results: 100,
-        });
-
-        const insertMedia = db.prepare(`
-          INSERT OR IGNORE INTO media (id, url, public_id, filename, format, size, width, height, folder, created_at)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `);
-
-        for (const res of cldRes.resources || []) {
-          const mId = `med-${res.public_id.replace(/[^a-zA-Z0-9]/g, "-")}`;
-          const parts = res.public_id.split("/");
-          const folderName = parts.length > 1 ? parts[1] : "products";
-          const filename = parts[parts.length - 1];
-
-          insertMedia.run(
-            mId,
-            res.secure_url,
-            res.public_id,
-            filename,
-            res.format || "jpg",
-            res.bytes || 0,
-            res.width || 800,
-            res.height || 800,
-            folderName,
-            res.created_at || new Date().toISOString()
-          );
-        }
-      } catch (cldErr: any) {
-        console.warn("Cloudinary sync warning:", cldErr.message);
-      }
-    }
-
-    // 2. Fetch all media from DB
+    // Fetch all media from DB
     let query = "SELECT * FROM media";
     const whereClauses: string[] = [];
     const params: any[] = [];
 
     if (folder && folder !== "all") {
-      whereClauses.push("folder = ?");
-      params.push(folder);
+      if (folder === "flower-bouquet") {
+        whereClauses.push("(folder = 'flower-bouquet' OR url LIKE '%/flower-bouquet/%')");
+      } else if (folder === "flower-basket") {
+        whereClauses.push("(folder = 'flower-basket' OR url LIKE '%/flower-basket/%')");
+      } else if (folder === "table-decor" || folder === "table decor") {
+        whereClauses.push("(folder = 'table-decor' OR url LIKE '%/table decor/%' OR url LIKE '%/table-decor/%')");
+      } else if (folder === "cakes") {
+        whereClauses.push("(folder = 'cakes' OR url LIKE '%/cakes/%')");
+      } else if (folder === "uploads") {
+        whereClauses.push("(folder = 'uploads' OR url LIKE '%/uploads/%')");
+      } else if (folder === "wreaths") {
+        whereClauses.push("(folder = 'wreaths' OR url LIKE '%/wreath%')");
+      } else {
+        whereClauses.push("folder = ?");
+        params.push(folder);
+      }
+    }
+
+    if (hideSideViews) {
+      whereClauses.push("url NOT LIKE '%/side-view/%'");
     }
 
     if (search) {
-      whereClauses.push("(filename LIKE ? OR public_id LIKE ? OR folder LIKE ?)");
+      whereClauses.push("(filename LIKE ? OR public_id LIKE ? OR folder LIKE ? OR url LIKE ?)");
       const term = `%${search}%`;
-      params.push(term, term, term);
+      params.push(term, term, term, term);
     }
 
     if (whereClauses.length > 0) {
       query += ` WHERE ${whereClauses.join(" AND ")}`;
     }
 
-    query += " ORDER BY created_at DESC LIMIT 150";
+    query += " ORDER BY created_at DESC LIMIT 200";
 
     const mediaRows = db.prepare(query).all(...params);
 
@@ -100,14 +102,13 @@ export async function GET(request: Request) {
       return exists;
     });
 
-    // 3. Check image references in products & categories
+    // Check image references in products & categories
     const products = db.prepare("SELECT id, name, images FROM products").all();
     const categories = db.prepare("SELECT id, name, image FROM categories").all();
 
     const enrichedMedia = validMediaRows.map((m: any) => {
       const referencedIn: string[] = [];
 
-      // Check products
       for (const p of products) {
         if (p.images && p.images.includes(m.url)) {
           referencedIn.push(`Product: ${p.name}`);
@@ -116,7 +117,6 @@ export async function GET(request: Request) {
         }
       }
 
-      // Check categories
       for (const c of categories) {
         if (c.image && (c.image.includes(m.url) || (m.public_id && c.image.includes(m.public_id)))) {
           referencedIn.push(`Category: ${c.name}`);
@@ -135,7 +135,7 @@ export async function GET(request: Request) {
       success: true,
       media: enrichedMedia,
       total: enrichedMedia.length,
-      folders: ["products", "categories", "banners", "branding"],
+      folders: ["all", "flower-bouquet", "flower-basket", "table-decor", "cakes", "uploads", "wreaths"],
     });
   } catch (error: any) {
     console.error("Media list error:", error);
@@ -151,88 +151,118 @@ export async function POST(request: Request) {
     }
 
     const contentType = request.headers.get("content-type") || "";
-    let fileBuffer: string | null = null;
-    let folder = "occasions/products";
-    let originalName = "upload";
+    let rawBuffer: Buffer | null = null;
+    let originalName = "upload.jpg";
+    let requestedFolder: string | null = null;
 
     if (contentType.includes("multipart/form-data")) {
       const formData = await request.formData();
       const file = formData.get("file") as File | null;
-      const customFolder = formData.get("folder") as string | null;
-      if (customFolder) folder = customFolder.startsWith("occasions/") ? customFolder : `occasions/${customFolder}`;
+      requestedFolder = (formData.get("folder") as string) || (formData.get("categoryId") as string) || null;
 
       if (!file) {
         return NextResponse.json({ success: false, error: "No image file provided" }, { status: 400 });
       }
 
-      originalName = file.name;
+      originalName = file.name || "upload.jpg";
       const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      const mime = file.type || "image/jpeg";
-      fileBuffer = `data:${mime};base64,${buffer.toString("base64")}`;
+      rawBuffer = Buffer.from(bytes);
     } else {
       const body = await request.json();
-      if (!body.image && !body.dataUrl) {
+      requestedFolder = body.folder || body.categoryId || null;
+      if (body.filename) originalName = body.filename;
+
+      const fileData = body.image || body.dataUrl;
+      if (!fileData) {
         return NextResponse.json({ success: false, error: "No image data provided" }, { status: 400 });
       }
-      fileBuffer = body.image || body.dataUrl;
-      if (body.folder) folder = body.folder.startsWith("occasions/") ? body.folder : `occasions/${body.folder}`;
-      if (body.filename) originalName = body.filename;
+
+      if (fileData.startsWith("data:")) {
+        const base64Part = fileData.split(",")[1];
+        rawBuffer = Buffer.from(base64Part, "base64");
+      } else {
+        rawBuffer = Buffer.from(fileData, "base64");
+      }
     }
 
-    if (!fileBuffer) {
+    if (!rawBuffer || rawBuffer.length === 0) {
       return NextResponse.json({ success: false, error: "Failed to read image data" }, { status: 400 });
     }
 
-    // Upload to Cloudinary
-    const uploadResult = await new Promise<any>((resolve, reject) => {
-      cloudinary.uploader.upload(
-        fileBuffer!,
-        {
-          folder,
-          resource_type: "image",
-          transformation: [{ quality: "auto" }, { fetch_format: "auto" }],
-        },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      );
-    });
+    // Determine target local directory on server storage
+    const { subDir, folderName } = resolveCategoryStorage(requestedFolder);
+    const targetDir = path.join(process.cwd(), "public", "images", subDir);
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true });
+    }
+
+    // Clean and sanitize filename
+    const ext = (path.extname(originalName) || ".jpg").toLowerCase();
+    const base = path.basename(originalName, ext)
+      .toLowerCase()
+      .replace(/[^a-z0-9_-]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "product";
+
+    let safeName = `${base}${ext}`;
+    let targetFilePath = path.join(targetDir, safeName);
+
+    if (fs.existsSync(targetFilePath)) {
+      safeName = `${base}-${Date.now().toString().slice(-6)}${ext}`;
+      targetFilePath = path.join(targetDir, safeName);
+    }
+
+    // Save to local server storage
+    fs.writeFileSync(targetFilePath, rawBuffer);
+
+    const localUrl = `/images/${subDir}/${safeName}`;
+    const mediaId = `med-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+    const now = new Date().toISOString();
 
     const db = getDb();
-    const mediaId = `med-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
-    const folderLabel = folder.replace(/^occasions\//, "");
-
     db.prepare(`
-      INSERT INTO media (id, url, public_id, filename, format, size, width, height, folder, created_at)
+      INSERT OR REPLACE INTO media (id, url, public_id, filename, format, size, width, height, folder, created_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       mediaId,
-      uploadResult.secure_url,
-      uploadResult.public_id,
-      originalName,
-      uploadResult.format || "jpg",
-      uploadResult.bytes || 0,
-      uploadResult.width || 800,
-      uploadResult.height || 800,
-      folderLabel,
-      uploadResult.created_at || new Date().toISOString()
+      localUrl,
+      localUrl,
+      safeName,
+      ext.replace(".", ""),
+      rawBuffer.length,
+      800,
+      800,
+      folderName,
+      now
     );
+
+    if (process.env.DATABASE_URL) {
+      try {
+        await sql`
+          INSERT INTO media (id, url, public_id, filename, format, size, width, height, folder, created_at)
+          VALUES (
+            ${mediaId}, ${localUrl}, ${localUrl}, ${safeName},
+            ${ext.replace(".", "")}, ${rawBuffer.length}, 800, 800, ${folderName}, ${now}
+          )
+          ON CONFLICT (id) DO NOTHING
+        `;
+      } catch (neonErr: any) {
+        console.warn("Neon media insert sync warning:", neonErr.message);
+      }
+    }
 
     return NextResponse.json({
       success: true,
       mediaItem: {
         id: mediaId,
-        url: uploadResult.secure_url,
-        public_id: uploadResult.public_id,
-        filename: originalName,
-        format: uploadResult.format,
-        size: uploadResult.bytes,
-        width: uploadResult.width,
-        height: uploadResult.height,
-        folder: folderLabel,
-        created_at: uploadResult.created_at || new Date().toISOString(),
+        url: localUrl,
+        public_id: localUrl,
+        filename: safeName,
+        format: ext.replace(".", ""),
+        size: rawBuffer.length,
+        width: 800,
+        height: 800,
+        folder: folderName,
+        created_at: now,
         referencedBy: [],
         isReferenced: false,
         usageCount: 0,
@@ -269,7 +299,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ success: false, error: "Media item not found" }, { status: 404 });
     }
 
-    // Check usage references
+    // Check usage references in products and categories
     const products = db.prepare("SELECT id, name, images FROM products").all();
     const categories = db.prepare("SELECT id, name, image FROM categories").all();
 
@@ -286,16 +316,31 @@ export async function DELETE(request: Request) {
     }
 
     if (references.length > 0 && !force) {
-      return NextResponse.json({
-        success: false,
-        isReferenced: true,
-        references,
-        error: `Cannot delete image: It is currently used in ${references.length} place(s): ${references.slice(0, 3).join(", ")}. Please remove image references first or confirm forced removal.`,
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          isReferenced: true,
+          references,
+          error: `Cannot delete image: It is currently used in ${references.length} place(s): ${references.slice(0, 3).join(", ")}. Please remove image references first or confirm forced removal.`,
+        },
+        { status: 400 }
+      );
     }
 
-    // Delete from Cloudinary
-    if (mediaItem.public_id) {
+    // Delete local file from server storage
+    if (mediaItem.url && mediaItem.url.startsWith("/images/")) {
+      const localFilePath = path.join(process.cwd(), "public", mediaItem.url.replace(/^\//, ""));
+      if (fs.existsSync(localFilePath)) {
+        try {
+          fs.unlinkSync(localFilePath);
+        } catch (unlinkErr: any) {
+          console.warn("Local file unlink warning:", unlinkErr.message);
+        }
+      }
+    }
+
+    // Optional Cloudinary cleanup
+    if (mediaItem.public_id && mediaItem.public_id.startsWith("occasions/")) {
       try {
         await cloudinary.uploader.destroy(mediaItem.public_id);
       } catch (cldErr: any) {
@@ -303,8 +348,17 @@ export async function DELETE(request: Request) {
       }
     }
 
-    // Delete from DB
+    // Delete from SQLite
     db.prepare("DELETE FROM media WHERE id = ?").run(mediaItem.id);
+
+    // Delete from Neon DB
+    if (process.env.DATABASE_URL) {
+      try {
+        await sql`DELETE FROM media WHERE id = ${mediaItem.id}`;
+      } catch (neonErr: any) {
+        console.warn("Neon media delete warning:", neonErr.message);
+      }
+    }
 
     return NextResponse.json({
       success: true,

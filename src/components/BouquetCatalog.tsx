@@ -85,7 +85,7 @@ export default function BouquetCatalog({ onAddToCart, onQuickView }: BouquetCata
               <div className={styles.cardBody}>
                 <div className={styles.ratingRow}>
                   <Star size={13} className={styles.starFilled} />
-                  <span>{bouquet.rating.toFixed(1)}</span>
+                  <span>{Number(bouquet.rating || 4.5).toFixed(1)}</span>
                   <span>({bouquet.reviewsCount} reviews)</span>
                   <span>•</span>
                   <span>Calicut Delivery</span>

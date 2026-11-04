@@ -637,7 +637,7 @@ export default function ProductInfo({
       <div className={styles.ratingDeliveryRow}>
         <div className={styles.greenRatingBadge}>
           <Star size={9} fill="#ffffff" color="#ffffff" strokeWidth={0} />
-          <span>{(product.rating || 4.4).toFixed(1)}</span>
+          <span>{Number(product.rating || 4.4).toFixed(1)}</span>
         </div>
       </div>
 

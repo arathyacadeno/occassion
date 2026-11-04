@@ -196,7 +196,7 @@ export default function ProductFormModal({
     }
   };
 
-  // Upload to Cloudinary via backend endpoint
+  // Upload to local server storage and database via backend endpoint
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -209,7 +209,8 @@ export default function ProductFormModal({
         const file = files[i];
         const formData = new FormData();
         formData.append("file", file);
-        formData.append("folder", "occasions/products");
+        formData.append("categoryId", categoryId);
+        formData.append("folder", categoryId.replace(/^cat-/, ""));
 
         const res = await fetch("/api/admin/upload", {
           method: "POST",
@@ -220,14 +221,15 @@ export default function ProductFormModal({
         if (data.success && data.url) {
           setImages((prev) => {
             const filtered = prev.filter((img) => img !== "/images/lily-6-stems.png" && img !== "/images/cat-flower-bouquet-luxe.jpg");
+            if (filtered.includes(data.url)) return filtered;
             return [data.url, ...filtered];
           });
         } else {
-          throw new Error(data.error || "Failed to upload to Cloudinary");
+          throw new Error(data.error || "Failed to upload to server storage");
         }
       }
     } catch (err: any) {
-      console.error("Cloudinary upload failed:", err);
+      console.error("Server upload failed:", err);
       setError(err.message || "Upload failed");
     } finally {
       setUploading(false);
@@ -814,7 +816,35 @@ export default function ProductFormModal({
             </div>
 
             {/* Upload Toolbar */}
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center", marginBottom: 16 }}>
+              {/* Direct Server Image Upload */}
+              <label
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "10px 18px",
+                  borderRadius: 10,
+                  background: "#be185d",
+                  color: "#fff",
+                  fontSize: "0.88rem",
+                  fontWeight: 600,
+                  cursor: uploading ? "not-allowed" : "pointer",
+                  boxShadow: "0 2px 8px rgba(190, 24, 93, 0.25)",
+                }}
+              >
+                <Upload size={16} />
+                <span>{uploading ? "Uploading to Server Storage..." : "Upload from Computer"}</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  disabled={uploading}
+                  onChange={handleFileUpload}
+                  style={{ display: "none" }}
+                />
+              </label>
+
               <button
                 type="button"
                 onClick={() => setIsMediaPickerOpen(true)}
@@ -824,50 +854,17 @@ export default function ProductFormModal({
                   gap: 8,
                   padding: "10px 18px",
                   borderRadius: 10,
-                  background: "#db2777",
-                  color: "#fff",
-                  border: "none",
+                  background: "#ffffff",
+                  color: "#334155",
+                  border: "1.5px solid #cbd5e1",
                   fontSize: "0.88rem",
                   fontWeight: 600,
                   cursor: "pointer",
-                  boxShadow: "0 2px 8px rgba(219, 39, 119, 0.25)",
                 }}
               >
-                <ImageIcon size={16} />
-                <span>Browse Media Library</span>
+                <ImageIcon size={16} color="#be185d" />
+                <span>Browse Existing Category Images</span>
               </button>
-
-              <div style={{ display: "flex", gap: 8, flex: 1, minWidth: 260 }}>
-                <input
-                  type="text"
-                  placeholder="Or paste external image URL..."
-                  value={customImageUrl}
-                  onChange={(e) => setCustomImageUrl(e.target.value)}
-                  style={{
-                    flex: 1,
-                    padding: "8px 12px",
-                    borderRadius: 8,
-                    border: "1px solid #cbd5e1",
-                    fontSize: "0.88rem",
-                    background: "#fff",
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={handleAddCustomUrl}
-                  style={{
-                    padding: "8px 14px",
-                    borderRadius: 8,
-                    border: "1px solid #cbd5e1",
-                    background: "#fff",
-                    fontWeight: 600,
-                    fontSize: "0.85rem",
-                    cursor: "pointer",
-                  }}
-                >
-                  Add URL
-                </button>
-              </div>
             </div>
 
             {/* Gallery Thumbnails List */}
@@ -1233,6 +1230,17 @@ export default function ProductFormModal({
             </div>
             <MediaLibrary
               isPickerMode={true}
+              preferredFolder={
+                categoryId === "cat-flower-bouquet"
+                  ? "flower-bouquet"
+                  : categoryId === "cat-flower-basket"
+                  ? "flower-basket"
+                  : categoryId === "cat-table-decor"
+                  ? "table-decor"
+                  : categoryId === "cat-cakes"
+                  ? "cakes"
+                  : "all"
+              }
               onSelectImage={(url) => {
                 if (!images.includes(url)) {
                   setImages([...images, url]);
