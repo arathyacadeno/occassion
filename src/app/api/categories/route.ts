@@ -21,7 +21,20 @@ export async function GET(request: Request) {
 
     query += ` GROUP BY c.id ORDER BY c.display_order ASC, c.name ASC`;
 
-    const categories = db.prepare(query).all();
+    const rawCategories: any[] = db.prepare(query).all();
+    const categories = rawCategories.map((c) => {
+      let img = c.image;
+      if (!img || img.includes("lily-6-stems") || img.includes("flower-basket-pink-lilies") || img.includes("cake-chocolate") || img.includes("table-arrangement") || img.includes("wreath-white-lilies")) {
+        const s = (c.slug || c.id || "").toLowerCase();
+        if (s.includes("basket")) img = "/images/categories/flower-basket.jpg";
+        else if (s.includes("cake")) img = "/images/cakes/cat-cakes-luxe.jpg";
+        else if (s.includes("table")) img = "/images/categories/table-decor.jpg";
+        else if (s.includes("wreath")) img = "/images/categories/wreath.jpg";
+        else img = "/images/categories/flower-bouquet.jpg";
+      }
+      return { ...c, image: img };
+    });
+
     return NextResponse.json({ success: true, categories });
   } catch (error: any) {
     console.error("Categories fetch error:", error);

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import CategoryPage from "@/components/CategoryPage";
-import { getProductsByCategory } from "@/data/catalog";
+import { getStorefrontCategoryProducts } from "@/lib/getProduct";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Table Decor | Occassions Florist Calicut",
@@ -16,8 +18,8 @@ const TABLE_DECOR_TABS = [
   { id: "wedding", label: "Wedding & Ceremonies" },
 ];
 
-export default function TableDecorCategoryPage() {
-  const tableProducts = getProductsByCategory("table-decor");
+export default async function TableDecorCategoryPage() {
+  const tableProducts = await getStorefrontCategoryProducts("table-decor");
 
   return (
     <CategoryPage

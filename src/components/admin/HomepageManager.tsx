@@ -79,6 +79,16 @@ export default function HomepageManager() {
   const [uploadingImage, setUploadingImage] = useState<string | null>(null);
   const [savingBanner, setSavingBanner] = useState(false);
 
+  // Lock background body scroll when banner modal is open
+  useEffect(() => {
+    if (!isBannerModalOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [isBannerModalOpen]);
+
   // Section Modal
   const [editingSection, setEditingSection] = useState<Section | null>(null);
   const [sectionForm, setSectionForm] = useState({

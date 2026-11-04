@@ -107,7 +107,7 @@
 /* ================= 5-CATEGORY SINGLE ROW GALLERY GRID ================= */
 .galleryGrid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: clamp(14px, 1.8vw, 24px);
   width: 100%;
   margin: 0 auto;
@@ -234,21 +234,21 @@
     border-radius: 24px;
   }
   .galleryGrid {
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 18px;
     max-width: 760px;
   }
   .galleryGrid > * {
-    grid-column: span 2;
+    grid-column: auto;
   }
   .galleryGrid > :nth-child(even) {
     margin-top: 0;
   }
   .galleryGrid > :nth-child(4) {
-    grid-column: 2 / span 2;
+    grid-column: auto;
   }
   .galleryGrid > :nth-child(5) {
-    grid-column: 4 / span 2;
+    grid-column: auto;
   }
   .mainTitle {
     font-size: 28px;
@@ -281,7 +281,7 @@
   .galleryGrid > :nth-child(n) {
     grid-column: auto;
   }
-  .galleryGrid > :last-child {
+  .galleryGrid > :nth-child(odd):last-child {
     grid-column: 1 / -1;
     width: 100%;
     max-width: 200px;

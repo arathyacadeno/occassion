@@ -55,6 +55,16 @@ export default function CategoryManager({ categories, onRefresh }: CategoryManag
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
 
+  // Lock background body scroll when modal is open
+  React.useEffect(() => {
+    if (!isModalOpen && !deleteModalOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [isModalOpen, deleteModalOpen]);
+
   const handleOpenAdd = () => {
     setEditingCategory(null);
     setName("");

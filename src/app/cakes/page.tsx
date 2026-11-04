@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import CategoryPage from "@/components/CategoryPage";
-import { getProductsByCategory } from "@/data/catalog";
+import { getStorefrontCategoryProducts } from "@/lib/getProduct";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Cakes | Occassions Florist Calicut",
@@ -14,10 +16,8 @@ const CAKE_TABS = [
   { id: "chocolate", label: "Chocolate Cakes" },
 ];
 
-export default function CakesCategoryPage() {
-  const cakeProducts = getProductsByCategory("cakes").filter(
-    (p) => !p.id.startsWith("addon-")
-  );
+export default async function CakesCategoryPage() {
+  const cakeProducts = await getStorefrontCategoryProducts("cakes");
 
   return (
     <CategoryPage

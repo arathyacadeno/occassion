@@ -60,14 +60,27 @@ export default function JoyfulGiftsBanner() {
       .then((res) => res.json())
       .then((data) => {
         if (data.success && Array.isArray(data.banners) && data.banners.length > 0) {
-          const dynamicBanners: BannerSlide[] = data.banners.map((b: any) => ({
-            id: b.id,
-            title: b.title || "Occasions Special",
-            subtitle: b.subtitle || "Fresh Celebration Blooms",
-            image: b.desktop_image,
-            href: b.button_link || "/flower-bouquets",
-            accent: "#be185d",
-          }));
+          const dynamicBanners: BannerSlide[] = data.banners.map((b: any) => {
+            const badgeOrTitle = ((b.badge || "") + " " + (b.title || "") + " " + (b.id || "")).toLowerCase();
+            const accent = badgeOrTitle.includes("diwali")
+              ? "#d97706"
+              : badgeOrTitle.includes("xmas") || badgeOrTitle.includes("love")
+              ? "#dc2626"
+              : badgeOrTitle.includes("mother")
+              ? "#ec4899"
+              : badgeOrTitle.includes("year")
+              ? "#f59e0b"
+              : "#be185d";
+
+            return {
+              id: b.id,
+              title: b.title || "Occasions Special",
+              subtitle: b.subtitle || "Fresh Celebration Blooms",
+              image: b.desktop_image,
+              href: b.button_link || "/occasions",
+              accent,
+            };
+          });
           setBanners(dynamicBanners);
         }
       })

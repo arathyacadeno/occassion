@@ -84,6 +84,16 @@ export default function ProductFormModal({
   const [isMediaPickerOpen, setIsMediaPickerOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
+  // Lock background body scroll when modal is open
+  useEffect(() => {
+    if (!isOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [isOpen]);
+
   // Initialize or reset form
   useEffect(() => {
     if (!isOpen) {
@@ -153,7 +163,7 @@ export default function ProductFormModal({
       setFeatured(false);
       setBadge("");
       setDeliveryInfo("Same-day Calicut express delivery available");
-      setImages(["/images/lily-6-stems.png"]);
+      setImages([]);
       setFlavour("");
       setCakeWeight("1kg");
       setEgglessAvailable(true);
@@ -580,7 +590,7 @@ export default function ProductFormModal({
               <span>Category &amp; Department</span>
             </h3>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
               <div>
                 <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, color: "#475569", marginBottom: 6 }}>
                   Category *
@@ -665,31 +675,6 @@ export default function ProductFormModal({
                   <option value="wreath">Floral Wreath</option>
                   <option value="decor">Table / Event Decor</option>
                   <option value="general">General Gift</option>
-                </select>
-              </div>
-
-              <div>
-                <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, color: "#475569", marginBottom: 6 }}>
-                  Occasion Theme (Optional)
-                </label>
-                <select
-                  value={occasionId}
-                  onChange={(e) => setOccasionId(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "10px 14px",
-                    borderRadius: 10,
-                    border: "1.5px solid #cbd5e1",
-                    fontSize: "0.92rem",
-                    background: "#fff",
-                  }}
-                >
-                  <option value="">Any / Universal Occasion</option>
-                  {occasions.map((o) => (
-                    <option key={o.id} value={o.id}>
-                      {o.name}
-                    </option>
-                  ))}
                 </select>
               </div>
             </div>
@@ -797,52 +782,39 @@ export default function ProductFormModal({
             </div>
           </div>
 
-          {/* Section 4: Cloudinary Media Gallery */}
+          {/* Section 4: Media Gallery & Side Thumbnail */}
           <div style={{ marginBottom: 28, background: "#fdf2f8", padding: 18, borderRadius: 14, border: "1px solid #fce7f3" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, flexWrap: "wrap", gap: 8 }}>
               <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#831843", margin: 0, display: "flex", alignItems: "center", gap: 8 }}>
                 <ImageIcon size={18} color="#db2777" />
-                <span>Product Images &amp; Cloudinary Storage</span>
+                <span>Product Images &amp; Side Thumbnail</span>
               </h3>
-              {uploading && (
-                <span style={{ fontSize: "0.82rem", color: "#db2777", fontWeight: 600 }}>
-                  Uploading to Cloudinary CDN...
-                </span>
-              )}
+              <span style={{ fontSize: "0.74rem", background: "#fce7f3", color: "#9d174d", padding: "3px 10px", borderRadius: 20, fontWeight: 700 }}>
+                1st Image = Admin &amp; Storefront Thumbnail
+              </span>
             </div>
 
-            <p style={{ margin: "0 0 14px", fontSize: "0.84rem", color: "#64748b" }}>
-              Upload high-resolution photography. The first image serves as the Main Featured thumbnail.
-            </p>
+            <div style={{
+              display: "flex",
+              alignItems: "flex-start",
+              gap: 10,
+              padding: "10px 14px",
+              marginBottom: 14,
+              background: "#fff",
+              borderRadius: 10,
+              border: "1px solid #fbcfe8",
+              fontSize: "0.82rem",
+              color: "#475569",
+              lineHeight: 1.5,
+            }}>
+              <span style={{ fontSize: "1rem", lineHeight: 1 }}>🖼️</span>
+              <div>
+                <strong style={{ color: "#9d174d" }}>Side Thumbnail Setup:</strong> The <strong>1st image (MAIN)</strong> automatically sets up the square thumbnail icon shown beside this product in the Admin Table list, order summaries, and category catalog. Any additional images will appear in the product detail photo slider.
+              </div>
+            </div>
 
             {/* Upload Toolbar */}
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
-              <label
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 8,
-                  padding: "10px 18px",
-                  borderRadius: 10,
-                  background: "#db2777",
-                  color: "#fff",
-                  fontSize: "0.88rem",
-                  fontWeight: 600,
-                  cursor: uploading ? "not-allowed" : "pointer",
-                }}
-              >
-                <Upload size={16} />
-                <span>{uploading ? "Processing..." : "Upload from Device (Cloudinary)"}</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  disabled={uploading}
-                  onChange={handleFileUpload}
-                  style={{ display: "none" }}
-                />
-              </label>
-
               <button
                 type="button"
                 onClick={() => setIsMediaPickerOpen(true)}
@@ -852,12 +824,13 @@ export default function ProductFormModal({
                   gap: 8,
                   padding: "10px 18px",
                   borderRadius: 10,
-                  background: "#fdf2f8",
-                  color: "#be185d",
-                  border: "1px solid #fbcfe8",
+                  background: "#db2777",
+                  color: "#fff",
+                  border: "none",
                   fontSize: "0.88rem",
                   fontWeight: 600,
                   cursor: "pointer",
+                  boxShadow: "0 2px 8px rgba(219, 39, 119, 0.25)",
                 }}
               >
                 <ImageIcon size={16} />
@@ -898,22 +871,50 @@ export default function ProductFormModal({
             </div>
 
             {/* Gallery Thumbnails List */}
-            <div style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 8 }}>
-              {images.map((img, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    position: "relative",
-                    width: 100,
-                    height: 100,
-                    borderRadius: 10,
-                    overflow: "hidden",
-                    border: idx === 0 ? "2.5px solid #db2777" : "1.5px solid #cbd5e1",
-                    flexShrink: 0,
-                    background: "#fff",
-                  }}
-                >
-                  <img src={img} alt={`Preview ${idx}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            {images.length === 0 ? (
+              <div
+                style={{
+                  padding: "20px",
+                  background: "#fff",
+                  borderRadius: 10,
+                  border: "1.5px dashed #fbcfe8",
+                  textAlign: "center",
+                  color: "#9d174d",
+                  fontSize: "0.85rem",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 8,
+                }}
+              >
+                <ImageIcon size={18} color="#db2777" />
+                <span>No images selected yet. Click <strong>Browse Media Library</strong> above to choose photography.</span>
+              </div>
+            ) : (
+              <div style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 8 }}>
+                {images.map((img, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      position: "relative",
+                      width: 100,
+                      height: 100,
+                      borderRadius: 10,
+                      overflow: "hidden",
+                      border: idx === 0 ? "2.5px solid #db2777" : "1.5px solid #cbd5e1",
+                      flexShrink: 0,
+                      background: "#fff",
+                    }}
+                  >
+                    <img
+                      src={img}
+                      alt={`Preview ${idx}`}
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = "/images/cat-flower-bouquet-luxe.jpg";
+                      }}
+                    />
                   {idx === 0 && (
                     <span
                       style={{
@@ -921,15 +922,16 @@ export default function ProductFormModal({
                         bottom: 0,
                         left: 0,
                         right: 0,
-                        background: "rgba(219, 39, 119, 0.9)",
+                        background: "linear-gradient(90deg, #db2777, #be185d)",
                         color: "#fff",
-                        fontSize: "0.65rem",
+                        fontSize: "0.62rem",
                         textAlign: "center",
-                        fontWeight: 700,
-                        padding: "2px 0",
+                        fontWeight: 800,
+                        padding: "3px 0",
+                        letterSpacing: "0.5px",
                       }}
                     >
-                      MAIN
+                      ★ SIDE THUMBNAIL
                     </span>
                   )}
                   <button
@@ -978,6 +980,7 @@ export default function ProductFormModal({
                 </div>
               ))}
             </div>
+          )}
           </div>
 
           {/* Section 5: Category-Specific Attributes */}

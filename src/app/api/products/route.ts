@@ -325,6 +325,35 @@ export async function POST(request: Request) {
       else if (lower.includes("flower") || lower.includes("rose") || lower.includes("lily") || lower.includes("bouquet")) inferredType = "flower";
     }
 
+    // Ensure category exists in categories table if newly created inline
+    if (categoryId && categoryId.startsWith("cat-")) {
+      const existingCategory = db.prepare("SELECT id FROM categories WHERE id = ? OR slug = ?").get(categoryId, categoryId.replace(/^cat-/, ""));
+      if (!existingCategory) {
+        const catSlug = categoryId.replace(/^cat-/, "");
+        const catName = catSlug
+          .split("-")
+          .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(" ");
+        const catImg = imageArray[0] || "/images/cat-flower-bouquet-luxe.jpg";
+        try {
+          db.prepare(`
+            INSERT INTO categories (id, name, slug, description, image, display_order, active)
+            VALUES (?, ?, ?, ?, ?, 99, 1)
+          `).run(categoryId, catName, catSlug, `${catName} collection`, catImg);
+
+          if (process.env.DATABASE_URL) {
+            await sql`
+              INSERT INTO categories (id, name, slug, description, image, display_order, active)
+              VALUES (${categoryId}, ${catName}, ${catSlug}, ${`${catName} collection`}, ${catImg}, 99, 1)
+              ON CONFLICT (id) DO NOTHING
+            `;
+          }
+        } catch (catErr) {
+          console.warn("Auto-insert category warning:", catErr);
+        }
+      }
+    }
+
     db.prepare(`
       INSERT INTO products (
         id, name, slug, description, short_description, images, price, discount_price,

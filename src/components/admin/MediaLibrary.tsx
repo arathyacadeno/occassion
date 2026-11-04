@@ -56,6 +56,16 @@ export default function MediaLibrary({ onSelectImage, isPickerMode = false }: Me
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
 
+  // Lock background body scroll when detail or delete modal is open
+  useEffect(() => {
+    if (!detailItem && !deleteItem) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [detailItem, deleteItem]);
+
   const fetchMedia = async (sync = false) => {
     try {
       if (sync) setSyncing(true);
@@ -171,28 +181,6 @@ export default function MediaLibrary({ onSelectImage, isPickerMode = false }: Me
         </div>
 
         <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-          <button
-            type="button"
-            onClick={() => fetchMedia(true)}
-            disabled={syncing}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 6,
-              padding: "9px 16px",
-              borderRadius: 10,
-              border: "1px solid #cbd5e1",
-              background: "#fff",
-              color: "#475569",
-              fontSize: "0.85rem",
-              fontWeight: 600,
-              cursor: syncing ? "not-allowed" : "pointer",
-            }}
-          >
-            <RefreshCw size={14} className={syncing ? "spin" : ""} />
-            <span>{syncing ? "Syncing CDN..." : "Sync Cloudinary"}</span>
-          </button>
-
           <label
             style={{
               display: "inline-flex",
@@ -290,7 +278,7 @@ export default function MediaLibrary({ onSelectImage, isPickerMode = false }: Me
           <ImageIcon size={40} color="#94a3b8" style={{ margin: "0 auto 10px" }} />
           <h3 style={{ margin: "0 0 6px", fontSize: "1.05rem", color: "#334155" }}>No Media Found in this Folder</h3>
           <p style={{ margin: 0, fontSize: "0.85rem", color: "#64748b" }}>
-            Click &quot;Upload New Files&quot; or &quot;Sync Cloudinary&quot; to import photography directly into the CMS.
+            Click &quot;Upload New Files&quot; to import photography directly into the CMS.
           </p>
         </div>
       ) : (
@@ -337,6 +325,10 @@ export default function MediaLibrary({ onSelectImage, isPickerMode = false }: Me
                   src={m.url}
                   alt={m.filename}
                   style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = "/images/cat-flower-bouquet-luxe.jpg";
+                  }}
                 />
 
                 {m.isReferenced && (
@@ -466,7 +458,15 @@ export default function MediaLibrary({ onSelectImage, isPickerMode = false }: Me
 
             <div style={{ padding: 24, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
               <div style={{ borderRadius: 12, overflow: "hidden", border: "1px solid #e2e8f0", background: "#f8fafc", maxHeight: 320 }}>
-                <img src={detailItem.url} alt={detailItem.filename} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                <img
+                  src={detailItem.url}
+                  alt={detailItem.filename}
+                  style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = "/images/cat-flower-bouquet-luxe.jpg";
+                  }}
+                />
               </div>
 
               <div>

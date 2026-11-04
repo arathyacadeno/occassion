@@ -379,6 +379,15 @@ export default function AdminPage() {
     return true;
   };
 
+  const getProductStorefrontUrl = (p: any) => {
+    const cat = (p.category_slug || p.category_id || p.category || "").toLowerCase();
+    if (cat.includes("cake")) return `/cakes/${p.slug}`;
+    if (cat.includes("table")) return `/table-decor/${p.slug}`;
+    if (cat.includes("wreath")) return `/wreaths/${p.slug}`;
+    if (cat.includes("special") || cat.includes("occ")) return `/special-occasions/${p.slug}`;
+    return `/flower/${p.slug}`;
+  };
+
   const handleTogglePublishProduct = async (p: any) => {
     const newActive = !p.active;
     const newStatus = newActive ? "published" : "draft";
@@ -556,9 +565,6 @@ export default function AdminPage() {
           <div className={styles.titleArea}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <h1>Occassions Management Console</h1>
-              <span className={styles.badgeAdmin}>
-                <ShieldCheck size={14} /> Admin
-              </span>
             </div>
             <p>Real-time orders, floral inventory, coupons, and delivery logistics</p>
           </div>
@@ -995,7 +1001,17 @@ export default function AdminPage() {
                                 <div style={{ display: "flex", gap: 8, fontSize: "0.75rem", color: "#64748b", marginTop: 2 }}>
                                   <span>SKU: {p.sku || "—"}</span>
                                   <span>•</span>
-                                  <span style={{ fontFamily: "monospace" }}>/{p.slug}</span>
+                                  <a
+                                    href={getProductStorefrontUrl(p)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{ fontFamily: "monospace", color: "#2563eb", textDecoration: "none" }}
+                                    title="Open live storefront page in new tab"
+                                    onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
+                                    onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
+                                  >
+                                    /{p.slug}
+                                  </a>
                                 </div>
                                 {p.badge && (
                                   <span style={{ display: "inline-block", fontSize: "0.68rem", fontWeight: 700, background: "#fdf2f8", color: "#db2777", padding: "1px 6px", borderRadius: 4, marginTop: 3 }}>
@@ -1054,15 +1070,21 @@ export default function AdminPage() {
                           </td>
 
                           <td>
-                            <span
+                            <button
+                              type="button"
+                              onClick={() => handleTogglePublishProduct(p)}
                               className={styles.statusBadge}
                               style={{
                                 background: isPublished ? "#dcfce7" : p.status === "archived" ? "#f1f5f9" : "#fef3c7",
                                 color: isPublished ? "#166534" : p.status === "archived" ? "#64748b" : "#92400e",
+                                border: "none",
+                                cursor: "pointer",
+                                textTransform: "capitalize",
                               }}
+                              title={isPublished ? "Click to Unpublish (Move to Draft)" : "Click to Publish to Storefront"}
                             >
                               {p.status || (isPublished ? "published" : "draft")}
-                            </span>
+                            </button>
                           </td>
 
                           <td>
@@ -1099,10 +1121,13 @@ export default function AdminPage() {
                               <button
                                 type="button"
                                 className={styles.iconActionBtn}
-                                onClick={() => handleTogglePublishProduct(p)}
-                                title={isPublished ? "Unpublish (Move to Draft)" : "Publish to Storefront"}
+                                onClick={() => {
+                                  const url = getProductStorefrontUrl(p);
+                                  window.open(url, "_blank");
+                                }}
+                                title="Open Live Storefront Page in new tab"
                                 style={{
-                                  color: isPublished ? "#059669" : "#d97706",
+                                  color: "#059669",
                                 }}
                               >
                                 <Globe size={14} />

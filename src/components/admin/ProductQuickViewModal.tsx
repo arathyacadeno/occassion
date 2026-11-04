@@ -20,6 +20,16 @@ export default function ProductQuickViewModal({
 }: ProductQuickViewModalProps) {
   const [selectedImgIdx, setSelectedImgIdx] = useState(0);
 
+  // Lock background body scroll when modal is open
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [isOpen]);
+
   if (!isOpen || !product) return null;
 
   let images: string[] = [];

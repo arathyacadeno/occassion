@@ -16,22 +16,22 @@ interface CategoryCardItem {
   initRot: string;
 }
 
-const CATEGORY_CARDS: CategoryCardItem[] = [
+const DEFAULT_CATEGORY_CARDS: CategoryCardItem[] = [
   {
-    id: "flower-basket",
-    name: "Flower Basket",
-    image: "/images/cat-flower-bouquet-yellow.jpg",
-    link: "/flower-baskets",
+    id: "flower-bouquet",
+    name: "Flower Bouquet",
+    image: "/images/categories/flower-bouquet.jpg",
+    link: "/flower-bouquets",
     delay: "0s",
     initTx: "0px",
     initTy: "16px",
     initRot: "0deg",
   },
   {
-    id: "flower-bouquet",
-    name: "Flower Bouquet",
-    image: "/images/cat-flower-bouquet-luxe.jpg",
-    link: "/flower-bouquets",
+    id: "flower-basket",
+    name: "Flower Basket",
+    image: "/images/categories/flower-basket.jpg",
+    link: "/flower-baskets",
     delay: "0.12s",
     initTx: "0px",
     initTy: "16px",
@@ -50,7 +50,7 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
   {
     id: "table-decor",
     name: "Table Decor",
-    image: "/images/cat-table-arrangements-luxe.jpg",
+    image: "/images/categories/table-decor.jpg",
     link: "/table-decor",
     delay: "0.36s",
     initTx: "0px",
@@ -60,7 +60,7 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
   {
     id: "wreath",
     name: "Wreath",
-    image: "/images/cat-wreath-luxe.jpg",
+    image: "/images/categories/wreath.jpg",
     link: "/wreaths",
     delay: "0.48s",
     initTx: "0px",
@@ -69,9 +69,73 @@ const CATEGORY_CARDS: CategoryCardItem[] = [
   },
 ];
 
+const getCategoryLink = (slug: string, id: string): string => {
+  const s = (slug || id || "").toLowerCase().replace(/^cat-/, "");
+  if (s.includes("flower-bouquet") || s === "bouquet" || s === "bouquets") return "/flower-bouquets";
+  if (s.includes("flower-basket") || s === "basket" || s === "baskets") return "/flower-baskets";
+  if (s.includes("cake")) return "/cakes";
+  if (s.includes("table-decor") || s === "table-decorations") return "/table-decor";
+  if (s.includes("wreath")) return "/wreaths";
+  return `/category/${s}`;
+};
+
 export default function ShopByCategory() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [categoryCards, setCategoryCards] = useState<CategoryCardItem[]>(DEFAULT_CATEGORY_CARDS);
+
+  // Dynamically load active categories from database
+  useEffect(() => {
+    let isMounted = true;
+    fetch("/api/categories?activeOnly=true")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!isMounted || !data.success || !Array.isArray(data.categories) || data.categories.length === 0) return;
+
+        // User fixed ordering: 1. Flower Bouquet, 2. Flower Basket, 3. Cakes, 4. Table Decor, 5. Wreath
+        const FIXED_ORDER = ["flower-bouquet", "flower-basket", "cakes", "table-decor", "wreath"];
+        const getSortRank = (cat: any) => {
+          const s = (cat.slug || cat.id || "").toLowerCase().replace(/^cat-/, "");
+          for (let i = 0; i < FIXED_ORDER.length; i++) {
+            if (s.includes(FIXED_ORDER[i]) || FIXED_ORDER[i].includes(s)) {
+              return i;
+            }
+          }
+          return 100 + (cat.display_order || 0);
+        };
+
+        const sorted = [...data.categories].sort((a: any, b: any) => getSortRank(a) - getSortRank(b));
+        const mapped: CategoryCardItem[] = sorted.map((c: any, index: number) => {
+          let fallbackImg = "/images/categories/flower-bouquet.jpg";
+          const s = (c.slug || c.id || "").toLowerCase();
+          if (s.includes("basket")) fallbackImg = "/images/categories/flower-basket.jpg";
+          else if (s.includes("cake")) fallbackImg = "/images/cakes/cat-cakes-luxe.jpg";
+          else if (s.includes("table")) fallbackImg = "/images/categories/table-decor.jpg";
+          else if (s.includes("wreath")) fallbackImg = "/images/categories/wreath.jpg";
+
+          const isBroken = !c.image || c.image.includes("lily-6-stems") || c.image.includes("flower-basket-pink-lilies") || c.image.includes("cake-chocolate") || c.image.includes("table-arrangement") || c.image.includes("wreath-white-lilies");
+
+          return {
+            id: c.slug || c.id,
+            name: c.name,
+            image: isBroken ? fallbackImg : c.image,
+            link: getCategoryLink(c.slug, c.id),
+            delay: `${Math.min(index * 0.1, 0.6).toFixed(2)}s`,
+            initTx: "0px",
+            initTy: "16px",
+            initRot: "0deg",
+          };
+        });
+        setCategoryCards(mapped);
+      })
+      .catch((err) => {
+        console.warn("Dynamic category fetch error:", err);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const target = sectionRef.current;
@@ -154,7 +218,7 @@ export default function ShopByCategory() {
         {/* White Rounded Card Container */}
         <div className={styles.whiteCardWrapper}>
           <div className={styles.galleryGrid}>
-            {CATEGORY_CARDS.map((cat) => (
+            {categoryCards.map((cat) => (
               <CategoryItem key={cat.id} item={cat} isVisible={isVisible} />
             ))}
           </div>
@@ -176,10 +240,14 @@ function CategoryItem({
     <div className={styles.itemWrapper}>
       <div
         className={styles.imageFrame}
-        style={isBouquet ? { backgroundColor: "#B5DCF7" } : undefined}
+
       >
         <Image
           src={item.image}
+          onError={(e: any) => {
+            const el = e.currentTarget || e.target;
+            if (el) el.src = "/images/cat-flower-bouquet-luxe.jpg";
+          }}
           alt={item.name}
           fill
           unoptimized

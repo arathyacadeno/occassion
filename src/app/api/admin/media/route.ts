@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
 import { getDb } from "@/lib/db";
 import { getAuthenticatedUser } from "@/lib/auth/jwt";
 import { v2 as cloudinary } from "cloudinary";
@@ -85,11 +87,24 @@ export async function GET(request: Request) {
 
     const mediaRows = db.prepare(query).all(...params);
 
+    // Filter out any ghost/broken local paths that do not exist on disk
+    const validMediaRows = mediaRows.filter((m: any) => {
+      if (m.url.startsWith("http://") || m.url.startsWith("https://")) return true;
+      const localFile = path.join(process.cwd(), "public", m.url.replace(/^\//, ""));
+      const exists = fs.existsSync(localFile);
+      if (!exists) {
+        try {
+          db.prepare("DELETE FROM media WHERE id = ?").run(m.id);
+        } catch {}
+      }
+      return exists;
+    });
+
     // 3. Check image references in products & categories
     const products = db.prepare("SELECT id, name, images FROM products").all();
     const categories = db.prepare("SELECT id, name, image FROM categories").all();
 
-    const enrichedMedia = mediaRows.map((m: any) => {
+    const enrichedMedia = validMediaRows.map((m: any) => {
       const referencedIn: string[] = [];
 
       // Check products

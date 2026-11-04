@@ -27,6 +27,16 @@ export default function DeleteConfirmModal({
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Lock background body scroll when modal is open
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [isOpen]);
+
   if (!isOpen || !product) return null;
 
   let imgUrl = product.image;
@@ -34,7 +44,7 @@ export default function DeleteConfirmModal({
     try {
       imgUrl = Array.isArray(product.images) ? product.images[0] : JSON.parse(product.images)[0];
     } catch {
-      imgUrl = typeof product.images === "string" ? product.images : "/images/lily-6-stems.png";
+      imgUrl = typeof product.images === "string" ? product.images : "/images/cat-flower-bouquet-luxe.jpg";
     }
   }
 

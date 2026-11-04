@@ -78,6 +78,16 @@ export default function DeliveryManager() {
   });
   const [savingSettings, setSavingSettings] = useState(false);
 
+  // Lock background body scroll when any modal is open
+  useEffect(() => {
+    if (!isTierModalOpen && !isDeleteModalOpen && !isSettingsModalOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [isTierModalOpen, isDeleteModalOpen, isSettingsModalOpen]);
+
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);

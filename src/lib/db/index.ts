@@ -357,19 +357,19 @@ function seedInitialData(db: any) {
 
   // 2. Categories
   const categories = [
-    { id: "cat-flower-bouquet", name: "Flower Bouquet", slug: "flower-bouquet", description: "Fresh hand-tied flower bouquets for every celebration", image: "/images/lily-6-stems.png" },
-    { id: "cat-flower-basket", name: "Flower Basket", slug: "flower-basket", description: "Artisanal woven baskets overflowing with seasonal blooms", image: "/images/flower-basket-pink-lilies.jpg" },
-    { id: "cat-cakes", name: "Cakes", slug: "cakes", description: "Delicious gourmet celebration cakes and desserts", image: "/images/cake-chocolate.jpg" },
-    { id: "cat-table-decor", name: "Table Decor", slug: "table-decor", description: "Stunning floral centerpieces and table arrangements", image: "/images/table-arrangement.jpg" },
-    { id: "cat-wreath", name: "Wreath", slug: "wreath", description: "Handcrafted memorial and celebration floral wreaths", image: "/images/wreath-white-lilies.jpg" },
+    { id: "cat-flower-bouquet", name: "Flower Bouquet", slug: "flower-bouquet", description: "Fresh hand-tied flower bouquets for every celebration", image: "/images/categories/flower-bouquet.jpg", display_order: 1 },
+    { id: "cat-flower-basket", name: "Flower Basket", slug: "flower-basket", description: "Artisanal woven baskets overflowing with seasonal blooms", image: "/images/categories/flower-basket.jpg", display_order: 2 },
+    { id: "cat-cakes", name: "Cakes", slug: "cakes", description: "Delicious gourmet celebration cakes and desserts", image: "/images/cakes/cat-cakes-luxe.jpg", display_order: 3 },
+    { id: "cat-table-decor", name: "Table Decor", slug: "table-decor", description: "Stunning floral centerpieces and table arrangements", image: "/images/categories/table-decor.jpg", display_order: 4 },
+    { id: "cat-wreath", name: "Wreath", slug: "wreath", description: "Handcrafted memorial and celebration floral wreaths", image: "/images/categories/wreath.jpg", display_order: 5 },
   ];
 
   const insertCategory = db.prepare(`
-    INSERT OR IGNORE INTO categories (id, name, slug, description, image)
-    VALUES (?, ?, ?, ?, ?)
+    INSERT OR IGNORE INTO categories (id, name, slug, description, image, display_order)
+    VALUES (?, ?, ?, ?, ?, ?)
   `);
   for (const c of categories) {
-    insertCategory.run(c.id, c.name, c.slug, c.description, c.image);
+    insertCategory.run(c.id, c.name, c.slug, c.description, c.image, c.display_order);
   }
 
   // 3. Flower Types
@@ -618,28 +618,52 @@ function seedInitialData(db: any) {
   // 11. Homepage Banners
   const defaultBanners = [
     {
-      id: "banner-hero-1",
-      type: "hero",
-      title: "Bespoke Floral Atelier & Luxury Celebrations",
-      subtitle: "Handcrafted fresh flower bouquets, artisanal flower baskets, gourmet cakes & decor in Calicut.",
-      button_text: "Shop Flowers",
-      button_link: "/flower-bouquets",
-      desktop_image: "/images/rose.jpg",
-      mobile_image: "/images/rose.jpg",
-      badge: "Premium Handcrafted",
+      id: "banner-xmas",
+      type: "promo",
+      title: "Xmas Special",
+      subtitle: "Celebrate with Festive Gifts & Sweets",
+      button_text: "Shop Festive",
+      button_link: "/occasions",
+      desktop_image: "/images/banners/love-romance.png",
+      mobile_image: "/images/banners/love-romance.png",
+      badge: "Xmas Special",
       order: 1,
     },
     {
-      id: "banner-promo-1",
+      id: "banner-diwali",
       type: "promo",
-      title: "Express Same-Day Floral Delivery",
-      subtitle: "Freshly cut blooms delivered in hydration wraps with personalized cards.",
-      button_text: "Explore Bouquets",
-      button_link: "/flower-bouquets",
-      desktop_image: "/images/lilies.jpg",
-      mobile_image: "/images/lilies.jpg",
-      badge: "Fresh Blooms",
+      title: "Diwali Offer",
+      subtitle: "Share Happiness, Lights & Gift Hampers",
+      button_text: "Shop Diwali",
+      button_link: "/occasions",
+      desktop_image: "/images/banners/dwali.jpg.jpeg",
+      mobile_image: "/images/banners/dwali.jpg.jpeg",
+      badge: "Diwali Offer",
       order: 2,
+    },
+    {
+      id: "banner-new-year",
+      type: "promo",
+      title: "New Year Offer",
+      subtitle: "Welcome the New Year with Floral Celebrations",
+      button_text: "Shop New Year",
+      button_link: "/occasions",
+      desktop_image: "/images/banners/NEW YEAR.jpeg",
+      mobile_image: "/images/banners/NEW YEAR.jpeg",
+      badge: "New Year Offer",
+      order: 3,
+    },
+    {
+      id: "banner-mothers-day",
+      type: "promo",
+      title: "Mother's Day Special",
+      subtitle: "Celebrate Mom with Heartfelt Blooms & Gifts",
+      button_text: "Shop Mother's Day",
+      button_link: "/occasions",
+      desktop_image: "/images/banners/mothers day.jpg.jpeg",
+      mobile_image: "/images/banners/mothers day.jpg.jpeg",
+      badge: "Mother's Day Special",
+      order: 4,
     },
   ];
   const insertBanner = db.prepare(`

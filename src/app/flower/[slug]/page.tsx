@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ProductDetailView from "@/components/ProductDetailView";
-import { getProductBySlug } from "@/data/catalog";
+import { getProduct } from "@/lib/getProduct";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -9,7 +9,7 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const product = getProductBySlug("flower", resolvedParams.slug);
+  const product = await getProduct("flower", resolvedParams.slug);
 
   if (!product) {
     return { title: "Product Not Found | Occassions" };
@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function FlowerProductDetailPage({ params }: PageProps) {
   const resolvedParams = await params;
-  const product = getProductBySlug("flower", resolvedParams.slug);
+  const product = await getProduct("flower", resolvedParams.slug);
 
   if (!product) {
     notFound();

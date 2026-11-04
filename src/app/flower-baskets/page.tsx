@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import CategoryPage from "@/components/CategoryPage";
-import { getFlowerBaskets } from "@/data/catalog";
+import { getStorefrontCategoryProducts } from "@/lib/getProduct";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Flower Baskets | Occassions Florist Calicut",
@@ -15,8 +17,8 @@ const BASKET_TABS = [
   { id: "container", label: "Flowers in Container" },
 ];
 
-export default function FlowerBasketsPage() {
-  const basketProducts = getFlowerBaskets();
+export default async function FlowerBasketsPage() {
+  const basketProducts = await getStorefrontCategoryProducts("flower-baskets");
 
   return (
     <CategoryPage
