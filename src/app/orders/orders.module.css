@@ -304,6 +304,28 @@
   transform: translateY(-1px);
 }
 
+.trackOrderBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #fff0f5;
+  color: #c21460;
+  border: 1px solid rgba(194, 20, 96, 0.2);
+  border-radius: 12px;
+  padding: 9px 16px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.trackOrderBtn:hover {
+  background-color: #fce7f0;
+  border-color: #c21460;
+  transform: translateY(-1px);
+}
+
 .reorderBtn {
   display: inline-flex;
   align-items: center;

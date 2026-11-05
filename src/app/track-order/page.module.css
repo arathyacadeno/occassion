@@ -11,7 +11,7 @@
 
 .main {
   flex: 1;
-  max-width: 760px;
+  max-width: 860px;
   width: 100%;
   margin: 0 auto;
   padding: 32px 20px 80px 20px;
@@ -139,6 +139,272 @@
   margin: 0;
 }
 
+/* ── Quick Track Chips ───────────────────────────────────── */
+.quickTrackRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 16px auto 14px auto;
+}
+
+.quickTrackLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.quickTrackChips {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.quickChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #ffffff;
+  color: #E6004C;
+  border: 1px solid rgba(230, 0, 76, 0.25);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.quickChip:hover {
+  background: #E6004C;
+  color: #ffffff;
+  border-color: #E6004C;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(230, 0, 76, 0.2);
+}
+
+.quickChipActive {
+  background: #E6004C;
+  color: #ffffff;
+  border-color: #E6004C;
+}
+
+/* ── Available Orders Section ────────────────────────────── */
+.availableSection {
+  margin-top: 24px;
+  margin-bottom: 40px;
+}
+
+.availableSectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.availableTitleWrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.availableIconWrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #fff0f5;
+  color: #E6004C;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.availableTitle {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 3px 0;
+  letter-spacing: -0.01em;
+}
+
+.availableSubtitle {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.availableBadge {
+  font-size: 12px;
+  font-weight: 700;
+  color: #E6004C;
+  background: #fff0f5;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(230, 0, 76, 0.15);
+}
+
+.availableGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+@media (max-width: 680px) {
+  .availableGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.availableCard {
+  background: #ffffff;
+  border: 1.5px solid #f1f5f9;
+  border-radius: 18px;
+  padding: 18px;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+  text-align: left;
+}
+
+.availableCard:hover {
+  transform: translateY(-2px);
+  border-color: #fbcfe8;
+  box-shadow: 0 10px 24px rgba(230, 0, 76, 0.08);
+}
+
+.availableCardSelected {
+  border-color: #E6004C;
+  background: #fffbfa;
+  box-shadow: 0 6px 20px rgba(230, 0, 76, 0.12);
+}
+
+.availableCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.availableIdBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: 0.02em;
+  background: #f8fafc;
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.statusPill {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.pillConfirmed {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.pillOutForDelivery {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+.pillDelivered {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.availableCardBody {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.availableImgWrap {
+  width: 68px;
+  height: 68px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff0f5;
+  flex-shrink: 0;
+  border: 1px solid #f1f5f9;
+}
+
+.availableImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.availableInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.availableProductName {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 4px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.availableDate {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin: 0 0 8px 0;
+}
+
+.availablePriceRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.availablePrice {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.trackActionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #E6004C;
+  transition: transform 0.15s ease;
+}
+
+.availableCard:hover .trackActionBtn {
+  transform: translateX(3px);
+}
+
 /* ── Result Section ─────────────────────────────────────── */
 .resultSection {
   margin-bottom: 36px;
@@ -230,6 +496,224 @@
   font-size: 0.88rem;
   text-decoration: none;
   margin-bottom: 20px;
+}
+
+/* ── Access Denied / Auth Required Error States in Result ── */
+.forbiddenBox {
+  text-align: center;
+  padding: 48px 24px;
+  background: #fffbfa;
+  border: 1.5px solid #fed7aa;
+  border-radius: 20px;
+}
+
+.forbiddenIcon {
+  color: #ea580c;
+  margin-bottom: 16px;
+}
+
+.authRequiredBox {
+  text-align: center;
+  padding: 48px 24px;
+  background: #fff5f8;
+  border: 1.5px solid #fce7f3;
+  border-radius: 20px;
+}
+
+.authRequiredIcon {
+  color: #E6004C;
+  margin-bottom: 16px;
+}
+
+.errorActionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #E6004C;
+  color: #ffffff;
+  padding: 11px 24px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 10px;
+  text-decoration: none;
+}
+
+.errorActionBtn:hover {
+  background: #cc0044;
+  transform: translateY(-1px);
+}
+
+/* ── New Customer Empty State on Track Order ── */
+.emptyOrdersSection {
+  margin-top: 24px;
+  margin-bottom: 40px;
+}
+
+.emptyOrdersCard {
+  background: #ffffff;
+  border-radius: 24px;
+  border: 1.5px solid #fce7f3;
+  padding: 48px 28px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 520px;
+  margin: 0 auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
+
+.emptyIconWrap {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background-color: #fff0f5;
+  color: #E6004C;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.emptyTitle {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 10px 0;
+  letter-spacing: -0.01em;
+}
+
+.emptyDesc {
+  font-size: 0.95rem;
+  color: #64748b;
+  max-width: 420px;
+  line-height: 1.6;
+  margin: 0 0 24px 0;
+}
+
+.shopNowBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: #E6004C;
+  color: #ffffff;
+  border-radius: 9999px;
+  padding: 12px 32px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(230, 0, 76, 0.25);
+  border: none;
+}
+
+.shopNowBtn:hover {
+  background-color: #cc0044;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(230, 0, 76, 0.35);
+}
+
+/* ── Auth Prompt Card for Unauthenticated Visitors ── */
+.authPromptSection {
+  margin-top: 24px;
+  margin-bottom: 40px;
+}
+
+.authPromptCard {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 44px 28px;
+  text-align: center;
+  max-width: 520px;
+  margin: 0 auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  border: 1.5px solid #fce7f3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.authPromptIconWrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: #fff0f5;
+  color: #E6004C;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.authPromptTitle {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 10px 0;
+  letter-spacing: -0.01em;
+}
+
+.authPromptDesc {
+  font-size: 0.92rem;
+  color: #64748b;
+  max-width: 420px;
+  line-height: 1.55;
+  margin: 0 0 24px 0;
+}
+
+.authPromptBtnGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.signInBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #E6004C;
+  color: #ffffff;
+  border-radius: 9999px;
+  padding: 11px 26px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(230, 0, 76, 0.25);
+}
+
+.signInBtn:hover {
+  background-color: #cc0044;
+  transform: translateY(-1px);
+}
+
+.exploreBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: transparent;
+  color: #475569;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 9999px;
+  padding: 10px 22px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.exploreBtn:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+  color: #0f172a;
 }
 
 .whatsappLink:hover {

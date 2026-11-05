@@ -37,6 +37,48 @@ interface OrderData {
 }
 
 const DUMMY_ORDERS: Record<string, OrderData> = {
+  "181573": {
+    id: "181573",
+    status: "confirmed",
+    product: "Chocolate Birthday Cake for Amma",
+    image: "/images/cakes/chocolate-birthday-cake-for-amma.png",
+    placedAt: "22 Oct 2026 · 1:30 PM",
+    deliveryDate: "Today",
+    timeSlot: "Express Calicut Delivery",
+    address: "Mavoor Road, Kozhikode – 673004",
+    price: 1450,
+    deliveryCharge: 0,
+    rider: "Occasions Floral Dispatch",
+    riderPhone: "+91 8606 464 700",
+  },
+  "874941": {
+    id: "874941",
+    status: "out_for_delivery",
+    product: "1kg Premium Belgium Chocolate Cake",
+    image: "/images/cakes/decadent-chocolate-shavings-cake.png",
+    placedAt: "22 Oct 2026 · 10:16 AM",
+    deliveryDate: "Today",
+    timeSlot: "2:00 – 4:00 PM",
+    address: "Palayam, Kozhikode – 673002",
+    price: 2600,
+    deliveryCharge: 0,
+    rider: "Rajan K.",
+    riderPhone: "+91 8606 464 700",
+  },
+  "178505": {
+    id: "178505",
+    status: "confirmed",
+    product: "Chocolate Truffle Cake",
+    image: "/images/cakes/chocolate-birthday-cake-for-amma.png",
+    placedAt: "15 Oct 2026 · 4:07 PM",
+    deliveryDate: "Today",
+    timeSlot: "4:00 – 6:00 PM",
+    address: "Mavoor Road, Kozhikode – 673004",
+    price: 1450,
+    deliveryCharge: 0,
+    rider: "Occasions Floral Dispatch",
+    riderPhone: "+91 8606 464 700",
+  },
   "OCC-100123": {
     id: "OCC-100123",
     status: "out_for_delivery",
@@ -64,6 +106,58 @@ const DUMMY_ORDERS: Record<string, OrderData> = {
     deliveryCharge: 150,
   },
 };
+
+interface AvailableOrderItem {
+  id: string;
+  status: OrderStatus;
+  product: string;
+  image: string;
+  placedAt: string;
+  price: number;
+}
+
+const DEFAULT_AVAILABLE_ORDERS: AvailableOrderItem[] = [
+  {
+    id: "181573",
+    status: "confirmed",
+    product: "Chocolate Birthday Cake for Amma",
+    image: "/images/cakes/chocolate-birthday-cake-for-amma.png",
+    placedAt: "22 Oct 2026",
+    price: 1450,
+  },
+  {
+    id: "874941",
+    status: "out_for_delivery",
+    product: "1kg Premium Belgium Chocolate Cake",
+    image: "/images/cakes/decadent-chocolate-shavings-cake.png",
+    placedAt: "22 Oct 2026",
+    price: 2600,
+  },
+  {
+    id: "178505",
+    status: "confirmed",
+    product: "Chocolate Truffle Cake",
+    image: "/images/cakes/chocolate-birthday-cake-for-amma.png",
+    placedAt: "15 Oct 2026",
+    price: 1450,
+  },
+  {
+    id: "OCC-100123",
+    status: "out_for_delivery",
+    product: "Wildflower Basket",
+    image: "/images/wildflower-basket.jpg",
+    placedAt: "Today, 9:15 AM",
+    price: 2300,
+  },
+  {
+    id: "OCC-100098",
+    status: "delivered",
+    product: "Rose Bouquet",
+    image: "/images/roses-bouquet.jpg",
+    placedAt: "03 Oct 2026",
+    price: 1449,
+  },
+];
 
 interface StatusStep {
   key: OrderStatus;
@@ -95,6 +189,7 @@ export default function TrackOrderPage() {
   const [input, setInput]       = useState("");
   const [searched, setSearched] = useState(false);
   const [order, setOrder]       = useState<OrderData | null>(null);
+  const [availableOrders, setAvailableOrders] = useState<AvailableOrderItem[]>(DEFAULT_AVAILABLE_ORDERS);
 
   const executeLookup = async (searchId: string) => {
     const rawKey = searchId.trim();
@@ -224,6 +319,15 @@ export default function TrackOrderPage() {
     executeLookup(input);
   };
 
+  const handleSelectOrder = (orderId: string) => {
+    const clean = orderId.replace(/^#+/, "").trim();
+    setInput(clean);
+    executeLookup(clean);
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
@@ -233,6 +337,99 @@ export default function TrackOrderPage() {
         executeLookup(urlId);
       }
     }
+  }, []);
+
+  // Fetch available orders on mount
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadAvailableOrders() {
+      const ordersList: AvailableOrderItem[] = [];
+
+      // 1. Check LocalStorage for recent user orders
+      if (typeof window !== "undefined") {
+        try {
+          const storedLatest = localStorage.getItem("occassions_latest_order");
+          const storedHistory = localStorage.getItem("occassions_order_history");
+          const locals: any[] = [];
+          if (storedLatest) locals.push(JSON.parse(storedLatest));
+          if (storedHistory) locals.push(...JSON.parse(storedHistory));
+
+          locals.forEach((lo) => {
+            if (lo && lo.orderId) {
+              const cleanId = String(lo.orderId).replace(/^#+/, "");
+              if (!ordersList.some((x) => x.id === cleanId)) {
+                ordersList.push({
+                  id: cleanId,
+                  status: (lo.orderStatus || "confirmed") as OrderStatus,
+                  product: lo.productName || "Handcrafted Fresh Arrangement",
+                  image: lo.productImage || "/images/cakes/chocolate-birthday-cake-for-amma.png",
+                  placedAt: lo.createdAt
+                    ? new Date(lo.createdAt).toLocaleDateString("en-IN", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })
+                    : "Recent Order",
+                  price: Number(lo.price) || 0,
+                });
+              }
+            }
+          });
+        } catch (e) {
+          console.warn("Failed to parse local orders:", e);
+        }
+      }
+
+      // 2. Fetch available orders from API
+      try {
+        const res = await fetch("/api/orders?type=available");
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.success && Array.isArray(data.orders)) {
+            data.orders.forEach((o: any) => {
+              const cleanId = String(o.id).replace(/^#+/, "");
+              if (!ordersList.some((x) => x.id === cleanId)) {
+                const firstItem = o.items?.[0];
+                ordersList.push({
+                  id: cleanId,
+                  status: (o.order_status || "confirmed") as OrderStatus,
+                  product: firstItem?.product_name || "Handcrafted Fresh Arrangement",
+                  image: firstItem?.product_image || "/images/cakes/chocolate-birthday-cake-for-amma.png",
+                  placedAt: o.created_at
+                    ? new Date(o.created_at).toLocaleDateString("en-IN", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })
+                    : "Recent Order",
+                  price: Number(o.final_amount) || Number(firstItem?.product_price) || 0,
+                });
+              }
+            });
+          }
+        }
+      } catch (err) {
+        console.warn("Available orders API fetch fallback:", err);
+      }
+
+      // 3. Fallback to default available orders for any missing items
+      DEFAULT_AVAILABLE_ORDERS.forEach((def) => {
+        if (!ordersList.some((x) => x.id === def.id)) {
+          ordersList.push(def);
+        }
+      });
+
+      if (isMounted && ordersList.length > 0) {
+        setAvailableOrders(ordersList);
+      }
+    }
+
+    loadAvailableOrders();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const currentStepIndex = order ? STATUS_ORDER.indexOf(order.status) : -1;
@@ -280,6 +477,31 @@ export default function TrackOrderPage() {
               Track Now <ChevronRight size={17} strokeWidth={2.5} />
             </button>
           </form>
+
+          {/* Quick-Track Available Order IDs */}
+          {availableOrders.length > 0 && (
+            <div className={styles.quickTrackRow}>
+              <span className={styles.quickTrackLabel}>Available Order IDs:</span>
+              <div className={styles.quickTrackChips}>
+                {availableOrders.slice(0, 5).map((o) => {
+                  const isCur = input.trim().replace(/^#+/, "").toUpperCase() === o.id.toUpperCase();
+                  return (
+                    <button
+                      key={o.id}
+                      type="button"
+                      onClick={() => handleSelectOrder(o.id)}
+                      className={`${styles.quickChip} ${isCur ? styles.quickChipActive : ""}`}
+                      title={`Track Order #${o.id}`}
+                    >
+                      <Package size={12} />
+                      <span>#{o.id}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           <p className={styles.heroHint}>Your Order ID is in your confirmation email or SMS</p>
         </section>
 
@@ -403,6 +625,93 @@ export default function TrackOrderPage() {
             )}
           </section>
         )}
+
+        {/* ── Available Orders to Track ── */}
+        <section className={styles.availableSection}>
+          <div className={styles.availableSectionHeader}>
+            <div className={styles.availableTitleWrap}>
+              <div className={styles.availableIconWrap}>
+                <Package size={22} color="#E6004C" />
+              </div>
+              <div>
+                <h2 className={styles.availableTitle}>Available Orders to Track</h2>
+                <p className={styles.availableSubtitle}>
+                  Select any order with its Order ID below to view live tracking updates
+                </p>
+              </div>
+            </div>
+            <span className={styles.availableBadge}>
+              {availableOrders.length} {availableOrders.length === 1 ? "Order" : "Orders"}
+            </span>
+          </div>
+
+          <div className={styles.availableGrid}>
+            {availableOrders.map((o) => {
+              const isSelected =
+                order && order.id.replace(/^#+/, "").toUpperCase() === o.id.toUpperCase();
+              return (
+                <article
+                  key={o.id}
+                  className={`${styles.availableCard} ${isSelected ? styles.availableCardSelected : ""}`}
+                  onClick={() => handleSelectOrder(o.id)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      handleSelectOrder(o.id);
+                    }
+                  }}
+                >
+                  <div className={styles.availableCardTop}>
+                    <div className={styles.availableIdBadge}>
+                      <Package size={14} color="#E6004C" />
+                      <span>#{o.id}</span>
+                    </div>
+                    <span
+                      className={`${styles.statusPill} ${
+                        o.status === "delivered"
+                          ? styles.pillDelivered
+                          : o.status === "out_for_delivery"
+                          ? styles.pillOutForDelivery
+                          : styles.pillConfirmed
+                      }`}
+                    >
+                      {statusLabel(o.status)}
+                    </span>
+                  </div>
+
+                  <div className={styles.availableCardBody}>
+                    <div className={styles.availableImgWrap}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={o.image}
+                        alt={o.product}
+                        className={styles.availableImg}
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).src =
+                            "https://placehold.co/80x80/F9D7E0/E6004C?text=🌸";
+                        }}
+                      />
+                    </div>
+                    <div className={styles.availableInfo}>
+                      <h3 className={styles.availableProductName}>{o.product}</h3>
+                      <p className={styles.availableDate}>Placed: {o.placedAt}</p>
+                      <div className={styles.availablePriceRow}>
+                        <span className={styles.availablePrice}>
+                          ₹{o.price.toLocaleString("en-IN")}
+                        </span>
+                        <span className={styles.trackActionBtn}>
+                          Track Order <ChevronRight size={14} />
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </section>
       </main>
       <Footer />
     </div>

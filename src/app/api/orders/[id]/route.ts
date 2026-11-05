@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { sql } from "@/lib/db/neon";
 import { getAuthenticatedUser } from "@/lib/auth/jwt";
 
 export async function GET(
@@ -8,28 +9,91 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
+    const cleanId = id.trim().replace(/^#+/, "");
+    const hashId = `#${cleanId}`;
     const auth = getAuthenticatedUser(request);
     const db = getDb();
 
-    const order = db.prepare("SELECT * FROM orders WHERE id = ?").get(id);
+    let order: any = null;
+    let items: any[] = [];
+
+    if (process.env.DATABASE_URL) {
+      try {
+        const neonOrders = await sql`SELECT * FROM orders WHERE id = ${cleanId} OR id = ${hashId} OR id = ${id}`;
+        if (neonOrders && neonOrders.length > 0) {
+          order = neonOrders[0];
+          items = await sql`SELECT * FROM order_items WHERE order_id = ${order.id}`;
+        }
+      } catch (neonErr) {
+        console.warn("Neon order [id] lookup fallback:", neonErr);
+      }
+    }
+
+    if (!order) {
+      order = db.prepare("SELECT * FROM orders WHERE id = ? OR id = ? OR id = ?").get(cleanId, hashId, id);
+      if (order) {
+        items = db.prepare("SELECT * FROM order_items WHERE order_id = ?").all(order.id);
+      }
+    }
+
     if (!order) {
       return NextResponse.json({ success: false, error: "Order not found" }, { status: 404 });
     }
 
-    // Authorization check: allow public lookup for order tracking if order exists, but if user is logged in they can only access their own unless admin
-    if (auth && auth.role !== "admin" && order.user_id && order.user_id !== auth.userId) {
-      return NextResponse.json({ success: false, error: "Unauthorized access to order" }, { status: 403 });
+    // Security / Ownership check:
+    if (order.user_id) {
+      if (!auth) {
+        return NextResponse.json(
+          { success: false, error: "Please sign in to view this order", requiresAuth: true },
+          { status: 401 }
+        );
+      }
+      if (auth.role !== "admin" && String(auth.userId) !== String(order.user_id)) {
+        return NextResponse.json(
+          { success: false, error: "Access denied. You do not have permission to view this order." },
+          { status: 403 }
+        );
+      }
+    } else {
+      // Safe mapping for older orders: link if authenticated customer's email matches
+      if (
+        auth &&
+        order.customer_email &&
+        auth.email &&
+        order.customer_email.toLowerCase().trim() === auth.email.toLowerCase().trim()
+      ) {
+        order.user_id = auth.userId;
+        try {
+          db.prepare("UPDATE orders SET user_id = ? WHERE id = ?").run(auth.userId, order.id);
+          if (process.env.DATABASE_URL) {
+            await sql`UPDATE orders SET user_id = ${auth.userId} WHERE id = ${order.id}`;
+          }
+        } catch (mapErr) {
+          console.warn("Failed to auto-link unassigned order [id] to user:", mapErr);
+        }
+      }
     }
 
-    const items = db.prepare("SELECT * FROM order_items WHERE order_id = ?").all(order.id);
+    const deliveryAddress =
+      typeof order.delivery_address === "string"
+        ? JSON.parse(order.delivery_address || "{}")
+        : order.delivery_address;
+    const paymentMethod =
+      typeof order.payment_method === "string"
+        ? JSON.parse(order.payment_method || "{}")
+        : order.payment_method;
+    const trackingTimeline =
+      typeof order.tracking_timeline === "string"
+        ? JSON.parse(order.tracking_timeline || "[]")
+        : order.tracking_timeline;
 
     return NextResponse.json({
       success: true,
       order: {
         ...order,
-        deliveryAddress: JSON.parse(order.delivery_address || "{}"),
-        paymentMethod: JSON.parse(order.payment_method || "{}"),
-        trackingTimeline: JSON.parse(order.tracking_timeline || "[]"),
+        deliveryAddress,
+        paymentMethod,
+        trackingTimeline,
         items,
       },
     });

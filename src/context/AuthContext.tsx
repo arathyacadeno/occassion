@@ -224,6 +224,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } catch {
           // ignore firebase logout errors if not initialized
         }
+        try {
+          localStorage.removeItem("occassions_latest_order");
+          localStorage.removeItem("occassions_order_history");
+        } catch {
+          // ignore
+        }
       }
     } catch {
       // ignore network errors – still clear local state

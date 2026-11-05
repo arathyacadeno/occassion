@@ -17,6 +17,7 @@ import {
   Clock,
   Sparkles,
   Lock,
+  Truck,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import styles from "./orders.module.css";
@@ -366,6 +367,15 @@ export default function OrdersPage() {
                               <ArrowRight size={15} />
                             </button>
 
+                            <Link
+                              href={`/track-order?id=${encodeURIComponent(order.orderId)}`}
+                              className={styles.trackOrderBtn}
+                              title={`Track delivery of #${order.orderId}`}
+                            >
+                              <Truck size={14} />
+                              <span>Track Order</span>
+                            </Link>
+
                             <Link 
                               href={productHref} 
                               className={styles.reorderBtn}
@@ -387,15 +397,15 @@ export default function OrdersPage() {
           <div className={styles.emptyStateCard}>
             <img
               src="/images/no-orders.png"
-              alt="No order found"
+              alt="No orders yet"
               className={styles.emptyStateIllustration}
             />
-            <h2 className={styles.emptyTitle}>NO ORDER FOUND</h2>
+            <h2 className={styles.emptyTitle}>No Orders Yet</h2>
             <p className={styles.emptyDesc}>
-              Looks like you haven&apos;t made your order yet
+              You haven&apos;t placed any orders yet. Explore our beautiful flowers and gifts to make someone&apos;s day special!
             </p>
-            <Link href="/" className={styles.startShoppingBtn}>
-              Back to Collection
+            <Link href="/flower-bouquets" className={styles.startShoppingBtn}>
+              Shop Now
             </Link>
           </div>
         )}

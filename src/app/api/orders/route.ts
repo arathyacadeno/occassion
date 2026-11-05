@@ -20,54 +20,159 @@ export async function GET(request: Request) {
       const cleanOrderId = rawOrderId.trim().replace(/^#+/, "");
       const hashOrderId = `#${cleanOrderId}`;
 
+      let foundOrder: any = null;
+      let orderItems: any[] = [];
+
       if (process.env.DATABASE_URL) {
         try {
           const neonOrders = await sql`SELECT * FROM orders WHERE id = ${cleanOrderId} OR id = ${hashOrderId} OR id = ${rawOrderId}`;
           if (neonOrders && neonOrders.length > 0) {
-            const nOrder = neonOrders[0];
-            const nItems = await sql`SELECT * FROM order_items WHERE order_id = ${nOrder.id}`;
-            return NextResponse.json({
-              success: true,
-              order: {
-                ...nOrder,
-                deliveryAddress: typeof nOrder.delivery_address === 'string' ? JSON.parse(nOrder.delivery_address || "{}") : nOrder.delivery_address,
-                paymentMethod: typeof nOrder.payment_method === 'string' ? JSON.parse(nOrder.payment_method || "{}") : nOrder.payment_method,
-                trackingTimeline: typeof nOrder.tracking_timeline === 'string' ? JSON.parse(nOrder.tracking_timeline || "[]") : nOrder.tracking_timeline,
-                items: nItems,
-              },
-            });
+            foundOrder = neonOrders[0];
+            orderItems = await sql`SELECT * FROM order_items WHERE order_id = ${foundOrder.id}`;
           }
         } catch (neonErr) {
           console.warn("Neon order lookup fallback:", neonErr);
         }
       }
 
-      const order = db
-        .prepare("SELECT * FROM orders WHERE id = ? OR id = ? OR id = ?")
-        .get(cleanOrderId, hashOrderId, rawOrderId);
-      if (!order) {
+      if (!foundOrder) {
+        foundOrder = db
+          .prepare("SELECT * FROM orders WHERE id = ? OR id = ? OR id = ?")
+          .get(cleanOrderId, hashOrderId, rawOrderId);
+        if (foundOrder) {
+          orderItems = db.prepare("SELECT * FROM order_items WHERE order_id = ?").all(foundOrder.id);
+        }
+      }
+
+      if (!foundOrder) {
         return NextResponse.json({ success: false, error: "Order not found" }, { status: 404 });
       }
 
-      const items = db.prepare("SELECT * FROM order_items WHERE order_id = ?").all(order.id);
+      // Security / Ownership validation
+      if (foundOrder.user_id) {
+        if (!auth) {
+          return NextResponse.json(
+            { success: false, error: "Please sign in to track this order", requiresAuth: true },
+            { status: 401 }
+          );
+        }
+        if (auth.role !== "admin" && String(auth.userId) !== String(foundOrder.user_id)) {
+          return NextResponse.json(
+            { success: false, error: "Access denied. This order does not belong to your account." },
+            { status: 403 }
+          );
+        }
+      } else {
+        // Safe mapping for older orders without user_id: if authenticated user's email matches customer_email
+        if (
+          auth &&
+          foundOrder.customer_email &&
+          auth.email &&
+          foundOrder.customer_email.toLowerCase().trim() === auth.email.toLowerCase().trim()
+        ) {
+          foundOrder.user_id = auth.userId;
+          try {
+            db.prepare("UPDATE orders SET user_id = ? WHERE id = ?").run(auth.userId, foundOrder.id);
+            if (process.env.DATABASE_URL) {
+              await sql`UPDATE orders SET user_id = ${auth.userId} WHERE id = ${foundOrder.id}`;
+            }
+          } catch (mapErr) {
+            console.warn("Failed to auto-link unassigned order to user:", mapErr);
+          }
+        }
+      }
+
+      const deliveryAddress =
+        typeof foundOrder.delivery_address === "string"
+          ? JSON.parse(foundOrder.delivery_address || "{}")
+          : foundOrder.delivery_address;
+      const paymentMethod =
+        typeof foundOrder.payment_method === "string"
+          ? JSON.parse(foundOrder.payment_method || "{}")
+          : foundOrder.payment_method;
+      const trackingTimeline =
+        typeof foundOrder.tracking_timeline === "string"
+          ? JSON.parse(foundOrder.tracking_timeline || "[]")
+          : foundOrder.tracking_timeline;
 
       return NextResponse.json({
         success: true,
         order: {
-          ...order,
-          deliveryAddress: JSON.parse(order.delivery_address || "{}"),
-          paymentMethod: JSON.parse(order.payment_method || "{}"),
-          trackingTimeline: JSON.parse(order.tracking_timeline || "[]"),
-          items,
+          ...foundOrder,
+          deliveryAddress,
+          paymentMethod,
+          trackingTimeline,
+          items: orderItems,
         },
       });
     }
 
-    // List orders: if admin, can list all or filter; if customer, list their own orders
+    // List orders: strictly require authentication
     if (!auth) {
-      return NextResponse.json({ success: false, error: "Authentication required to view order history" }, { status: 401 });
+      return NextResponse.json(
+        { success: false, error: "Authentication required to view order history", requiresAuth: true },
+        { status: 401 }
+      );
     }
 
+    // Safe mapping: link any older unmapped orders that have matching customer_email to auth.userId
+    if (auth.email) {
+      try {
+        db.prepare(
+          "UPDATE orders SET user_id = ? WHERE (user_id IS NULL OR user_id = '') AND LOWER(TRIM(customer_email)) = LOWER(TRIM(?))"
+        ).run(auth.userId, auth.email);
+      } catch (sqlErr) {
+        console.warn("SQLite auto-map error:", sqlErr);
+      }
+    }
+
+    // 1. If Neon PostgreSQL is configured, fetch from Neon
+    if (process.env.DATABASE_URL) {
+      try {
+        if (auth.email) {
+          try {
+            await sql`UPDATE orders SET user_id = ${auth.userId} WHERE (user_id IS NULL OR user_id = '') AND LOWER(TRIM(customer_email)) = LOWER(TRIM(${auth.email}))`;
+          } catch (mErr) {
+            console.warn("Neon auto-map error:", mErr);
+          }
+        }
+
+        let neonOrders;
+        if (auth.role === "admin") {
+          neonOrders = await sql`SELECT * FROM orders ORDER BY created_at DESC`;
+        } else {
+          neonOrders = await sql`SELECT * FROM orders WHERE user_id = ${auth.userId} ORDER BY created_at DESC`;
+        }
+
+        if (neonOrders && Array.isArray(neonOrders)) {
+          const ordersWithItems = [];
+          for (const o of neonOrders) {
+            const items = await sql`SELECT * FROM order_items WHERE order_id = ${o.id}`;
+            ordersWithItems.push({
+              ...o,
+              deliveryAddress:
+                typeof o.delivery_address === "string"
+                  ? JSON.parse(o.delivery_address || "{}")
+                  : o.delivery_address,
+              paymentMethod:
+                typeof o.payment_method === "string"
+                  ? JSON.parse(o.payment_method || "{}")
+                  : o.payment_method,
+              trackingTimeline:
+                typeof o.tracking_timeline === "string"
+                  ? JSON.parse(o.tracking_timeline || "[]")
+                  : o.tracking_timeline,
+              items,
+            });
+          }
+          return NextResponse.json({ success: true, orders: ordersWithItems, count: ordersWithItems.length });
+        }
+      } catch (neonErr) {
+        console.warn("Neon orders listing fallback to SQLite:", neonErr);
+      }
+    }
+
+    // 2. Fallback to SQLite (local)
     let ordersQuery = "SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC";
     let params: any[] = [auth.userId];
 
