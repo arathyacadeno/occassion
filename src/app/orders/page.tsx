@@ -201,7 +201,7 @@ export default function OrdersPage() {
     return (
       <div className={styles.pageWrapper}>
         <Navbar />
-        <main className={styles.mainContainer}>
+        <main className={`${styles.mainContainer} ${styles.emptyMainContainer}`}>
           <div style={{ textAlign: "center", padding: "80px 20px", color: "#64748b" }}>
             <p>Checking account...</p>
           </div>
@@ -215,7 +215,7 @@ export default function OrdersPage() {
     return (
       <div className={styles.pageWrapper}>
         <Navbar />
-        <main className={styles.mainContainer}>
+        <main className={`${styles.mainContainer} ${styles.emptyMainContainer}`}>
           <div className={styles.authRequiredCard}>
             <div className={styles.authIconWrap}>
               <Lock size={32} strokeWidth={2.2} />
@@ -251,7 +251,7 @@ export default function OrdersPage() {
     <div className={styles.pageWrapper}>
       <Navbar />
 
-      <main className={styles.mainContainer}>
+      <main className={`${styles.mainContainer} ${orders.length === 0 ? styles.emptyMainContainer : ""}`}>
         {/* Header - only rendered when there are orders */}
         {orders.length > 0 && (
           <div className={styles.headerRow}>
