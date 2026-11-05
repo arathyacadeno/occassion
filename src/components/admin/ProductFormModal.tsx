@@ -110,7 +110,13 @@ export default function ProductFormModal({
       setSku(product.sku || "");
       setShortDescription(product.shortDescription || product.short_description || "");
       setDescription(product.description || "");
-      setCategoryId(product.categoryId || product.category_id || (categories[0]?.id || "cat-flower-bouquet"));
+      let initialCat = product.categoryId || product.category_id || "";
+      if (!initialCat && (product.categorySlug || product.category)) {
+        const slug = (product.categorySlug || product.category).toLowerCase().replace(/^cat-/, "");
+        const matched = categories.find((c) => c.slug === slug || c.id === `cat-${slug}` || c.id === slug);
+        if (matched) initialCat = matched.id;
+      }
+      setCategoryId(initialCat || (categories[0]?.id || "cat-flower-bouquet"));
       setFlowerTypeId(product.flowerTypeId || product.flower_type_id || "");
       setOccasionId(product.occasionId || product.occasion_id || "");
       setPrice(product.price ?? "");

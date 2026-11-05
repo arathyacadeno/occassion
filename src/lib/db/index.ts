@@ -763,6 +763,7 @@ function seedInitialData(db: any) {
   try {
     db.prepare(`UPDATE products SET status = 'published' WHERE status IS NULL OR status = ''`).run();
     db.prepare(`UPDATE products SET low_stock_threshold = 5 WHERE low_stock_threshold IS NULL`).run();
+    db.prepare(`UPDATE products SET category_id = 'cat-wreath' WHERE category_id = 'cat-wreaths'`).run();
     db.prepare(`UPDATE products SET type = 'cake' WHERE (type IS NULL OR type = 'general') AND (category_id = 'cat-cakes' OR id LIKE 'cake-%' OR slug LIKE '%cake%')`).run();
     db.prepare(`UPDATE products SET type = 'basket' WHERE (type IS NULL OR type = 'general') AND (category_id = 'cat-flower-basket' OR slug LIKE '%basket%' OR name LIKE '%basket%')`).run();
     db.prepare(`UPDATE products SET type = 'wreath' WHERE (type IS NULL OR type = 'general') AND (category_id = 'cat-wreath' OR slug LIKE '%wreath%' OR name LIKE '%wreath%')`).run();

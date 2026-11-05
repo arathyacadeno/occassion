@@ -149,9 +149,17 @@ export async function GET(
         stock: product.stock,
         lowStockThreshold: product.low_stock_threshold ?? 5,
         sku: product.sku,
-        category: product.category_slug || "flower",
+        category: product.category_slug || (product.category_id ? product.category_id.replace(/^cat-/, "") : "flower"),
         categoryId: product.category_id,
-        categoryLabel: product.category_name || "Flowers",
+        categorySlug: product.category_slug || (product.category_id ? product.category_id.replace(/^cat-/, "") : "flower"),
+        categoryLabel: product.category_name || (
+          product.category_id === "cat-flower-basket" ? "Flower Basket" :
+          product.category_id === "cat-flower-bouquet" ? "Flower Bouquet" :
+          product.category_id === "cat-cakes" ? "Cakes" :
+          product.category_id === "cat-table-decor" ? "Table Decor" :
+          product.category_id === "cat-wreath" ? "Wreath" :
+          "Flowers"
+        ),
         type: product.type || "general",
         status: product.status || "published",
         flowerType: product.flower_type_slug,

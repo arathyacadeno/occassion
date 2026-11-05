@@ -143,6 +143,7 @@ export async function GET(request: Request) {
         p.delivery_info, p.offers, p.includes, p.badge, p.created_at, p.updated_at,
         p.type, p.status, p.short_description, p.tags, p.low_stock_threshold,
         p.seo_title, p.seo_description, p.attributes,
+        p.category_id, p.flower_type_id, p.occasion_id,
         c.name as category_name, c.slug as category_slug,
         ft.name as flower_type_name, ft.slug as flower_type_slug,
         o.name as occasion_name, o.slug as occasion_slug
@@ -206,9 +207,17 @@ export async function GET(request: Request) {
         stock: r.stock,
         lowStockThreshold: r.low_stock_threshold ?? 5,
         sku: r.sku,
-        category: r.category_slug || "flower",
+        category: r.category_slug || (r.category_id ? r.category_id.replace(/^cat-/, "") : "flower"),
         categoryId: r.category_id,
-        categoryLabel: r.category_name || "Flowers",
+        categorySlug: r.category_slug || (r.category_id ? r.category_id.replace(/^cat-/, "") : "flower"),
+        categoryLabel: r.category_name || (
+          r.category_id === "cat-flower-basket" ? "Flower Basket" :
+          r.category_id === "cat-flower-bouquet" ? "Flower Bouquet" :
+          r.category_id === "cat-cakes" ? "Cakes" :
+          r.category_id === "cat-table-decor" ? "Table Decor" :
+          r.category_id === "cat-wreath" ? "Wreath" :
+          "Flowers"
+        ),
         type: r.type || "general",
         status: r.status || "published",
         flowerType: r.flower_type_slug,

@@ -163,7 +163,7 @@ export default function AdminPage() {
       }
 
       // 3. Products
-      const prodRes = await fetch("/api/products?limit=250", { credentials: "include" });
+      const prodRes = await fetch("/api/products?limit=500", { credentials: "include" });
       if (prodRes.ok) {
         const data = await prodRes.json();
         if (data.success && Array.isArray(data.products)) {
@@ -456,8 +456,25 @@ export default function AdminPage() {
         }
 
         if (productCategoryFilter !== "all") {
-          const cat = (p.categoryId || p.categorySlug || p.category || "").toLowerCase();
-          if (cat !== productCategoryFilter.toLowerCase()) return false;
+          const filterVal = productCategoryFilter.toLowerCase();
+          const filterNorm = filterVal.replace(/^cat-/, "").replace(/s$/, "");
+
+          const pCatId = (p.categoryId || p.category_id || "").toLowerCase();
+          const pCatSlug = (p.categorySlug || p.category_slug || p.category || "").toLowerCase();
+          const pCatName = (p.categoryLabel || p.categoryName || "").toLowerCase();
+
+          const normCatId = pCatId.replace(/^cat-/, "").replace(/s$/, "");
+          const normCatSlug = pCatSlug.replace(/^cat-/, "").replace(/s$/, "");
+          const normCatName = pCatName.replace(/s$/, "");
+
+          const matches =
+            pCatId === filterVal ||
+            pCatSlug === filterVal ||
+            normCatId === filterNorm ||
+            normCatSlug === filterNorm ||
+            (normCatName !== "" && (normCatName === filterNorm || normCatName.includes(filterNorm)));
+
+          if (!matches) return false;
         }
 
         if (productStatusFilter !== "all") {
@@ -476,7 +493,7 @@ export default function AdminPage() {
         if (productSort === "price_desc") return (b.price || 0) - (a.price || 0);
         if (productSort === "name_asc") return (a.name || "").localeCompare(b.name || "");
         if (productSort === "stock_asc") return (a.stock || 0) - (b.stock || 0);
-        return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+        return new Date(b.created_at || b.createdAt || 0).getTime() - new Date(a.created_at || a.createdAt || 0).getTime();
       });
   }, [products, productSearch, productCategoryFilter, productStatusFilter, productStockFilter, productSort]);
 
@@ -893,7 +910,7 @@ export default function AdminPage() {
                   <option value="cat-cakes">Cakes</option>
                   <option value="cat-table-decor">Table Decor</option>
                   <option value="cat-wreath">Wreaths</option>
-                  {categoriesList.filter((c: any) => !["cat-flower-bouquet", "cat-flower-basket", "cat-cakes", "cat-table-decor", "cat-wreath"].includes(c.id)).map((c: any) => (
+                  {categoriesList.filter((c: any) => !["cat-flower-bouquet", "cat-flower-basket", "cat-cakes", "cat-table-decor", "cat-wreath", "cat-wreaths"].includes(c.id)).map((c: any) => (
                     <option key={c.id} value={c.id}>{c.name}</option>
                   ))}
                 </select>
