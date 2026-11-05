@@ -252,24 +252,26 @@ export default function OrdersPage() {
       <Navbar />
 
       <main className={styles.mainContainer}>
-        {/* Header */}
-        <div className={styles.headerRow}>
-          <div>
-            <h1 className={styles.pageTitle}>My Orders</h1>
-            <p className={styles.pageSubtitle}>
-              {loadingOrders
-                ? "Loading your orders..."
-                : orders.length > 0
-                ? `Welcome back, ${user?.name || "Customer"}. You have placed ${orders.length} ${
-                    orders.length === 1 ? "order" : "orders"
-                  } with Occassions Florist.`
-                : "You haven't placed any orders with this account yet."}
-            </p>
+        {/* Header - only rendered when there are orders */}
+        {orders.length > 0 && (
+          <div className={styles.headerRow}>
+            <div>
+              <h1 className={styles.pageTitle}>My Orders</h1>
+              <p className={styles.pageSubtitle}>
+                {`Welcome back, ${user?.name || "Customer"}. You have placed ${orders.length} ${
+                  orders.length === 1 ? "order" : "orders"
+                } with Occassions Florist.`}
+              </p>
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Orders List */}
-        {orders.length > 0 ? (
+        {/* Orders List or Empty State */}
+        {loadingOrders ? (
+          <div style={{ textAlign: "center", padding: "80px 20px", color: "#64748b" }}>
+            <p>Loading your orders...</p>
+          </div>
+        ) : orders.length > 0 ? (
           <div className={styles.ordersList}>
             {orders.map((order) => {
               const formattedDate = new Date(order.createdAt).toLocaleDateString(
