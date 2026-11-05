@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, Heart, X } from "lucide-react";
 import { useWishlist } from "@/context/WishlistContext";
-import { Product } from "@/data/catalog";
+import { Product, isFlowerBouquet } from "@/data/catalog";
 import styles from "./ProductGallery.module.css";
 
 interface ProductGalleryProps {
@@ -144,6 +144,13 @@ export default function ProductGallery({
       (product.image && product.image.includes("/flower-basket/")) ||
       (product.category === "flower" && (product.id === "flower-9" || product.id === "flower-10"))
     )
+  );
+
+  const isBouquet = Boolean(
+    !isFlowerBasket && (
+      (product && isFlowerBouquet(product)) ||
+      thumbnails.some((t) => typeof t === "string" && t.includes("/flower-bouquet/"))
+    )
   );
 
   const currentImage = thumbnails[selectedIndex];
@@ -169,7 +176,13 @@ export default function ProductGallery({
                 if (window.matchMedia("(hover: hover)").matches) setSelectedIndex(idx);
               }}
               className={`${styles.thumbnailBtn} ${
-                selectedIndex === idx ? styles.thumbnailActive : ""
+                isBouquet ? styles.bouquetThumbnailBtn : ""
+              } ${
+                selectedIndex === idx
+                  ? isBouquet
+                    ? styles.bouquetThumbnailActive
+                    : styles.thumbnailActive
+                  : ""
               }`}
             >
               <img
@@ -332,7 +345,13 @@ export default function ProductGallery({
                     onClick={() => setSelectedIndex(idx)}
                     aria-label={`Show image ${idx + 1}`}
                     className={`${styles.modalThumbBtn} ${
-                      selectedIndex === idx ? styles.modalThumbActive : ""
+                      isBouquet ? styles.bouquetModalThumbBtn : ""
+                    } ${
+                      selectedIndex === idx
+                        ? isBouquet
+                          ? styles.bouquetModalThumbActive
+                          : styles.modalThumbActive
+                        : ""
                     }`}
                   >
                     <img src={img} alt="" className={styles.thumbnailImg} />
