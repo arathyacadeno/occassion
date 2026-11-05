@@ -12,6 +12,8 @@ interface FlowerCategory {
   image: string;
   href: string;
   coverFull?: boolean;
+  zoomOut?: boolean;
+  objectPosition?: string;
 }
 
 const FLOWER_CATEGORIES: FlowerCategory[] = [
@@ -20,7 +22,7 @@ const FLOWER_CATEGORIES: FlowerCategory[] = [
   { id: "chrysanthemums", title: "Chrysanthemums", description: "Vibrant & cheerful", image: "/images/Chrysanthemum.jpg", href: "/flowers/chrysanthemums", coverFull: true },
   { id: "gerberas", title: "Gerberas", description: "Playful & vivid", image: "/images/Gerbera.jpg", href: "/flowers/gerberas", coverFull: true },
   { id: "sunflowers", title: "Sunflowers", description: "Bright & joyful", image: "/images/sunflower.jpg", href: "/flowers/sunflowers", coverFull: true },
-  { id: "carnations", title: "Carnations", description: "Charming & delicate", image: "/images/Carnations.jpg", href: "/flowers/carnations", coverFull: true },
+  { id: "carnations", title: "Carnations", description: "Charming & delicate", image: "/images/Carnations.jpg", href: "/flowers/carnations", coverFull: true, objectPosition: "center 82%" },
   { id: "lilies", title: "Lilies", description: "Elegant & graceful", image: "/images/lilies.jpg", href: "/flowers/lilies", coverFull: true },
   { id: "gladiolus", title: "Gladiolus", description: "Majestic & stately", image: "/images/Gladiolus.jpg", href: "/flowers/gladiolus", coverFull: true },
   { id: "rajnigandha", title: "Rajnigandha", description: "Aromatic & traditional", image: "/images/Rajnigandha.jpg", href: "/flowers/rajnigandha", coverFull: true },
@@ -211,6 +213,7 @@ export default function ShopByFlowers() {
                         src={cat.image}
                         alt={`${cat.title} bouquet`}
                         className={`${styles.bouquetImg} ${cat.coverFull ? styles.imgCoverFull : ""}`}
+                        style={cat.objectPosition ? { objectPosition: cat.objectPosition } : undefined}
                         draggable={false}
                       />
                     </div>
