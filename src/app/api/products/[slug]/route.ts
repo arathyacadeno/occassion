@@ -158,6 +158,7 @@ export async function GET(
           product.category_id === "cat-cakes" ? "Cakes" :
           product.category_id === "cat-table-decor" ? "Table Decor" :
           product.category_id === "cat-wreath" ? "Wreath" :
+          product.category_id === "cat-addons" ? "Add-ons" :
           "Flowers"
         ),
         type: product.type || "general",

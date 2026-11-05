@@ -362,6 +362,7 @@ function seedInitialData(db: any) {
     { id: "cat-cakes", name: "Cakes", slug: "cakes", description: "Delicious gourmet celebration cakes and desserts", image: "/images/cakes/cat-cakes-luxe.jpg", display_order: 3 },
     { id: "cat-table-decor", name: "Table Decor", slug: "table-decor", description: "Stunning floral centerpieces and table arrangements", image: "/images/categories/table-decor.jpg", display_order: 4 },
     { id: "cat-wreath", name: "Wreath", slug: "wreath", description: "Handcrafted memorial and celebration floral wreaths", image: "/images/categories/wreath.jpg", display_order: 5 },
+    { id: "cat-addons", name: "Add-ons", slug: "addons", description: "Chocolates, cards, teddy bears and celebration gifts", image: "/images/addons/bournville.jpg", display_order: 6 },
   ];
 
   const insertCategory = db.prepare(`
@@ -764,6 +765,7 @@ function seedInitialData(db: any) {
     db.prepare(`UPDATE products SET status = 'published' WHERE status IS NULL OR status = ''`).run();
     db.prepare(`UPDATE products SET low_stock_threshold = 5 WHERE low_stock_threshold IS NULL`).run();
     db.prepare(`UPDATE products SET category_id = 'cat-wreath' WHERE category_id = 'cat-wreaths'`).run();
+    db.prepare(`INSERT OR IGNORE INTO categories (id, name, slug, description, image, display_order, active) VALUES ('cat-addons', 'Add-ons', 'addons', 'Chocolates, cards, teddy bears and celebration gifts', '/images/addons/bournville.jpg', 6, 1)`).run();
     db.prepare(`UPDATE products SET type = 'cake' WHERE (type IS NULL OR type = 'general') AND (category_id = 'cat-cakes' OR id LIKE 'cake-%' OR slug LIKE '%cake%')`).run();
     db.prepare(`UPDATE products SET type = 'basket' WHERE (type IS NULL OR type = 'general') AND (category_id = 'cat-flower-basket' OR slug LIKE '%basket%' OR name LIKE '%basket%')`).run();
     db.prepare(`UPDATE products SET type = 'wreath' WHERE (type IS NULL OR type = 'general') AND (category_id = 'cat-wreath' OR slug LIKE '%wreath%' OR name LIKE '%wreath%')`).run();

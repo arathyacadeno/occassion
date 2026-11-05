@@ -48,6 +48,7 @@ const DEFAULT_CATEGORIES_LIST = [
   { id: "cat-cakes", name: "Cakes", slug: "cakes" },
   { id: "cat-table-decor", name: "Table Decor", slug: "table-decor" },
   { id: "cat-wreath", name: "Wreath", slug: "wreath" },
+  { id: "cat-addons", name: "Add-ons", slug: "addons" },
 ];
 
 export default function AdminPage() {
@@ -910,7 +911,8 @@ export default function AdminPage() {
                   <option value="cat-cakes">Cakes</option>
                   <option value="cat-table-decor">Table Decor</option>
                   <option value="cat-wreath">Wreaths</option>
-                  {categoriesList.filter((c: any) => !["cat-flower-bouquet", "cat-flower-basket", "cat-cakes", "cat-table-decor", "cat-wreath", "cat-wreaths"].includes(c.id)).map((c: any) => (
+                  <option value="cat-addons">Add-ons</option>
+                  {categoriesList.filter((c: any) => !["cat-flower-bouquet", "cat-flower-basket", "cat-cakes", "cat-table-decor", "cat-wreath", "cat-wreaths", "cat-addons"].includes(c.id)).map((c: any) => (
                     <option key={c.id} value={c.id}>{c.name}</option>
                   ))}
                 </select>
@@ -1640,6 +1642,7 @@ export default function AdminPage() {
             { id: "cat-cakes", name: "Cakes", slug: "cakes" },
             { id: "cat-table-decor", name: "Table Decor", slug: "table-decor" },
             { id: "cat-wreath", name: "Wreath", slug: "wreath" },
+            { id: "cat-addons", name: "Add-ons", slug: "addons" },
           ]}
           onSave={handleCreateOrUpdateProduct}
         />

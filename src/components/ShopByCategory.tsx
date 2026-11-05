@@ -104,7 +104,14 @@ export default function ShopByCategory() {
           return 100 + (cat.display_order || 0);
         };
 
-        const sorted = [...data.categories].sort((a: any, b: any) => getSortRank(a) - getSortRank(b));
+        // Storefront MUST ONLY show these 5 categories, never Add-ons
+        const storefrontCategories = data.categories.filter((c: any) => {
+          const s = (c.slug || c.id || "").toLowerCase().replace(/^cat-/, "");
+          if (s.includes("addon")) return false;
+          return FIXED_ORDER.some((orderKey) => s.includes(orderKey) || orderKey.includes(s));
+        });
+
+        const sorted = [...storefrontCategories].sort((a: any, b: any) => getSortRank(a) - getSortRank(b));
         const mapped: CategoryCardItem[] = sorted.map((c: any, index: number) => {
           let fallbackImg = "/images/categories/flower-bouquet.jpg";
           const s = (c.slug || c.id || "").toLowerCase();

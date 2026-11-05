@@ -216,6 +216,7 @@ export async function GET(request: Request) {
           r.category_id === "cat-cakes" ? "Cakes" :
           r.category_id === "cat-table-decor" ? "Table Decor" :
           r.category_id === "cat-wreath" ? "Wreath" :
+          r.category_id === "cat-addons" ? "Add-ons" :
           "Flowers"
         ),
         type: r.type || "general",

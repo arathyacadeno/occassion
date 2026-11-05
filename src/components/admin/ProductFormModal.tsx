@@ -1245,6 +1245,8 @@ export default function ProductFormModal({
                   ? "table-decor"
                   : categoryId === "cat-cakes"
                   ? "cakes"
+                  : categoryId === "cat-addons"
+                  ? "addons"
                   : "all"
               }
               onSelectImage={(url) => {
