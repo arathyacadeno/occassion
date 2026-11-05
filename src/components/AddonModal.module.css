@@ -32,8 +32,8 @@
   background-color: #ffffff;
   border-radius: 20px;
   width: 100%;
-  max-width: 800px;
-  max-height: 82vh;
+  max-width: 1040px;
+  max-height: 85vh;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -226,8 +226,8 @@
 
 .modalGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -237,13 +237,13 @@
    ========================================================= */
 
 .addonCard {
-  border-radius: 12px;
+  border-radius: 14px;
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   position: relative;
-  padding: 8px 8px 10px 8px;
+  padding: 10px 10px 12px 10px;
   border: 1px solid #e5e7eb;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
@@ -270,11 +270,11 @@
   width: 100%;
   aspect-ratio: 1 / 1;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 10px;
   background-color: #f8fafc;
   box-sizing: border-box;
   flex-shrink: 0;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .cardImage {
@@ -283,7 +283,7 @@
   height: 100%;
   object-fit: cover;
   object-position: center;
-  border-radius: 8px;
+  border-radius: 10px;
   transition: transform 0.3s ease;
 }
 
@@ -520,6 +520,19 @@
 /* =========================================================
    RESPONSIVE DESIGN
    ========================================================= */
+
+@media (max-width: 1100px) {
+  .modalContent {
+    max-width: 95vw;
+  }
+}
+
+@media (max-width: 920px) {
+  .modalGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+}
 
 @media (max-width: 768px) {
   .modalContent {
