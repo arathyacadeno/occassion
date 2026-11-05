@@ -217,7 +217,9 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
           <RecommendedAddons
             selectedAddons={selectedAddons}
             onAddonChange={setSelectedAddons}
-            mainCategory={product.category}
+            mainCategory={isCakeProduct ? "cakes" : isFlowerBasket ? "flower-basket" : isFlowerBouquet ? "flower-bouquet" : product.category}
+            currentProductId={product.id}
+            currentProductSlug={product.slug}
           />
         )}
 

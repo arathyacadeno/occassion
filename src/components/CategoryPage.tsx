@@ -132,14 +132,15 @@ export default function CategoryPage({
       }
     }
 
-    if (activeFilterId === "all" || activeFilterId.toLowerCase() === "all items") {
-      return list;
-    }
-    const f = activeFilterId.toLowerCase();
-    if (f === "customize") {
-      return list.filter((p) => p.customizable !== false);
-    }
-    return products.filter((p) => {
+    const filteredList = (() => {
+      if (activeFilterId === "all" || activeFilterId.toLowerCase() === "all items") {
+        return list;
+      }
+      const f = activeFilterId.toLowerCase();
+      if (f === "customize") {
+        return list.filter((p) => p.customizable !== false);
+      }
+      return products.filter((p) => {
       const text = `${p.name} ${p.description ?? ""} ${p.slug ?? ""} ${p.badge ?? ""}`.toLowerCase();
       if (f === "birthday")
         return (
@@ -308,6 +309,27 @@ export default function CategoryPage({
         );
       }
       return text.includes(f);
+      });
+    })();
+
+    // Strictly deduplicate by ID, normalized Name, and primary Image URL
+    const seenIds = new Set<string>();
+    const seenNames = new Set<string>();
+    const seenImages = new Set<string>();
+
+    return filteredList.filter((p) => {
+      const idKey = (p.id || "").toLowerCase();
+      const nameKey = (p.name || "").trim().toLowerCase();
+      const imgKey = (p.image || "").trim().toLowerCase();
+
+      if (seenIds.has(idKey)) return false;
+      if (seenNames.has(nameKey)) return false;
+      if (imgKey && seenImages.has(imgKey)) return false;
+
+      seenIds.add(idKey);
+      seenNames.add(nameKey);
+      if (imgKey) seenImages.add(imgKey);
+      return true;
     });
   }, [activeFilterId, products, searchParam]);
 

@@ -11,6 +11,8 @@ export interface AddonModalProps {
   selectedAddons?: Record<string, number>;
   onAddonChange: (addons: Record<string, number>) => void;
   mainCategory?: string;
+  currentProductId?: string;
+  currentProductSlug?: string;
   isBuyNow?: boolean;
   basePrice?: number;
   quantity?: number;
@@ -26,6 +28,8 @@ export default function AddonModal({
   selectedAddons = {},
   onAddonChange,
   mainCategory,
+  currentProductId,
+  currentProductSlug,
   isBuyNow = false,
   basePrice,
   quantity = 1,
@@ -54,12 +58,20 @@ export default function AddonModal({
     };
   }, [isOpen, onClose]);
 
-  const filteredAddons = useMemo(() => getAddonProducts(mainCategory), [mainCategory]);
+  const filteredAddons = useMemo(() => getAddonProducts(mainCategory, currentProductId, currentProductSlug), [mainCategory, currentProductId, currentProductSlug]);
 
-  // Categories list with order: All, Cakes, Chocolates, Soft Toys
+  // Categories list with contextual priority
   const categories = useMemo(() => {
     const cats = Array.from(new Set(filteredAddons.map((p) => p.category)));
-    const order = ["Cakes", "Chocolates", "Soft Toys"];
+    const norm = (mainCategory || "").toLowerCase().replace(/^cat-/, "");
+    let order: string[];
+    if (norm.includes("cake")) {
+      order = ["Flower Bouquets", "Flower Baskets", "Chocolates", "Soft Toys", "Cakes"];
+    } else if (norm.includes("basket")) {
+      order = ["Cakes", "Flower Bouquets", "Chocolates", "Soft Toys", "Flower Baskets"];
+    } else {
+      order = ["Cakes", "Flower Baskets", "Chocolates", "Soft Toys", "Flower Bouquets"];
+    }
     cats.sort((a, b) => {
       const iA = order.indexOf(a);
       const iB = order.indexOf(b);
@@ -69,7 +81,7 @@ export default function AddonModal({
       return a.localeCompare(b);
     });
     return ["All", ...cats];
-  }, [filteredAddons]);
+  }, [filteredAddons, mainCategory]);
 
   // Selected count per category
   const categorySelectedCounts = useMemo(() => {

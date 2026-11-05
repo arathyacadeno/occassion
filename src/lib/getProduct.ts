@@ -210,6 +210,11 @@ export async function getStorefrontCategoryProducts(categoryType: string): Promi
   const seenIds = new Set(updatedBaseProducts.map((p) => p.id));
   const seenSlugs = new Set(updatedBaseProducts.map((p) => p.slug.toLowerCase()));
   const seenNames = new Set(updatedBaseProducts.map((p) => p.name.trim().toLowerCase()));
+  const seenImages = new Set(
+    updatedBaseProducts
+      .map((p) => (p.image || "").trim().toLowerCase())
+      .filter(Boolean)
+  );
 
   // 4. Filter ONLY newly created admin products (created via Admin Dashboard with 'prod-' or 'prod_' prefix)
   const newlyCreatedAdminProducts: Product[] = [];
@@ -234,7 +239,7 @@ export async function getStorefrontCategoryProducts(categoryType: string): Promi
     let matchesCategory = false;
     if (categoryType === "flower-bouquets" || categoryType === "bouquets") {
       matchesCategory =
-        (cat === "flower-bouquet" || cat === "bouquet" || (!cat.includes("cake") && !cat.includes("table") && !cat.includes("wreath") && !cat.includes("basket"))) &&
+        (cat === "flower-bouquet" || cat === "bouquet" || (!cat.includes("cake") && !cat.includes("table") && !cat.includes("wreath") && !cat.includes("basket") && !cat.includes("addon"))) &&
         !name.includes("basket") &&
         !desc.includes("in a basket") &&
         !name.includes("cake") &&
@@ -243,7 +248,8 @@ export async function getStorefrontCategoryProducts(categoryType: string): Promi
         !name.includes("runner") &&
         !name.includes("centerpiece") &&
         !name.includes("box") &&
-        !name.includes("bear");
+        !name.includes("bear") &&
+        !name.includes("chocolate");
     } else if (categoryType === "flower-baskets" || categoryType === "baskets") {
       matchesCategory = cat === "flower-basket" || cat === "basket" || name.includes("basket");
     } else if (categoryType === "cakes") {
@@ -260,19 +266,54 @@ export async function getStorefrontCategoryProducts(categoryType: string): Promi
       continue;
     }
 
+    const mapped = mapDbToProduct(row);
     const normName = row.name.trim().toLowerCase();
     const normSlug = (row.slug || "").trim().toLowerCase();
+    const primaryImg = (mapped.image || "").trim().toLowerCase();
 
-    if (seenIds.has(row.id) || seenSlugs.has(normSlug) || seenNames.has(normName)) {
+    if (
+      seenIds.has(row.id) ||
+      seenSlugs.has(normSlug) ||
+      seenNames.has(normName) ||
+      (primaryImg && seenImages.has(primaryImg))
+    ) {
       continue;
     }
 
     seenIds.add(row.id);
     seenSlugs.add(normSlug);
     seenNames.add(normName);
-    newlyCreatedAdminProducts.push(mapDbToProduct(row));
+    if (primaryImg) seenImages.add(primaryImg);
+    newlyCreatedAdminProducts.push(mapped);
   }
 
-  // New admin-created products are placed at the beginning, followed by the curated catalog products
-  return [...newlyCreatedAdminProducts, ...updatedBaseProducts];
+  // Combined product list with final-pass strict deduplication
+  const combined = [...newlyCreatedAdminProducts, ...updatedBaseProducts];
+  const finalIds = new Set<string>();
+  const finalSlugs = new Set<string>();
+  const finalNames = new Set<string>();
+  const finalImages = new Set<string>();
+  const dedupedProducts: Product[] = [];
+
+  for (const p of combined) {
+    const idKey = (p.id || "").toLowerCase();
+    const slugKey = (p.slug || "").trim().toLowerCase();
+    const nameKey = (p.name || "").trim().toLowerCase();
+    const imgKey = (p.image || "").trim().toLowerCase();
+
+    if (finalIds.has(idKey) || finalSlugs.has(slugKey) || finalNames.has(nameKey)) {
+      continue;
+    }
+    if (imgKey && finalImages.has(imgKey)) {
+      continue;
+    }
+
+    finalIds.add(idKey);
+    finalSlugs.add(slugKey);
+    finalNames.add(nameKey);
+    if (imgKey) finalImages.add(imgKey);
+    dedupedProducts.push(p);
+  }
+
+  return dedupedProducts;
 }

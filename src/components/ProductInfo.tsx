@@ -133,7 +133,16 @@ export default function ProductInfo({
 
   const [customStems, setCustomStems] = useState<number>(8);
 
-  const isCake = product.category === "cakes";
+  const isCake = product.category === "cakes" || product.id.startsWith("cake-") || Boolean(product.slug?.includes("cake"));
+  const isBasket =
+    product.basketType !== undefined ||
+    product.id.startsWith("flower-basket-") ||
+    product.id === "flower-9" ||
+    product.id === "flower-10" ||
+    Boolean(product.slug?.toLowerCase().includes("basket")) ||
+    Boolean(product.name?.toLowerCase().includes("basket")) ||
+    Boolean(product.slug?.toLowerCase().includes("container")) ||
+    Boolean(product.name?.toLowerCase().includes("container"));
   const isFlower = product.category === "flower" || isBouquet;
   const isWreath =
     product.category === "wreaths" ||
@@ -1240,7 +1249,9 @@ export default function ProductInfo({
         onClose={() => setIsBuyNowAddonOpen(false)}
         selectedAddons={selectedAddons}
         onAddonChange={onAddonChange || (() => {})}
-        mainCategory={product.category}
+        mainCategory={isCake ? "cakes" : isBasket ? "flower-basket" : "flower-bouquet"}
+        currentProductId={product.id}
+        currentProductSlug={product.slug}
         isBuyNow={true}
         basePrice={activePrice}
         quantity={quantity}

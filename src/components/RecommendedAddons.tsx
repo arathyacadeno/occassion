@@ -15,25 +15,61 @@ export interface RecommendedAddonsProps {
   selectedAddons?: Record<string, number>;
   onAddonChange?: (addons: Record<string, number>) => void;
   mainCategory?: string;
+  currentProductId?: string;
+  currentProductSlug?: string;
 }
 
-export const getAddonProducts = (category?: string) => {
-  const norm = category?.toLowerCase() || "";
+export const getAddonProducts = (
+  category?: string,
+  currentProductId?: string,
+  currentProductSlug?: string
+) => {
+  const norm = category?.toLowerCase().replace(/^cat-/, "") || "";
   if (norm === "wreaths" || norm === "wreath") {
     return [];
   }
 
-  const cakes = ADDON_PRODUCTS.filter((p) => p.category === "Cakes");
-  const chocolates = ADDON_PRODUCTS.filter((p) => p.category === "Chocolates");
-  const softToys = ADDON_PRODUCTS.filter((p) => p.category === "Soft Toys");
+  // Filter out the current product so it NEVER appears in recommended add-ons
+  const isCurrentProduct = (p: AddonProduct) => {
+    if (currentProductId) {
+      const cleanCurId = currentProductId.toLowerCase().replace(/^addon-/, "");
+      const cleanPId = p.id.toLowerCase().replace(/^addon-/, "");
+      if (cleanCurId === cleanPId || currentProductId.toLowerCase() === p.id.toLowerCase()) return true;
+    }
+    if (currentProductSlug) {
+      const cleanSlug = currentProductSlug.toLowerCase().replace(/^\//, "");
+      const pHrefSlug = p.href.toLowerCase().replace(/^\//, "").split("/").pop();
+      if (cleanSlug === pHrefSlug || p.href.toLowerCase().endsWith("/" + cleanSlug)) return true;
+    }
+    return false;
+  };
 
-  // If viewing a cake, prioritize chocolates and soft toys before cakes
-  const groups = norm === "cakes"
-    ? [chocolates, softToys, cakes]
-    : [cakes, chocolates, softToys];
+  const filterCurrent = (items: AddonProduct[]) => items.filter((p) => !isCurrentProduct(p));
+
+  const cakes = filterCurrent(ADDON_PRODUCTS.filter((p) => p.category === "Cakes"));
+  const bouquets = filterCurrent(ADDON_PRODUCTS.filter((p) => p.category === "Flower Bouquets"));
+  const baskets = filterCurrent(ADDON_PRODUCTS.filter((p) => p.category === "Flower Baskets"));
+  const chocolates = filterCurrent(ADDON_PRODUCTS.filter((p) => p.category === "Chocolates"));
+  const softToys = filterCurrent(ADDON_PRODUCTS.filter((p) => p.category === "Soft Toys"));
+
+  let groups: AddonProduct[][];
+
+  if (norm.includes("cake")) {
+    // When buying a Cake: show Flower Bouquets, Flower Baskets, Chocolates, Soft Toys (NEVER any Cakes)
+    groups = [bouquets, baskets, chocolates, softToys];
+  } else if (norm.includes("basket")) {
+    // When buying a Flower Basket: show Cakes, Flower Bouquets, Chocolates, Soft Toys (No Baskets)
+    groups = [cakes, bouquets, chocolates, softToys];
+  } else if (norm.includes("bouquet") || norm === "flower") {
+    // When buying a Flower Bouquet: show Cakes, Flower Baskets, Chocolates, Soft Toys (No Bouquets)
+    groups = [cakes, baskets, chocolates, softToys];
+  } else {
+    // Other items / Table decor: show Cakes, Flower Bouquets, Flower Baskets, Chocolates, Soft Toys
+    groups = [cakes, bouquets, baskets, chocolates, softToys];
+  }
 
   const mixed: AddonProduct[] = [];
-  const maxLen = Math.max(cakes.length, chocolates.length, softToys.length);
+  const maxLen = Math.max(...groups.map((g) => g.length));
 
   for (let i = 0; i < maxLen; i++) {
     for (const grp of groups) {
@@ -50,10 +86,12 @@ export default function RecommendedAddons({
   selectedAddons,
   onAddonChange,
   mainCategory,
+  currentProductId,
+  currentProductSlug,
 }: RecommendedAddonsProps = {}) {
   const { addItem } = useCart();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const filteredAddons = getAddonProducts(mainCategory);
+  const filteredAddons = getAddonProducts(mainCategory, currentProductId, currentProductSlug);
 
   if (filteredAddons.length === 0) {
     return null;
@@ -210,6 +248,8 @@ export default function RecommendedAddons({
         selectedAddons={quantities}
         onAddonChange={updateQuantities}
         mainCategory={mainCategory}
+        currentProductId={currentProductId}
+        currentProductSlug={currentProductSlug}
         isBuyNow={false}
       />
     </section>
