@@ -1902,32 +1902,7 @@ export const CATALOG_PRODUCTS: Product[] = [
     ],
     badge: "Exotic Grandeur",
   },
-  {
-    id: "flower-30-white-roses",
-    slug: "30-white-roses-sheeve-bouquet",
-    name: "30 white roses sheeve bouquet",
-    price: 1800,
-    category: "flower",
-    categoryLabel: "Flowers",
-    image: "/images/flower-bouquet/30-white-roses-sheeve-bouquet.jpg",
-    images: [
-      "/images/flower-bouquet/side-view/Four Views of a Golden-Wrapped Rose Bouquet.png",
-      "/images/flower-bouquet/side-view/Four Views of a Golden-Wrapped Rose Bouquet(1).png",
-      "/images/flower-bouquet/side-view/Four Views of a Golden-Wrapped Rose Bouquet(2).png",
-      "/images/flower-bouquet/side-view/Four Views of a Golden-Wrapped Rose Bouquet(3).png",
-    ],
-    rating: 5.0,
-    reviewsCount: 15,
-    description: "An elegant arrangement of 30 pristine white roses beautifully wrapped in a yellow sheeve style bouquet with a delicate white ribbon. Perfect for expressing purity and grace.",
-    deliveryInfo: "Fresh morning delivery within 3 hours across Calicut.",
-    offers: ["Flat 10% off with code OCCASIONS10", "Complimentary heartfelt note card"],
-    includes: [
-      "30 Fresh White Roses",
-      "Premium Sheeve Paper Wrapping",
-      "Satin Ribbon Bow"
-    ],
-    badge: "New Arrival",
-  },
+  
 
   // ==================== CAKES PRODUCTS (/cakes) ====================
 
@@ -3893,6 +3868,10 @@ export const EXCLUDED_FROM_GENERAL_BOUQUETS = new Set([
   "tropical-heliconia-cascade-bouquet",
   "flower-rajnigandha-fragrant-bunch",
   "fragrant-rajnigandha-tuberose-bunch",
+  "flower-30-white-roses",
+  "30-white-roses-sheeve-bouquet",
+  "bouquet-ivory-elegance",
+  "ivory-elegance",
 ]);
 
 export function getFlowerBaskets(): Product[] {
@@ -3981,11 +3960,10 @@ export function getProductsForFlower(flower: string): Product[] {
 
     const baskets = matched.filter((p) => isBasket(p));
     const nonBaskets = matched.filter(
-      (p) => !isBasket(p) && p.id !== "flower-30-white-roses"
+      (p) => !isBasket(p) && p.id !== "flower-30-white-roses" && p.slug !== "30-white-roses-sheeve-bouquet"
     );
-    const targetItem = matched.filter((p) => p.id === "flower-30-white-roses");
 
-    return [...baskets, ...nonBaskets, ...targetItem];
+    return [...baskets, ...nonBaskets];
   }
 
   return matched;
