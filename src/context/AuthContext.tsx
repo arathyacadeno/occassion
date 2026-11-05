@@ -30,6 +30,7 @@ interface AuthContextType {
     name?: string;
     credential?: string;
     image?: string;
+    googleId?: string;
   }) => Promise<{ success: boolean; error?: string }>;
   loginWithPhone: (data: {
     phoneNumber: string;
@@ -126,6 +127,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     name?: string;
     credential?: string;
     image?: string;
+    googleId?: string;
   }) => {
     try {
       const payload = googleData?.credential

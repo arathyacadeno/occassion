@@ -314,7 +314,7 @@ export default function Header({
       return;
     }
 
-    if (typeof window === "undefined" || !(window as any).google?.accounts?.id) {
+    if (typeof window === "undefined" || !(window as any).google?.accounts) {
       setAuthError("Google Services are loading. Please check your connection and try again.");
       return;
     }
@@ -323,58 +323,117 @@ export default function Header({
 
     try {
       const google = (window as any).google;
-      google.accounts.id.initialize({
-        client_id: clientId,
-        callback: async (response: { credential?: string }) => {
-          if (!response || !response.credential) {
-            setAuthError("Failed to receive Google credential. Please try again.");
-            setAuthLoading(false);
-            return;
-          }
 
-          try {
-            const res = await loginWithGoogle({ credential: response.credential });
-            if (res.success) {
-              setActiveModal(null);
-              if (pathname === "/signin" || pathname === "/signup") {
-                router.push("/");
+      // Method 1: Google OAuth2 Token Client (Standard popup - avoids FedCM NetworkError)
+      if (google.accounts?.oauth2?.initTokenClient) {
+        const tokenClient = google.accounts.oauth2.initTokenClient({
+          client_id: clientId,
+          scope: "email profile openid",
+          callback: async (tokenResponse: any) => {
+            if (tokenResponse.error) {
+              setAuthLoading(false);
+              if (tokenResponse.error !== "popup_closed_by_user") {
+                setAuthError(tokenResponse.error_description || "Google sign-in was canceled.");
               }
-            } else {
-              setAuthError(res.error || "Google authentication failed.");
+              return;
             }
-          } catch {
-            setAuthError("Authentication request failed. Please try again.");
-          } finally {
-            setAuthLoading(false);
-          }
-        },
-        auto_select: false,
-        cancel_on_tap_outside: true,
-      });
 
-      // Prompt account selection
-      google.accounts.id.prompt((notification: any) => {
-        if (notification.isNotDisplayed()) {
-          setAuthLoading(false);
-          const reason = notification.getNotDisplayedReason();
-          console.warn("Google One Tap prompt not displayed:", reason);
-          setAuthError("Unable to open Google prompt. Please check your browser popup/cookie settings.");
-        } else if (notification.isSkippedMoment()) {
-          setAuthLoading(false);
-          const reason = notification.getSkippedReason();
-          if (reason !== "user_cancel") {
-            console.warn("Google prompt skipped:", reason);
+            try {
+              const userInfoRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+                headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+              });
+              const profile = await userInfoRes.json();
+              if (!profile || !profile.email) {
+                setAuthError("Failed to retrieve profile from Google. Please try again.");
+                setAuthLoading(false);
+                return;
+              }
+
+              const res = await loginWithGoogle({
+                email: profile.email,
+                name: profile.name,
+                image: profile.picture,
+                googleId: profile.sub,
+              });
+
+              if (res.success) {
+                setActiveModal(null);
+                if (pathname === "/signin" || pathname === "/signup") {
+                  router.push("/");
+                }
+              } else {
+                setAuthError(res.error || "Google authentication failed.");
+              }
+            } catch {
+              setAuthError("Authentication request failed. Please try again.");
+            } finally {
+              setAuthLoading(false);
+            }
+          },
+          error_callback: (err: any) => {
+            setAuthLoading(false);
+            console.warn("OAuth token error:", err);
+            setAuthError("Google sign-in popup could not be completed. Please check your browser popup settings.");
+          },
+        });
+
+        tokenClient.requestAccessToken({ prompt: "select_account" });
+        return;
+      }
+
+      // Method 2: Fallback to google.accounts.id with use_fedcm_for_prompt disabled
+      if (google.accounts?.id) {
+        google.accounts.id.initialize({
+          client_id: clientId,
+          use_fedcm_for_prompt: false,
+          callback: async (response: { credential?: string }) => {
+            if (!response || !response.credential) {
+              setAuthError("Failed to receive Google credential. Please try again.");
+              setAuthLoading(false);
+              return;
+            }
+
+            try {
+              const res = await loginWithGoogle({ credential: response.credential });
+              if (res.success) {
+                setActiveModal(null);
+                if (pathname === "/signin" || pathname === "/signup") {
+                  router.push("/");
+                }
+              } else {
+                setAuthError(res.error || "Google authentication failed.");
+              }
+            } catch {
+              setAuthError("Authentication request failed. Please try again.");
+            } finally {
+              setAuthLoading(false);
+            }
+          },
+          auto_select: false,
+          cancel_on_tap_outside: true,
+        });
+
+        google.accounts.id.prompt((notification: any) => {
+          if (notification.isNotDisplayed()) {
+            setAuthLoading(false);
+            const reason = notification.getNotDisplayedReason();
+            console.warn("Google prompt not displayed:", reason);
+            setAuthError("Unable to open Google prompt. Please check your browser popup/cookie settings.");
+          } else if (notification.isSkippedMoment()) {
+            setAuthLoading(false);
+            const reason = notification.getSkippedReason();
+            if (reason !== "user_cancel") {
+              console.warn("Google prompt skipped:", reason);
+            }
+          } else if (notification.isDismissedMoment()) {
+            setAuthLoading(false);
+            const reason = notification.getDismissedReason();
+            if (reason !== "user_cancel" && reason !== "credential_returned") {
+              console.log("Google prompt dismissed:", reason);
+            }
           }
-        } else if (notification.isDismissedMoment()) {
-          setAuthLoading(false);
-          const reason = notification.getDismissedReason();
-          if (reason === "credential_returned") {
-            // Handled in callback
-          } else {
-            console.log("Google prompt dismissed:", reason);
-          }
-        }
-      });
+        });
+      }
     } catch (err: any) {
       setAuthLoading(false);
       setAuthError(err?.message || "Google authentication could not be initialized.");
