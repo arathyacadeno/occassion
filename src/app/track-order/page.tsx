@@ -650,7 +650,6 @@ export default function TrackOrderPage() {
                 <div className={styles.emptyIconWrap}>
                   <Package size={36} color="#E6004C" />
                 </div>
-                <span className={styles.emptyCountBadge}>0 Orders</span>
                 <h2 className={styles.emptyTitle}>No Orders Yet</h2>
                 <p className={styles.emptyDesc}>
                   You haven&apos;t placed any orders yet. Explore our beautiful flowers and gifts to make someone&apos;s day special!
