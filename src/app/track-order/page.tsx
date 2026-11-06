@@ -280,6 +280,9 @@ export default function TrackOrderPage() {
       if (urlId) {
         setInput(urlId);
         executeLookup(urlId);
+      } else {
+        // Auto-focus the input field when entering this page so the text cursor appears immediately
+        inputRef.current?.focus();
       }
     }
   }, []);
@@ -317,6 +320,7 @@ export default function TrackOrderPage() {
                 ref={inputRef}
                 id="trackOrderIdInput"
                 type="text"
+                autoFocus
                 className={styles.searchInput}
                 placeholder="Enter Order ID e.g. 178505"
                 value={input}

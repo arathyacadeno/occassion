@@ -101,6 +101,8 @@
   color: #111827;
   background: transparent;
   letter-spacing: 0.02em;
+  cursor: text;
+  caret-color: #E6004C;
 }
 
 .searchInput::placeholder {
