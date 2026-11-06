@@ -252,6 +252,16 @@ async function runOrderPaymentTests() {
     assert(false, "4.8 Order cancellation and stock restoration", err.message);
   }
 
+  // Cleanup test orders and addresses from Neon
+  try {
+    if (createdOrderId) {
+      await queryNeon(() => sql`DELETE FROM order_items WHERE order_id = ${createdOrderId}`);
+      await queryNeon(() => sql`DELETE FROM orders WHERE id = ${createdOrderId}`);
+    }
+    await queryNeon(() => sql`DELETE FROM addresses WHERE full_name = 'Arathy Tester A'`);
+    console.log("  [Cleanup] Test orders and address cleaned up from Neon.");
+  } catch {}
+
   console.log(`\nSection 4 Results: ${results.passed.length} Passed, ${results.failed.length} Failed\n`);
   if (results.failed.length > 0) {
     process.exit(1);

@@ -253,8 +253,11 @@ async function runAuthTests() {
 
   // Cleanup test users from Neon
   try {
-    await queryNeon(() => sql`DELETE FROM users WHERE email = ${testEmail} OR email = ${googleEmail}`);
-    await queryNeon(() => sql`DELETE FROM phone_otps WHERE phone = ${otpPhone}`);
+    if (createdUserId) {
+      await queryNeon(() => sql`DELETE FROM users WHERE id = ${createdUserId}`);
+    }
+    await queryNeon(() => sql`DELETE FROM users WHERE email = ${testEmail} OR email = ${googleEmail} OR email LIKE '%occasions-audit.com%'`);
+    await queryNeon(() => sql`DELETE FROM phone_otps WHERE phone = ${otpPhone} OR phone = ${cleanOtpPhone}`);
     console.log("  [Cleanup] Test users and OTP records cleaned up from Neon.");
   } catch {}
 

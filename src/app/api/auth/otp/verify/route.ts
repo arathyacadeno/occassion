@@ -6,7 +6,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const phoneNumber = body.phoneNumber || body.phone;
-    const { otp } = body;
+    const { otp, name } = body;
 
     if (!phoneNumber || !otp) {
       return NextResponse.json(
@@ -84,7 +84,7 @@ export async function POST(request: Request) {
     } else {
       // Create new customer account in Neon PostgreSQL
       const userId = "usr-p-" + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
-      const displayName = `Customer (${cleanPhone})`;
+      const displayName = (name && typeof name === "string" && name.trim()) ? name.trim() : `Customer (${cleanPhone})`;
 
       await sql`
         INSERT INTO users (id, name, email, phone, role, created_at, updated_at)

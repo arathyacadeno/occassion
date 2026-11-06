@@ -64,7 +64,14 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<"orders" | "stock" | "categories" | "media" | "branding" | "homepage" | "customization" | "coupons" | "delivery" | "users">("orders");
 
   // Admin stats & data
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<{
+    totalRevenue: number;
+    totalOrders: number;
+    activeProducts: number;
+    totalCustomers: number;
+    lowStockCount?: number;
+  } | null>(null);
+  const [statsLoading, setStatsLoading] = useState(true);
   const [orders, setOrders] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
   const [coupons, setCoupons] = useState<any[]>([]);
@@ -143,80 +150,91 @@ export default function AdminPage() {
   const fetchAdminData = useCallback(async () => {
     if (!isAdmin) return;
     setLoading(true);
-    try {
-      // 1. Stats & Users
-      const statsRes = await fetch("/api/admin/stats", { credentials: "include" });
-      if (statsRes.ok) {
-        const data = await statsRes.json();
-        if (data.success) {
-          setStats(data.stats);
-          setUsersList(data.users || []);
-        }
-      }
-
-      // 2. Orders
-      const ordersRes = await fetch("/api/orders", { credentials: "include" });
-      if (ordersRes.ok) {
-        const data = await ordersRes.json();
-        if (data.success && Array.isArray(data.orders)) {
-          setOrders(data.orders);
-        }
-      }
-
-      // 3. Products
-      const prodRes = await fetch("/api/products?limit=500", { credentials: "include" });
-      if (prodRes.ok) {
-        const data = await prodRes.json();
-        if (data.success && Array.isArray(data.products)) {
-          setProducts(data.products);
-        }
-      }
-
-      // 4. Coupons
-      const coupRes = await fetch("/api/coupons", { credentials: "include" });
-      if (coupRes.ok) {
-        const data = await coupRes.json();
-        if (data.success && Array.isArray(data.coupons)) {
-          setCoupons(data.coupons);
-        }
-      }
-
-      // 6. Categories
-      try {
-        const catRes = await fetch("/api/categories", { credentials: "include" });
-        if (catRes.ok) {
-          const data = await catRes.json();
-          if (data.success && Array.isArray(data.categories)) {
-            setCategoriesList(data.categories);
-          }
-        }
-      } catch (err) {
-        console.warn("Could not fetch categories", err);
-      }
-
-      // 5. Customization Settings
-      try {
-        const customRes = await fetch("/api/admin/customization", { credentials: "include" });
-        if (customRes.ok) {
-          const data = await customRes.json();
-          if (data.success && data.config) {
-            setCustomConfig(data.config);
-          }
-        }
-      } catch (err) {
-        console.warn("Could not fetch customization settings", err);
-      }
-    } catch (e) {
-      console.error("Admin data fetch error:", e);
-    } finally {
-      setLoading(false);
+    if (!stats) {
+      setStatsLoading(true);
     }
-  }, [isAdmin]);
+
+    // 1. Stats & Users (Fast dedicated query to Neon DB)
+    const statsPromise = (async () => {
+      try {
+        const statsRes = await fetch("/api/admin/stats", {
+          credentials: "include",
+          cache: "no-store",
+          headers: { "Cache-Control": "no-cache" },
+        });
+        if (statsRes.ok) {
+          const data = await statsRes.json();
+          if (data.success && data.stats) {
+            setStats(data.stats);
+            if (data.users) setUsersList(data.users);
+          }
+        }
+      } catch (e) {
+        console.error("Stats fetch error:", e);
+      } finally {
+        setStatsLoading(false);
+      }
+    })();
+
+    // 2. Fetch other administrative data concurrently
+    const othersPromise = (async () => {
+      try {
+        await Promise.allSettled([
+          // Orders
+          fetch("/api/orders", { credentials: "include" })
+            .then((r) => (r.ok ? r.json() : null))
+            .then((d) => d?.success && Array.isArray(d.orders) && setOrders(d.orders)),
+
+          // Products
+          fetch("/api/products?limit=500", { credentials: "include" })
+            .then((r) => (r.ok ? r.json() : null))
+            .then((d) => d?.success && Array.isArray(d.products) && setProducts(d.products)),
+
+          // Coupons
+          fetch("/api/coupons", { credentials: "include" })
+            .then((r) => (r.ok ? r.json() : null))
+            .then((d) => d?.success && Array.isArray(d.coupons) && setCoupons(d.coupons)),
+
+          // Categories
+          fetch("/api/categories", { credentials: "include" })
+            .then((r) => (r.ok ? r.json() : null))
+            .then((d) => d?.success && Array.isArray(d.categories) && setCategoriesList(d.categories)),
+
+          // Customization Settings
+          fetch("/api/admin/customization", { credentials: "include" })
+            .then((r) => (r.ok ? r.json() : null))
+            .then((d) => d?.success && d.config && setCustomConfig(d.config)),
+        ]);
+      } catch (e) {
+        console.error("Admin data fetch error:", e);
+      } finally {
+        setLoading(false);
+      }
+    })();
+
+    await Promise.all([statsPromise, othersPromise]);
+  }, [isAdmin, stats]);
 
   useEffect(() => {
     if (isAdmin) {
       fetchAdminData();
     }
+  }, [isAdmin, fetchAdminData]);
+
+  // Gentle real-time refresh on tab visibility change (throttled to at most once per 10s)
+  useEffect(() => {
+    if (!isAdmin) return;
+    let lastRefresh = Date.now();
+    const handleVisibilityChange = () => {
+      if (!document.hidden && Date.now() - lastRefresh > 10000) {
+        lastRefresh = Date.now();
+        fetchAdminData();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [isAdmin, fetchAdminData]);
 
   const handleAdminLogin = async (e: React.FormEvent) => {
@@ -245,6 +263,7 @@ export default function AdminPage() {
         setOrders((prev) =>
           prev.map((o) => (o.id === orderId ? { ...o, order_status: newStatus } : o))
         );
+        fetchAdminData();
       }
     } catch (err) {
       console.error("Failed to update status", err);
@@ -265,6 +284,7 @@ export default function AdminPage() {
         setProducts((prev) =>
           prev.map((p) => (p.slug === productSlug ? { ...p, stock: newStock } : p))
         );
+        fetchAdminData();
       }
     } catch (err) {
       console.error(err);
@@ -407,6 +427,7 @@ export default function AdminPage() {
       );
       setProductActionMsg(`✓ '${p.name}' is now ${newActive ? "Published" : "Draft"}`);
       setTimeout(() => setProductActionMsg(null), 4000);
+      fetchAdminData();
     } else {
       alert(data.error || "Failed to update product status");
     }
@@ -604,7 +625,15 @@ export default function AdminPage() {
               <TrendingUp size={24} />
             </div>
             <div>
-              <div className={styles.statValue}>₹{(stats?.totalRevenue || 0).toLocaleString("en-IN")}</div>
+              <div className={styles.statValue}>
+                {statsLoading && !stats ? (
+                  <span style={{ opacity: 0.35 }}>...</span>
+                ) : (
+                  `₹${Number(stats?.totalRevenue ?? 0).toLocaleString("en-IN", {
+                    maximumFractionDigits: 2,
+                  })}`
+                )}
+              </div>
               <div className={styles.statLabel}>Total Paid Revenue</div>
             </div>
           </div>
@@ -614,7 +643,13 @@ export default function AdminPage() {
               <Package size={24} />
             </div>
             <div>
-              <div className={styles.statValue}>{stats?.totalOrders ?? orders.length}</div>
+              <div className={styles.statValue}>
+                {statsLoading && !stats ? (
+                  <span style={{ opacity: 0.35 }}>...</span>
+                ) : (
+                  Number(stats?.totalOrders ?? 0).toLocaleString("en-IN")
+                )}
+              </div>
               <div className={styles.statLabel}>Total Orders Placed</div>
             </div>
           </div>
@@ -624,7 +659,13 @@ export default function AdminPage() {
               <ShoppingBag size={24} />
             </div>
             <div>
-              <div className={styles.statValue}>{stats?.activeProducts ?? products.length}</div>
+              <div className={styles.statValue}>
+                {statsLoading && !stats ? (
+                  <span style={{ opacity: 0.35 }}>...</span>
+                ) : (
+                  Number(stats?.activeProducts ?? 0).toLocaleString("en-IN")
+                )}
+              </div>
               <div className={styles.statLabel}>Active Catalog Products</div>
             </div>
           </div>
@@ -634,7 +675,13 @@ export default function AdminPage() {
               <Users size={24} />
             </div>
             <div>
-              <div className={styles.statValue}>{stats?.totalCustomers ?? usersList.length}</div>
+              <div className={styles.statValue}>
+                {statsLoading && !stats ? (
+                  <span style={{ opacity: 0.35 }}>...</span>
+                ) : (
+                  Number(stats?.totalCustomers ?? 0).toLocaleString("en-IN")
+                )}
+              </div>
               <div className={styles.statLabel}>Registered Customers</div>
             </div>
           </div>
@@ -657,7 +704,7 @@ export default function AdminPage() {
                   <span>Orders</span>
                 </div>
                 <span className={`${styles.sidebarBadge} ${activeTab === "orders" ? styles.sidebarBadgeActive : ""}`}>
-                  {stats?.totalOrders ?? orders.length}
+                  {stats != null ? Number(stats.totalOrders).toLocaleString("en-IN") : (statsLoading ? "..." : 0)}
                 </span>
               </button>
 
@@ -671,7 +718,7 @@ export default function AdminPage() {
                   <span>Customers</span>
                 </div>
                 <span className={`${styles.sidebarBadge} ${activeTab === "users" ? styles.sidebarBadgeActive : ""}`}>
-                  {stats?.totalCustomers ?? usersList.length}
+                  {stats != null ? Number(stats.totalCustomers).toLocaleString("en-IN") : (statsLoading ? "..." : 0)}
                 </span>
               </button>
             </div>
@@ -689,7 +736,7 @@ export default function AdminPage() {
                   <span>Products &amp; Stock</span>
                 </div>
                 <span className={`${styles.sidebarBadge} ${activeTab === "stock" ? styles.sidebarBadgeActive : ""}`}>
-                  {stats?.activeProducts ?? products.length}
+                  {stats != null ? Number(stats.activeProducts).toLocaleString("en-IN") : (statsLoading ? "..." : 0)}
                 </span>
               </button>
 
