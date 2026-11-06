@@ -100,6 +100,18 @@ export function CheckoutProvider({ children }: { children: React.ReactNode }) {
       console.error("Failed to load checkout state:", e);
     }
     setIsLoaded(true);
+
+    const handleAuthLogout = () => {
+      setOrders([]);
+      setCompletedOrder(null);
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("occasions-auth-logout", handleAuthLogout);
+      return () => {
+        window.removeEventListener("occasions-auth-logout", handleAuthLogout);
+      };
+    }
   }, []);
 
   // Save checkout items to localStorage

@@ -54,24 +54,6 @@ export async function GET(
           { status: 403 }
         );
       }
-    } else {
-      // Safe mapping for older orders: link if authenticated customer's email matches
-      if (
-        auth &&
-        order.customer_email &&
-        auth.email &&
-        order.customer_email.toLowerCase().trim() === auth.email.toLowerCase().trim()
-      ) {
-        order.user_id = auth.userId;
-        try {
-          db.prepare("UPDATE orders SET user_id = ? WHERE id = ?").run(auth.userId, order.id);
-          if (process.env.DATABASE_URL) {
-            await sql`UPDATE orders SET user_id = ${auth.userId} WHERE id = ${order.id}`;
-          }
-        } catch (mapErr) {
-          console.warn("Failed to auto-link unassigned order [id] to user:", mapErr);
-        }
-      }
     }
 
     const deliveryAddress =

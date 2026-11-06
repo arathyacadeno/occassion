@@ -227,6 +227,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
           localStorage.removeItem("occassions_latest_order");
           localStorage.removeItem("occassions_order_history");
+          window.dispatchEvent(new CustomEvent("occasions-auth-logout"));
         } catch {
           // ignore
         }

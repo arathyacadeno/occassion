@@ -62,24 +62,6 @@ export async function GET(request: Request) {
             { status: 403 }
           );
         }
-      } else {
-        // Safe mapping for older orders without user_id: if authenticated user's email matches customer_email
-        if (
-          auth &&
-          foundOrder.customer_email &&
-          auth.email &&
-          foundOrder.customer_email.toLowerCase().trim() === auth.email.toLowerCase().trim()
-        ) {
-          foundOrder.user_id = auth.userId;
-          try {
-            db.prepare("UPDATE orders SET user_id = ? WHERE id = ?").run(auth.userId, foundOrder.id);
-            if (process.env.DATABASE_URL) {
-              await sql`UPDATE orders SET user_id = ${auth.userId} WHERE id = ${foundOrder.id}`;
-            }
-          } catch (mapErr) {
-            console.warn("Failed to auto-link unassigned order to user:", mapErr);
-          }
-        }
       }
 
       const deliveryAddress =
@@ -115,28 +97,9 @@ export async function GET(request: Request) {
       );
     }
 
-    // Safe mapping: link any older unmapped orders that have matching customer_email to auth.userId
-    if (auth.email) {
-      try {
-        db.prepare(
-          "UPDATE orders SET user_id = ? WHERE (user_id IS NULL OR user_id = '') AND LOWER(TRIM(customer_email)) = LOWER(TRIM(?))"
-        ).run(auth.userId, auth.email);
-      } catch (sqlErr) {
-        console.warn("SQLite auto-map error:", sqlErr);
-      }
-    }
-
     // 1. If Neon PostgreSQL is configured, fetch from Neon
     if (process.env.DATABASE_URL) {
       try {
-        if (auth.email) {
-          try {
-            await sql`UPDATE orders SET user_id = ${auth.userId} WHERE (user_id IS NULL OR user_id = '') AND LOWER(TRIM(customer_email)) = LOWER(TRIM(${auth.email}))`;
-          } catch (mErr) {
-            console.warn("Neon auto-map error:", mErr);
-          }
-        }
-
         let neonOrders;
         if (auth.role === "admin") {
           neonOrders = await sql`SELECT * FROM orders ORDER BY created_at DESC`;
@@ -401,14 +364,29 @@ export async function POST(request: Request) {
     const customerPhone = (delivery?.mobile || delivery?.phone || "+91 8606464700").trim();
 
     // 6a. Duplicate Order Prevention (Idempotency check within last 60 seconds)
+    // Strictly isolate: Authenticated user matches ONLY their own user_id. Guest matches unauthenticated records.
     const sixtySecsAgo = new Date(Date.now() - 60000).toISOString();
-    const existingRecentOrder = db.prepare(`
-      SELECT id, final_amount, created_at FROM orders 
-      WHERE (customer_phone = ? OR customer_email = ? OR (user_id IS NOT NULL AND user_id = ?))
-        AND final_amount = ?
-        AND created_at >= ?
-      ORDER BY created_at DESC LIMIT 1
-    `).get(customerPhone, customerEmail, auth?.userId || null, finalAmount, sixtySecsAgo) as { id: string; final_amount: number; created_at: string } | undefined;
+    let existingRecentOrder: { id: string; final_amount: number; created_at: string } | undefined;
+
+    if (auth?.userId) {
+      existingRecentOrder = db.prepare(`
+        SELECT id, final_amount, created_at FROM orders 
+        WHERE user_id = ?
+          AND final_amount = ?
+          AND created_at >= ?
+        ORDER BY created_at DESC LIMIT 1
+      `).get(auth.userId, finalAmount, sixtySecsAgo) as { id: string; final_amount: number; created_at: string } | undefined;
+    } else {
+      existingRecentOrder = db.prepare(`
+        SELECT id, final_amount, created_at FROM orders 
+        WHERE user_id IS NULL
+          AND customer_phone = ?
+          AND customer_email = ?
+          AND final_amount = ?
+          AND created_at >= ?
+        ORDER BY created_at DESC LIMIT 1
+      `).get(customerPhone, customerEmail, finalAmount, sixtySecsAgo) as { id: string; final_amount: number; created_at: string } | undefined;
+    }
 
     if (existingRecentOrder) {
       console.log(`[Order Dedup] Returning existing order #${existingRecentOrder.id} to prevent duplicate submission`);

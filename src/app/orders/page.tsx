@@ -122,8 +122,9 @@ export default function OrdersPage() {
   }, []);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      setDbOrders([]);
+    setDbOrders([]);
+    if (!isAuthenticated || !user?.id) {
+      setLoadingOrders(false);
       return;
     }
 
@@ -190,7 +191,7 @@ export default function OrdersPage() {
         setDbOrders([]);
       })
       .finally(() => setLoadingOrders(false));
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user?.id]);
 
   const orders = dbOrders;
 
