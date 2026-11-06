@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { sql } from "@/lib/db/neon";
 import { comparePassword, signUserToken } from "@/lib/auth/jwt";
 
 export async function POST(request: Request) {
@@ -15,13 +15,14 @@ export async function POST(request: Request) {
     }
 
     const cleanEmail = email.trim().toLowerCase();
-    const db = getDb();
 
-    const user = db.prepare(`
+    const users = await sql`
       SELECT id, name, email, phone, password_hash, role, image
       FROM users
-      WHERE email = ?
-    `).get(cleanEmail);
+      WHERE LOWER(email) = ${cleanEmail}
+      LIMIT 1
+    `;
+    const user = users[0];
 
     if (!user) {
       return NextResponse.json(

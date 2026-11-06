@@ -4,10 +4,8 @@ import {
   getFlowerBaskets,
   getProductsByCategory,
   getAllProducts,
-  CATALOG_PRODUCTS,
   Product,
 } from "@/data/catalog";
-import { getDb } from "@/lib/db";
 import { sql } from "@/lib/db/neon";
 
 export function mapDbToProduct(dbProduct: any): Product {
@@ -83,39 +81,20 @@ export async function getProduct(category: string, slug: string): Promise<Produc
 
   if (catalogProduct) return catalogProduct;
 
-  // 2. Try Neon PostgreSQL
-  if (process.env.DATABASE_URL) {
-    try {
-      const rows = await sql`
-        SELECT p.*, c.name as category_name, c.slug as category_slug
-        FROM products p
-        LEFT JOIN categories c ON p.category_id = c.id
-        WHERE p.slug = ${decodedSlug} OR p.id = ${decodedSlug}
-        LIMIT 1
-      `;
-      if (rows && rows.length > 0) {
-        return mapDbToProduct(rows[0]);
-      }
-    } catch (e) {
-      console.warn("Neon product lookup fallback:", e);
-    }
-  }
-
-  // 3. Try SQLite
+  // 2. Query Neon PostgreSQL as single source of truth
   try {
-    const db = getDb();
-    const row = db.prepare(`
+    const rows = await sql`
       SELECT p.*, c.name as category_name, c.slug as category_slug
       FROM products p
       LEFT JOIN categories c ON p.category_id = c.id
-      WHERE p.slug = ? OR p.id = ?
+      WHERE p.slug = ${decodedSlug} OR p.id = ${decodedSlug}
       LIMIT 1
-    `).get(decodedSlug, decodedSlug);
-    if (row) {
-      return mapDbToProduct(row);
+    `;
+    if (rows && rows.length > 0) {
+      return mapDbToProduct(rows[0]);
     }
   } catch (e) {
-    console.warn("SQLite product lookup error:", e);
+    console.error("Neon product lookup error:", e);
   }
 
   return null;
@@ -142,36 +121,18 @@ export async function getStorefrontCategoryProducts(categoryType: string): Promi
     baseProducts = getAllProducts();
   }
 
-  // 2. Fetch live published products from database
+  // 2. Fetch live published products from Neon PostgreSQL
   let dbRows: any[] = [];
-
-  if (process.env.DATABASE_URL) {
-    try {
-      dbRows = await sql`
-        SELECT p.*, c.name as category_name, c.slug as category_slug
-        FROM products p
-        LEFT JOIN categories c ON p.category_id = c.id
-        WHERE p.active = 1 AND (p.status = 'published' OR p.status IS NULL OR p.status = '')
-        ORDER BY p.created_at DESC
-      `;
-    } catch (e) {
-      console.warn("Neon category products fetch fallback:", e);
-    }
-  }
-
-  if (!dbRows || dbRows.length === 0) {
-    try {
-      const db = getDb();
-      dbRows = db.prepare(`
-        SELECT p.*, c.name as category_name, c.slug as category_slug
-        FROM products p
-        LEFT JOIN categories c ON p.category_id = c.id
-        WHERE p.active = 1 AND (p.status = 'published' OR p.status IS NULL OR p.status = '')
-        ORDER BY p.created_at DESC
-      `).all();
-    } catch (e) {
-      console.warn("SQLite category products fetch error:", e);
-    }
+  try {
+    dbRows = await sql`
+      SELECT p.*, c.name as category_name, c.slug as category_slug
+      FROM products p
+      LEFT JOIN categories c ON p.category_id = c.id
+      WHERE p.active = 1 AND (p.status = 'published' OR p.status IS NULL OR p.status = '')
+      ORDER BY p.created_at DESC
+    `;
+  } catch (e) {
+    console.error("Neon category products fetch error:", e);
   }
 
   if (!dbRows || dbRows.length === 0) {
@@ -186,8 +147,7 @@ export async function getStorefrontCategoryProducts(categoryType: string): Promi
     if (r.slug) dbRowBySlug.set(r.slug.toLowerCase(), r);
   }
 
-  // 3. Update base products with live edits from database (e.g. image replacements, price changes)
-  // or suppress if marked inactive/drafted
+  // 3. Update base products with live edits from database
   const updatedBaseProducts: Product[] = [];
   for (const bp of baseProducts) {
     const dbMatch = dbRowById.get(bp.id) || dbRowBySlug.get(bp.slug.toLowerCase());

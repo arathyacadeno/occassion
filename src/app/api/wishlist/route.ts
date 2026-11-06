@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { sql } from "@/lib/db/neon";
 import { getAuthenticatedUser } from "@/lib/auth/jwt";
 
 export async function GET(request: Request) {
@@ -9,22 +9,21 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: false, error: "Authentication required" }, { status: 401 });
     }
 
-    const db = getDb();
-    const rows = db.prepare(`
+    const rows = await sql`
       SELECT
         w.id as wishlist_id, w.created_at as added_at,
         p.id, p.name, p.slug, p.description, p.images, p.price,
         p.discount_price, p.stock, p.rating, p.reviews_count, p.badge
       FROM wishlist_items w
       JOIN products p ON w.product_id = p.id
-      WHERE w.user_id = ?
+      WHERE w.user_id = ${auth.userId}
       ORDER BY w.created_at DESC
-    `).all(auth.userId);
+    `;
 
     const items = rows.map((r: any) => {
       let images = [];
       try {
-        images = JSON.parse(r.images);
+        images = typeof r.images === "string" ? JSON.parse(r.images) : r.images;
       } catch {
         images = [r.images];
       }
@@ -34,13 +33,13 @@ export async function GET(request: Request) {
         name: r.name,
         slug: r.slug,
         description: r.description,
-        price: r.price,
-        originalPrice: r.discount_price,
+        price: Number(r.price) || 0,
+        originalPrice: r.discount_price ? Number(r.discount_price) : null,
         image: images[0] || "/images/lily-6-stems.png",
         images,
-        stock: r.stock,
-        rating: r.rating,
-        reviewsCount: r.reviews_count,
+        stock: Number(r.stock) || 0,
+        rating: Number(r.rating) || 5.0,
+        reviewsCount: Number(r.reviews_count) || 1,
         badge: r.badge,
         addedAt: r.added_at,
       };
@@ -71,20 +70,25 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: "Product ID is required" }, { status: 400 });
     }
 
-    const db = getDb();
-    const product = db.prepare("SELECT id, name FROM products WHERE id = ? OR slug = ?").get(productId, productId);
+    const products = await sql`
+      SELECT id, name FROM products WHERE id = ${productId} OR slug = ${productId} LIMIT 1
+    `;
+    const product = products[0];
+
     if (!product) {
       return NextResponse.json({ success: false, error: "Product not found" }, { status: 404 });
     }
 
     // Check if already in wishlist (toggle behavior)
-    const existing = db.prepare(`
+    const existingRows = await sql`
       SELECT id FROM wishlist_items
-      WHERE user_id = ? AND product_id = ?
-    `).get(auth.userId, product.id);
+      WHERE user_id = ${auth.userId} AND product_id = ${product.id}
+      LIMIT 1
+    `;
+    const existing = existingRows[0];
 
     if (existing) {
-      db.prepare("DELETE FROM wishlist_items WHERE id = ?").run(existing.id);
+      await sql`DELETE FROM wishlist_items WHERE id = ${existing.id}`;
       return NextResponse.json({
         success: true,
         action: "removed",
@@ -95,10 +99,10 @@ export async function POST(request: Request) {
 
     const id = "wish-" + Math.random().toString(36).substring(2, 10);
     const now = new Date().toISOString();
-    db.prepare(`
+    await sql`
       INSERT INTO wishlist_items (id, user_id, product_id, created_at)
-      VALUES (?, ?, ?, ?)
-    `).run(id, auth.userId, product.id, now);
+      VALUES (${id}, ${auth.userId}, ${product.id}, ${now})
+    `;
 
     return NextResponse.json({
       success: true,

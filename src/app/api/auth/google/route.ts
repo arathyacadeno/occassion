@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { sql } from "@/lib/db/neon";
 import { signUserToken } from "@/lib/auth/jwt";
 
 export async function POST(request: Request) {
@@ -37,33 +37,35 @@ export async function POST(request: Request) {
     const cleanName = (name || cleanEmail.split("@")[0]).trim();
     const cleanGoogleId = googleId ? String(googleId) : null;
     const cleanImage = image || null;
-
-    const db = getDb();
     const now = new Date().toISOString();
 
-    // Check if user already exists
-    let user = db.prepare("SELECT * FROM users WHERE email = ?").get(cleanEmail);
+    // Check if user already exists in Neon PostgreSQL
+    const existing = await sql`
+      SELECT * FROM users WHERE LOWER(email) = ${cleanEmail} LIMIT 1
+    `;
 
-    if (user) {
+    let user: any;
+    if (existing && existing.length > 0) {
+      user = existing[0];
       // Existing user: Link Google ID / image if not set
-      db.prepare(`
+      await sql`
         UPDATE users
-        SET google_id = COALESCE(google_id, ?),
-            image = COALESCE(?, image),
-            updated_at = ?
-        WHERE id = ?
-      `).run(cleanGoogleId, cleanImage, now, user.id);
-
-      user = db.prepare("SELECT * FROM users WHERE id = ?").get(user.id);
+        SET google_id = COALESCE(google_id, ${cleanGoogleId}),
+            image = COALESCE(${cleanImage}, image),
+            updated_at = ${now}
+        WHERE id = ${user.id}
+      `;
+      const updated = await sql`SELECT * FROM users WHERE id = ${user.id} LIMIT 1`;
+      user = updated[0];
     } else {
-      // New user: Automatic account creation
+      // New user: Automatic account creation in Neon PostgreSQL
       const userId = "usr-g-" + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
-      db.prepare(`
+      await sql`
         INSERT INTO users (id, name, email, phone, google_id, image, role, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, 'customer', ?, ?)
-      `).run(userId, cleanName, cleanEmail, "", cleanGoogleId, cleanImage, now, now);
-
-      user = db.prepare("SELECT * FROM users WHERE id = ?").get(userId);
+        VALUES (${userId}, ${cleanName}, ${cleanEmail}, '', ${cleanGoogleId}, ${cleanImage}, 'customer', ${now}, ${now})
+      `;
+      const created = await sql`SELECT * FROM users WHERE id = ${userId} LIMIT 1`;
+      user = created[0];
     }
 
     const userData = {

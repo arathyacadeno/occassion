@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { sql } from "@/lib/db/neon";
 import { signUserToken } from "@/lib/auth/jwt";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { phoneNumber, otp } = body;
+    const phoneNumber = body.phoneNumber || body.phone;
+    const { otp } = body;
 
     if (!phoneNumber || !otp) {
       return NextResponse.json(
@@ -24,19 +25,11 @@ export async function POST(request: Request) {
       );
     }
 
-    const db = getDb();
-
-    db.exec(`
-      CREATE TABLE IF NOT EXISTS phone_otps (
-        phone TEXT PRIMARY KEY,
-        otp TEXT NOT NULL,
-        expires_at INTEGER NOT NULL,
-        created_at TEXT NOT NULL
-      );
-    `);
-
-    // Check OTP record in database
-    const otpRecord = db.prepare("SELECT * FROM phone_otps WHERE phone = ?").get(cleanPhone);
+    // Check OTP record in Neon PostgreSQL
+    const otpRecords = await sql`
+      SELECT * FROM phone_otps WHERE phone = ${cleanPhone} LIMIT 1
+    `;
+    const otpRecord = otpRecords[0];
 
     if (!otpRecord) {
       return NextResponse.json(
@@ -46,8 +39,8 @@ export async function POST(request: Request) {
     }
 
     // Check expiration
-    if (Date.now() > otpRecord.expires_at) {
-      db.prepare("DELETE FROM phone_otps WHERE phone = ?").run(cleanPhone);
+    if (Date.now() > Number(otpRecord.expires_at)) {
+      await sql`DELETE FROM phone_otps WHERE phone = ${cleanPhone}`;
       return NextResponse.json(
         { success: false, error: "OTP has expired. Please click 'Resend OTP'." },
         { status: 400 }
@@ -63,39 +56,42 @@ export async function POST(request: Request) {
     }
 
     // OTP is valid - delete from active OTPs
-    db.prepare("DELETE FROM phone_otps WHERE phone = ?").run(cleanPhone);
+    await sql`DELETE FROM phone_otps WHERE phone = ${cleanPhone}`;
 
     const fullPhone = `+91${cleanPhone}`;
     const generatedEmail = `${cleanPhone}@phone.occasions.in`;
     const now = new Date().toISOString();
 
-    // Check if user already exists
-    let user = db.prepare(`
+    // Check if user already exists in Neon PostgreSQL
+    const existing = await sql`
       SELECT * FROM users 
-      WHERE phone = ? OR phone = ? OR phone = ? OR email = ?
-    `).get(fullPhone, cleanPhone, `+91 ${cleanPhone}`, generatedEmail);
+      WHERE phone = ${fullPhone} OR phone = ${cleanPhone} OR phone = ${`+91 ${cleanPhone}`} OR email = ${generatedEmail}
+      LIMIT 1
+    `;
 
-    if (user) {
+    let user: any;
+    if (existing && existing.length > 0) {
+      user = existing[0];
       // Existing user: ensure updated timestamp
-      db.prepare(`
+      await sql`
         UPDATE users 
-        SET phone = COALESCE(phone, ?),
-            updated_at = ?
-        WHERE id = ?
-      `).run(fullPhone, now, user.id);
-
-      user = db.prepare("SELECT * FROM users WHERE id = ?").get(user.id);
+        SET phone = COALESCE(phone, ${fullPhone}),
+            updated_at = ${now}
+        WHERE id = ${user.id}
+      `;
+      const updated = await sql`SELECT * FROM users WHERE id = ${user.id} LIMIT 1`;
+      user = updated[0];
     } else {
-      // Create new customer account
+      // Create new customer account in Neon PostgreSQL
       const userId = "usr-p-" + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
       const displayName = `Customer (${cleanPhone})`;
 
-      db.prepare(`
+      await sql`
         INSERT INTO users (id, name, email, phone, role, created_at, updated_at)
-        VALUES (?, ?, ?, ?, 'customer', ?, ?)
-      `).run(userId, displayName, generatedEmail, fullPhone, now, now);
-
-      user = db.prepare("SELECT * FROM users WHERE id = ?").get(userId);
+        VALUES (${userId}, ${displayName}, ${generatedEmail}, ${fullPhone}, 'customer', ${now}, ${now})
+      `;
+      const created = await sql`SELECT * FROM users WHERE id = ${userId} LIMIT 1`;
+      user = created[0];
     }
 
     const userData = {

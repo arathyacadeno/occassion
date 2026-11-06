@@ -33,6 +33,20 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# database files & backups
+data/*.backup
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+*.db
+*.backup
+*.sqlite
+*.sqlite3
+
+# scratch & temporary verification scripts
+/scratch/
+
 # vercel
 .vercel
 

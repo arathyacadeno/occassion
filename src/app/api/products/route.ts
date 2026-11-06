@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
 import { sql } from "@/lib/db/neon";
 import { getAuthenticatedUser } from "@/lib/auth/jwt";
 
@@ -24,62 +23,66 @@ export async function GET(request: Request) {
     const auth = getAuthenticatedUser(request);
     const isAdmin = auth?.role === "admin";
 
-    const db = getDb();
-
     const whereClauses: string[] = [];
     const params: any[] = [];
 
+    const addParam = (val: any) => {
+      params.push(val);
+      return `$${params.length}`;
+    };
+
     // Customer vs Admin visibility rule:
-    // Public customers only see active = 1 AND status = 'published' (or published legacy products where status is null)
     if (!isAdmin) {
       whereClauses.push("p.active = 1");
       whereClauses.push("(p.status = 'published' OR p.status IS NULL OR p.status = '')");
     } else {
-      // Admin can filter by status ('all', 'published', 'draft')
       if (status && status !== "all") {
-        whereClauses.push("p.status = ?");
-        params.push(status);
+        whereClauses.push(`p.status = ${addParam(status)}`);
       }
-      // Admin can filter by active/inactive
       const activeParam = searchParams.get("active");
       if (activeParam !== null && activeParam !== "all") {
-        whereClauses.push("p.active = ?");
-        params.push(activeParam === "true" || activeParam === "1" ? 1 : 0);
+        whereClauses.push(`p.active = ${addParam(activeParam === "true" || activeParam === "1" ? 1 : 0)}`);
       }
     }
 
-    // Search query (matches name, description, slug, sku, badge)
+    // Search query
     if (search) {
-      whereClauses.push("(LOWER(p.name) LIKE ? OR LOWER(p.description) LIKE ? OR LOWER(p.slug) LIKE ? OR LOWER(p.sku) LIKE ? OR LOWER(p.badge) LIKE ?)");
       const term = `%${search}%`;
-      params.push(term, term, term, term, term);
+      const p1 = addParam(term);
+      const p2 = addParam(term);
+      const p3 = addParam(term);
+      const p4 = addParam(term);
+      const p5 = addParam(term);
+      whereClauses.push(`(LOWER(p.name) LIKE ${p1} OR LOWER(p.description) LIKE ${p2} OR LOWER(p.slug) LIKE ${p3} OR LOWER(p.sku) LIKE ${p4} OR LOWER(p.badge) LIKE ${p5})`);
     }
 
     // Category filter
     if (category && category !== "all") {
-      whereClauses.push("(c.slug = ? OR p.category_id = ?)");
-      params.push(category, category);
+      const pCat1 = addParam(category);
+      const pCat2 = addParam(category);
+      whereClauses.push(`(c.slug = ${pCat1} OR p.category_id = ${pCat2})`);
     }
 
-    // Product Type filter (flower, cake, basket, wreath, decor, general)
+    // Product Type filter
     if (productType && productType !== "all") {
-      whereClauses.push("p.type = ?");
-      params.push(productType);
+      whereClauses.push(`p.type = ${addParam(productType)}`);
     }
 
     // Flower type filter
     if (flower && flower !== "all") {
-      whereClauses.push("(ft.slug = ? OR p.flower_type_id = ?)");
-      params.push(flower, flower);
+      const pF1 = addParam(flower);
+      const pF2 = addParam(flower);
+      whereClauses.push(`(ft.slug = ${pF1} OR p.flower_type_id = ${pF2})`);
     }
 
     // Occasion filter
     if (occasion && occasion !== "all") {
-      whereClauses.push("(o.slug = ? OR p.occasion_id = ?)");
-      params.push(occasion, occasion);
+      const pO1 = addParam(occasion);
+      const pO2 = addParam(occasion);
+      whereClauses.push(`(o.slug = ${pO1} OR p.occasion_id = ${pO2})`);
     }
 
-    // Stock Status filter (in_stock, low_stock, out_of_stock)
+    // Stock Status filter
     if (stockStatus && stockStatus !== "all") {
       if (stockStatus === "out_of_stock") {
         whereClauses.push("p.stock <= 0");
@@ -92,12 +95,10 @@ export async function GET(request: Request) {
 
     // Price filters
     if (minPrice !== null && !isNaN(minPrice)) {
-      whereClauses.push("p.price >= ?");
-      params.push(minPrice);
+      whereClauses.push(`p.price >= ${addParam(minPrice)}`);
     }
     if (maxPrice !== null && !isNaN(maxPrice)) {
-      whereClauses.push("p.price <= ?");
-      params.push(maxPrice);
+      whereClauses.push(`p.price <= ${addParam(maxPrice)}`);
     }
 
     // Featured filter
@@ -125,17 +126,20 @@ export async function GET(request: Request) {
 
     // Count total matching items
     const countSql = `
-      SELECT COUNT(*) as total
+      SELECT COUNT(*)::int as total
       FROM products p
       LEFT JOIN categories c ON p.category_id = c.id
       LEFT JOIN flower_types ft ON p.flower_type_id = ft.id
       LEFT JOIN occasions o ON p.occasion_id = o.id
       ${whereSql}
     `;
-    const countResult = db.prepare(countSql).get(...params);
-    const total = countResult ? countResult.total : 0;
+    const countRows = await sql.query(countSql, [...params]);
+    const total = Number(countRows[0]?.total || 0);
 
     // Fetch paginated products
+    const limitPlaceholder = addParam(limit);
+    const offsetPlaceholder = addParam(offset);
+
     const querySql = `
       SELECT
         p.id, p.name, p.slug, p.description, p.images, p.price, p.discount_price,
@@ -153,17 +157,17 @@ export async function GET(request: Request) {
       LEFT JOIN occasions o ON p.occasion_id = o.id
       ${whereSql}
       ${orderSql}
-      LIMIT ? OFFSET ?
+      LIMIT ${limitPlaceholder} OFFSET ${offsetPlaceholder}
     `;
 
-    const rawRows = db.prepare(querySql).all(...params, limit, offset);
+    const rawRows = await sql.query(querySql, params);
 
-    const products = rawRows.map((r: any) => {
+    const products = (rawRows || []).map((r: any) => {
       let parsedImages: string[] = [];
       try {
         parsedImages = JSON.parse(r.images);
       } catch {
-        parsedImages = [r.images];
+        parsedImages = r.images ? [r.images] : [];
       }
 
       let parsedOffers: string[] = [];
@@ -200,11 +204,11 @@ export async function GET(request: Request) {
         slug: r.slug,
         description: r.description,
         shortDescription: r.short_description || "",
-        price: r.price,
-        originalPrice: r.discount_price,
+        price: Number(r.price),
+        originalPrice: r.discount_price ? Number(r.discount_price) : undefined,
         image: parsedImages[0] || "/images/cat-flower-bouquet-luxe.jpg",
         images: parsedImages,
-        stock: r.stock,
+        stock: Number(r.stock),
         lowStockThreshold: r.low_stock_threshold ?? 5,
         sku: r.sku,
         category: r.category_slug || (r.category_id ? r.category_id.replace(/^cat-/, "") : "flower"),
@@ -229,8 +233,8 @@ export async function GET(request: Request) {
         occasionLabel: r.occasion_name,
         featured: !!r.featured,
         active: !!r.active,
-        rating: r.rating,
-        reviewsCount: r.reviews_count,
+        rating: Number(r.rating) || 5.0,
+        reviewsCount: Number(r.reviews_count) || 0,
         deliveryInfo: r.delivery_info,
         offers: parsedOffers,
         includes: parsedIncludes,
@@ -305,7 +309,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: "Valid product price is required" }, { status: 400 });
     }
 
-    const db = getDb();
     const now = new Date().toISOString();
 
     // Generate unique slug
@@ -315,9 +318,9 @@ export async function POST(request: Request) {
 
     if (!cleanSlug) cleanSlug = "product-" + Date.now();
 
-    // Ensure slug uniqueness
-    const existingSlug = db.prepare("SELECT id FROM products WHERE slug = ?").get(cleanSlug);
-    if (existingSlug) {
+    // Ensure slug uniqueness in Neon
+    const existingSlug = await sql`SELECT id FROM products WHERE slug = ${cleanSlug} LIMIT 1`;
+    if (existingSlug && existingSlug.length > 0) {
       cleanSlug = `${cleanSlug}-${Date.now().toString().slice(-4)}`;
     }
 
@@ -337,8 +340,8 @@ export async function POST(request: Request) {
 
     // Ensure category exists in categories table if newly created inline
     if (categoryId && categoryId.startsWith("cat-")) {
-      const existingCategory = db.prepare("SELECT id FROM categories WHERE id = ? OR slug = ?").get(categoryId, categoryId.replace(/^cat-/, ""));
-      if (!existingCategory) {
+      const existingCategory = await sql`SELECT id FROM categories WHERE id = ${categoryId} OR slug = ${categoryId.replace(/^cat-/, "")} LIMIT 1`;
+      if (!existingCategory || existingCategory.length === 0) {
         const catSlug = categoryId.replace(/^cat-/, "");
         const catName = catSlug
           .split("-")
@@ -346,93 +349,40 @@ export async function POST(request: Request) {
           .join(" ");
         const catImg = imageArray[0] || "/images/cat-flower-bouquet-luxe.jpg";
         try {
-          db.prepare(`
+          await sql`
             INSERT INTO categories (id, name, slug, description, image, display_order, active)
-            VALUES (?, ?, ?, ?, ?, 99, 1)
-          `).run(categoryId, catName, catSlug, `${catName} collection`, catImg);
-
-          if (process.env.DATABASE_URL) {
-            await sql`
-              INSERT INTO categories (id, name, slug, description, image, display_order, active)
-              VALUES (${categoryId}, ${catName}, ${catSlug}, ${`${catName} collection`}, ${catImg}, 99, 1)
-              ON CONFLICT (id) DO NOTHING
-            `;
-          }
+            VALUES (${categoryId}, ${catName}, ${catSlug}, ${`${catName} collection`}, ${catImg}, 99, 1)
+            ON CONFLICT (id) DO NOTHING
+          `;
         } catch (catErr) {
           console.warn("Auto-insert category warning:", catErr);
         }
       }
     }
 
-    db.prepare(`
+    await sql`
       INSERT INTO products (
         id, name, slug, description, short_description, images, price, discount_price,
         stock, low_stock_threshold, sku, category_id, flower_type_id, occasion_id,
         featured, active, rating, reviews_count, delivery_info,
         offers, includes, badge, type, status, tags, seo_title, seo_description,
         attributes, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 5.0, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      id,
-      name.trim(),
-      cleanSlug,
-      description || "",
-      shortDescription || "",
-      JSON.stringify(imageArray),
-      numPrice,
-      originalPrice ? Number(originalPrice) : null,
-      stock !== undefined ? Number(stock) : 45,
-      lowStockThreshold !== undefined ? Number(lowStockThreshold) : 5,
-      sku || `SKU-${id.toUpperCase()}`,
-      categoryId || "cat-flower-bouquet",
-      flowerTypeId || "ft-mixed-flowers",
-      occasionId || "occ-birthday",
-      featured ? 1 : 0,
-      active !== undefined ? (active ? 1 : 0) : 1,
-      deliveryInfo || "Same-day Calicut express delivery available",
-      JSON.stringify(Array.isArray(offers) ? offers : []),
-      JSON.stringify(Array.isArray(includes) ? includes : []),
-      badge || null,
-      inferredType,
-      status || "published",
-      JSON.stringify(Array.isArray(tags) ? tags : []),
-      seoTitle || "",
-      seoDescription || "",
-      JSON.stringify(typeof attributes === "object" && attributes !== null ? attributes : {}),
-      now,
-      now
-    );
-
-    // Sync newly created product to Neon DB if configured
-    if (process.env.DATABASE_URL) {
-      try {
-        await sql`
-          INSERT INTO products (
-            id, name, slug, description, short_description, images, price, discount_price,
-            stock, low_stock_threshold, sku, category_id, flower_type_id, occasion_id,
-            featured, active, rating, reviews_count, delivery_info,
-            offers, includes, badge, type, status, tags, seo_title, seo_description,
-            attributes, created_at, updated_at
-          ) VALUES (
-            ${id}, ${name.trim()}, ${cleanSlug}, ${description || ""}, ${shortDescription || ""},
-            ${JSON.stringify(imageArray)}, ${numPrice}, ${originalPrice ? Number(originalPrice) : null},
-            ${stock !== undefined ? Number(stock) : 45}, ${lowStockThreshold !== undefined ? Number(lowStockThreshold) : 5},
-            ${sku || `SKU-${id.toUpperCase()}`}, ${categoryId || "cat-flower-bouquet"}, ${flowerTypeId || "ft-mixed-flowers"},
-            ${occasionId || "occ-birthday"}, ${featured ? 1 : 0}, ${active !== undefined ? (active ? 1 : 0) : 1},
-            5.0, 1, ${deliveryInfo || "Same-day Calicut express delivery available"},
-            ${JSON.stringify(Array.isArray(offers) ? offers : [])},
-            ${JSON.stringify(Array.isArray(includes) ? includes : [])},
-            ${badge || null}, ${inferredType}, ${status || "published"},
-            ${JSON.stringify(Array.isArray(tags) ? tags : [])},
-            ${seoTitle || ""}, ${seoDescription || ""},
-            ${JSON.stringify(typeof attributes === "object" && attributes !== null ? attributes : {})},
-            ${now}, ${now}
-          )
-        `;
-      } catch (neonErr) {
-        console.warn("Neon product insert sync warning:", neonErr);
-      }
-    }
+      ) VALUES (
+        ${id}, ${name.trim()}, ${cleanSlug}, ${description || ""}, ${shortDescription || ""},
+        ${JSON.stringify(imageArray)}, ${numPrice}, ${originalPrice ? Number(originalPrice) : null},
+        ${stock !== undefined ? Number(stock) : 45}, ${lowStockThreshold !== undefined ? Number(lowStockThreshold) : 5},
+        ${sku || `SKU-${id.toUpperCase()}`}, ${categoryId || "cat-flower-bouquet"}, ${flowerTypeId || "ft-mixed-flowers"},
+        ${occasionId || "occ-birthday"}, ${featured ? 1 : 0}, ${active !== undefined ? (active ? 1 : 0) : 1},
+        5.0, 1, ${deliveryInfo || "Same-day Calicut express delivery available"},
+        ${JSON.stringify(Array.isArray(offers) ? offers : [])},
+        ${JSON.stringify(Array.isArray(includes) ? includes : [])},
+        ${badge || null}, ${inferredType}, ${status || "published"},
+        ${JSON.stringify(Array.isArray(tags) ? tags : [])},
+        ${seoTitle || ""}, ${seoDescription || ""},
+        ${JSON.stringify(typeof attributes === "object" && attributes !== null ? attributes : {})},
+        ${now}, ${now}
+      )
+    `;
 
     return NextResponse.json({
       success: true,

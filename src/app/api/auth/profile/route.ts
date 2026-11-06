@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { sql } from "@/lib/db/neon";
 import { getAuthenticatedUser, comparePassword, hashPassword } from "@/lib/auth/jwt";
 
 export async function GET(request: Request) {
@@ -9,20 +9,24 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
 
-    const db = getDb();
-    const user = db.prepare(`
+    const users = await sql`
       SELECT id, name, email, phone, role, image, google_id, created_at
       FROM users
-      WHERE id = ?
-    `).get(auth.userId);
+      WHERE id = ${auth.userId}
+      LIMIT 1
+    `;
+    const user = users[0];
 
     if (!user) {
       return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
     }
 
-    // Get order count and saved addresses count
-    const ordersCount = db.prepare("SELECT count(*) as count FROM orders WHERE user_id = ?").get(user.id)?.count || 0;
-    const addressCount = db.prepare("SELECT count(*) as count FROM addresses WHERE user_id = ?").get(user.id)?.count || 0;
+    // Get order count and saved addresses count from Neon
+    const orderCountRes = await sql`SELECT count(*) as count FROM orders WHERE user_id = ${user.id}`;
+    const ordersCount = Number(orderCountRes[0]?.count) || 0;
+
+    const addressCountRes = await sql`SELECT count(*) as count FROM addresses WHERE user_id = ${user.id}`;
+    const addressCount = Number(addressCountRes[0]?.count) || 0;
 
     return NextResponse.json({
       success: true,
@@ -56,10 +60,10 @@ export async function PUT(request: Request) {
 
     const body = await request.json();
     const { name, phone, image, currentPassword, newPassword } = body;
-    const db = getDb();
     const now = new Date().toISOString();
 
-    const user = db.prepare("SELECT * FROM users WHERE id = ?").get(auth.userId);
+    const users = await sql`SELECT * FROM users WHERE id = ${auth.userId} LIMIT 1`;
+    const user = users[0];
     if (!user) {
       return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
     }
@@ -93,11 +97,15 @@ export async function PUT(request: Request) {
     const updatedPhone = phone !== undefined ? phone.trim() : user.phone;
     const updatedImage = image !== undefined ? image : user.image;
 
-    db.prepare(`
+    await sql`
       UPDATE users
-      SET name = ?, phone = ?, image = ?, password_hash = ?, updated_at = ?
-      WHERE id = ?
-    `).run(updatedName, updatedPhone, updatedImage, passwordHash, now, user.id);
+      SET name = ${updatedName},
+          phone = ${updatedPhone},
+          image = ${updatedImage},
+          password_hash = ${passwordHash},
+          updated_at = ${now}
+      WHERE id = ${user.id}
+    `;
 
     return NextResponse.json({
       success: true,

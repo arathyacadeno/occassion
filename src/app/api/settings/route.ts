@@ -1,36 +1,13 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
 import { sql } from "@/lib/db/neon";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    let settingsRows: { key: string; value: string }[] = [];
+    const rows = await sql`SELECT key, value FROM store_settings`;
+    const settingsRows = (rows || []) as { key: string; value: string }[];
 
-    // Try Neon Postgres if configured
-    if (process.env.DATABASE_URL) {
-      try {
-        const rows = await sql`
-          SELECT key, value FROM store_settings;
-        `;
-        settingsRows = rows as { key: string; value: string }[];
-      } catch (neonErr) {
-        console.warn("Neon store_settings fetch fallback to SQLite:", neonErr);
-      }
-    }
-
-    // Fallback to SQLite if empty
-    if (!settingsRows || settingsRows.length === 0) {
-      try {
-        const db = getDb();
-        settingsRows = db.prepare("SELECT key, value FROM store_settings").all() as { key: string; value: string }[];
-      } catch (sqlErr) {
-        console.warn("SQLite store_settings fetch warning:", sqlErr);
-      }
-    }
-
-    // Convert key-value array to object dictionary
     const settings: Record<string, string> = {
       store_name: "Occassions",
       store_tagline: "Luxury Florist & Celebration Atelier",
@@ -65,4 +42,3 @@ export async function GET() {
     );
   }
 }
-

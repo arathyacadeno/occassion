@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { sql } from "@/lib/db/neon";
 import { hashPassword, signUserToken } from "@/lib/auth/jwt";
 
 export async function POST(request: Request) {
@@ -25,26 +25,26 @@ export async function POST(request: Request) {
     const cleanName = name.trim();
     const cleanPhone = (phone || "").trim();
 
-    const db = getDb();
-
-    // 2. Check if user already exists
-    const existing = db.prepare("SELECT id FROM users WHERE email = ?").get(cleanEmail);
-    if (existing) {
+    // 2. Check if user already exists in Neon PostgreSQL
+    const existing = await sql`
+      SELECT id FROM users WHERE LOWER(email) = ${cleanEmail} LIMIT 1
+    `;
+    if (existing && existing.length > 0) {
       return NextResponse.json(
         { success: false, error: "An account with this email already exists. Please sign in." },
         { status: 409 }
       );
     }
 
-    // 3. Create user
+    // 3. Create user in Neon PostgreSQL
     const userId = "usr-" + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
     const passwordHash = await hashPassword(password);
     const now = new Date().toISOString();
 
-    db.prepare(`
+    await sql`
       INSERT INTO users (id, name, email, phone, password_hash, role, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, 'customer', ?, ?)
-    `).run(userId, cleanName, cleanEmail, cleanPhone, passwordHash, now, now);
+      VALUES (${userId}, ${cleanName}, ${cleanEmail}, ${cleanPhone}, ${passwordHash}, 'customer', ${now}, ${now})
+    `;
 
     const user = {
       id: userId,
@@ -61,12 +61,15 @@ export async function POST(request: Request) {
       role: user.role,
     });
 
-    const response = NextResponse.json({
-      success: true,
-      message: "Account created successfully",
-      user,
-      token,
-    });
+    const response = NextResponse.json(
+      {
+        success: true,
+        message: "Account created successfully",
+        user,
+        token,
+      },
+      { status: 201 }
+    );
 
     // Set cookie for automatic session persistence
     response.cookies.set("occasions_token", token, {

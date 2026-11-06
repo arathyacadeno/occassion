@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 import { getAuthenticatedUser } from "@/lib/auth/jwt";
-import { getDb } from "@/lib/db";
 import { sql } from "@/lib/db/neon";
 import { v2 as cloudinary } from "cloudinary";
 
@@ -114,43 +113,15 @@ export async function POST(request: Request) {
     const mediaId = `med-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
     const now = new Date().toISOString();
 
-    // Save record to SQLite media database
-    const db = getDb();
-    try {
-      db.prepare(`
-        INSERT OR REPLACE INTO media (id, url, public_id, filename, format, size, width, height, folder, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `).run(
-        mediaId,
-        localUrl,
-        localUrl,
-        safeName,
-        ext.replace(".", ""),
-        rawBuffer.length,
-        800,
-        800,
-        folderName,
-        now
-      );
-    } catch (dbErr: any) {
-      console.warn("SQLite media record insert warning:", dbErr.message);
-    }
-
-    // Sync record to Neon DB if connected
-    if (process.env.DATABASE_URL) {
-      try {
-        await sql`
-          INSERT INTO media (id, url, public_id, filename, format, size, width, height, folder, created_at)
-          VALUES (
-            ${mediaId}, ${localUrl}, ${localUrl}, ${safeName},
-            ${ext.replace(".", "")}, ${rawBuffer.length}, 800, 800, ${folderName}, ${now}
-          )
-          ON CONFLICT (id) DO NOTHING
-        `;
-      } catch (neonErr: any) {
-        console.warn("Neon media insert sync warning:", neonErr.message);
-      }
-    }
+    // Record to Neon PostgreSQL media database
+    await sql`
+      INSERT INTO media (id, url, public_id, filename, format, size, width, height, folder, created_at)
+      VALUES (
+        ${mediaId}, ${localUrl}, ${localUrl}, ${safeName},
+        ${ext.replace(".", "")}, ${rawBuffer.length}, 800, 800, ${folderName}, ${now}
+      )
+      ON CONFLICT (id) DO NOTHING
+    `;
 
     // Optional Cloudinary backup upload in background
     if (process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {

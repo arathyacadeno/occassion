@@ -1,25 +1,23 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
-import { getAuthenticatedUser } from "@/lib/auth/jwt";
 import { sql } from "@/lib/db/neon";
+import { getAuthenticatedUser } from "@/lib/auth/jwt";
 
 export async function GET(request: Request) {
   try {
     const auth = getAuthenticatedUser(request);
-    const db = getDb();
 
     if (auth && auth.role === "admin") {
-      const coupons = db.prepare("SELECT * FROM coupons ORDER BY active DESC, code ASC").all();
+      const coupons = await sql`SELECT * FROM coupons ORDER BY active DESC, code ASC`;
       return NextResponse.json({ success: true, coupons });
     }
 
     // Public active coupons
-    const coupons = db.prepare(`
+    const coupons = await sql`
       SELECT code, discount_type, discount_value, min_order_value, max_discount
       FROM coupons
       WHERE active = 1
       ORDER BY min_order_value ASC
-    `).all();
+    `;
 
     return NextResponse.json({ success: true, coupons });
   } catch (error: any) {
@@ -44,48 +42,25 @@ export async function POST(request: Request) {
 
     const cleanCode = code.trim().toUpperCase();
     const id = "cpn-" + cleanCode.toLowerCase();
-    const db = getDb();
 
-    db.prepare(`
-      INSERT OR REPLACE INTO coupons (
+    await sql`
+      INSERT INTO coupons (
         id, code, discount_type, discount_value, min_order_value, max_discount, expiry_date, usage_limit, active
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)
-    `).run(
-      id,
-      cleanCode,
-      discountType,
-      Number(discountValue),
-      minOrderValue ? Number(minOrderValue) : 0,
-      maxDiscount ? Number(maxDiscount) : null,
-      expiryDate || null,
-      usageLimit ? Number(usageLimit) : 1000
-    );
-
-    // Dual-write to Neon PostgreSQL
-    if (process.env.DATABASE_URL) {
-      try {
-        await sql`
-          INSERT INTO coupons (
-            id, code, discount_type, discount_value, min_order_value, max_discount, expiry_date, usage_limit, active
-          ) VALUES (
-            ${id}, ${cleanCode}, ${discountType}, ${Number(discountValue)}, 
-            ${minOrderValue ? Number(minOrderValue) : 0}, ${maxDiscount ? Number(maxDiscount) : null}, 
-            ${expiryDate || null}, ${usageLimit ? Number(usageLimit) : 1000}, 1
-          )
-          ON CONFLICT (id) DO UPDATE SET
-            code = EXCLUDED.code,
-            discount_type = EXCLUDED.discount_type,
-            discount_value = EXCLUDED.discount_value,
-            min_order_value = EXCLUDED.min_order_value,
-            max_discount = EXCLUDED.max_discount,
-            expiry_date = EXCLUDED.expiry_date,
-            usage_limit = EXCLUDED.usage_limit,
-            active = EXCLUDED.active;
-        `;
-      } catch (neonErr) {
-        console.warn("Neon coupons sync warning:", neonErr);
-      }
-    }
+      ) VALUES (
+        ${id}, ${cleanCode}, ${discountType}, ${Number(discountValue)}, 
+        ${minOrderValue ? Number(minOrderValue) : 0}, ${maxDiscount ? Number(maxDiscount) : null}, 
+        ${expiryDate || null}, ${usageLimit ? Number(usageLimit) : 1000}, 1
+      )
+      ON CONFLICT (id) DO UPDATE SET
+        code = EXCLUDED.code,
+        discount_type = EXCLUDED.discount_type,
+        discount_value = EXCLUDED.discount_value,
+        min_order_value = EXCLUDED.min_order_value,
+        max_discount = EXCLUDED.max_discount,
+        expiry_date = EXCLUDED.expiry_date,
+        usage_limit = EXCLUDED.usage_limit,
+        active = EXCLUDED.active;
+    `;
 
     return NextResponse.json({ success: true, message: `Coupon ${cleanCode} created successfully` });
   } catch (error: any) {

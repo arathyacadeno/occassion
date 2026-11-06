@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { sql } from "@/lib/db/neon";
 import { getAuthenticatedUser } from "@/lib/auth/jwt";
 
 export async function DELETE(
@@ -13,13 +13,12 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    const db = getDb();
 
-    // Delete by wishlist ID or product ID
-    db.prepare(`
+    // Delete by wishlist ID or product ID in Neon
+    await sql`
       DELETE FROM wishlist_items
-      WHERE user_id = ? AND (id = ? OR product_id = ?)
-    `).run(auth.userId, id, id);
+      WHERE user_id = ${auth.userId} AND (id = ${id} OR product_id = ${id})
+    `;
 
     return NextResponse.json({ success: true, message: "Removed from wishlist" });
   } catch (error: any) {

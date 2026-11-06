@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { sql } from "@/lib/db/neon";
 import { getAuthenticatedUser } from "@/lib/auth/jwt";
 
 export async function GET() {
   try {
-    const db = getDb();
-    const flowers = db.prepare("SELECT * FROM flower_types ORDER BY name ASC").all();
-    return NextResponse.json({ success: true, flowers });
+    const flowers = await sql`SELECT * FROM flower_types ORDER BY name ASC`;
+    return NextResponse.json({ success: true, flowers: flowers || [] });
   } catch (error: any) {
     console.error("Flower types fetch error:", error);
     return NextResponse.json({ success: false, error: "Failed to fetch flower types" }, { status: 500 });
@@ -28,12 +27,12 @@ export async function POST(request: Request) {
     }
 
     const id = "ft-" + slug.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-    const db = getDb();
 
-    db.prepare(`
+    await sql`
       INSERT INTO flower_types (id, name, slug)
-      VALUES (?, ?, ?)
-    `).run(id, name, slug);
+      VALUES (${id}, ${name}, ${slug})
+      ON CONFLICT (id) DO NOTHING
+    `;
 
     return NextResponse.json({ success: true, flowerType: { id, name, slug } });
   } catch (error: any) {

@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
 import { sql } from "@/lib/db/neon";
 import { getAuthenticatedUser } from "@/lib/auth/jwt";
 import { checkDeliveryAsync } from "@/lib/delivery/service";
@@ -13,40 +12,23 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const rawOrderId = searchParams.get("id");
 
-    const db = getDb();
-
     // If query by orderId directly (for tracking / thank-you)
     if (rawOrderId) {
       const cleanOrderId = rawOrderId.trim().replace(/^#+/, "");
       const hashOrderId = `#${cleanOrderId}`;
 
-      let foundOrder: any = null;
-      let orderItems: any[] = [];
+      const neonOrders = await sql`
+        SELECT * FROM orders 
+        WHERE id = ${cleanOrderId} OR id = ${hashOrderId} OR id = ${rawOrderId}
+        LIMIT 1
+      `;
 
-      if (process.env.DATABASE_URL) {
-        try {
-          const neonOrders = await sql`SELECT * FROM orders WHERE id = ${cleanOrderId} OR id = ${hashOrderId} OR id = ${rawOrderId}`;
-          if (neonOrders && neonOrders.length > 0) {
-            foundOrder = neonOrders[0];
-            orderItems = await sql`SELECT * FROM order_items WHERE order_id = ${foundOrder.id}`;
-          }
-        } catch (neonErr) {
-          console.warn("Neon order lookup fallback:", neonErr);
-        }
-      }
-
-      if (!foundOrder) {
-        foundOrder = db
-          .prepare("SELECT * FROM orders WHERE id = ? OR id = ? OR id = ?")
-          .get(cleanOrderId, hashOrderId, rawOrderId);
-        if (foundOrder) {
-          orderItems = db.prepare("SELECT * FROM order_items WHERE order_id = ?").all(foundOrder.id);
-        }
-      }
-
-      if (!foundOrder) {
+      if (!neonOrders || neonOrders.length === 0) {
         return NextResponse.json({ success: false, error: "Order not found" }, { status: 404 });
       }
+
+      const foundOrder = neonOrders[0];
+      const orderItems = await sql`SELECT * FROM order_items WHERE order_id = ${foundOrder.id}`;
 
       // Security / Ownership validation
       if (foundOrder.user_id) {
@@ -97,67 +79,35 @@ export async function GET(request: Request) {
       );
     }
 
-    // 1. If Neon PostgreSQL is configured, fetch from Neon
-    if (process.env.DATABASE_URL) {
-      try {
-        let neonOrders;
-        if (auth.role === "admin") {
-          neonOrders = await sql`SELECT * FROM orders ORDER BY created_at DESC`;
-        } else {
-          neonOrders = await sql`SELECT * FROM orders WHERE user_id = ${auth.userId} ORDER BY created_at DESC`;
-        }
-
-        if (neonOrders && Array.isArray(neonOrders)) {
-          const ordersWithItems = [];
-          for (const o of neonOrders) {
-            const items = await sql`SELECT * FROM order_items WHERE order_id = ${o.id}`;
-            ordersWithItems.push({
-              ...o,
-              deliveryAddress:
-                typeof o.delivery_address === "string"
-                  ? JSON.parse(o.delivery_address || "{}")
-                  : o.delivery_address,
-              paymentMethod:
-                typeof o.payment_method === "string"
-                  ? JSON.parse(o.payment_method || "{}")
-                  : o.payment_method,
-              trackingTimeline:
-                typeof o.tracking_timeline === "string"
-                  ? JSON.parse(o.tracking_timeline || "[]")
-                  : o.tracking_timeline,
-              items,
-            });
-          }
-          return NextResponse.json({ success: true, orders: ordersWithItems, count: ordersWithItems.length });
-        }
-      } catch (neonErr) {
-        console.warn("Neon orders listing fallback to SQLite:", neonErr);
-      }
-    }
-
-    // 2. Fallback to SQLite (local)
-    let ordersQuery = "SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC";
-    let params: any[] = [auth.userId];
-
+    let neonOrders: any[];
     if (auth.role === "admin") {
-      ordersQuery = "SELECT * FROM orders ORDER BY created_at DESC";
-      params = [];
+      neonOrders = await sql`SELECT * FROM orders ORDER BY created_at DESC`;
+    } else {
+      neonOrders = await sql`SELECT * FROM orders WHERE user_id = ${auth.userId} ORDER BY created_at DESC`;
     }
 
-    const ordersRaw = db.prepare(ordersQuery).all(...params);
-
-    const orders = ordersRaw.map((o: any) => {
-      const items = db.prepare("SELECT * FROM order_items WHERE order_id = ?").all(o.id);
-      return {
+    const ordersWithItems = [];
+    for (const o of neonOrders || []) {
+      const items = await sql`SELECT * FROM order_items WHERE order_id = ${o.id}`;
+      ordersWithItems.push({
         ...o,
-        deliveryAddress: JSON.parse(o.delivery_address || "{}"),
-        paymentMethod: JSON.parse(o.payment_method || "{}"),
-        trackingTimeline: JSON.parse(o.tracking_timeline || "[]"),
+        deliveryAddress:
+          typeof o.delivery_address === "string"
+            ? JSON.parse(o.delivery_address || "{}")
+            : o.delivery_address,
+        paymentMethod:
+          typeof o.payment_method === "string"
+            ? JSON.parse(o.payment_method || "{}")
+            : o.payment_method,
+        trackingTimeline:
+          typeof o.tracking_timeline === "string"
+            ? JSON.parse(o.tracking_timeline || "[]")
+            : o.tracking_timeline,
         items,
-      };
-    });
+      });
+    }
 
-    return NextResponse.json({ success: true, orders, count: orders.length });
+    return NextResponse.json({ success: true, orders: ordersWithItems, count: ordersWithItems.length });
   } catch (error: any) {
     console.error("Orders GET error:", error);
     return NextResponse.json({ success: false, error: "Failed to fetch orders" }, { status: 500 });
@@ -215,8 +165,6 @@ export async function POST(request: Request) {
     const customDeliveryFee = isCustomDelivery ? CUSTOM_DELIVERY_FEE : 0;
     const verifiedDeliveryCharge = baseDeliveryCharge + customDeliveryFee;
 
-    const db = getDb();
-
     // 3. Validate each item against DB product & stock, calculate verified subtotal
     let verifiedSubtotal = 0;
     const validatedOrderItems: {
@@ -232,13 +180,15 @@ export async function POST(request: Request) {
       const pId = it.productId || it.id;
       const requestedQty = Math.max(1, Number(it.quantity) || 1);
 
-      let product: any = db.prepare("SELECT * FROM products WHERE id = ? OR slug = ?").get(pId, pId);
+      const dbProducts = await sql`SELECT * FROM products WHERE id = ${pId} OR slug = ${pId} LIMIT 1`;
+      let product: any = dbProducts[0];
 
       if (!product) {
         // 1. If ID starts with addon-, try matching with prefix stripped
         if (typeof pId === "string" && pId.startsWith("addon-")) {
           const stripped = pId.replace(/^addon-/, "");
-          product = db.prepare("SELECT * FROM products WHERE id = ? OR slug = ?").get(stripped, stripped);
+          const strippedProducts = await sql`SELECT * FROM products WHERE id = ${stripped} OR slug = ${stripped} LIMIT 1`;
+          product = strippedProducts[0];
         }
 
         // 2. Check if product is in ADDON_PRODUCTS catalog
@@ -248,11 +198,9 @@ export async function POST(request: Request) {
           );
           if (addon) {
             const slugFromHref = addon.href ? addon.href.split("/").pop() : "";
-            const dbMatch = db
-              .prepare("SELECT * FROM products WHERE slug = ? OR name = ? OR id = ?")
-              .get(slugFromHref, addon.name, slugFromHref);
-            if (dbMatch) {
-              product = dbMatch;
+            const matchProducts = await sql`SELECT * FROM products WHERE slug = ${slugFromHref} OR name = ${addon.name} OR id = ${slugFromHref} LIMIT 1`;
+            if (matchProducts.length > 0) {
+              product = matchProducts[0];
             } else {
               product = {
                 id: addon.id,
@@ -285,7 +233,7 @@ export async function POST(request: Request) {
       if (!product.active) {
         return NextResponse.json({ success: false, error: `${product.name} is currently unavailable` }, { status: 400 });
       }
-      if (product.stock < requestedQty) {
+      if (Number(product.stock) < requestedQty) {
         return NextResponse.json(
           { success: false, error: `Insufficient stock for ${product.name}. Only ${product.stock} left in stock.` },
           { status: 400 }
@@ -323,10 +271,12 @@ export async function POST(request: Request) {
     // 4. Validate coupon if provided
     let verifiedDiscount = 0;
     let appliedCouponCode: string | null = null;
+    let appliedCouponId: string | null = null;
 
     if (couponCode && typeof couponCode === "string" && couponCode.trim()) {
       const cleanCoupon = couponCode.trim().toUpperCase();
-      const coupon = db.prepare("SELECT * FROM coupons WHERE code = ?").get(cleanCoupon);
+      const coupons = await sql`SELECT * FROM coupons WHERE code = ${cleanCoupon} LIMIT 1`;
+      const coupon = coupons[0];
 
       if (coupon && coupon.active) {
         const notExpired = !coupon.expiry_date || new Date(coupon.expiry_date) >= new Date();
@@ -344,9 +294,7 @@ export async function POST(request: Request) {
           }
           verifiedDiscount = Math.min(verifiedDiscount, verifiedSubtotal);
           appliedCouponCode = coupon.code;
-
-          // Increment coupon usage
-          db.prepare("UPDATE coupons SET times_used = times_used + 1 WHERE id = ?").run(coupon.id);
+          appliedCouponId = coupon.id;
         }
       }
     }
@@ -364,28 +312,29 @@ export async function POST(request: Request) {
     const customerPhone = (delivery?.mobile || delivery?.phone || "+91 8606464700").trim();
 
     // 6a. Duplicate Order Prevention (Idempotency check within last 60 seconds)
-    // Strictly isolate: Authenticated user matches ONLY their own user_id. Guest matches unauthenticated records.
     const sixtySecsAgo = new Date(Date.now() - 60000).toISOString();
-    let existingRecentOrder: { id: string; final_amount: number; created_at: string } | undefined;
+    let existingRecentOrder: any = null;
 
     if (auth?.userId) {
-      existingRecentOrder = db.prepare(`
+      const orders = await sql`
         SELECT id, final_amount, created_at FROM orders 
-        WHERE user_id = ?
-          AND final_amount = ?
-          AND created_at >= ?
+        WHERE user_id = ${auth.userId}
+          AND final_amount = ${finalAmount}
+          AND created_at >= ${sixtySecsAgo}
         ORDER BY created_at DESC LIMIT 1
-      `).get(auth.userId, finalAmount, sixtySecsAgo) as { id: string; final_amount: number; created_at: string } | undefined;
+      `;
+      existingRecentOrder = orders[0];
     } else {
-      existingRecentOrder = db.prepare(`
+      const orders = await sql`
         SELECT id, final_amount, created_at FROM orders 
         WHERE user_id IS NULL
-          AND customer_phone = ?
-          AND customer_email = ?
-          AND final_amount = ?
-          AND created_at >= ?
+          AND customer_phone = ${customerPhone}
+          AND customer_email = ${customerEmail}
+          AND final_amount = ${finalAmount}
+          AND created_at >= ${sixtySecsAgo}
         ORDER BY created_at DESC LIMIT 1
-      `).get(customerPhone, customerEmail, finalAmount, sixtySecsAgo) as { id: string; final_amount: number; created_at: string } | undefined;
+      `;
+      existingRecentOrder = orders[0];
     }
 
     if (existingRecentOrder) {
@@ -439,122 +388,74 @@ export async function POST(request: Request) {
       },
     ];
 
-    // 7. Insert Order into Neon PostgreSQL
-    if (process.env.DATABASE_URL) {
-      try {
-        await sql`
-          INSERT INTO orders (
-            id, user_id, customer_name, customer_email, customer_phone,
-            subtotal, delivery_charge, discount, final_amount, coupon_code,
-            delivery_address, payment_method, payment_status, order_status,
-            tracking_timeline, notes
-          ) VALUES (
-            ${orderId},
-            ${auth?.userId || null},
-            ${customerName},
-            ${customerEmail},
-            ${customerPhone},
-            ${verifiedSubtotal},
-            ${verifiedDeliveryCharge},
-            ${verifiedDiscount},
-            ${finalAmount},
-            ${appliedCouponCode},
-            ${JSON.stringify(delivery || {})},
-            ${JSON.stringify(paymentMethod || { type: "COD", label: "Cash on Delivery" })},
-            ${paymentMethod?.type === "COD" ? "pending" : "paid"},
-            'confirmed',
-            ${JSON.stringify(trackingTimeline)},
-            ${notes || ""}
-          )
-        `;
-
-        for (let i = 0; i < validatedOrderItems.length; i++) {
-          const it = validatedOrderItems[i];
-          const orderItemId = `oi-${orderId}-${i + 1}`;
-          await sql`
-            INSERT INTO order_items (
-              id, order_id, product_id, product_name, product_price,
-              quantity, product_image, subtotal
-            ) VALUES (
-              ${orderItemId},
-              ${orderId},
-              ${it.productId},
-              ${it.productName},
-              ${it.productPrice},
-              ${it.quantity},
-              ${it.productImage || null},
-              ${it.subtotal}
-            )
-          `;
-          await sql`UPDATE products SET stock = GREATEST(0, stock - ${it.quantity}) WHERE id = ${it.productId}`;
-        }
-      } catch (neonInsertErr) {
-        console.error("Neon order insert error:", neonInsertErr);
-      }
-    }
-
-    // Insert Order into SQLite (backup / local cache)
-    db.prepare(`
-      INSERT INTO orders (
-        id, user_id, customer_name, customer_email, customer_phone,
-        subtotal, delivery_charge, discount, final_amount, coupon_code,
-        delivery_address, payment_method, payment_status, order_status,
-        tracking_timeline, notes, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      orderId,
-      auth?.userId || null,
-      customerName,
-      customerEmail,
-      customerPhone,
-      verifiedSubtotal,
-      verifiedDeliveryCharge,
-      verifiedDiscount,
-      finalAmount,
-      appliedCouponCode,
-      JSON.stringify(delivery || {}),
-      JSON.stringify(paymentMethod || { type: "COD", label: "Cash on Delivery" }),
-      paymentMethod?.type === "COD" ? "pending" : "paid",
-      "confirmed",
-      JSON.stringify(trackingTimeline),
-      notes || "",
-      now,
-      now
-    );
-
-    // 8. Insert Order Items & deduct stock
-    const insertOrderItem = db.prepare(`
-      INSERT INTO order_items (
-        id, order_id, product_id, product_name, product_price,
-        quantity, product_image, subtotal
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-
-    const deductStock = db.prepare("UPDATE products SET stock = MAX(0, stock - ?) WHERE id = ?");
+    // 7. Atomic Neon PostgreSQL Transaction: Order creation, items insertion & stock deduction
+    const txQueries: any[] = [
+      sql`
+        INSERT INTO orders (
+          id, user_id, customer_name, customer_email, customer_phone,
+          subtotal, delivery_charge, discount, final_amount, coupon_code,
+          delivery_address, payment_method, payment_status, order_status,
+          tracking_timeline, notes, created_at, updated_at
+        ) VALUES (
+          ${orderId},
+          ${auth?.userId || null},
+          ${customerName},
+          ${customerEmail},
+          ${customerPhone},
+          ${verifiedSubtotal},
+          ${verifiedDeliveryCharge},
+          ${verifiedDiscount},
+          ${finalAmount},
+          ${appliedCouponCode},
+          ${JSON.stringify(delivery || {})},
+          ${JSON.stringify(paymentMethod || { type: "COD", label: "Cash on Delivery" })},
+          ${paymentMethod?.type === "COD" ? "pending" : "paid"},
+          'confirmed',
+          ${JSON.stringify(trackingTimeline)},
+          ${notes || ""},
+          ${now},
+          ${now}
+        )
+      `,
+    ];
 
     for (let i = 0; i < validatedOrderItems.length; i++) {
       const it = validatedOrderItems[i];
       const orderItemId = `oi-${orderId}-${i + 1}`;
-      insertOrderItem.run(
-        orderItemId,
-        orderId,
-        it.productId,
-        it.productName,
-        it.productPrice,
-        it.quantity,
-        it.productImage,
-        it.subtotal
-      );
-
-      deductStock.run(it.quantity, it.productId);
+      txQueries.push(sql`
+        INSERT INTO order_items (
+          id, order_id, product_id, product_name, product_price,
+          quantity, product_image, subtotal
+        ) VALUES (
+          ${orderItemId},
+          ${orderId},
+          ${it.productId},
+          ${it.productName},
+          ${it.productPrice},
+          ${it.quantity},
+          ${it.productImage || null},
+          ${it.subtotal}
+        )
+      `);
+      txQueries.push(sql`
+        UPDATE products 
+        SET stock = GREATEST(0, stock - ${it.quantity}) 
+        WHERE id = ${it.productId}
+      `);
     }
 
-    // 9. Clear user's DB cart if logged in
-    if (auth) {
-      db.prepare("DELETE FROM cart_items WHERE user_id = ?").run(auth.userId);
+    if (appliedCouponId) {
+      txQueries.push(sql`UPDATE coupons SET times_used = times_used + 1 WHERE id = ${appliedCouponId}`);
     }
 
-    // 10. Auto-save delivery address to user's saved addresses
+    if (auth?.userId) {
+      txQueries.push(sql`DELETE FROM cart_items WHERE user_id = ${auth.userId}`);
+    }
+
+    // Execute atomic transaction
+    await sql.transaction(txQueries);
+
+    // 8. Auto-save delivery address to user's saved addresses in Neon PostgreSQL
     if (auth?.userId && delivery && (delivery.houseBuilding || delivery.house) && delivery.pinCode) {
       try {
         const dHouse = (delivery.houseBuilding || delivery.house || "").trim();
@@ -567,46 +468,26 @@ export async function POST(request: Request) {
         const dPhone = (delivery.receiverMobile || delivery.senderMobile || customerPhone || "+91 8606464700").trim();
 
         const addrId = "addr-" + Math.random().toString(36).substring(2, 10);
-
-        // Check SQLite
-        const existingSqlite = db.prepare("SELECT id FROM addresses WHERE user_id = ? AND house = ? AND pin_code = ?").get(auth.userId, dHouse, dPinCode);
-        if (!existingSqlite) {
-          const count = db.prepare("SELECT count(*) as count FROM addresses WHERE user_id = ?").get(auth.userId)?.count || 0;
-          db.prepare(`
+        const existingNeon = await sql`SELECT id FROM addresses WHERE user_id = ${auth.userId} AND house = ${dHouse} AND pin_code = ${dPinCode}`;
+        if (existingNeon.length === 0) {
+          const countRes = await sql`SELECT count(*)::int as count FROM addresses WHERE user_id = ${auth.userId}`;
+          const count = countRes[0]?.count || 0;
+          await sql`
             INSERT INTO addresses (
               id, user_id, full_name, phone, house, street, area, city, state, pin_code,
               type, is_default, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Home', ?, ?, ?)
-          `).run(addrId, auth.userId, dName, dPhone, dHouse, dStreet, dLandmark, dCity, dState, dPinCode, count === 0 ? 1 : 0, now, now);
-        }
-
-        // Check Neon
-        if (process.env.DATABASE_URL) {
-          try {
-            const existingNeon = await sql`SELECT id FROM addresses WHERE user_id = ${auth.userId} AND house = ${dHouse} AND pin_code = ${dPinCode}`;
-            if (existingNeon.length === 0) {
-              const countRes = await sql`SELECT count(*)::int as count FROM addresses WHERE user_id = ${auth.userId}`;
-              const count = countRes[0]?.count || 0;
-              await sql`
-                INSERT INTO addresses (
-                  id, user_id, full_name, phone, house, street, area, city, state, pin_code,
-                  type, is_default, created_at, updated_at
-                ) VALUES (
-                  ${addrId}, ${auth.userId}, ${dName}, ${dPhone}, ${dHouse}, ${dStreet}, ${dLandmark}, ${dCity}, ${dState}, ${dPinCode},
-                  'Home', ${count === 0 ? 1 : 0}, ${now}, ${now}
-                )
-              `;
-            }
-          } catch (e) {
-            console.warn("Could not save address to Neon on order:", e);
-          }
+            ) VALUES (
+              ${addrId}, ${auth.userId}, ${dName}, ${dPhone}, ${dHouse}, ${dStreet}, ${dLandmark}, ${dCity}, ${dState}, ${dPinCode},
+              'Home', ${count === 0 ? 1 : 0}, ${now}, ${now}
+            )
+          `;
         }
       } catch (addrErr) {
-        console.warn("Could not auto-save delivery address on order:", addrErr);
+        console.warn("Could not auto-save delivery address to Neon on order:", addrErr);
       }
     }
 
-    // 11. Send WhatsApp notification to owner 9447446008 (Instant for COD; generated for all)
+    // 9. Send WhatsApp notification to owner 9447446008
     let whatsappResult: any = null;
     try {
       const isCod = paymentMethod?.type === "COD";

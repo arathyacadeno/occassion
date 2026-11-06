@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { sql } from "@/lib/db/neon";
 import { getAuthenticatedUser } from "@/lib/auth/jwt";
 import {
   DEFAULT_SIZES,
@@ -10,8 +10,8 @@ import {
 
 export async function GET(request: Request) {
   try {
-    const db = getDb();
-    const row = db.prepare("SELECT config_json FROM product_customizations WHERE id = 'global_settings'").get() as { config_json: string } | undefined;
+    const rows = await sql`SELECT config_json FROM product_customizations WHERE id = 'global_settings' LIMIT 1`;
+    const row = rows[0];
 
     let config = {
       sizes: DEFAULT_SIZES,
@@ -23,7 +23,7 @@ export async function GET(request: Request) {
 
     if (row && row.config_json) {
       try {
-        const parsed = JSON.parse(row.config_json);
+        const parsed = typeof row.config_json === "string" ? JSON.parse(row.config_json) : row.config_json;
         config = { ...config, ...parsed };
       } catch (e) {
         console.error("Failed to parse customization config JSON", e);
@@ -50,18 +50,16 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const db = getDb();
     const now = new Date().toISOString();
-
     const configJson = JSON.stringify(body);
 
-    db.prepare(`
+    await sql`
       INSERT INTO product_customizations (id, enabled, config_json, updated_at)
-      VALUES ('global_settings', 1, ?, ?)
+      VALUES ('global_settings', 1, ${configJson}, ${now})
       ON CONFLICT(id) DO UPDATE SET
-        config_json = excluded.config_json,
-        updated_at = excluded.updated_at
-    `).run(configJson, now);
+        config_json = EXCLUDED.config_json,
+        updated_at = EXCLUDED.updated_at
+    `;
 
     return NextResponse.json({ success: true, message: "Customization settings saved successfully" });
   } catch (error: any) {

@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
 import { sql } from "@/lib/db/neon";
 import { getAuthenticatedUser } from "@/lib/auth/jwt";
 
@@ -12,33 +11,19 @@ export async function GET(
     const cleanId = id.trim().replace(/^#+/, "");
     const hashId = `#${cleanId}`;
     const auth = getAuthenticatedUser(request);
-    const db = getDb();
 
-    let order: any = null;
-    let items: any[] = [];
+    const neonOrders = await sql`
+      SELECT * FROM orders 
+      WHERE id = ${cleanId} OR id = ${hashId} OR id = ${id}
+      LIMIT 1
+    `;
 
-    if (process.env.DATABASE_URL) {
-      try {
-        const neonOrders = await sql`SELECT * FROM orders WHERE id = ${cleanId} OR id = ${hashId} OR id = ${id}`;
-        if (neonOrders && neonOrders.length > 0) {
-          order = neonOrders[0];
-          items = await sql`SELECT * FROM order_items WHERE order_id = ${order.id}`;
-        }
-      } catch (neonErr) {
-        console.warn("Neon order [id] lookup fallback:", neonErr);
-      }
-    }
-
-    if (!order) {
-      order = db.prepare("SELECT * FROM orders WHERE id = ? OR id = ? OR id = ?").get(cleanId, hashId, id);
-      if (order) {
-        items = db.prepare("SELECT * FROM order_items WHERE order_id = ?").all(order.id);
-      }
-    }
-
-    if (!order) {
+    if (!neonOrders || neonOrders.length === 0) {
       return NextResponse.json({ success: false, error: "Order not found" }, { status: 404 });
     }
+
+    const order = neonOrders[0];
+    const items = await sql`SELECT * FROM order_items WHERE order_id = ${order.id}`;
 
     // Security / Ownership check:
     if (order.user_id) {
@@ -95,12 +80,12 @@ export async function PATCH(
     const body = await request.json();
     const { action, status, paymentStatus } = body;
 
-    const db = getDb();
-    const order = db.prepare("SELECT * FROM orders WHERE id = ?").get(id);
-    if (!order) {
+    const neonOrders = await sql`SELECT * FROM orders WHERE id = ${id} LIMIT 1`;
+    if (!neonOrders || neonOrders.length === 0) {
       return NextResponse.json({ success: false, error: "Order not found" }, { status: 404 });
     }
 
+    const order = neonOrders[0];
     const now = new Date().toISOString();
 
     // Customer cancellation
@@ -119,14 +104,10 @@ export async function PATCH(
         );
       }
 
-      // Restore stock for items
-      const items = db.prepare("SELECT product_id, quantity FROM order_items WHERE order_id = ?").all(id);
-      const restoreStock = db.prepare("UPDATE products SET stock = stock + ? WHERE id = ?");
-      for (const item of items) {
-        restoreStock.run(item.quantity, item.product_id);
-      }
+      // Restore stock for items & update order in Neon PostgreSQL
+      const items = await sql`SELECT product_id, quantity FROM order_items WHERE order_id = ${id}`;
 
-      let timeline = [];
+      let timeline: any[] = [];
       try {
         timeline = JSON.parse(order.tracking_timeline || "[]");
       } catch {
@@ -142,14 +123,19 @@ export async function PATCH(
         desc: "Order was cancelled by customer. Any charged amount will be refunded within 3-5 business days.",
       });
 
-      db.prepare(`
-        UPDATE orders
-        SET order_status = 'cancelled',
-            payment_status = CASE WHEN payment_status = 'paid' THEN 'refunded' ELSE payment_status END,
-            tracking_timeline = ?,
-            updated_at = ?
-        WHERE id = ?
-      `).run(JSON.stringify(timeline), now, id);
+      const txQueries: any[] = [
+        ...items.map((item) => sql`UPDATE products SET stock = stock + ${item.quantity} WHERE id = ${item.product_id}`),
+        sql`
+          UPDATE orders
+          SET order_status = 'cancelled',
+              payment_status = CASE WHEN payment_status = 'paid' THEN 'refunded' ELSE payment_status END,
+              tracking_timeline = ${JSON.stringify(timeline)},
+              updated_at = ${now}
+          WHERE id = ${id}
+        `,
+      ];
+
+      await sql.transaction(txQueries);
 
       return NextResponse.json({
         success: true,
@@ -168,7 +154,7 @@ export async function PATCH(
     const newPaymentStatus = paymentStatus || order.payment_status;
 
     // Update tracking timeline to mark steps up to newStatus as completed
-    let timeline = [];
+    let timeline: any[] = [];
     try {
       timeline = JSON.parse(order.tracking_timeline || "[]");
     } catch {
@@ -192,14 +178,14 @@ export async function PATCH(
       });
     }
 
-    db.prepare(`
+    await sql`
       UPDATE orders
-      SET order_status = ?,
-          payment_status = ?,
-          tracking_timeline = ?,
-          updated_at = ?
-      WHERE id = ?
-    `).run(newStatus, newPaymentStatus, JSON.stringify(timeline), now, id);
+      SET order_status = ${newStatus},
+          payment_status = ${newPaymentStatus},
+          tracking_timeline = ${JSON.stringify(timeline)},
+          updated_at = ${now}
+      WHERE id = ${id}
+    `;
 
     return NextResponse.json({
       success: true,

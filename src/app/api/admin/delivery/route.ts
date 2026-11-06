@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
 import { sql } from "@/lib/db/neon";
+import { getAuthenticatedUser } from "@/lib/auth/jwt";
 
 export const dynamic = "force-dynamic";
 
@@ -15,38 +15,24 @@ export interface DeliveryTier {
 }
 
 // GET /api/admin/delivery - Retrieve all delivery tiers and delivery settings
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    let tiers: any[] = [];
-    let settingsRows: { key: string; value: string }[] = [];
-
-    // Try Neon first if configured
-    if (process.env.DATABASE_URL) {
-      try {
-        tiers = await sql`
-          SELECT * FROM delivery_tiers 
-          ORDER BY display_order ASC, min_km ASC;
-        `;
-        settingsRows = (await sql`
-          SELECT key, value FROM delivery_settings;
-        `) as unknown as { key: string; value: string }[];
-      } catch (neonErr) {
-        console.warn("Neon delivery fetch fallback to SQLite:", neonErr);
-      }
+    const auth = getAuthenticatedUser(req);
+    if (!auth || auth.role !== "admin") {
+      return NextResponse.json({ success: false, error: "Forbidden: Admin access required" }, { status: 403 });
     }
 
-    // Fallback to SQLite if empty
-    if (!tiers || tiers.length === 0) {
-      try {
-        const db = getDb();
-        tiers = db.prepare(`
-          SELECT * FROM delivery_tiers 
-          ORDER BY display_order ASC, min_km ASC
-        `).all();
-        settingsRows = db.prepare("SELECT key, value FROM delivery_settings").all() as { key: string; value: string }[];
-      } catch (sqlErr) {
-        console.warn("SQLite delivery fetch warning:", sqlErr);
-      }
+    const tiers = await sql`
+      SELECT * FROM delivery_tiers 
+      ORDER BY display_order ASC, min_km ASC
+    `;
+
+    let settingsRows: { key: string; value: string }[] = [];
+    try {
+      const rows = await sql`SELECT key, value FROM delivery_settings`;
+      settingsRows = rows as unknown as { key: string; value: string }[];
+    } catch {
+      // delivery_settings table might be empty or optional
     }
 
     const settings: Record<string, string> = {
@@ -78,6 +64,11 @@ export async function GET() {
 // POST /api/admin/delivery - Add a new delivery tier
 export async function POST(req: NextRequest) {
   try {
+    const auth = getAuthenticatedUser(req);
+    if (!auth || auth.role !== "admin") {
+      return NextResponse.json({ success: false, error: "Forbidden: Admin access required" }, { status: 403 });
+    }
+
     const body = await req.json();
     const { min_km, max_km, charge, label, active = 1, display_order = 0 } = body;
 
@@ -96,24 +87,10 @@ export async function POST(req: NextRequest) {
     const activeVal = active ? 1 : 0;
     const tierLabel = label || `${minVal} – ${maxVal} km`;
 
-    // 1. Insert into SQLite
-    const db = getDb();
-    db.prepare(`
+    await sql`
       INSERT INTO delivery_tiers (id, min_km, max_km, charge, label, active, display_order)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    `).run(id, minVal, maxVal, chargeVal, tierLabel, activeVal, orderVal);
-
-    // 2. Dual-write to Neon PostgreSQL
-    if (process.env.DATABASE_URL) {
-      try {
-        await sql`
-          INSERT INTO delivery_tiers (id, min_km, max_km, charge, label, active, display_order)
-          VALUES (${id}, ${minVal}, ${maxVal}, ${chargeVal}, ${tierLabel}, ${activeVal}, ${orderVal});
-        `;
-      } catch (neonErr) {
-        console.warn("Neon delivery_tiers insert sync warning:", neonErr);
-      }
-    }
+      VALUES (${id}, ${minVal}, ${maxVal}, ${chargeVal}, ${tierLabel}, ${activeVal}, ${orderVal})
+    `;
 
     return NextResponse.json({
       success: true,
@@ -132,9 +109,13 @@ export async function POST(req: NextRequest) {
 // PUT /api/admin/delivery - Edit an existing tier or update general settings
 export async function PUT(req: NextRequest) {
   try {
+    const auth = getAuthenticatedUser(req);
+    if (!auth || auth.role !== "admin") {
+      return NextResponse.json({ success: false, error: "Forbidden: Admin access required" }, { status: 403 });
+    }
+
     const body = await req.json();
     const { action, tier, settings } = body;
-    const db = getDb();
 
     // 1. Update delivery tier
     if (action === "update_tier" || tier) {
@@ -150,33 +131,16 @@ export async function PUT(req: NextRequest) {
       const activeVal = targetTier.active ? 1 : 0;
       const tierLabel = targetTier.label || `${minVal} – ${maxVal} km`;
 
-      db.prepare(`
+      await sql`
         UPDATE delivery_tiers SET
-          min_km = ?,
-          max_km = ?,
-          charge = ?,
-          label = ?,
-          active = ?,
-          display_order = ?
-        WHERE id = ?
-      `).run(minVal, maxVal, chargeVal, tierLabel, activeVal, orderVal, targetTier.id);
-
-      if (process.env.DATABASE_URL) {
-        try {
-          await sql`
-            UPDATE delivery_tiers SET
-              min_km = ${minVal},
-              max_km = ${maxVal},
-              charge = ${chargeVal},
-              label = ${tierLabel},
-              active = ${activeVal},
-              display_order = ${orderVal}
-            WHERE id = ${targetTier.id};
-          `;
-        } catch (neonErr) {
-          console.warn("Neon delivery_tiers update sync warning:", neonErr);
-        }
-      }
+          min_km = ${minVal},
+          max_km = ${maxVal},
+          charge = ${chargeVal},
+          label = ${tierLabel},
+          active = ${activeVal},
+          display_order = ${orderVal}
+        WHERE id = ${targetTier.id}
+      `;
 
       return NextResponse.json({
         success: true,
@@ -186,29 +150,12 @@ export async function PUT(req: NextRequest) {
 
     // 2. Update general settings (shop location, radius, pin)
     if (action === "update_settings" && settings) {
-      const insertSetting = db.prepare(`
-        INSERT INTO delivery_settings (key, value) VALUES (?, ?)
-        ON CONFLICT(key) DO UPDATE SET value = excluded.value
-      `);
-
       for (const [key, value] of Object.entries(settings)) {
         if (typeof value === "string") {
-          insertSetting.run(key, value);
-        }
-      }
-
-      if (process.env.DATABASE_URL) {
-        try {
-          for (const [key, value] of Object.entries(settings)) {
-            if (typeof value === "string") {
-              await sql`
-                INSERT INTO delivery_settings (key, value) VALUES (${key}, ${value})
-                ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
-              `;
-            }
-          }
-        } catch (neonErr) {
-          console.warn("Neon delivery_settings update sync warning:", neonErr);
+          await sql`
+            INSERT INTO delivery_settings (key, value) VALUES (${key}, ${value})
+            ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value
+          `;
         }
       }
 
@@ -231,6 +178,11 @@ export async function PUT(req: NextRequest) {
 // DELETE /api/admin/delivery?id=... - Delete delivery tier
 export async function DELETE(req: NextRequest) {
   try {
+    const auth = getAuthenticatedUser(req);
+    if (!auth || auth.role !== "admin") {
+      return NextResponse.json({ success: false, error: "Forbidden: Admin access required" }, { status: 403 });
+    }
+
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
 
@@ -238,18 +190,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Delivery Tier ID is required" }, { status: 400 });
     }
 
-    // 1. Delete from SQLite
-    const db = getDb();
-    db.prepare("DELETE FROM delivery_tiers WHERE id = ?").run(id);
-
-    // 2. Dual-delete from Neon PostgreSQL
-    if (process.env.DATABASE_URL) {
-      try {
-        await sql`DELETE FROM delivery_tiers WHERE id = ${id};`;
-      } catch (neonErr) {
-        console.warn("Neon delivery_tiers delete sync warning:", neonErr);
-      }
-    }
+    await sql`DELETE FROM delivery_tiers WHERE id = ${id}`;
 
     return NextResponse.json({
       success: true,

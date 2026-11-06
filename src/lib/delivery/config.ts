@@ -87,35 +87,7 @@ export function calculateDeliveryChargeFromDistance(distanceKm: number): {
     };
   }
 
-  // 1. Dynamic database tier check (supports custom admin configurations)
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { getDb } = require("@/lib/db");
-    const db = getDb();
-    const tiers = db
-      .prepare("SELECT * FROM delivery_tiers WHERE active = 1 ORDER BY min_km ASC")
-      .all() as Array<{ min_km: number; max_km: number; charge: number; label?: string }>;
-
-    if (tiers && tiers.length > 0) {
-      for (const t of tiers) {
-        if (distanceKm >= t.min_km && distanceKm <= t.max_km) {
-          return {
-            charge: t.charge,
-            tier_label: t.charge === 0 ? "Free delivery" : `₹${t.charge} delivery charge`,
-            serviceable: true,
-            message:
-              t.charge === 0
-                ? "Delivery available (Free delivery)"
-                : `Delivery available (₹${t.charge} delivery charge)`,
-          };
-        }
-      }
-    }
-  } catch {
-    // Fallback to static rules below
-  }
-
-  // 2. Default static rules fallback
+  // Evaluate delivery distance against standard tiers
   if (distanceKm <= 5.0) {
     return {
       charge: 0,

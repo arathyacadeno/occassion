@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { sql } from "@/lib/db/neon";
 import { getAuthenticatedUser } from "@/lib/auth/jwt";
 
 export async function PUT(
@@ -20,38 +20,39 @@ export async function PUT(
       return NextResponse.json({ success: false, error: "Valid quantity is required" }, { status: 400 });
     }
 
-    const db = getDb();
-
-    // Check item ownership and product stock
-    const item = db.prepare(`
+    // Check item ownership and product stock in Neon
+    const items = await sql`
       SELECT ci.id, ci.product_id, p.stock, p.name
       FROM cart_items ci
       JOIN products p ON ci.product_id = p.id
-      WHERE ci.id = ? AND ci.user_id = ?
-    `).get(id, auth.userId);
+      WHERE ci.id = ${id} AND ci.user_id = ${auth.userId}
+      LIMIT 1
+    `;
+    const item = items[0];
 
     if (!item) {
       return NextResponse.json({ success: false, error: "Cart item not found" }, { status: 404 });
     }
 
     if (quantity === 0) {
-      db.prepare("DELETE FROM cart_items WHERE id = ?").run(id);
+      await sql`DELETE FROM cart_items WHERE id = ${id} AND user_id = ${auth.userId}`;
       return NextResponse.json({ success: true, message: "Item removed from cart" });
     }
 
-    if (quantity > item.stock) {
+    const itemStock = Number(item.stock) || 0;
+    if (quantity > itemStock) {
       return NextResponse.json(
-        { success: false, error: `Only ${item.stock} items available in stock for ${item.name}` },
+        { success: false, error: `Only ${itemStock} items available in stock for ${item.name}` },
         { status: 400 }
       );
     }
 
     const now = new Date().toISOString();
-    db.prepare(`
+    await sql`
       UPDATE cart_items
-      SET quantity = ?, updated_at = ?
-      WHERE id = ?
-    `).run(quantity, now, id);
+      SET quantity = ${quantity}, updated_at = ${now}
+      WHERE id = ${id} AND user_id = ${auth.userId}
+    `;
 
     return NextResponse.json({ success: true, message: "Cart updated successfully", quantity });
   } catch (error: any) {
@@ -71,9 +72,7 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    const db = getDb();
-
-    db.prepare("DELETE FROM cart_items WHERE id = ? AND user_id = ?").run(id, auth.userId);
+    await sql`DELETE FROM cart_items WHERE id = ${id} AND user_id = ${auth.userId}`;
 
     return NextResponse.json({ success: true, message: "Item removed from cart" });
   } catch (error: any) {

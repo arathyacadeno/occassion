@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { sql } from "@/lib/db/neon";
 import { signUserToken } from "@/lib/auth/jwt";
 
 export async function POST(request: Request) {
@@ -53,37 +53,38 @@ export async function POST(request: Request) {
     const cleanPhone = verifiedPhone.trim();
     const phoneDigits = cleanPhone.replace(/\D/g, "");
     const generatedEmail = `${phoneDigits}@phone.occasions.in`;
-
-    const db = getDb();
     const now = new Date().toISOString();
 
-    // Check if user exists by phone or generated phone email
-    let user = db.prepare(`
+    // Check if user exists by phone or generated phone email in Neon PostgreSQL
+    const existing = await sql`
       SELECT * FROM users 
-      WHERE phone = ? OR phone = ? OR email = ?
-    `).get(cleanPhone, `+${phoneDigits}`, generatedEmail);
+      WHERE phone = ${cleanPhone} OR phone = ${`+${phoneDigits}`} OR email = ${generatedEmail}
+      LIMIT 1
+    `;
 
-    if (user) {
+    let user: any;
+    if (existing && existing.length > 0) {
+      user = existing[0];
       // Existing user: ensure phone is formatted and updated
-      db.prepare(`
+      await sql`
         UPDATE users
-        SET phone = COALESCE(phone, ?),
-            updated_at = ?
-        WHERE id = ?
-      `).run(cleanPhone, now, user.id);
-
-      user = db.prepare("SELECT * FROM users WHERE id = ?").get(user.id);
+        SET phone = COALESCE(phone, ${cleanPhone}),
+            updated_at = ${now}
+        WHERE id = ${user.id}
+      `;
+      const updated = await sql`SELECT * FROM users WHERE id = ${user.id} LIMIT 1`;
+      user = updated[0];
     } else {
-      // Create new user for this mobile number
+      // Create new user for this mobile number in Neon PostgreSQL
       const userId = "usr-p-" + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
       const displayName = `Customer (+${phoneDigits.slice(-10)})`;
 
-      db.prepare(`
+      await sql`
         INSERT INTO users (id, name, email, phone, role, created_at, updated_at)
-        VALUES (?, ?, ?, ?, 'customer', ?, ?)
-      `).run(userId, displayName, generatedEmail, cleanPhone, now, now);
-
-      user = db.prepare("SELECT * FROM users WHERE id = ?").get(userId);
+        VALUES (${userId}, ${displayName}, ${generatedEmail}, ${cleanPhone}, 'customer', ${now}, ${now})
+      `;
+      const created = await sql`SELECT * FROM users WHERE id = ${userId} LIMIT 1`;
+      user = created[0];
     }
 
     const userData = {

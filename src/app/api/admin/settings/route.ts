@@ -1,33 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
 import { sql } from "@/lib/db/neon";
+import { getAuthenticatedUser } from "@/lib/auth/jwt";
 
 export const dynamic = "force-dynamic";
 
 // GET /api/admin/settings
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    let settingsRows: { key: string; value: string }[] = [];
-
-    if (process.env.DATABASE_URL) {
-      try {
-        const rows = await sql`
-          SELECT key, value FROM store_settings;
-        `;
-        settingsRows = rows as { key: string; value: string }[];
-      } catch (err) {
-        console.warn("Neon admin settings fetch fallback to SQLite:", err);
-      }
+    const auth = getAuthenticatedUser(req);
+    if (!auth || auth.role !== "admin") {
+      return NextResponse.json({ success: false, error: "Forbidden: Admin access required" }, { status: 403 });
     }
 
-    if (!settingsRows || settingsRows.length === 0) {
-      try {
-        const db = getDb();
-        settingsRows = db.prepare("SELECT key, value FROM store_settings").all() as { key: string; value: string }[];
-      } catch (err) {
-        console.warn("SQLite admin settings fetch error:", err);
-      }
-    }
+    const rows = await sql`SELECT key, value FROM store_settings`;
+    const settingsRows = (rows || []) as { key: string; value: string }[];
 
     const settings: Record<string, string> = {
       store_name: "Occassions",
@@ -67,6 +53,11 @@ export async function GET() {
 // PUT /api/admin/settings
 export async function PUT(req: NextRequest) {
   try {
+    const auth = getAuthenticatedUser(req);
+    if (!auth || auth.role !== "admin") {
+      return NextResponse.json({ success: false, error: "Forbidden: Admin access required" }, { status: 403 });
+    }
+
     const body = await req.json();
     const { settings } = body;
 
@@ -77,40 +68,20 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    // 1. Dual-Write to SQLite
-    const db = getDb();
-    const updateStmt = db.prepare(`
-      INSERT OR REPLACE INTO store_settings (key, value)
-      VALUES (?, ?)
-    `);
-
+    // Write to Neon PostgreSQL as single source of truth
     for (const [key, value] of Object.entries(settings)) {
       if (typeof value === "string") {
-        updateStmt.run(key, value);
-      }
-    }
-
-    // 2. Dual-Write to Neon PostgreSQL
-    if (process.env.DATABASE_URL) {
-      try {
-        for (const [key, value] of Object.entries(settings)) {
-          if (typeof value === "string") {
-            await sql`
-              INSERT INTO store_settings (key, value)
-              VALUES (${key}, ${value})
-              ON CONFLICT (key) DO UPDATE
-              SET value = EXCLUDED.value;
-            `;
-          }
-        }
-      } catch (neonErr) {
-        console.warn("Neon PostgreSQL store_settings sync warning:", neonErr);
+        await sql`
+          INSERT INTO store_settings (key, value)
+          VALUES (${key}, ${value})
+          ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value
+        `;
       }
     }
 
     return NextResponse.json({
       success: true,
-      message: "Store branding settings updated successfully",
+      message: "Settings updated successfully",
       settings,
     });
   } catch (err: any) {
@@ -121,4 +92,3 @@ export async function PUT(req: NextRequest) {
     );
   }
 }
-

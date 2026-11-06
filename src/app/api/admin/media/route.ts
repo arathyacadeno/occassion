@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
-import { getDb } from "@/lib/db";
 import { sql } from "@/lib/db/neon";
 import { getAuthenticatedUser } from "@/lib/auth/jwt";
 import { v2 as cloudinary } from "cloudinary";
@@ -45,12 +44,14 @@ export async function GET(request: Request) {
     const folder = searchParams.get("folder") || "all";
     const hideSideViews = searchParams.get("sideViews") === "false";
 
-    const db = getDb();
-
-    // Fetch all media from DB
     let query = "SELECT * FROM media";
     const whereClauses: string[] = [];
     const params: any[] = [];
+
+    const addParam = (val: any) => {
+      params.push(val);
+      return `$${params.length}`;
+    };
 
     if (folder && folder !== "all") {
       if (folder === "flower-bouquet") {
@@ -66,8 +67,7 @@ export async function GET(request: Request) {
       } else if (folder === "wreaths") {
         whereClauses.push("(folder = 'wreaths' OR url LIKE '%/wreath%')");
       } else {
-        whereClauses.push("folder = ?");
-        params.push(folder);
+        whereClauses.push(`folder = ${addParam(folder)}`);
       }
     }
 
@@ -76,9 +76,12 @@ export async function GET(request: Request) {
     }
 
     if (search) {
-      whereClauses.push("(filename LIKE ? OR public_id LIKE ? OR folder LIKE ? OR url LIKE ?)");
       const term = `%${search}%`;
-      params.push(term, term, term, term);
+      const p1 = addParam(term);
+      const p2 = addParam(term);
+      const p3 = addParam(term);
+      const p4 = addParam(term);
+      whereClauses.push(`(filename LIKE ${p1} OR public_id LIKE ${p2} OR folder LIKE ${p3} OR url LIKE ${p4})`);
     }
 
     if (whereClauses.length > 0) {
@@ -87,29 +90,34 @@ export async function GET(request: Request) {
 
     query += " ORDER BY created_at DESC LIMIT 200";
 
-    const mediaRows = db.prepare(query).all(...params);
+    const mediaRows = await sql.query(query, params);
 
-    // Filter out any ghost/broken local paths that do not exist on disk
-    const validMediaRows = mediaRows.filter((m: any) => {
-      if (m.url.startsWith("http://") || m.url.startsWith("https://")) return true;
+    // Filter out any broken local paths that do not exist on disk
+    const validMediaRows: any[] = [];
+    for (const m of mediaRows || []) {
+      if (m.url.startsWith("http://") || m.url.startsWith("https://")) {
+        validMediaRows.push(m);
+        continue;
+      }
       const localFile = path.join(process.cwd(), "public", m.url.replace(/^\//, ""));
       const exists = fs.existsSync(localFile);
       if (!exists) {
         try {
-          db.prepare("DELETE FROM media WHERE id = ?").run(m.id);
+          await sql`DELETE FROM media WHERE id = ${m.id}`;
         } catch {}
+      } else {
+        validMediaRows.push(m);
       }
-      return exists;
-    });
+    }
 
-    // Check image references in products & categories
-    const products = db.prepare("SELECT id, name, images FROM products").all();
-    const categories = db.prepare("SELECT id, name, image FROM categories").all();
+    // Check image references in products & categories from Neon PostgreSQL
+    const products = await sql`SELECT id, name, images FROM products`;
+    const categories = await sql`SELECT id, name, image FROM categories`;
 
     const enrichedMedia = validMediaRows.map((m: any) => {
       const referencedIn: string[] = [];
 
-      for (const p of products) {
+      for (const p of products || []) {
         if (p.images && p.images.includes(m.url)) {
           referencedIn.push(`Product: ${p.name}`);
         } else if (m.public_id && p.images && p.images.includes(m.public_id)) {
@@ -117,7 +125,7 @@ export async function GET(request: Request) {
         }
       }
 
-      for (const c of categories) {
+      for (const c of categories || []) {
         if (c.image && (c.image.includes(m.url) || (m.public_id && c.image.includes(m.public_id)))) {
           referencedIn.push(`Category: ${c.name}`);
         }
@@ -218,37 +226,14 @@ export async function POST(request: Request) {
     const mediaId = `med-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
     const now = new Date().toISOString();
 
-    const db = getDb();
-    db.prepare(`
-      INSERT OR REPLACE INTO media (id, url, public_id, filename, format, size, width, height, folder, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      mediaId,
-      localUrl,
-      localUrl,
-      safeName,
-      ext.replace(".", ""),
-      rawBuffer.length,
-      800,
-      800,
-      folderName,
-      now
-    );
-
-    if (process.env.DATABASE_URL) {
-      try {
-        await sql`
-          INSERT INTO media (id, url, public_id, filename, format, size, width, height, folder, created_at)
-          VALUES (
-            ${mediaId}, ${localUrl}, ${localUrl}, ${safeName},
-            ${ext.replace(".", "")}, ${rawBuffer.length}, 800, 800, ${folderName}, ${now}
-          )
-          ON CONFLICT (id) DO NOTHING
-        `;
-      } catch (neonErr: any) {
-        console.warn("Neon media insert sync warning:", neonErr.message);
-      }
-    }
+    await sql`
+      INSERT INTO media (id, url, public_id, filename, format, size, width, height, folder, created_at)
+      VALUES (
+        ${mediaId}, ${localUrl}, ${localUrl}, ${safeName},
+        ${ext.replace(".", "")}, ${rawBuffer.length}, 800, 800, ${folderName}, ${now}
+      )
+      ON CONFLICT (id) DO NOTHING
+    `;
 
     return NextResponse.json({
       success: true,
@@ -286,13 +271,13 @@ export async function DELETE(request: Request) {
     const publicId = searchParams.get("publicId");
     const force = searchParams.get("force") === "true";
 
-    const db = getDb();
-
     let mediaItem: any = null;
     if (mediaId) {
-      mediaItem = db.prepare("SELECT * FROM media WHERE id = ?").get(mediaId);
+      const rows = await sql`SELECT * FROM media WHERE id = ${mediaId} LIMIT 1`;
+      mediaItem = rows[0];
     } else if (publicId) {
-      mediaItem = db.prepare("SELECT * FROM media WHERE public_id = ?").get(publicId);
+      const rows = await sql`SELECT * FROM media WHERE public_id = ${publicId} LIMIT 1`;
+      mediaItem = rows[0];
     }
 
     if (!mediaItem) {
@@ -300,16 +285,16 @@ export async function DELETE(request: Request) {
     }
 
     // Check usage references in products and categories
-    const products = db.prepare("SELECT id, name, images FROM products").all();
-    const categories = db.prepare("SELECT id, name, image FROM categories").all();
+    const products = await sql`SELECT id, name, images FROM products`;
+    const categories = await sql`SELECT id, name, image FROM categories`;
 
     const references: string[] = [];
-    for (const p of products) {
+    for (const p of products || []) {
       if (p.images && (p.images.includes(mediaItem.url) || p.images.includes(mediaItem.public_id))) {
         references.push(`Product: ${p.name}`);
       }
     }
-    for (const c of categories) {
+    for (const c of categories || []) {
       if (c.image && (c.image.includes(mediaItem.url) || c.image.includes(mediaItem.public_id))) {
         references.push(`Category: ${c.name}`);
       }
@@ -348,17 +333,8 @@ export async function DELETE(request: Request) {
       }
     }
 
-    // Delete from SQLite
-    db.prepare("DELETE FROM media WHERE id = ?").run(mediaItem.id);
-
-    // Delete from Neon DB
-    if (process.env.DATABASE_URL) {
-      try {
-        await sql`DELETE FROM media WHERE id = ${mediaItem.id}`;
-      } catch (neonErr: any) {
-        console.warn("Neon media delete warning:", neonErr.message);
-      }
-    }
+    // Delete from Neon PostgreSQL
+    await sql`DELETE FROM media WHERE id = ${mediaItem.id}`;
 
     return NextResponse.json({
       success: true,

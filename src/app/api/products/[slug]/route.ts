@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
 import { sql } from "@/lib/db/neon";
 import { getAuthenticatedUser } from "@/lib/auth/jwt";
 import { ADDON_PRODUCTS } from "@/data/addons";
@@ -10,9 +9,9 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
-    const db = getDb();
 
-    let product: any = db.prepare(`
+    let product: any = null;
+    const rows = await sql`
       SELECT
         p.id, p.name, p.slug, p.description, p.short_description, p.images, p.price, p.discount_price,
         p.stock, p.low_stock_threshold, p.sku, p.featured, p.active, p.rating, p.reviews_count,
@@ -26,12 +25,17 @@ export async function GET(
       LEFT JOIN categories c ON p.category_id = c.id
       LEFT JOIN flower_types ft ON p.flower_type_id = ft.id
       LEFT JOIN occasions o ON p.occasion_id = o.id
-      WHERE p.slug = ? OR p.id = ?
-    `).get(slug, slug);
+      WHERE p.slug = ${slug} OR p.id = ${slug}
+      LIMIT 1
+    `;
+
+    if (rows && rows.length > 0) {
+      product = rows[0];
+    }
 
     if (!product && typeof slug === "string" && slug.startsWith("addon-")) {
       const stripped = slug.replace(/^addon-/, "");
-      product = db.prepare(`
+      const strippedRows = await sql`
         SELECT
           p.id, p.name, p.slug, p.description, p.short_description, p.images, p.price, p.discount_price,
           p.stock, p.low_stock_threshold, p.sku, p.featured, p.active, p.rating, p.reviews_count,
@@ -45,8 +49,12 @@ export async function GET(
         LEFT JOIN categories c ON p.category_id = c.id
         LEFT JOIN flower_types ft ON p.flower_type_id = ft.id
         LEFT JOIN occasions o ON p.occasion_id = o.id
-        WHERE p.slug = ? OR p.id = ?
-      `).get(stripped, stripped);
+        WHERE p.slug = ${stripped} OR p.id = ${stripped}
+        LIMIT 1
+      `;
+      if (strippedRows && strippedRows.length > 0) {
+        product = strippedRows[0];
+      }
     }
 
     if (!product) {
@@ -103,7 +111,7 @@ export async function GET(
     try {
       parsedImages = JSON.parse(product.images);
     } catch {
-      parsedImages = [product.images];
+      parsedImages = product.images ? [product.images] : [];
     }
 
     let parsedOffers: string[] = [];
@@ -142,11 +150,11 @@ export async function GET(
         slug: product.slug,
         description: product.description,
         shortDescription: product.short_description || "",
-        price: product.price,
-        originalPrice: product.discount_price,
+        price: Number(product.price),
+        originalPrice: product.discount_price ? Number(product.discount_price) : undefined,
         image: parsedImages[0] || "/images/sunflower-bouquet.jpg",
         images: parsedImages,
-        stock: product.stock,
+        stock: Number(product.stock),
         lowStockThreshold: product.low_stock_threshold ?? 5,
         sku: product.sku,
         category: product.category_slug || (product.category_id ? product.category_id.replace(/^cat-/, "") : "flower"),
@@ -171,8 +179,8 @@ export async function GET(
         occasionLabel: product.occasion_name,
         featured: !!product.featured,
         active: !!product.active,
-        rating: product.rating,
-        reviewsCount: product.reviews_count,
+        rating: Number(product.rating) || 5.0,
+        reviewsCount: Number(product.reviews_count) || 0,
         deliveryInfo: product.delivery_info,
         offers: parsedOffers,
         includes: parsedIncludes,
@@ -203,75 +211,107 @@ export async function PUT(
 
     const { slug } = await params;
     const body = await request.json();
-    const db = getDb();
     const now = new Date().toISOString();
 
-    const product = db.prepare("SELECT * FROM products WHERE slug = ? OR id = ?").get(slug, slug);
-    if (!product) {
+    const existingProducts = await sql`SELECT * FROM products WHERE slug = ${slug} OR id = ${slug} LIMIT 1`;
+    if (!existingProducts || existingProducts.length === 0) {
       return NextResponse.json({ success: false, error: "Product not found" }, { status: 404 });
     }
+    const product = existingProducts[0];
 
-    const updates: string[] = ["updated_at = ?"];
     const values: any[] = [now];
+    const updates: string[] = ["updated_at = $1"];
 
-    if (body.name !== undefined) { updates.push("name = ?"); values.push(body.name.trim()); }
+    const addParam = (val: any) => {
+      values.push(val);
+      return `$${values.length}`;
+    };
+
+    if (body.name !== undefined) {
+      updates.push(`name = ${addParam(body.name.trim())}`);
+    }
     if (body.slug !== undefined) {
       const newSlug = body.slug.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
       if (newSlug && newSlug !== product.slug) {
-        const existing = db.prepare("SELECT id FROM products WHERE slug = ? AND id != ?").get(newSlug, product.id);
-        if (existing) {
+        const existing = await sql`SELECT id FROM products WHERE slug = ${newSlug} AND id != ${product.id} LIMIT 1`;
+        if (existing && existing.length > 0) {
           return NextResponse.json({ success: false, error: "Product slug already in use" }, { status: 400 });
         }
-        updates.push("slug = ?");
-        values.push(newSlug);
+        updates.push(`slug = ${addParam(newSlug)}`);
       }
     }
-    if (body.description !== undefined) { updates.push("description = ?"); values.push(body.description); }
-    if (body.shortDescription !== undefined) { updates.push("short_description = ?"); values.push(body.shortDescription); }
-    if (body.price !== undefined) { updates.push("price = ?"); values.push(Number(body.price)); }
-    if (body.originalPrice !== undefined) { updates.push("discount_price = ?"); values.push(body.originalPrice ? Number(body.originalPrice) : null); }
-    if (body.stock !== undefined) { updates.push("stock = ?"); values.push(Number(body.stock)); }
-    if (body.lowStockThreshold !== undefined) { updates.push("low_stock_threshold = ?"); values.push(Number(body.lowStockThreshold)); }
-    if (body.sku !== undefined) { updates.push("sku = ?"); values.push(body.sku); }
-    if (body.active !== undefined) { updates.push("active = ?"); values.push(body.active ? 1 : 0); }
-    if (body.featured !== undefined) { updates.push("featured = ?"); values.push(body.featured ? 1 : 0); }
-    if (body.status !== undefined) { updates.push("status = ?"); values.push(body.status); }
-    if (body.type !== undefined) { updates.push("type = ?"); values.push(body.type); }
-    if (body.images !== undefined) { updates.push("images = ?"); values.push(JSON.stringify(Array.isArray(body.images) ? body.images : [body.images])); }
-    if (body.badge !== undefined) { updates.push("badge = ?"); values.push(body.badge); }
-    if (body.deliveryInfo !== undefined) { updates.push("delivery_info = ?"); values.push(body.deliveryInfo); }
-    if (body.offers !== undefined) { updates.push("offers = ?"); values.push(JSON.stringify(Array.isArray(body.offers) ? body.offers : [])); }
-    if (body.includes !== undefined) { updates.push("includes = ?"); values.push(JSON.stringify(Array.isArray(body.includes) ? body.includes : [])); }
-    if (body.tags !== undefined) { updates.push("tags = ?"); values.push(JSON.stringify(Array.isArray(body.tags) ? body.tags : [])); }
-    if (body.seoTitle !== undefined) { updates.push("seo_title = ?"); values.push(body.seoTitle); }
-    if (body.seoDescription !== undefined) { updates.push("seo_description = ?"); values.push(body.seoDescription); }
-    if (body.attributes !== undefined) { updates.push("attributes = ?"); values.push(JSON.stringify(typeof body.attributes === "object" && body.attributes !== null ? body.attributes : {})); }
-    if (body.categoryId !== undefined) { updates.push("category_id = ?"); values.push(body.categoryId); }
-    if (body.flowerTypeId !== undefined) { updates.push("flower_type_id = ?"); values.push(body.flowerTypeId); }
-    if (body.occasionId !== undefined) { updates.push("occasion_id = ?"); values.push(body.occasionId); }
-
-    values.push(product.id);
-
-    db.prepare(`UPDATE products SET ${updates.join(", ")} WHERE id = ?`).run(...values);
-
-    // Sync update to Neon PostgreSQL if configured
-    if (process.env.DATABASE_URL) {
-      try {
-        const setClauses: string[] = [];
-        if (body.name !== undefined) setClauses.push(`name = '${body.name.replace(/'/g, "''")}'`);
-        if (body.price !== undefined) setClauses.push(`price = ${Number(body.price)}`);
-        if (body.stock !== undefined) setClauses.push(`stock = ${Number(body.stock)}`);
-        if (body.active !== undefined) setClauses.push(`active = ${body.active ? 1 : 0}`);
-        if (body.status !== undefined) setClauses.push(`status = '${body.status}'`);
-        if (body.featured !== undefined) setClauses.push(`featured = ${body.featured ? 1 : 0}`);
-        if (body.images !== undefined) setClauses.push(`images = '${JSON.stringify(Array.isArray(body.images) ? body.images : [body.images]).replace(/'/g, "''")}'`);
-        if (setClauses.length > 0) {
-          await sql`UPDATE products SET updated_at = ${now} WHERE id = ${product.id}`;
-        }
-      } catch (neonErr) {
-        console.warn("Neon product update sync warning:", neonErr);
-      }
+    if (body.description !== undefined) {
+      updates.push(`description = ${addParam(body.description)}`);
     }
+    if (body.shortDescription !== undefined) {
+      updates.push(`short_description = ${addParam(body.shortDescription)}`);
+    }
+    if (body.price !== undefined) {
+      updates.push(`price = ${addParam(Number(body.price))}`);
+    }
+    if (body.originalPrice !== undefined) {
+      updates.push(`discount_price = ${addParam(body.originalPrice ? Number(body.originalPrice) : null)}`);
+    }
+    if (body.stock !== undefined) {
+      updates.push(`stock = ${addParam(Number(body.stock))}`);
+    }
+    if (body.lowStockThreshold !== undefined) {
+      updates.push(`low_stock_threshold = ${addParam(Number(body.lowStockThreshold))}`);
+    }
+    if (body.sku !== undefined) {
+      updates.push(`sku = ${addParam(body.sku)}`);
+    }
+    if (body.active !== undefined) {
+      updates.push(`active = ${addParam(body.active ? 1 : 0)}`);
+    }
+    if (body.featured !== undefined) {
+      updates.push(`featured = ${addParam(body.featured ? 1 : 0)}`);
+    }
+    if (body.status !== undefined) {
+      updates.push(`status = ${addParam(body.status)}`);
+    }
+    if (body.type !== undefined) {
+      updates.push(`type = ${addParam(body.type)}`);
+    }
+    if (body.images !== undefined) {
+      updates.push(`images = ${addParam(JSON.stringify(Array.isArray(body.images) ? body.images : [body.images]))}`);
+    }
+    if (body.badge !== undefined) {
+      updates.push(`badge = ${addParam(body.badge)}`);
+    }
+    if (body.deliveryInfo !== undefined) {
+      updates.push(`delivery_info = ${addParam(body.deliveryInfo)}`);
+    }
+    if (body.offers !== undefined) {
+      updates.push(`offers = ${addParam(JSON.stringify(Array.isArray(body.offers) ? body.offers : []))}`);
+    }
+    if (body.includes !== undefined) {
+      updates.push(`includes = ${addParam(JSON.stringify(Array.isArray(body.includes) ? body.includes : []))}`);
+    }
+    if (body.tags !== undefined) {
+      updates.push(`tags = ${addParam(JSON.stringify(Array.isArray(body.tags) ? body.tags : []))}`);
+    }
+    if (body.seoTitle !== undefined) {
+      updates.push(`seo_title = ${addParam(body.seoTitle)}`);
+    }
+    if (body.seoDescription !== undefined) {
+      updates.push(`seo_description = ${addParam(body.seoDescription)}`);
+    }
+    if (body.attributes !== undefined) {
+      updates.push(`attributes = ${addParam(JSON.stringify(typeof body.attributes === "object" && body.attributes !== null ? body.attributes : {}))}`);
+    }
+    if (body.categoryId !== undefined) {
+      updates.push(`category_id = ${addParam(body.categoryId)}`);
+    }
+    if (body.flowerTypeId !== undefined) {
+      updates.push(`flower_type_id = ${addParam(body.flowerTypeId)}`);
+    }
+    if (body.occasionId !== undefined) {
+      updates.push(`occasion_id = ${addParam(body.occasionId)}`);
+    }
+
+    const idPlaceholder = addParam(product.id);
+    await sql.query(`UPDATE products SET ${updates.join(", ")} WHERE id = ${idPlaceholder}`, values);
 
     return NextResponse.json({ success: true, message: "Product updated successfully" });
   } catch (error: any) {
@@ -291,16 +331,15 @@ export async function DELETE(
     }
 
     const { slug } = await params;
-    const db = getDb();
-
-    const product = db.prepare("SELECT id, name FROM products WHERE slug = ? OR id = ?").get(slug, slug);
-    if (!product) {
+    const existingProducts = await sql`SELECT id, name FROM products WHERE slug = ${slug} OR id = ${slug} LIMIT 1`;
+    if (!existingProducts || existingProducts.length === 0) {
       return NextResponse.json({ success: false, error: "Product not found" }, { status: 404 });
     }
+    const product = existingProducts[0];
 
     // Check if product is referenced in any customer orders
-    const orderCount = db.prepare("SELECT count(*) as count FROM order_items WHERE product_id = ?").get(product.id) as { count: number } | undefined;
-    const hasOrders = (orderCount?.count || 0) > 0;
+    const orderCountRes = await sql`SELECT count(*)::int as count FROM order_items WHERE product_id = ${product.id}`;
+    const hasOrders = (orderCountRes[0]?.count || 0) > 0;
 
     const { searchParams } = new URL(request.url);
     const forceHardDelete = searchParams.get("force") === "true";
@@ -308,12 +347,7 @@ export async function DELETE(
     if (hasOrders && !forceHardDelete) {
       // Soft-delete / Archive product to protect order history integrity
       const now = new Date().toISOString();
-      db.prepare("UPDATE products SET active = 0, status = 'archived', updated_at = ? WHERE id = ?").run(now, product.id);
-      if (process.env.DATABASE_URL) {
-        try {
-          await sql`UPDATE products SET active = 0, status = 'archived', updated_at = ${now} WHERE id = ${product.id}`;
-        } catch {}
-      }
+      await sql`UPDATE products SET active = 0, status = 'archived', updated_at = ${now} WHERE id = ${product.id}`;
       return NextResponse.json({
         success: true,
         archived: true,
@@ -322,12 +356,7 @@ export async function DELETE(
     }
 
     // Hard delete if never ordered
-    db.prepare("DELETE FROM products WHERE id = ?").run(product.id);
-    if (process.env.DATABASE_URL) {
-      try {
-        await sql`DELETE FROM products WHERE id = ${product.id}`;
-      } catch {}
-    }
+    await sql`DELETE FROM products WHERE id = ${product.id}`;
 
     return NextResponse.json({
       success: true,

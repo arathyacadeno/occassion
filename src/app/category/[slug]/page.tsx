@@ -1,8 +1,8 @@
 import React from "react";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import CategoryPage from "@/components/CategoryPage";
-import { getDb } from "@/lib/db";
+import { sql } from "@/lib/db/neon";
 import { Product } from "@/data/catalog";
 
 interface PageProps {
@@ -11,21 +11,29 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const db = getDb();
-  const category: any = db.prepare("SELECT * FROM categories WHERE slug = ? OR id = ?").get(slug, `cat-${slug}`);
+  try {
+    const cats = await sql`SELECT * FROM categories WHERE slug = ${slug} OR id = ${slug} OR id = ${`cat-${slug}`} LIMIT 1`;
+    const category = cats[0];
 
-  if (!category) {
+    if (!category) {
+      const formatted = slug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+      return {
+        title: `${formatted} | Occassions Florist Calicut`,
+        description: `Explore our exclusive ${formatted} collection handcrafted for your special celebrations in Calicut.`,
+      };
+    }
+
+    return {
+      title: `${category.name} | Occassions Florist Calicut`,
+      description: category.description || `Explore our ${category.name} collection at Occassions Florist Calicut.`,
+    };
+  } catch {
     const formatted = slug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
     return {
       title: `${formatted} | Occassions Florist Calicut`,
       description: `Explore our exclusive ${formatted} collection handcrafted for your special celebrations in Calicut.`,
     };
   }
-
-  return {
-    title: `${category.name} | Occassions Florist Calicut`,
-    description: category.description || `Explore our ${category.name} collection at Occassions Florist Calicut.`,
-  };
 }
 
 export default async function DynamicCategoryPage({ params }: PageProps) {
@@ -49,23 +57,33 @@ export default async function DynamicCategoryPage({ params }: PageProps) {
     redirect("/wreaths");
   }
 
-  const db = getDb();
-  const category: any = db.prepare("SELECT * FROM categories WHERE slug = ? OR id = ?").get(cleanSlug, `cat-${cleanSlug}`);
+  let category: any = null;
+  try {
+    const cats = await sql`SELECT * FROM categories WHERE slug = ${cleanSlug} OR id = ${cleanSlug} OR id = ${`cat-${cleanSlug}`} LIMIT 1`;
+    category = cats[0];
+  } catch (e) {
+    console.error("Neon category page lookup error:", e);
+  }
 
   const catId = category?.id || `cat-${cleanSlug}`;
   const catName = category?.name || cleanSlug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
   const catDesc = category?.description || `Explore handcrafted ${catName} curated with fresh blooms and boutique designs.`;
 
-  // Query products belonging to this category
-  const rawProducts: any[] = db.prepare(`
-    SELECT p.* FROM products p
-    WHERE (p.category_id = ? OR p.category_id = ? OR p.category_id = ?)
-      AND p.active = 1
-      AND (p.status = 'published' OR p.status IS NULL OR p.status = '')
-    ORDER BY p.featured DESC, p.created_at DESC
-  `).all(catId, cleanSlug, `cat-${cleanSlug}`);
+  // Query products belonging to this category from Neon PostgreSQL
+  let rawProducts: any[] = [];
+  try {
+    rawProducts = await sql`
+      SELECT p.* FROM products p
+      WHERE (p.category_id = ${catId} OR p.category_id = ${cleanSlug} OR p.category_id = ${`cat-${cleanSlug}`})
+        AND p.active = 1
+        AND (p.status = 'published' OR p.status IS NULL OR p.status = '')
+      ORDER BY p.featured DESC, p.created_at DESC
+    `;
+  } catch (e) {
+    console.error("Neon category products query error:", e);
+  }
 
-  const products: Product[] = rawProducts.map((p) => {
+  const products: Product[] = (rawProducts || []).map((p) => {
     let parsedImages: string[] = [];
     if (typeof p.images === "string") {
       try {

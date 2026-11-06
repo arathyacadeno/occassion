@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { sql } from "@/lib/db/neon";
 import { getAuthenticatedUser } from "@/lib/auth/jwt";
 
 export async function GET(request: Request) {
@@ -9,48 +9,46 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: false, error: "Forbidden: Admin access required" }, { status: 403 });
     }
 
-    const db = getDb();
+    // Stats from Neon PostgreSQL
+    const totalRevenueResult = await sql`SELECT COALESCE(SUM(final_amount), 0) as total FROM orders WHERE payment_status = 'paid'`;
+    const totalOrdersResult = await sql`SELECT count(*) as count FROM orders`;
+    const totalUsersResult = await sql`SELECT count(*) as count FROM users WHERE role = 'customer'`;
+    const activeProductsResult = await sql`SELECT count(*) as count FROM products WHERE active = 1`;
+    const lowStockProductsResult = await sql`SELECT count(*) as count FROM products WHERE stock <= 10`;
 
-    // Stats
-    const totalRevenueResult = db.prepare("SELECT SUM(final_amount) as total FROM orders WHERE payment_status = 'paid'").get();
-    const totalOrdersResult = db.prepare("SELECT count(*) as count FROM orders").get();
-    const totalUsersResult = db.prepare("SELECT count(*) as count FROM users WHERE role = 'customer'").get();
-    const activeProductsResult = db.prepare("SELECT count(*) as count FROM products WHERE active = 1").get();
-    const lowStockProductsResult = db.prepare("SELECT count(*) as count FROM products WHERE stock <= 10").get();
-
-    // Recent orders
-    const recentOrders = db.prepare(`
+    // Recent orders from Neon
+    const recentOrders = await sql`
       SELECT id, customer_name, customer_email, customer_phone, final_amount, order_status, payment_status, created_at
       FROM orders
       ORDER BY created_at DESC
       LIMIT 10
-    `).all();
+    `;
 
     // Users list (customers only)
-    const users = db.prepare(`
+    const users = await sql`
       SELECT id, name, email, phone, role, created_at
       FROM users
       WHERE role = 'customer'
       ORDER BY created_at DESC
       LIMIT 50
-    `).all();
+    `;
 
     // Low stock items
-    const lowStockItems = db.prepare(`
+    const lowStockItems = await sql`
       SELECT id, name, slug, price, stock, active
       FROM products
       ORDER BY stock ASC
       LIMIT 20
-    `).all();
+    `;
 
     return NextResponse.json({
       success: true,
       stats: {
-        totalRevenue: totalRevenueResult?.total || 0,
-        totalOrders: totalOrdersResult?.count || 0,
-        totalCustomers: totalUsersResult?.count || 0,
-        activeProducts: activeProductsResult?.count || 0,
-        lowStockCount: lowStockProductsResult?.count || 0,
+        totalRevenue: Number(totalRevenueResult[0]?.total) || 0,
+        totalOrders: Number(totalOrdersResult[0]?.count) || 0,
+        totalCustomers: Number(totalUsersResult[0]?.count) || 0,
+        activeProducts: Number(activeProductsResult[0]?.count) || 0,
+        lowStockCount: Number(lowStockProductsResult[0]?.count) || 0,
       },
       recentOrders,
       users,

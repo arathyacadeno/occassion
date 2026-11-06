@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { sql } from "@/lib/db/neon";
 import { sendFast2SmsOtp } from "@/lib/sms/fast2sms";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { phoneNumber } = body;
+    const phoneNumber = body.phoneNumber || body.phone;
 
     if (!phoneNumber) {
       return NextResponse.json(
@@ -28,22 +28,15 @@ export async function POST(request: Request) {
     const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes
     const now = new Date().toISOString();
 
-    const db = getDb();
-
-    db.exec(`
-      CREATE TABLE IF NOT EXISTS phone_otps (
-        phone TEXT PRIMARY KEY,
-        otp TEXT NOT NULL,
-        expires_at INTEGER NOT NULL,
-        created_at TEXT NOT NULL
-      );
-    `);
-
-    // Store in phone_otps table
-    db.prepare(`
-      INSERT OR REPLACE INTO phone_otps (phone, otp, expires_at, created_at)
-      VALUES (?, ?, ?, ?)
-    `).run(cleanPhone, otp, expiresAt, now);
+    // Store in Neon PostgreSQL phone_otps table
+    await sql`
+      INSERT INTO phone_otps (phone, otp, expires_at, created_at)
+      VALUES (${cleanPhone}, ${otp}, ${expiresAt}, ${now})
+      ON CONFLICT (phone) DO UPDATE
+      SET otp = EXCLUDED.otp,
+          expires_at = EXCLUDED.expires_at,
+          created_at = EXCLUDED.created_at
+    `;
 
     // Send SMS via Fast2SMS
     const smsResult = await sendFast2SmsOtp(cleanPhone, otp);

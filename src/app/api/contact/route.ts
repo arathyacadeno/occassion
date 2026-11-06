@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { sql } from "@/lib/db/neon";
 import { sendContactNotification } from "@/lib/email";
 
 export async function POST(req: Request) {
@@ -34,32 +34,14 @@ export async function POST(req: Request) {
     const cleanSubject = subject ? subject.trim() : "General Inquiry";
     const cleanMessage = message.trim();
 
-    // 1. Persist inquiry into database
-    try {
-      const db = getDb();
-      db.exec(`
-        CREATE TABLE IF NOT EXISTS contact_inquiries (
-          id TEXT PRIMARY KEY,
-          name TEXT NOT NULL,
-          email TEXT NOT NULL,
-          phone TEXT,
-          subject TEXT,
-          message TEXT NOT NULL,
-          created_at TEXT NOT NULL
-        );
-      `);
+    // 1. Persist inquiry into Neon PostgreSQL database
+    const inquiryId = "inq-" + Date.now() + "-" + Math.random().toString(36).substring(2, 7);
+    const createdAt = new Date().toISOString();
 
-      const inquiryId = "inq-" + Date.now() + "-" + Math.random().toString(36).substring(2, 7);
-      const createdAt = new Date().toISOString();
-
-      const stmt = db.prepare(`
-        INSERT INTO contact_inquiries (id, name, email, phone, subject, message, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-      `);
-      stmt.run(inquiryId, cleanName, cleanEmail, cleanPhone, cleanSubject, cleanMessage, createdAt);
-    } catch (dbErr) {
-      console.warn("Could not save inquiry to local DB (continuing gracefully):", dbErr);
-    }
+    await sql`
+      INSERT INTO contact_inquiries (id, name, email, phone, subject, message, created_at)
+      VALUES (${inquiryId}, ${cleanName}, ${cleanEmail}, ${cleanPhone}, ${cleanSubject}, ${cleanMessage}, ${createdAt})
+    `;
 
     // 2. Dispatch email notification to owner (occassions.flowers@gmail.com)
     try {

@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { sql } from "@/lib/db/neon";
 import { getAuthenticatedUser } from "@/lib/auth/jwt";
 
 export async function GET() {
   try {
-    const db = getDb();
-    const occasions = db.prepare("SELECT * FROM occasions ORDER BY name ASC").all();
-    return NextResponse.json({ success: true, occasions });
+    const occasions = await sql`SELECT * FROM occasions ORDER BY name ASC`;
+    return NextResponse.json({ success: true, occasions: occasions || [] });
   } catch (error: any) {
     console.error("Occasions fetch error:", error);
     return NextResponse.json({ success: false, error: "Failed to fetch occasions" }, { status: 500 });
@@ -28,12 +27,12 @@ export async function POST(request: Request) {
     }
 
     const id = "occ-" + slug.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-    const db = getDb();
 
-    db.prepare(`
+    await sql`
       INSERT INTO occasions (id, name, slug)
-      VALUES (?, ?, ?)
-    `).run(id, name, slug);
+      VALUES (${id}, ${name}, ${slug})
+      ON CONFLICT (id) DO NOTHING
+    `;
 
     return NextResponse.json({ success: true, occasion: { id, name, slug } });
   } catch (error: any) {

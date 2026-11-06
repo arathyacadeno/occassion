@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { sql } from "@/lib/db/neon";
 import { getAuthenticatedUser } from "@/lib/auth/jwt";
 
 export async function POST(
@@ -16,20 +16,21 @@ export async function POST(
     }
 
     const { slug } = await params;
-    const db = getDb();
-
-    const product: any = db.prepare("SELECT * FROM products WHERE slug = ? OR id = ?").get(slug, slug);
-    if (!product) {
+    const existing = await sql`SELECT * FROM products WHERE slug = ${slug} OR id = ${slug} LIMIT 1`;
+    if (!existing || existing.length === 0) {
       return NextResponse.json({ success: false, error: "Product not found" }, { status: 404 });
     }
+    const product = existing[0];
 
     const now = new Date().toISOString();
 
-    // Generate unique slug
+    // Generate unique slug in Neon
     let baseSlug = `${product.slug}-copy`;
     let newSlug = baseSlug;
     let counter = 1;
-    while (db.prepare("SELECT id FROM products WHERE slug = ?").get(newSlug)) {
+    while (true) {
+      const slugCheck = await sql`SELECT id FROM products WHERE slug = ${newSlug} LIMIT 1`;
+      if (!slugCheck || slugCheck.length === 0) break;
       counter++;
       newSlug = `${baseSlug}-${counter}`;
     }
@@ -38,7 +39,7 @@ export async function POST(
     const newName = `${product.name} (Copy)`;
     const newSku = product.sku ? `${product.sku}-COPY-${Date.now().toString().slice(-4)}` : `SKU-${Date.now().toString().slice(-6)}`;
 
-    db.prepare(`
+    await sql`
       INSERT INTO products (
         id, name, slug, description, short_description, images, price, discount_price,
         stock, low_stock_threshold, sku, category_id, flower_type_id, occasion_id,
@@ -46,41 +47,16 @@ export async function POST(
         offers, includes, badge, type, status, tags, seo_title, seo_description,
         attributes, created_at, updated_at
       ) VALUES (
-        ?, ?, ?, ?, ?, ?, ?, ?,
-        ?, ?, ?, ?, ?, ?,
-        0, 1, ?, ?, ?,
-        ?, ?, ?, ?, 'draft', ?, ?, ?,
-        ?, ?, ?
+        ${newId}, ${newName}, ${newSlug}, ${product.description || ""}, ${product.short_description || ""},
+        ${product.images || "[]"}, ${product.price}, ${product.discount_price},
+        ${product.stock}, ${product.low_stock_threshold ?? 5}, ${newSku}, ${product.category_id},
+        ${product.flower_type_id}, ${product.occasion_id}, 0, 1, ${product.rating ?? 5.0},
+        ${product.reviews_count ?? 0}, ${product.delivery_info || ""}, ${product.offers || "[]"},
+        ${product.includes || "[]"}, ${product.badge || null}, ${product.type || "flower"},
+        'draft', ${product.tags || "[]"}, ${product.seo_title || ""}, ${product.seo_description || ""},
+        ${product.attributes || "{}"}, ${now}, ${now}
       )
-    `).run(
-      newId,
-      newName,
-      newSlug,
-      product.description || "",
-      product.short_description || "",
-      product.images || "[]",
-      product.price,
-      product.discount_price,
-      product.stock,
-      product.low_stock_threshold ?? 5,
-      newSku,
-      product.category_id,
-      product.flower_type_id,
-      product.occasion_id,
-      product.rating ?? 5.0,
-      product.reviews_count ?? 0,
-      product.delivery_info || "",
-      product.offers || "[]",
-      product.includes || "[]",
-      product.badge || null,
-      product.type || "flower",
-      product.tags || "[]",
-      product.seo_title || "",
-      product.seo_description || "",
-      product.attributes || "{}",
-      now,
-      now
-    );
+    `;
 
     return NextResponse.json({
       success: true,
@@ -101,4 +77,3 @@ export async function POST(
     );
   }
 }
-

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { sql } from "@/lib/db/neon";
 
 export async function POST(request: Request) {
   try {
@@ -12,9 +12,9 @@ export async function POST(request: Request) {
 
     const cleanCode = code.trim().toUpperCase();
     const amount = Number(subtotal) || 0;
-    const db = getDb();
 
-    const coupon = db.prepare("SELECT * FROM coupons WHERE code = ?").get(cleanCode);
+    const rows = await sql`SELECT * FROM coupons WHERE UPPER(code) = ${cleanCode} LIMIT 1`;
+    const coupon = rows[0];
 
     if (!coupon) {
       return NextResponse.json({ success: false, error: "Invalid coupon code" }, { status: 404 });
@@ -28,29 +28,35 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: "This coupon has expired" }, { status: 400 });
     }
 
-    if (coupon.usage_limit && coupon.times_used >= coupon.usage_limit) {
+    const usageLimit = Number(coupon.usage_limit) || 1000;
+    const timesUsed = Number(coupon.times_used) || 0;
+    if (coupon.usage_limit && timesUsed >= usageLimit) {
       return NextResponse.json({ success: false, error: "Coupon usage limit reached" }, { status: 400 });
     }
 
-    if (amount < coupon.min_order_value) {
+    const minOrderVal = Number(coupon.min_order_value) || 0;
+    if (amount < minOrderVal) {
       return NextResponse.json(
         {
           success: false,
-          error: `Minimum order value of ₹${coupon.min_order_value} required for this coupon. Your subtotal is ₹${amount}.`,
+          error: `Minimum order value of ₹${minOrderVal} required for this coupon. Your subtotal is ₹${amount}.`,
         },
         { status: 400 }
       );
     }
 
     let discount = 0;
+    const discVal = Number(coupon.discount_value) || 0;
+    const maxDisc = coupon.max_discount ? Number(coupon.max_discount) : null;
+
     if (coupon.discount_type === "percentage") {
-      discount = Math.round((amount * coupon.discount_value) / 100);
-      if (coupon.max_discount && discount > coupon.max_discount) {
-        discount = coupon.max_discount;
+      discount = Math.round((amount * discVal) / 100);
+      if (maxDisc && discount > maxDisc) {
+        discount = maxDisc;
       }
     } else {
       // Fixed discount
-      discount = coupon.discount_value;
+      discount = discVal;
     }
 
     // Ensure discount does not exceed subtotal
@@ -61,7 +67,7 @@ export async function POST(request: Request) {
       valid: true,
       code: coupon.code,
       discountType: coupon.discount_type,
-      discountValue: coupon.discount_value,
+      discountValue: discVal,
       discount,
       message: `Coupon applied! You saved ₹${discount}`,
     });

@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import { getDb } from "@/lib/db";
 
 const JWT_SECRET = process.env.JWT_SECRET || "occasions-florist-calicut-secret-2026-secure-jwt";
 const TOKEN_EXPIRY = "7d";
@@ -60,22 +59,8 @@ export function getAuthenticatedUser(request: Request): (TokenPayload & { id: st
   const payload = verifyUserToken(token);
   if (!payload) return null;
 
-  // Verify user still exists in DB
-  try {
-    const db = getDb();
-    const user = db.prepare("SELECT id, name, email, role FROM users WHERE id = ?").get(payload.userId);
-    if (!user) return null;
-    return {
-      userId: user.id,
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role as "customer" | "admin",
-    };
-  } catch {
-    return {
-      ...payload,
-      id: payload.userId,
-    };
-  }
+  return {
+    ...payload,
+    id: payload.userId,
+  };
 }
