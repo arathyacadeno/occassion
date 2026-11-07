@@ -881,7 +881,9 @@ export default function AdminPage() {
                       <td style={{ fontWeight: 700, color: "#831843" }}>#{o.id}</td>
                       <td>
                         <div style={{ fontWeight: 600 }}>{o.customer_name}</div>
-                        <div style={{ fontSize: "0.78rem", color: "#64748b" }}>{o.customer_phone}</div>
+                        <div style={{ fontSize: "0.78rem", color: "#64748b" }}>
+                          {o.customer_phone || o.deliveryAddress?.senderMobile || o.deliveryAddress?.receiverMobile || "—"}
+                        </div>
                       </td>
                       <td>
                         <div style={{ fontSize: "0.82rem" }}>

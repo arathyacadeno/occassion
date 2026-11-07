@@ -307,9 +307,27 @@ export async function POST(request: Request) {
     const orderId = `${orderRandom}`;
     const now = new Date().toISOString();
 
-    const customerName = (delivery?.fullName || auth?.name || "Customer").trim();
-    const customerEmail = (delivery?.email || auth?.email || "customer@occasions.com").trim();
-    const customerPhone = (delivery?.mobile || delivery?.phone || "+91 8606464700").trim();
+    const customerName = (
+      delivery?.senderName ||
+      delivery?.fullName ||
+      delivery?.receiverName ||
+      auth?.name ||
+      "Customer"
+    ).trim();
+    const customerEmail = (
+      delivery?.senderEmail ||
+      delivery?.email ||
+      auth?.email ||
+      "customer@occasions.com"
+    ).trim();
+    const customerPhone = (
+      delivery?.senderMobile ||
+      delivery?.mobile ||
+      delivery?.phone ||
+      delivery?.receiverMobile ||
+      (auth as any)?.phone ||
+      ""
+    ).trim();
 
     // 6a. Duplicate Order Prevention (Idempotency check within last 60 seconds)
     const sixtySecsAgo = new Date(Date.now() - 60000).toISOString();

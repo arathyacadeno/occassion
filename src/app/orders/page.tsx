@@ -173,7 +173,7 @@ export default function OrdersPage() {
               quantity: firstItem?.quantity || 1,
               price: o.final_amount,
               unitPrice: firstItem?.product_price || o.final_amount,
-              mobileNumber: o.customer_phone || "+91 8606464700",
+              mobileNumber: o.customer_phone || o.deliveryAddress?.senderMobile || o.deliveryAddress?.receiverMobile || "",
               paymentMethod: o.paymentMethod?.type || "Online Payment",
               paymentStatus: "success",
               orderStatus: o.order_status === "delivered" ? "delivered" : "confirmed",
