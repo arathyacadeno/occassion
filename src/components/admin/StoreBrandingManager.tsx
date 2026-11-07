@@ -631,7 +631,7 @@ export default function StoreBrandingManager() {
           </div>
         </div>
 
-        {/* Section 3: Brand Colors */}
+        {/* Section 3: Contact & Channels */}
         <div
           style={{
             background: "#fff",
@@ -642,102 +642,7 @@ export default function StoreBrandingManager() {
           }}
         >
           <h3 style={{ fontSize: "1.1rem", color: "#831843", margin: "0 0 16px", fontWeight: 700 }}>
-            3. Brand Color Palette
-          </h3>
-
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 20 }}>
-            <div>
-              <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#334155", marginBottom: 6 }}>
-                Primary Brand Color
-              </label>
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <input
-                  type="color"
-                  name="primary_color"
-                  value={form.primary_color}
-                  onChange={handleInputChange}
-                  style={{
-                    width: 44,
-                    height: 44,
-                    padding: 0,
-                    border: "none",
-                    borderRadius: 8,
-                    cursor: "pointer",
-                  }}
-                />
-                <input
-                  type="text"
-                  name="primary_color"
-                  value={form.primary_color}
-                  onChange={handleInputChange}
-                  style={{
-                    flex: 1,
-                    padding: "10px 14px",
-                    border: "1px solid #cbd5e1",
-                    borderRadius: 8,
-                    fontSize: "0.9rem",
-                    textTransform: "uppercase",
-                  }}
-                />
-              </div>
-              <span style={{ fontSize: "0.75rem", color: "#94a3b8" }}>
-                Used for main CTA buttons, badges, highlights.
-              </span>
-            </div>
-
-            <div>
-              <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#334155", marginBottom: 6 }}>
-                Secondary Brand Color (Dark Crimson)
-              </label>
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <input
-                  type="color"
-                  name="secondary_color"
-                  value={form.secondary_color}
-                  onChange={handleInputChange}
-                  style={{
-                    width: 44,
-                    height: 44,
-                    padding: 0,
-                    border: "none",
-                    borderRadius: 8,
-                    cursor: "pointer",
-                  }}
-                />
-                <input
-                  type="text"
-                  name="secondary_color"
-                  value={form.secondary_color}
-                  onChange={handleInputChange}
-                  style={{
-                    flex: 1,
-                    padding: "10px 14px",
-                    border: "1px solid #cbd5e1",
-                    borderRadius: 8,
-                    fontSize: "0.9rem",
-                    textTransform: "uppercase",
-                  }}
-                />
-              </div>
-              <span style={{ fontSize: "0.75rem", color: "#94a3b8" }}>
-                Used for headers, title typography, premium cards.
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Section 4: Contact & Channels */}
-        <div
-          style={{
-            background: "#fff",
-            borderRadius: 16,
-            padding: 24,
-            border: "1px solid #f1f5f9",
-            boxShadow: "0 2px 10px rgba(0,0,0,0.02)",
-          }}
-        >
-          <h3 style={{ fontSize: "1.1rem", color: "#831843", margin: "0 0 16px", fontWeight: 700 }}>
-            4. Contact &amp; Physical Store Details
+            3. Contact &amp; Physical Store Details
           </h3>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 18 }}>
