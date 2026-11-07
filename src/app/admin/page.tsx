@@ -54,9 +54,9 @@ const DEFAULT_CATEGORIES_LIST = [
 export default function AdminPage() {
   const { user, isAdmin, isAuthenticated, login } = useAuth();
 
-  // Admin login fallback
-  const [adminEmail, setAdminEmail] = useState("admin@occasions.com");
-  const [adminPassword, setAdminPassword] = useState("admin123");
+  // Admin login form state
+  const [adminEmail, setAdminEmail] = useState("");
+  const [adminPassword, setAdminPassword] = useState("");
   const [loginError, setLoginError] = useState<string | null>(null);
   const [loggingIn, setLoggingIn] = useState(false);
 
@@ -556,6 +556,7 @@ export default function AdminPage() {
                   style={{ width: "100%", boxSizing: "border-box" }}
                   value={adminEmail}
                   onChange={(e) => setAdminEmail(e.target.value)}
+                  placeholder="admin@occasions.in"
                   required
                 />
               </div>
@@ -570,6 +571,7 @@ export default function AdminPage() {
                   style={{ width: "100%", boxSizing: "border-box" }}
                   value={adminPassword}
                   onChange={(e) => setAdminPassword(e.target.value)}
+                  placeholder="••••••••"
                   required
                 />
               </div>
@@ -583,10 +585,6 @@ export default function AdminPage() {
                 {loggingIn ? "Verifying..." : "Sign In to Admin Dashboard"}
               </button>
             </form>
-
-            <div style={{ marginTop: 20, padding: 12, background: "#f8fafc", borderRadius: 10, fontSize: "0.75rem", color: "#64748b" }}>
-              💡 Default demo credentials: <strong>admin@occasions.com</strong> / <strong>admin123</strong>
-            </div>
           </div>
         </main>
         <Footer />

@@ -38,7 +38,7 @@ async function runAdminTests() {
   // Tokens
   const adminUser = {
     userId: "usr-admin-test-01",
-    email: "admin@occasions.com",
+    email: "occasions.flowers@gmail.com",
     name: "Occasions Admin",
     role: "admin",
   };

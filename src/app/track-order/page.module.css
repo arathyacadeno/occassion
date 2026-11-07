@@ -1,6 +1,6 @@
 /* ============================================================
-   ORDER TRACKING PAGE
-   ============================================================ */
+  ORDER TRACKING PAGE
+  ============================================================ */
 
 .pageWrapper {
   min-height: 100vh;
@@ -74,7 +74,7 @@
   border-radius: 12px;
   padding: 0 14px;
   height: 48px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   min-width: 200px;
   transition: border-color 0.2s ease;
   cursor: text;
@@ -747,7 +747,7 @@
 }
 
 .demoHint code {
-  background: rgba(0,0,0,0.06);
+  background: rgba(0, 0, 0, 0.06);
   border-radius: 4px;
   padding: 1px 6px;
   font-family: monospace;
@@ -986,8 +986,15 @@
 }
 
 @keyframes pulse {
-  0%, 100% { box-shadow: 0 0 0 4px rgba(230, 0, 76, 0.15); }
-  50%       { box-shadow: 0 0 0 7px rgba(230, 0, 76, 0.08); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 4px rgba(230, 0, 76, 0.15);
+  }
+
+  50% {
+    box-shadow: 0 0 0 7px rgba(230, 0, 76, 0.08);
+  }
 }
 
 .nodeFuture {
