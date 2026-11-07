@@ -1189,7 +1189,6 @@
   animation: scaleUp 0.22s ease-out;
   position: relative;
   box-sizing: border-box;
-  transition: max-width 0.25s ease, padding 0.25s ease;
 }
 
 .modalBox::-webkit-scrollbar {
@@ -1199,18 +1198,17 @@
 }
 
 .modalBoxSignup {
-  max-width: 580px;
-  padding: 24px 30px 20px;
+  max-width: 440px;
 }
 
 .formRow2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: 12px;
 }
 
-@media (max-width: 580px) {
-  .modalBoxSignup {
+@media (max-width: 460px) {
+  .modalBox {
     max-width: 95vw;
     padding: 20px 16px;
   }

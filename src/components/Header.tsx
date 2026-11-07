@@ -1679,7 +1679,7 @@ export default function Header({
       {activeModal === "signin" && (
         <div className={styles.modalBackdrop} onClick={() => { setActiveModal(null); resetPhoneFlow(); }}>
           <div
-            className={`${styles.modalBox} ${authTab === "signup" ? styles.modalBoxSignup : ""}`}
+            className={styles.modalBox}
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-labelledby="signin-modal-title"
