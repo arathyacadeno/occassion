@@ -18,6 +18,7 @@ import {
   CheckCircle,
   Clock,
   RefreshCw,
+  LogOut,
 } from "lucide-react";
 import {
   Plus,
@@ -52,7 +53,7 @@ const DEFAULT_CATEGORIES_LIST = [
 ];
 
 export default function AdminPage() {
-  const { user, isAdmin, isAuthenticated, login } = useAuth();
+  const { user, isAdmin, isAuthenticated, login, logout } = useAuth();
 
   // Admin login form state
   const [adminEmail, setAdminEmail] = useState("");
@@ -249,6 +250,11 @@ export default function AdminPage() {
     } finally {
       setLoggingIn(false);
     }
+  };
+
+  const handleAdminLogout = async () => {
+    await logout();
+    window.location.href = "/";
   };
 
   const handleUpdateOrderStatus = async (orderId: string, newStatus: string) => {
@@ -606,14 +612,32 @@ export default function AdminPage() {
             <p>Real-time orders, floral inventory, coupons, and delivery logistics</p>
           </div>
 
-          <button
-            type="button"
-            className={styles.actionBtn}
-            onClick={fetchAdminData}
-            style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
-          >
-            <RefreshCw size={14} /> Refresh Data
-          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <button
+              type="button"
+              className={styles.actionBtn}
+              onClick={fetchAdminData}
+              style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+            >
+              <RefreshCw size={14} /> Refresh Data
+            </button>
+            <button
+              type="button"
+              className={styles.actionBtn}
+              onClick={handleAdminLogout}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                color: "#e11d48",
+                borderColor: "#fecdd3",
+                background: "#fff1f2",
+              }}
+              title="Log Out from Admin Portal"
+            >
+              <LogOut size={14} /> Log Out
+            </button>
+          </div>
         </div>
 
         {/* Stats Row */}
@@ -808,6 +832,23 @@ export default function AdminPage() {
                 <div className={styles.sidebarBtnLeft}>
                   <Tag size={17} />
                   <span>Coupons</span>
+                </div>
+              </button>
+            </div>
+
+            {/* Group 4: Account & Session */}
+            <div className={styles.sidebarSection} style={{ marginTop: 18, paddingTop: 14, borderTop: "1px dashed #e2e8f0" }}>
+              <div className={styles.sidebarSectionTitle}>Account &amp; Session</div>
+              <button
+                type="button"
+                className={styles.sidebarBtn}
+                onClick={handleAdminLogout}
+                style={{ color: "#e11d48" }}
+                title="Log Out from Admin Portal"
+              >
+                <div className={styles.sidebarBtnLeft}>
+                  <LogOut size={17} />
+                  <span>Log Out</span>
                 </div>
               </button>
             </div>

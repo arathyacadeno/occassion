@@ -214,28 +214,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
+    // 1. Immediately reset user state in memory
+    setUser(null);
+
+    // 2. Clear client-accessible cookies immediately
+    if (typeof document !== "undefined") {
+      document.cookie = "occasions_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; max-age=0;";
+      document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; max-age=0;";
+      document.cookie = "occasions_auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; max-age=0;";
+    }
+
+    // 3. Clear local storage cache and notify listeners
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.removeItem("occassions_latest_order");
+        localStorage.removeItem("occassions_order_history");
+        window.dispatchEvent(new CustomEvent("occasions-auth-logout"));
+      } catch {
+        // ignore
+      }
+    }
+
+    // 4. Request server-side HttpOnly cookie deletion
     try {
       await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
-      if (typeof window !== "undefined") {
-        try {
-          const { auth } = await import("@/lib/firebase");
-          const { signOut } = await import("firebase/auth");
-          await signOut(auth);
-        } catch {
-          // ignore firebase logout errors if not initialized
-        }
-        try {
-          localStorage.removeItem("occassions_latest_order");
-          localStorage.removeItem("occassions_order_history");
-          window.dispatchEvent(new CustomEvent("occasions-auth-logout"));
-        } catch {
-          // ignore
-        }
-      }
     } catch {
-      // ignore network errors – still clear local state
-    } finally {
-      setUser(null);
+      // ignore network errors
+    }
+
+    // 5. Non-blocking background Firebase signout if active
+    if (typeof window !== "undefined") {
+      import("@/lib/firebase")
+        .then(({ auth }) => import("firebase/auth").then(({ signOut }) => signOut(auth)))
+        .catch(() => {});
     }
   };
 

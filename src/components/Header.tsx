@@ -1440,7 +1440,7 @@ export default function Header({
                             onClick={async () => {
                               setProfileHovered(false);
                               await logout();
-                              router.refresh();
+                              window.location.href = "/";
                             }}
                             role="menuitem"
                             style={{ color: "#e11d48" }}
