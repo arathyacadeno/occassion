@@ -1462,7 +1462,7 @@ export default function Header({
                           role="menuitem"
                         >
                           <User size={17} className={styles.profileMenuIcon} />
-                          <span>Sign In / Register</span>
+                          <span>Sign In / Signup</span>
                         </button>
                       )}
                     </div>
@@ -1698,6 +1698,32 @@ export default function Header({
             </div>
 
             {/* Tabs */}
+            <div className={styles.authTabs} role="tablist">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={authTab === "signin"}
+                className={`${styles.authTab} ${authTab === "signin" ? styles.authTabActive : ""}`}
+                onClick={() => {
+                  setAuthTab("signin");
+                  setAuthError(null);
+                }}
+              >
+                Login
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={authTab === "signup"}
+                className={`${styles.authTab} ${authTab === "signup" ? styles.authTabActive : ""}`}
+                onClick={() => {
+                  setAuthTab("signup");
+                  setAuthError(null);
+                }}
+              >
+                Register
+              </button>
+            </div>
 
             {authError && <div className={styles.authError}>{authError}</div>}
 
@@ -1799,7 +1825,55 @@ export default function Header({
               <span>{authLoading ? "Connecting with Google…" : "Continue with Google"}</span>
             </button>
 
-            <div style={{ marginTop: 18, fontSize: "0.75rem", color: "#64748b", textAlign: "center", lineHeight: 1.5 }}>
+            <div style={{ marginTop: 14, textAlign: "center", fontSize: "0.85rem", color: "#64748b" }}>
+              {authTab === "signin" ? (
+                <span>
+                  Don&apos;t have an account?{" "}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAuthTab("signup");
+                      setAuthError(null);
+                    }}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      color: "#be185d",
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      padding: 0,
+                      textDecoration: "underline",
+                    }}
+                  >
+                    Register now
+                  </button>
+                </span>
+              ) : (
+                <span>
+                  Already have an account?{" "}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAuthTab("signin");
+                      setAuthError(null);
+                    }}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      color: "#be185d",
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      padding: 0,
+                      textDecoration: "underline",
+                    }}
+                  >
+                    Sign In
+                  </button>
+                </span>
+              )}
+            </div>
+
+            <div style={{ marginTop: 16, fontSize: "0.75rem", color: "#64748b", textAlign: "center", lineHeight: 1.5 }}>
               By continuing, you agree to Occassions{" "}
               <span style={{ color: "#db2777", fontWeight: 600 }}>Terms of Service</span>
               {" "}&amp;{" "}
