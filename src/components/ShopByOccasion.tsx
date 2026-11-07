@@ -79,36 +79,18 @@ const OCCASIONS_ITEMS: OccasionCardItem[] = [
   },
 ];
 
-const ORIGINAL_COUNT = OCCASIONS_ITEMS.length; // 6
-const START_INDEX = ORIGINAL_COUNT; // 6
-
-// Create 3 sets (pre-clones, original, post-clones) for seamless infinite loop
-const EXTENDED_ITEMS = [
-  ...OCCASIONS_ITEMS.map((item, idx) => ({ ...item, uniqueKey: `pre-${idx}` })),
-  ...OCCASIONS_ITEMS.map((item, idx) => ({ ...item, uniqueKey: `orig-${idx}` })),
-  ...OCCASIONS_ITEMS.map((item, idx) => ({ ...item, uniqueKey: `post-${idx}` })),
-];
+const ORIGINAL_COUNT = OCCASIONS_ITEMS.length;
 
 interface ShopByOccasionProps {
   targetOccasion?: string;
 }
 
-const findOccasionIndex = (idOrName: string) => {
-  const target = idOrName.toLowerCase().trim().replace(/[-\s_]/g, "");
-  return OCCASIONS_ITEMS.findIndex((item) => {
-    const itemCleanId = item.id.toLowerCase().replace(/[-\s_]/g, "");
-    const itemCleanName = item.name.toLowerCase().replace(/[-\s_]/g, "");
-    return (
-      itemCleanId === target ||
-      itemCleanName === target ||
-      itemCleanId.replace(/s$/, "") === target.replace(/s$/, "") ||
-      itemCleanName.replace(/s$/, "") === target.replace(/s$/, "")
-    );
-  });
-};
-
 export default function ShopByOccasion({ targetOccasion }: ShopByOccasionProps = {}) {
-  const [index, setIndex] = useState(START_INDEX);
+  const [occasions, setOccasions] = useState<OccasionCardItem[]>(OCCASIONS_ITEMS);
+  const originalCount = occasions.length || 1;
+  const startIndex = originalCount;
+
+  const [index, setIndex] = useState(startIndex);
   const [withTransition, setWithTransition] = useState(true);
   const [visibleCount, setVisibleCount] = useState(3);
   const [isVisible, setIsVisible] = useState(false);
@@ -117,6 +99,57 @@ export default function ShopByOccasion({ targetOccasion }: ShopByOccasionProps =
   const isTransitioningRef = useRef(false);
   const pointerStartX = useRef<number | null>(null);
   const isPointerDown = useRef(false);
+
+  // Dynamic fetch from API
+  useEffect(() => {
+    let isMounted = true;
+    fetch("/api/occasions")
+      .then((res) => res.json())
+      .then((data) => {
+        if (isMounted && data.success && Array.isArray(data.occasions) && data.occasions.length > 0) {
+          const activeList = data.occasions
+            .filter((o: any) => o.active !== 0 && o.active !== false)
+            .map((o: any) => ({
+              id: o.slug || o.id,
+              name: o.name,
+              image: o.image || "/images/occasion-birthday.jpg",
+              href: o.href || `/flower-bouquets?occasion=${o.slug}`,
+              whatsappMessage:
+                o.whatsapp_message ||
+                `Hello Occassions Florist Calicut, I would like to order fresh flowers for ${o.name}.`,
+            }));
+          if (activeList.length > 0) {
+            setOccasions(activeList);
+            setIndex(activeList.length);
+          }
+        }
+      })
+      .catch((err) => console.warn("Dynamic occasions notice:", err));
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const extendedItems = [
+    ...occasions.map((item, idx) => ({ ...item, uniqueKey: `pre-${idx}` })),
+    ...occasions.map((item, idx) => ({ ...item, uniqueKey: `orig-${idx}` })),
+    ...occasions.map((item, idx) => ({ ...item, uniqueKey: `post-${idx}` })),
+  ];
+
+  const findOccasionIndex = (idOrName: string) => {
+    const target = idOrName.toLowerCase().trim().replace(/[-\s_]/g, "");
+    return occasions.findIndex((item) => {
+      const itemCleanId = item.id.toLowerCase().replace(/[-\s_]/g, "");
+      const itemCleanName = item.name.toLowerCase().replace(/[-\s_]/g, "");
+      return (
+        itemCleanId === target ||
+        itemCleanName === target ||
+        itemCleanId.replace(/s$/, "") === target.replace(/s$/, "") ||
+        itemCleanName.replace(/s$/, "") === target.replace(/s$/, "")
+      );
+    });
+  };
 
   // Center a specific occasion card in the middle of the carousel
   const centerOccasion = (idOrName: string) => {
@@ -131,13 +164,13 @@ export default function ShopByOccasion({ targetOccasion }: ShopByOccasionProps =
       // On 3-card layout (desktop), center card is index + 1
       // On 1-card layout (mobile), center card is index
       const centerOffset = visibleCount === 3 ? 1 : 0;
-      let currentCenter = (prevIndex + centerOffset) % ORIGINAL_COUNT;
-      if (currentCenter < 0) currentCenter += ORIGINAL_COUNT;
+      let currentCenter = (prevIndex + centerOffset) % originalCount;
+      if (currentCenter < 0) currentCenter += originalCount;
 
-      // Circular shortest distance delta (mod ORIGINAL_COUNT)
-      let delta = (targetIdx - currentCenter) % ORIGINAL_COUNT;
-      if (delta > ORIGINAL_COUNT / 2) delta -= ORIGINAL_COUNT;
-      if (delta < -ORIGINAL_COUNT / 2) delta += ORIGINAL_COUNT;
+      // Circular shortest distance delta (mod originalCount)
+      let delta = (targetIdx - currentCenter) % originalCount;
+      if (delta > originalCount / 2) delta -= originalCount;
+      if (delta < -originalCount / 2) delta += originalCount;
 
       return prevIndex + delta;
     });
@@ -245,14 +278,14 @@ export default function ShopByOccasion({ targetOccasion }: ShopByOccasionProps =
     if (e.target !== e.currentTarget) return;
     isTransitioningRef.current = false;
 
-    if (index >= START_INDEX + ORIGINAL_COUNT) {
-      // Reached post clones: teleport back by ORIGINAL_COUNT items instantly
+    if (index >= startIndex + originalCount) {
+      // Reached post clones: teleport back by originalCount items instantly
       setWithTransition(false);
-      setIndex((prev) => prev - ORIGINAL_COUNT);
-    } else if (index < START_INDEX - 4) {
-      // Reached pre clones: teleport forward by ORIGINAL_COUNT items instantly
+      setIndex((prev) => prev - originalCount);
+    } else if (index < startIndex - 4) {
+      // Reached pre clones: teleport forward by originalCount items instantly
       setWithTransition(false);
-      setIndex((prev) => prev + ORIGINAL_COUNT);
+      setIndex((prev) => prev + originalCount);
     }
   };
 
@@ -372,7 +405,7 @@ export default function ShopByOccasion({ targetOccasion }: ShopByOccasionProps =
                   } as React.CSSProperties
                 }
               >
-                {EXTENDED_ITEMS.map((item, cardIdx) => {
+                {extendedItems.map((item, cardIdx) => {
                   // When 3 cards are visible, the center card is lowered
                   const visiblePos = cardIdx - index;
                   const isCenter = visibleCount === 3 && visiblePos === 1;

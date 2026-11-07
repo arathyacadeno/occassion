@@ -17,7 +17,7 @@ import {
   Eye,
   EyeOff,
   Sparkles,
-  Sliders,
+  Heart,
 } from "lucide-react";
 
 interface Banner {
@@ -34,29 +34,19 @@ interface Banner {
   display_order: number;
 }
 
-interface Section {
-  key: string;
-  title: string;
-  subtitle: string;
-  product_ids: string | string[];
+interface OccasionItem {
+  id: string;
+  name: string;
+  slug: string;
+  image?: string;
+  href?: string;
+  whatsapp_message?: string;
   active: number;
   display_order: number;
 }
 
-interface ProductItem {
-  id: string;
-  name: string;
-  slug: string;
-  price: number;
-  images: string;
-  category_id: string;
-  active: number;
-}
-
 export default function HomepageManager() {
   const [banners, setBanners] = useState<Banner[]>([]);
-  const [sections, setSections] = useState<Section[]>([]);
-  const [products, setProducts] = useState<ProductItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -79,26 +69,31 @@ export default function HomepageManager() {
   const [uploadingImage, setUploadingImage] = useState<string | null>(null);
   const [savingBanner, setSavingBanner] = useState(false);
 
-  // Lock background body scroll when banner modal is open
+  // Occasions State & Modal
+  const [occasions, setOccasions] = useState<OccasionItem[]>([]);
+  const [isOccasionModalOpen, setIsOccasionModalOpen] = useState(false);
+  const [editingOccasion, setEditingOccasion] = useState<OccasionItem | null>(null);
+  const [occasionForm, setOccasionForm] = useState({
+    name: "",
+    slug: "",
+    image: "",
+    href: "",
+    whatsapp_message: "",
+    active: 1,
+    display_order: 0,
+  });
+  const [uploadingOccasionImg, setUploadingOccasionImg] = useState(false);
+  const [savingOccasion, setSavingOccasion] = useState(false);
+
+  // Lock background body scroll when any modal is open
   useEffect(() => {
-    if (!isBannerModalOpen) return;
+    if (!isBannerModalOpen && !isOccasionModalOpen) return;
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = prevOverflow;
     };
-  }, [isBannerModalOpen]);
-
-  // Section Modal
-  const [editingSection, setEditingSection] = useState<Section | null>(null);
-  const [sectionForm, setSectionForm] = useState({
-    title: "",
-    subtitle: "",
-    product_ids: [] as string[],
-    active: 1,
-    display_order: 0,
-  });
-  const [savingSection, setSavingSection] = useState(false);
+  }, [isBannerModalOpen, isOccasionModalOpen]);
 
   const fetchData = useCallback(async () => {
     try {
@@ -110,8 +105,13 @@ export default function HomepageManager() {
         throw new Error(data.error || "Failed to fetch homepage data");
       }
       setBanners(data.banners || []);
-      setSections(data.sections || []);
-      setProducts(data.products || []);
+
+      // Load occasions
+      const occRes = await fetch("/api/occasions");
+      const occData = await occRes.json();
+      if (occData.success && Array.isArray(occData.occasions)) {
+        setOccasions(occData.occasions);
+      }
     } catch (err: any) {
       setErrorMsg(err.message || "Failed to load homepage configuration");
     } finally {
@@ -269,75 +269,160 @@ export default function HomepageManager() {
     }
   };
 
-  const handleOpenEditSection = (s: Section) => {
-    let ids: string[] = [];
-    if (typeof s.product_ids === "string") {
-      try {
-        ids = JSON.parse(s.product_ids);
-      } catch {
-        ids = [];
-      }
-    } else if (Array.isArray(s.product_ids)) {
-      ids = s.product_ids;
-    }
-
-    setEditingSection(s);
-    setSectionForm({
-      title: s.title || "",
-      subtitle: s.subtitle || "",
-      product_ids: ids,
-      active: s.active ?? 1,
-      display_order: s.display_order || 0,
+  // Occasions Handlers
+  const handleOpenAddOccasion = () => {
+    setEditingOccasion(null);
+    setOccasionForm({
+      name: "",
+      slug: "",
+      image: "",
+      href: "",
+      whatsapp_message: "",
+      active: 1,
+      display_order: occasions.length + 1,
     });
+    setIsOccasionModalOpen(true);
   };
 
-  const handleToggleProductInSection = (productId: string) => {
-    setSectionForm((prev) => {
-      const exists = prev.product_ids.includes(productId);
-      return {
-        ...prev,
-        product_ids: exists
-          ? prev.product_ids.filter((id) => id !== productId)
-          : [...prev.product_ids, productId],
-      };
+  const handleOpenEditOccasion = (occ: OccasionItem) => {
+    setEditingOccasion(occ);
+    setOccasionForm({
+      name: occ.name,
+      slug: occ.slug,
+      image: occ.image || "",
+      href: occ.href || `/flower-bouquets?occasion=${occ.slug}`,
+      whatsapp_message: occ.whatsapp_message || "",
+      active: occ.active ?? 1,
+      display_order: occ.display_order ?? 0,
     });
+    setIsOccasionModalOpen(true);
   };
 
-  const handleSaveSection = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingSection) return;
+  const handleOccasionImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
     try {
-      setSavingSection(true);
+      setUploadingOccasionImg(true);
       setErrorMsg(null);
 
-      const res = await fetch("/api/admin/homepage", {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", "occasions/occasions");
+
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to upload image to Cloudinary");
+      }
+
+      setOccasionForm((p) => ({ ...p, image: data.url }));
+    } catch (err: any) {
+      setErrorMsg(err.message || "Image upload failed");
+    } finally {
+      setUploadingOccasionImg(false);
+    }
+  };
+
+  const handleSaveOccasion = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!occasionForm.name.trim()) {
+      setErrorMsg("Occasion name is required");
+      return;
+    }
+
+    try {
+      setSavingOccasion(true);
+      setErrorMsg(null);
+
+      const isEdit = !!editingOccasion;
+      const url = "/api/occasions";
+      const method = isEdit ? "PUT" : "POST";
+      const body = isEdit
+        ? { id: editingOccasion.id, ...occasionForm }
+        : occasionForm;
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to save occasion");
+      }
+
+      setSuccessMsg(isEdit ? "Occasion updated successfully!" : "New occasion created successfully!");
+      setTimeout(() => setSuccessMsg(null), 4000);
+      setIsOccasionModalOpen(false);
+      setEditingOccasion(null);
+      await fetchData();
+    } catch (err: any) {
+      setErrorMsg(err.message || "Failed to save occasion");
+    } finally {
+      setSavingOccasion(false);
+    }
+  };
+
+  const handleDeleteOccasion = async (id: string, name: string) => {
+    if (!confirm(`Are you sure you want to delete the occasion "${name}"?`)) return;
+
+    try {
+      setLoading(true);
+      setErrorMsg(null);
+
+      const res = await fetch(`/api/occasions?id=${id}`, {
+        method: "DELETE",
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to delete occasion");
+      }
+
+      setSuccessMsg(`Occasion "${name}" deleted successfully.`);
+      setTimeout(() => setSuccessMsg(null), 4000);
+      await fetchData();
+    } catch (err: any) {
+      setErrorMsg(err.message || "Failed to delete occasion");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleToggleOccasionActive = async (occ: OccasionItem) => {
+    try {
+      const newActive = occ.active === 1 ? 0 : 1;
+      const res = await fetch("/api/occasions", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: "update_section",
-          section: {
-            key: editingSection.key,
-            title: sectionForm.title,
-            subtitle: sectionForm.subtitle,
-            product_ids: sectionForm.product_ids,
-            active: sectionForm.active,
-            display_order: sectionForm.display_order,
-          },
+          id: occ.id,
+          name: occ.name,
+          slug: occ.slug,
+          image: occ.image,
+          href: occ.href,
+          whatsappMessage: occ.whatsapp_message,
+          active: newActive,
+          displayOrder: occ.display_order,
         }),
       });
 
       const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error || "Failed to update section");
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to update occasion status");
+      }
 
-      setSuccessMsg(`Homepage section "${editingSection.key}" updated!`);
-      setEditingSection(null);
-      await fetchData();
-      setTimeout(() => setSuccessMsg(null), 4000);
+      setOccasions((prev) =>
+        prev.map((o) => (o.id === occ.id ? { ...o, active: newActive } : o))
+      );
     } catch (err: any) {
-      setErrorMsg(err.message || "Failed to save section");
-    } finally {
-      setSavingSection(false);
+      setErrorMsg(err.message || "Could not toggle status");
     }
   };
 
@@ -632,7 +717,7 @@ export default function HomepageManager() {
         )}
       </div>
 
-      {/* Section 2: Homepage Product Sections */}
+      {/* Section 2: Shop By Occasion Manager */}
       <div
         style={{
           background: "#fff",
@@ -642,108 +727,173 @@ export default function HomepageManager() {
           boxShadow: "0 2px 10px rgba(0,0,0,0.02)",
         }}
       >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-          <h3 style={{ fontSize: "1.1rem", color: "#831843", margin: 0, fontWeight: 700 }}>
-            2. Curated Homepage Sections
-          </h3>
-          <span style={{ fontSize: "0.8rem", color: "#64748b" }}>
-            Select which products appear under &quot;Featured Masterpieces&quot; and &quot;New Arrivals&quot;.
-          </span>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 12 }}>
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <Heart size={20} color="#be185d" />
+              <h3 style={{ fontSize: "1.1rem", color: "#831843", margin: 0, fontWeight: 700 }}>
+                2. Shop By Occasion Cards (Homepage Carousel)
+              </h3>
+            </div>
+            <span style={{ fontSize: "0.8rem", color: "#64748b", marginTop: 4, display: "block" }}>
+              Add, edit, or customize occasion cards that appear in the &quot;Shop by Occasion&quot; homepage slider.
+            </span>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleOpenAddOccasion}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              padding: "9px 16px",
+              background: "linear-gradient(135deg, #be185d 0%, #9d174d 100%)",
+              color: "#fff",
+              border: "none",
+              borderRadius: 8,
+              fontSize: "0.84rem",
+              fontWeight: 600,
+              cursor: "pointer",
+              boxShadow: "0 2px 8px rgba(190, 24, 93, 0.25)",
+            }}
+          >
+            <Plus size={16} />
+            <span>Add New Occasion</span>
+          </button>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 18 }}>
-          {sections.map((s) => {
-            let pIds: string[] = [];
-            if (typeof s.product_ids === "string") {
-              try {
-                pIds = JSON.parse(s.product_ids);
-              } catch {
-                pIds = [];
-              }
-            } else if (Array.isArray(s.product_ids)) {
-              pIds = s.product_ids;
-            }
-
-            return (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 18 }}>
+          {occasions.map((occ) => (
+            <div
+              key={occ.id}
+              style={{
+                border: "1px solid #e2e8f0",
+                borderRadius: 12,
+                overflow: "hidden",
+                background: "#fafafa",
+                display: "flex",
+                flexDirection: "column",
+                transition: "all 0.2s ease",
+              }}
+            >
               <div
-                key={s.key}
                 style={{
-                  border: "1px solid #e2e8f0",
-                  borderRadius: 12,
-                  padding: 18,
-                  background: "#fafafa",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
+                  width: "100%",
+                  height: 150,
+                  background: "#f1f5f9",
+                  position: "relative",
+                  overflow: "hidden",
                 }}
               >
+                <img
+                  src={occ.image || "/images/occasion-birthday.jpg"}
+                  alt={occ.name}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+                <span
+                  style={{
+                    position: "absolute",
+                    top: 8,
+                    left: 8,
+                    fontSize: "0.7rem",
+                    padding: "3px 8px",
+                    borderRadius: 4,
+                    background: occ.active ? "rgba(22, 101, 52, 0.9)" : "rgba(100, 116, 139, 0.9)",
+                    color: "#fff",
+                    fontWeight: 700,
+                  }}
+                >
+                  {occ.active ? "Active" : "Disabled"}
+                </span>
+
+                <span
+                  style={{
+                    position: "absolute",
+                    top: 8,
+                    right: 8,
+                    fontSize: "0.7rem",
+                    padding: "3px 8px",
+                    borderRadius: 4,
+                    background: "rgba(0,0,0,0.6)",
+                    color: "#fff",
+                    fontWeight: 600,
+                  }}
+                >
+                  Order #{occ.display_order}
+                </span>
+              </div>
+
+              <div style={{ padding: 14, flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                 <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-                    <div style={{ fontWeight: 700, fontSize: "1rem", color: "#831843" }}>{s.title}</div>
-                    <span
-                      style={{
-                        fontSize: "0.72rem",
-                        padding: "2px 6px",
-                        borderRadius: 4,
-                        background: s.active ? "#dcfce7" : "#f1f5f9",
-                        color: s.active ? "#15803d" : "#64748b",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {s.active ? "Active" : "Disabled"}
-                    </span>
+                  <div style={{ fontWeight: 700, fontSize: "0.98rem", color: "#1e293b", marginBottom: 4 }}>
+                    {occ.name}
                   </div>
-                  <div style={{ fontSize: "0.82rem", color: "#64748b", marginBottom: 12 }}>{s.subtitle}</div>
-                  <div style={{ fontSize: "0.8rem", color: "#475569", fontWeight: 600 }}>
-                    Selected Products ({pIds.length}):
-                  </div>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
-                    {pIds.map((pid) => {
-                      const prod = products.find((p) => p.id === pid);
-                      return (
-                        <span
-                          key={pid}
-                          style={{
-                            fontSize: "0.75rem",
-                            background: "#fff",
-                            border: "1px solid #cbd5e1",
-                            padding: "3px 8px",
-                            borderRadius: 6,
-                            color: "#334155",
-                          }}
-                        >
-                          {prod ? prod.name : pid}
-                        </span>
-                      );
-                    })}
+                  <div style={{ fontSize: "0.78rem", color: "#64748b", marginBottom: 8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    🔗 {occ.href || `/flower-bouquets?occasion=${occ.slug}`}
                   </div>
                 </div>
 
-                <div style={{ marginTop: 18, textAlign: "right" }}>
+                <div style={{ display: "flex", gap: 8, marginTop: 12, borderTop: "1px solid #f1f5f9", paddingTop: 10 }}>
                   <button
                     type="button"
-                    onClick={() => handleOpenEditSection(s)}
+                    onClick={() => handleOpenEditOccasion(occ)}
                     style={{
+                      flex: 1,
                       display: "inline-flex",
                       alignItems: "center",
-                      gap: 6,
-                      padding: "8px 14px",
+                      justifyContent: "center",
+                      gap: 4,
+                      padding: "6px 10px",
                       background: "#fff",
-                      border: "1px solid #be185d",
-                      color: "#be185d",
-                      borderRadius: 8,
-                      fontSize: "0.82rem",
+                      border: "1px solid #cbd5e1",
+                      borderRadius: 6,
+                      fontSize: "0.78rem",
                       fontWeight: 600,
+                      color: "#334155",
                       cursor: "pointer",
                     }}
                   >
-                    <Sliders size={14} />
-                    <span>Configure Section</span>
+                    <Edit size={13} />
+                    <span>Edit</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleToggleOccasionActive(occ)}
+                    title={occ.active ? "Deactivate" : "Activate"}
+                    style={{
+                      padding: "6px 10px",
+                      background: occ.active ? "#f0fdf4" : "#f1f5f9",
+                      border: `1px solid ${occ.active ? "#bbf7d0" : "#cbd5e1"}`,
+                      borderRadius: 6,
+                      fontSize: "0.78rem",
+                      fontWeight: 600,
+                      color: occ.active ? "#15803d" : "#64748b",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {occ.active ? <Eye size={13} /> : <EyeOff size={13} />}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteOccasion(occ.id, occ.name)}
+                    style={{
+                      padding: "6px 10px",
+                      background: "#fff1f2",
+                      border: "1px solid #ffe4e6",
+                      borderRadius: 6,
+                      color: "#e11d48",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <Trash2 size={13} />
                   </button>
                 </div>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       </div>
 
@@ -994,8 +1144,8 @@ export default function HomepageManager() {
         </div>
       )}
 
-      {/* SECTION CONFIGURE MODAL */}
-      {editingSection && (
+      {/* OCCASION ADD / EDIT MODAL */}
+      {isOccasionModalOpen && (
         <div
           style={{
             position: "fixed",
@@ -1013,7 +1163,7 @@ export default function HomepageManager() {
             style={{
               background: "#fff",
               borderRadius: 16,
-              maxWidth: 700,
+              maxWidth: 580,
               width: "100%",
               maxHeight: "90vh",
               overflowY: "auto",
@@ -1023,27 +1173,43 @@ export default function HomepageManager() {
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
               <h3 style={{ margin: 0, color: "#831843", fontSize: "1.2rem" }}>
-                Configure Section: {editingSection.key}
+                {editingOccasion ? `Edit Occasion: ${editingOccasion.name}` : "Add New Occasion"}
               </h3>
               <button
                 type="button"
-                onClick={() => setEditingSection(null)}
+                onClick={() => {
+                  setIsOccasionModalOpen(false);
+                  setEditingOccasion(null);
+                }}
                 style={{ background: "none", border: "none", cursor: "pointer", color: "#64748b" }}
               >
                 <X size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleSaveSection} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <form onSubmit={handleSaveOccasion} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               <div>
                 <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#334155", marginBottom: 6 }}>
-                  Section Heading *
+                  Occasion Name *
                 </label>
                 <input
                   type="text"
                   required
-                  value={sectionForm.title}
-                  onChange={(e) => setSectionForm((p) => ({ ...p, title: e.target.value }))}
+                  placeholder="e.g. Valentine's Day, Mother's Day, Housewarming"
+                  value={occasionForm.name}
+                  onChange={(e) => {
+                    const nameVal = e.target.value;
+                    const autoSlug = nameVal.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+                    setOccasionForm((p) => ({
+                      ...p,
+                      name: nameVal,
+                      slug: editingOccasion ? p.slug : (p.slug || autoSlug),
+                      href: editingOccasion ? p.href : (p.href || `/flower-bouquets?occasion=${autoSlug}`),
+                      whatsapp_message: editingOccasion
+                        ? p.whatsapp_message
+                        : (p.whatsapp_message || `Hello Occassions Florist Calicut, I would like to order fresh flowers for ${nameVal}.`),
+                    }));
+                  }}
                   style={{
                     width: "100%",
                     padding: "10px 14px",
@@ -1057,85 +1223,183 @@ export default function HomepageManager() {
 
               <div>
                 <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#334155", marginBottom: 6 }}>
-                  Section Subheading
+                  Occasion Photo *
                 </label>
-                <input
-                  type="text"
-                  value={sectionForm.subtitle}
-                  onChange={(e) => setSectionForm((p) => ({ ...p, subtitle: e.target.value }))}
-                  style={{
-                    width: "100%",
-                    padding: "10px 14px",
-                    border: "1px solid #cbd5e1",
-                    borderRadius: 8,
-                    fontSize: "0.9rem",
-                    boxSizing: "border-box",
-                  }}
-                />
-              </div>
+                <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
+                  <div
+                    style={{
+                      width: 100,
+                      height: 80,
+                      borderRadius: 8,
+                      border: "1px solid #e2e8f0",
+                      background: "#f8fafc",
+                      overflow: "hidden",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {occasionForm.image ? (
+                      <img src={occasionForm.image} alt="Occasion" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    ) : (
+                      <ImageIcon size={24} color="#94a3b8" />
+                    )}
+                  </div>
 
-              <div>
-                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#334155", marginBottom: 6 }}>
-                  Select Products to Showcase ({sectionForm.product_ids.length} selected)
-                </label>
-                <div
-                  style={{
-                    maxHeight: 280,
-                    overflowY: "auto",
-                    border: "1px solid #cbd5e1",
-                    borderRadius: 8,
-                    padding: 8,
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 6,
-                  }}
-                >
-                  {products.map((p) => {
-                    const isSelected = sectionForm.product_ids.includes(p.id);
-                    return (
-                      <div
-                        key={p.id}
-                        onClick={() => handleToggleProductInSection(p.id)}
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          padding: "8px 12px",
-                          borderRadius: 6,
-                          background: isSelected ? "#fdf2f8" : "#fff",
-                          border: `1px solid ${isSelected ? "#fbcfe8" : "#f1f5f9"}`,
-                          cursor: "pointer",
-                        }}
-                      >
-                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                          <input
-                            type="checkbox"
-                            checked={isSelected}
-                            readOnly
-                            style={{ cursor: "pointer" }}
-                          />
-                          <span style={{ fontSize: "0.85rem", fontWeight: isSelected ? 600 : 400, color: "#1e293b" }}>
-                            {p.name}
-                          </span>
-                        </div>
-                        <span style={{ fontSize: "0.82rem", fontWeight: 700, color: "#be185d" }}>
-                          ₹{p.price}
-                        </span>
-                      </div>
-                    );
-                  })}
+                  <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
+                    <label
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 6,
+                        padding: "7px 14px",
+                        background: "#fdf2f8",
+                        color: "#be185d",
+                        borderRadius: 6,
+                        fontSize: "0.8rem",
+                        fontWeight: 600,
+                        cursor: "pointer",
+                        border: "1px solid #fbcfe8",
+                        width: "fit-content",
+                      }}
+                    >
+                      <Upload size={14} />
+                      <span>{uploadingOccasionImg ? "Uploading..." : "Upload New Photo"}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        disabled={uploadingOccasionImg}
+                        onChange={handleOccasionImageUpload}
+                      />
+                    </label>
+
+                    <input
+                      type="text"
+                      placeholder="Or enter image URL"
+                      value={occasionForm.image}
+                      onChange={(e) => setOccasionForm((p) => ({ ...p, image: e.target.value }))}
+                      style={{
+                        width: "100%",
+                        padding: "8px 10px",
+                        border: "1px solid #cbd5e1",
+                        borderRadius: 6,
+                        fontSize: "0.8rem",
+                        boxSizing: "border-box",
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 12 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#334155", marginBottom: 6 }}>
+                    Slug / URL Identifier
+                  </label>
+                  <input
+                    type="text"
+                    value={occasionForm.slug}
+                    onChange={(e) => setOccasionForm((p) => ({ ...p, slug: e.target.value }))}
+                    style={{
+                      width: "100%",
+                      padding: "8px 12px",
+                      border: "1px solid #cbd5e1",
+                      borderRadius: 8,
+                      fontSize: "0.85rem",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#334155", marginBottom: 6 }}>
+                    Display Order (Sorting)
+                  </label>
+                  <input
+                    type="number"
+                    value={occasionForm.display_order}
+                    onChange={(e) => setOccasionForm((p) => ({ ...p, display_order: Number(e.target.value) || 0 }))}
+                    style={{
+                      width: "100%",
+                      padding: "8px 12px",
+                      border: "1px solid #cbd5e1",
+                      borderRadius: 8,
+                      fontSize: "0.85rem",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#334155", marginBottom: 6 }}>
+                  Target Page Link
+                </label>
+                <input
+                  type="text"
+                  value={occasionForm.href}
+                  placeholder="/flower-bouquets?occasion=birthday"
+                  onChange={(e) => setOccasionForm((p) => ({ ...p, href: e.target.value }))}
+                  style={{
+                    width: "100%",
+                    padding: "8px 12px",
+                    border: "1px solid #cbd5e1",
+                    borderRadius: 8,
+                    fontSize: "0.85rem",
+                    boxSizing: "border-box",
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#334155", marginBottom: 6 }}>
+                  WhatsApp Inquire Message
+                </label>
+                <textarea
+                  rows={2}
+                  value={occasionForm.whatsapp_message}
+                  onChange={(e) => setOccasionForm((p) => ({ ...p, whatsapp_message: e.target.value }))}
+                  placeholder="Hello Occassions Florist Calicut, I would like to order fresh flowers for..."
+                  style={{
+                    width: "100%",
+                    padding: "8px 12px",
+                    border: "1px solid #cbd5e1",
+                    borderRadius: 8,
+                    fontSize: "0.85rem",
+                    boxSizing: "border-box",
+                    resize: "vertical",
+                  }}
+                />
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <input
+                  type="checkbox"
+                  id="occActive"
+                  checked={occasionForm.active === 1}
+                  onChange={(e) => setOccasionForm((p) => ({ ...p, active: e.target.checked ? 1 : 0 }))}
+                  style={{ width: 16, height: 16, cursor: "pointer" }}
+                />
+                <label htmlFor="occActive" style={{ fontSize: "0.85rem", fontWeight: 600, color: "#334155", cursor: "pointer" }}>
+                  Active (Show on homepage carousel)
+                </label>
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 10 }}>
                 <button
                   type="button"
-                  onClick={() => setEditingSection(null)}
+                  onClick={() => {
+                    setIsOccasionModalOpen(false);
+                    setEditingOccasion(null);
+                  }}
                   style={{
-                    padding: "10px 18px",
+                    padding: "9px 16px",
                     background: "#f1f5f9",
+                    color: "#475569",
                     border: "none",
                     borderRadius: 8,
+                    fontWeight: 600,
                     fontSize: "0.88rem",
                     cursor: "pointer",
                   }}
@@ -1144,19 +1408,19 @@ export default function HomepageManager() {
                 </button>
                 <button
                   type="submit"
-                  disabled={savingSection}
+                  disabled={savingOccasion}
                   style={{
-                    padding: "10px 22px",
+                    padding: "9px 20px",
                     background: "linear-gradient(135deg, #be185d 0%, #9d174d 100%)",
                     color: "#fff",
                     border: "none",
                     borderRadius: 8,
                     fontWeight: 600,
                     fontSize: "0.88rem",
-                    cursor: savingSection ? "not-allowed" : "pointer",
+                    cursor: savingOccasion ? "not-allowed" : "pointer",
                   }}
                 >
-                  {savingSection ? "Saving..." : "Save Section Configuration"}
+                  {savingOccasion ? "Saving..." : editingOccasion ? "Update Occasion" : "Create Occasion"}
                 </button>
               </div>
             </form>
