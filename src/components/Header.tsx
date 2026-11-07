@@ -274,11 +274,89 @@ export default function Header({
     confirmationResultRef.current = null;
   };
 
+  const validateEmailOnBlur = (emailStr: string) => {
+    const val = emailStr.trim().toLowerCase();
+    if (!val) return;
+    const domain = val.split("@")[1] || "";
+    const typoDomains = [
+      "gail.com", "gamil.com", "gmial.com", "gmai.com", "gmaill.com", "gmil.com", "gmaul.com", "gmal.com",
+      "yaho.com", "yaho.co", "hotmial.com", "outlok.com", "outloo.com"
+    ];
+    if (typoDomains.includes(domain)) {
+      setAuthError(`Invalid email domain "@${domain}". Did you mean "@gmail.com"?`);
+      return;
+    }
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (val.includes("@") && !emailRegex.test(val)) {
+      setAuthError("Please enter a valid email address (e.g. name@gmail.com)");
+      return;
+    }
+    const validProviders = [
+      "gmail.com", "yahoo.com", "yahoo.in", "yahoo.co.in", 
+      "outlook.com", "hotmail.com", "live.com", "icloud.com", 
+      "occasions.in"
+    ];
+    if (domain && !validProviders.includes(domain)) {
+      setAuthError("Please enter a valid email address ending with @gmail.com");
+      return;
+    }
+  };
+
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError(null);
     setAuthSuccess(null);
     setAuthLoading(true);
+
+    // Email format validation
+    const cleanEmail = authForm.email.trim().toLowerCase();
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!cleanEmail || !emailRegex.test(cleanEmail)) {
+      setAuthError("Please enter a valid email address (e.g. name@gmail.com)");
+      setAuthLoading(false);
+      return;
+    }
+
+    const domain = cleanEmail.split("@")[1] || "";
+    const typoDomains = [
+      "gail.com", "gamil.com", "gmial.com", "gmai.com", "gmaill.com", "gmil.com", "gmaul.com", "gmal.com",
+      "yaho.com", "yaho.co", "hotmial.com", "outlok.com", "outloo.com"
+    ];
+    if (typoDomains.includes(domain)) {
+      setAuthError(`Invalid email domain "@${domain}". Did you mean "@gmail.com"?`);
+      setAuthLoading(false);
+      return;
+    }
+
+    const validProviders = [
+      "gmail.com", "yahoo.com", "yahoo.in", "yahoo.co.in", 
+      "outlook.com", "hotmail.com", "live.com", "icloud.com", 
+      "occasions.in"
+    ];
+    if (!validProviders.includes(domain)) {
+      setAuthError("Please enter a valid email address ending with @gmail.com");
+      setAuthLoading(false);
+      return;
+    }
+
+    if (authTab === "signup") {
+      if (!authForm.name.trim()) {
+        setAuthError("Please enter your full name");
+        setAuthLoading(false);
+        return;
+      }
+      if (authForm.password.length < 6) {
+        setAuthError("Password must be at least 6 characters long");
+        setAuthLoading(false);
+        return;
+      }
+      if (authForm.password !== authForm.confirmPassword) {
+        setAuthError("Passwords do not match");
+        setAuthLoading(false);
+        return;
+      }
+    }
+
     try {
       if (authTab === "signin") {
         const res = await login(authForm.email, authForm.password);
@@ -1779,10 +1857,14 @@ export default function Header({
                     <input
                       type="email"
                       className={styles.inputField}
-                      placeholder="Enter your email"
+                      placeholder="e.g. name@gmail.com"
                       required
                       value={authForm.email}
-                      onChange={(e) => setAuthForm({ ...authForm, email: e.target.value })}
+                      onChange={(e) => {
+                        setAuthForm({ ...authForm, email: e.target.value });
+                        if (authError) setAuthError(null);
+                      }}
+                      onBlur={(e) => validateEmailOnBlur(e.target.value)}
                     />
                   </div>
 
@@ -1819,10 +1901,14 @@ export default function Header({
                     <input
                       type="email"
                       className={styles.inputField}
-                      placeholder="Enter your email"
+                      placeholder="e.g. name@gmail.com"
                       required
                       value={authForm.email}
-                      onChange={(e) => setAuthForm({ ...authForm, email: e.target.value })}
+                      onChange={(e) => {
+                        setAuthForm({ ...authForm, email: e.target.value });
+                        if (authError) setAuthError(null);
+                      }}
+                      onBlur={(e) => validateEmailOnBlur(e.target.value)}
                     />
                   </div>
 

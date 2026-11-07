@@ -11,9 +11,40 @@ export async function POST(request: Request) {
     if (!name || !name.trim()) {
       return NextResponse.json({ success: false, error: "Full Name is required" }, { status: 400 });
     }
-    if (!email || !email.includes("@")) {
-      return NextResponse.json({ success: false, error: "A valid email address is required" }, { status: 400 });
+
+    const cleanEmail = (email || "").trim().toLowerCase();
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!cleanEmail || !emailRegex.test(cleanEmail)) {
+      return NextResponse.json(
+        { success: false, error: "Please enter a valid email address (e.g. name@gmail.com)" },
+        { status: 400 }
+      );
     }
+
+    const domain = cleanEmail.split("@")[1] || "";
+    const typoDomains = [
+      "gail.com", "gamil.com", "gmial.com", "gmai.com", "gmaill.com", "gmil.com", "gmaul.com", "gmal.com",
+      "yaho.com", "yaho.co", "hotmial.com", "outlok.com", "outloo.com"
+    ];
+    if (typoDomains.includes(domain)) {
+      return NextResponse.json(
+        { success: false, error: `Invalid email domain "@${domain}". Did you mean "@gmail.com"?` },
+        { status: 400 }
+      );
+    }
+
+    const validProviders = [
+      "gmail.com", "yahoo.com", "yahoo.in", "yahoo.co.in", 
+      "outlook.com", "hotmail.com", "live.com", "icloud.com", 
+      "occasions.in"
+    ];
+    if (!validProviders.includes(domain)) {
+      return NextResponse.json(
+        { success: false, error: "Please enter a valid email address ending with @gmail.com" },
+        { status: 400 }
+      );
+    }
+
     if (!password || password.length < 6) {
       return NextResponse.json({ success: false, error: "Password must be at least 6 characters long" }, { status: 400 });
     }
@@ -21,7 +52,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: "Passwords do not match" }, { status: 400 });
     }
 
-    const cleanEmail = email.trim().toLowerCase();
     const cleanName = name.trim();
     const cleanPhone = (phone || "").trim();
 
