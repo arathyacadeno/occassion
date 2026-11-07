@@ -23,6 +23,11 @@ export const metadata: Metadata = {
     description: "Stage Decoration, Floral Bouquets, Flower Baskets, and Fresh Flower Delivery in Calicut.",
     images: ["/images/slide1-flower.jpg"],
   },
+  icons: {
+    icon: "/images/occasions-logo.png",
+    shortcut: "/images/occasions-logo.png",
+    apple: "/images/occasions-logo.png",
+  },
 };
 
 import { AuthProvider } from "@/context/AuthContext";

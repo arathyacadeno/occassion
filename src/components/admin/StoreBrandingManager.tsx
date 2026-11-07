@@ -94,10 +94,30 @@ export default function StoreBrandingManager() {
         throw new Error(data.error || "Failed to upload image to Cloudinary");
       }
 
-      setForm((prev) => ({
-        ...prev,
+      const updatedForm = {
+        ...form,
         [fieldName]: data.url,
-      }));
+      };
+      setForm(updatedForm);
+
+      // Auto-save the uploaded image to store settings immediately
+      try {
+        const saveRes = await fetch("/api/admin/settings", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ settings: updatedForm }),
+        });
+        const saveData = await saveRes.json();
+        if (saveRes.ok && saveData.success) {
+          updateLocalSettings(updatedForm);
+          await refreshSettings();
+          const label = fieldName === "store_favicon" ? "Browser Favicon" : fieldName === "header_logo" ? "Header Logo" : "Footer Logo";
+          setSuccessMsg(`${label} uploaded and saved successfully!`);
+          setTimeout(() => setSuccessMsg(null), 5000);
+        }
+      } catch (autoSaveErr) {
+        console.warn("Auto-save after upload error:", autoSaveErr);
+      }
     } catch (err: any) {
       setErrorMsg(err.message || "Upload failed");
     } finally {
@@ -572,6 +592,40 @@ export default function StoreBrandingManager() {
                     onChange={(e) => handleImageUpload(e, "store_favicon")}
                   />
                 </label>
+
+                {form.store_favicon && (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const updated = { ...form, store_favicon: "" };
+                      setForm(updated);
+                      try {
+                        await fetch("/api/admin/settings", {
+                          method: "PUT",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ settings: updated }),
+                        });
+                        updateLocalSettings(updated);
+                        await refreshSettings();
+                        setSuccessMsg("Favicon reset to default successfully!");
+                        setTimeout(() => setSuccessMsg(null), 4000);
+                      } catch (err) {
+                        console.error(err);
+                      }
+                    }}
+                    style={{
+                      padding: "6px 10px",
+                      background: "#fff1f2",
+                      color: "#e11d48",
+                      border: "1px solid #ffe4e6",
+                      borderRadius: 6,
+                      fontSize: "0.78rem",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Remove
+                  </button>
+                )}
               </div>
             </div>
           </div>

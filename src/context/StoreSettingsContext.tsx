@@ -93,13 +93,18 @@ export function StoreSettingsProvider({ children }: { children: React.ReactNode 
 
       // Dynamic favicon
       if (settings.store_favicon) {
-        let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
-        if (!link) {
-          link = document.createElement("link");
-          link.rel = "icon";
-          document.head.appendChild(link);
+        try {
+          const oldIcons = document.querySelectorAll("link[rel*='icon']");
+          oldIcons.forEach((el) => el.remove());
+
+          const newIcon = document.createElement("link");
+          newIcon.rel = "shortcut icon";
+          newIcon.type = "image/png";
+          newIcon.href = settings.store_favicon;
+          document.head.appendChild(newIcon);
+        } catch (e) {
+          console.warn("Could not update dynamic favicon:", e);
         }
-        link.href = settings.store_favicon;
       }
     }
   }, [settings.primary_color, settings.secondary_color, settings.store_favicon]);
