@@ -1852,7 +1852,7 @@ export default function Header({
               <span>{authLoading ? "Connecting with Google…" : "Continue with Google"}</span>
             </button>
 
-            <div style={{ marginTop: 14, textAlign: "center", fontSize: "0.85rem", color: "#64748b" }}>
+            <div style={{ marginTop: 14, textAlign: "center", fontSize: "0.85rem", color: "#475569" }}>
               {authTab === "signin" ? (
                 <span>
                   Don&apos;t have an account?{" "}
@@ -1865,11 +1865,13 @@ export default function Header({
                     style={{
                       background: "none",
                       border: "none",
-                      color: "#be185d",
-                      fontWeight: 700,
+                      color: "#e11d48",
+                      fontWeight: 600,
                       cursor: "pointer",
                       padding: 0,
                       textDecoration: "underline",
+                      fontFamily: "inherit",
+                      fontSize: "inherit",
                     }}
                   >
                     Register now
@@ -1887,11 +1889,13 @@ export default function Header({
                     style={{
                       background: "none",
                       border: "none",
-                      color: "#be185d",
-                      fontWeight: 700,
+                      color: "#e11d48",
+                      fontWeight: 600,
                       cursor: "pointer",
                       padding: 0,
                       textDecoration: "underline",
+                      fontFamily: "inherit",
+                      fontSize: "inherit",
                     }}
                   >
                     Sign In
@@ -1900,28 +1904,31 @@ export default function Header({
               )}
             </div>
 
-            <div style={{ marginTop: 16, fontSize: "0.75rem", color: "#64748b", textAlign: "center", lineHeight: 1.5 }}>
-              By continuing, you agree to Occassions{" "}
-              <Link
-                href="/terms-of-service"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setActiveModal(null)}
-                style={{ color: "#db2777", fontWeight: 600, textDecoration: "underline" }}
-              >
-                Terms of Service
-              </Link>
-              {" "}&amp;{" "}
-              <Link
-                href="/privacy-policy"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setActiveModal(null)}
-                style={{ color: "#db2777", fontWeight: 600, textDecoration: "underline" }}
-              >
-                Privacy Policy
-              </Link>.
-              Fast checkout for all floral arrangements.
+            <div style={{ margin: "14px 0 12px", borderTop: "1px solid #f1f5f9" }} />
+
+            <div style={{ fontSize: "0.76rem", color: "#64748b", textAlign: "center", lineHeight: 1.5 }}>
+              <div>By continuing, you agree to our</div>
+              <div style={{ marginTop: 3 }}>
+                <Link
+                  href="/terms-of-service"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setActiveModal(null)}
+                  style={{ color: "#e11d48", fontWeight: 500, textDecoration: "none" }}
+                >
+                  Terms of Service
+                </Link>
+                <span style={{ margin: "0 6px", color: "#e11d48" }}>&middot;</span>
+                <Link
+                  href="/privacy-policy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setActiveModal(null)}
+                  style={{ color: "#e11d48", fontWeight: 500, textDecoration: "none" }}
+                >
+                  Privacy Policy
+                </Link>
+              </div>
             </div>
           </div>
         </div>
