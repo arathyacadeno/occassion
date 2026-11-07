@@ -1324,7 +1324,7 @@
   padding: 10px 16px;
   border: none;
   border-radius: 11px;
-  background: linear-gradient(135deg, #e11d48 0%, #db2777 100%);
+  background: linear-gradient(135deg, var(--brand-secondary, #e11d48) 0%, var(--brand-primary, #db2777) 100%);
   color: #ffffff;
   font-family: inherit;
   font-size: 0.92rem;

@@ -61,7 +61,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: #db2777;
+  background-color: var(--brand-primary, #db2777);
   color: #ffffff;
   border: none;
   border-radius: 14px;
@@ -74,7 +74,7 @@
 }
 
 .buyNowBtn:hover {
-  background-color: #be185d;
+  background-color: var(--brand-secondary, #be185d);
   transform: translateY(-1px);
   box-shadow: 0 6px 18px rgba(219, 39, 119, 0.35);
 }
