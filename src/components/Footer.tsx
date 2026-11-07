@@ -110,6 +110,11 @@ export default function Footer() {
                   Privacy &amp; Policy
                 </Link>
               </li>
+              <li>
+                <Link href="/terms-of-service" className={styles.navLink}>
+                  Terms of Service
+                </Link>
+              </li>
             </ul>
           </div>
 

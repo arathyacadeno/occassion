@@ -1462,7 +1462,7 @@ export default function Header({
                           role="menuitem"
                         >
                           <User size={17} className={styles.profileMenuIcon} />
-                          <span>Sign In / Signup</span>
+                          <span>Sign In / Register</span>
                         </button>
                       )}
                     </div>
@@ -1679,7 +1679,7 @@ export default function Header({
       {activeModal === "signin" && (
         <div className={styles.modalBackdrop} onClick={() => { setActiveModal(null); resetPhoneFlow(); }}>
           <div
-            className={styles.modalBox}
+            className={`${styles.modalBox} ${authTab === "signup" ? styles.modalBoxSignup : ""}`}
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-labelledby="signin-modal-title"
@@ -1709,7 +1709,7 @@ export default function Header({
                   setAuthError(null);
                 }}
               >
-                Login
+                Sign In
               </button>
               <button
                 type="button"
@@ -1727,71 +1727,98 @@ export default function Header({
 
             {authError && <div className={styles.authError}>{authError}</div>}
 
-
             <form onSubmit={handleAuthSubmit}>
-              {authTab === "signup" && (
+              {authTab === "signup" ? (
+                <>
+                  <div className={styles.formRow2}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>Full Name</label>
+                      <input
+                        type="text"
+                        className={styles.inputField}
+                        placeholder="e.g. Rahul Menon"
+                        required
+                        value={authForm.name}
+                        onChange={(e) => setAuthForm({ ...authForm, name: e.target.value })}
+                      />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>Mobile Number</label>
+                      <input
+                        type="tel"
+                        className={styles.inputField}
+                        placeholder="10-digit mobile"
+                        value={authForm.phone}
+                        onChange={(e) => setAuthForm({ ...authForm, phone: e.target.value })}
+                      />
+                    </div>
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Email Address</label>
+                    <input
+                      type="email"
+                      className={styles.inputField}
+                      placeholder="Enter your email"
+                      required
+                      value={authForm.email}
+                      onChange={(e) => setAuthForm({ ...authForm, email: e.target.value })}
+                    />
+                  </div>
+
+                  <div className={styles.formRow2}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>Password</label>
+                      <input
+                        type="password"
+                        className={styles.inputField}
+                        placeholder="At least 6 characters"
+                        required
+                        value={authForm.password}
+                        onChange={(e) => setAuthForm({ ...authForm, password: e.target.value })}
+                      />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>Confirm Password</label>
+                      <input
+                        type="password"
+                        className={styles.inputField}
+                        placeholder="Re-enter password"
+                        required
+                        value={authForm.confirmPassword}
+                        onChange={(e) => setAuthForm({ ...authForm, confirmPassword: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                </>
+              ) : (
                 <>
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Full Name</label>
+                    <label className={styles.formLabel}>Email Address</label>
                     <input
-                      type="text"
+                      type="email"
                       className={styles.inputField}
-                      placeholder="e.g. Rahul Menon"
+                      placeholder="Enter your email"
                       required
-                      value={authForm.name}
-                      onChange={(e) => setAuthForm({ ...authForm, name: e.target.value })}
+                      value={authForm.email}
+                      onChange={(e) => setAuthForm({ ...authForm, email: e.target.value })}
                     />
                   </div>
 
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Mobile Number</label>
+                    <label className={styles.formLabel}>Password</label>
                     <input
-                      type="tel"
+                      type="password"
                       className={styles.inputField}
-                      placeholder="10-digit mobile number"
-                      value={authForm.phone}
-                      onChange={(e) => setAuthForm({ ...authForm, phone: e.target.value })}
+                      placeholder="Enter your password"
+                      required
+                      value={authForm.password}
+                      onChange={(e) => setAuthForm({ ...authForm, password: e.target.value })}
                     />
                   </div>
                 </>
-              )}
-
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Email Address</label>
-                <input
-                  type="email"
-                  className={styles.inputField}
-                  placeholder="Enter your email"
-                  required
-                  value={authForm.email}
-                  onChange={(e) => setAuthForm({ ...authForm, email: e.target.value })}
-                />
-              </div>
-
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Password</label>
-                <input
-                  type="password"
-                  className={styles.inputField}
-                  placeholder={authTab === "signin" ? "Enter your password" : "At least 6 characters"}
-                  required
-                  value={authForm.password}
-                  onChange={(e) => setAuthForm({ ...authForm, password: e.target.value })}
-                />
-              </div>
-
-              {authTab === "signup" && (
-                <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Confirm Password</label>
-                  <input
-                    type="password"
-                    className={styles.inputField}
-                    placeholder="Re-enter your password"
-                    required
-                    value={authForm.confirmPassword}
-                    onChange={(e) => setAuthForm({ ...authForm, confirmPassword: e.target.value })}
-                  />
-                </div>
               )}
 
               <button type="submit" className={styles.primaryBtn} disabled={authLoading}>
@@ -1875,9 +1902,25 @@ export default function Header({
 
             <div style={{ marginTop: 16, fontSize: "0.75rem", color: "#64748b", textAlign: "center", lineHeight: 1.5 }}>
               By continuing, you agree to Occassions{" "}
-              <span style={{ color: "#db2777", fontWeight: 600 }}>Terms of Service</span>
+              <Link
+                href="/terms-of-service"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setActiveModal(null)}
+                style={{ color: "#db2777", fontWeight: 600, textDecoration: "underline" }}
+              >
+                Terms of Service
+              </Link>
               {" "}&amp;{" "}
-              <span style={{ color: "#db2777", fontWeight: 600 }}>Privacy Policy</span>.
+              <Link
+                href="/privacy-policy"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setActiveModal(null)}
+                style={{ color: "#db2777", fontWeight: 600, textDecoration: "underline" }}
+              >
+                Privacy Policy
+              </Link>.
               Fast checkout for all floral arrangements.
             </div>
           </div>
