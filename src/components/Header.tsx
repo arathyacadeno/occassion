@@ -18,6 +18,7 @@ import {
   LogOut,
   ShieldCheck,
   ChevronDown,
+  CheckCircle,
 } from "lucide-react";
 import { getSearchRoute } from "@/lib/searchRoutes";
 import { useCart } from "@/context/CartContext";
@@ -130,6 +131,7 @@ export default function Header({
   });
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [authSuccess, setAuthSuccess] = useState<string | null>(null);
 
   // Phone OTP flow (Firebase Phone Authentication)
   const [phoneFlow, setPhoneFlow] = useState<"idle" | "enter" | "otp">("idle");
@@ -275,13 +277,18 @@ export default function Header({
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError(null);
+    setAuthSuccess(null);
     setAuthLoading(true);
     try {
       if (authTab === "signin") {
         const res = await login(authForm.email, authForm.password);
         if (res.success) {
-          setActiveModal(null);
-          setAuthForm({ name: "", email: "", phone: "", password: "", confirmPassword: "" });
+          setAuthSuccess("Signed in successfully! Welcome back.");
+          setTimeout(() => {
+            setActiveModal(null);
+            setAuthSuccess(null);
+            setAuthForm({ name: "", email: "", phone: "", password: "", confirmPassword: "" });
+          }, 800);
         } else {
           setAuthError(res.error || "Failed to sign in");
         }
@@ -293,8 +300,12 @@ export default function Header({
         }
         const res = await signup(authForm);
         if (res.success) {
-          setActiveModal(null);
-          setAuthForm({ name: "", email: "", phone: "", password: "", confirmPassword: "" });
+          setAuthSuccess("Account created successfully! Welcome to Occassions.");
+          setTimeout(() => {
+            setActiveModal(null);
+            setAuthSuccess(null);
+            setAuthForm({ name: "", email: "", phone: "", password: "", confirmPassword: "" });
+          }, 1200);
         } else {
           setAuthError(res.error || "Failed to create account");
         }
@@ -1707,6 +1718,7 @@ export default function Header({
                 onClick={() => {
                   setAuthTab("signin");
                   setAuthError(null);
+                  setAuthSuccess(null);
                 }}
               >
                 Sign In
@@ -1719,6 +1731,7 @@ export default function Header({
                 onClick={() => {
                   setAuthTab("signup");
                   setAuthError(null);
+                  setAuthSuccess(null);
                 }}
               >
                 Register
@@ -1726,6 +1739,12 @@ export default function Header({
             </div>
 
             {authError && <div className={styles.authError}>{authError}</div>}
+            {authSuccess && (
+              <div className={styles.authSuccess}>
+                <CheckCircle size={16} />
+                <span>{authSuccess}</span>
+              </div>
+            )}
 
             <form onSubmit={handleAuthSubmit}>
               {authTab === "signup" ? (
@@ -1821,9 +1840,15 @@ export default function Header({
                 </>
               )}
 
-              <button type="submit" className={styles.primaryBtn} disabled={authLoading}>
+              <button
+                type="submit"
+                className={styles.primaryBtn}
+                disabled={authLoading || Boolean(authSuccess)}
+              >
                 {authLoading ? (
-                  "Processing..."
+                  authTab === "signup" ? "Creating Account..." : "Signing In..."
+                ) : authSuccess ? (
+                  authTab === "signup" ? "Account Created!" : "Signed In!"
                 ) : authTab === "signin" ? (
                   "Sign In"
                 ) : (
