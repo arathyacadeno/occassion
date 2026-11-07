@@ -4,7 +4,7 @@ import { getAuthenticatedUser } from "@/lib/auth/jwt";
 import { checkDeliveryAsync } from "@/lib/delivery/service";
 import { isSpecificOrCustomSlot, CUSTOM_DELIVERY_FEE } from "@/lib/delivery/schedule";
 import { ADDON_PRODUCTS } from "@/data/addons";
-import { sendWhatsAppToOwner } from "@/lib/whatsapp/service";
+import { sendWhatsAppToOwner, sendCustomerOrderNotification } from "@/lib/whatsapp/service";
 
 export async function GET(request: Request) {
   try {
@@ -505,7 +505,7 @@ export async function POST(request: Request) {
       }
     }
 
-    // 9. Send WhatsApp notification to owner 9447446008
+    // 9. Send WhatsApp notification to owner 9447446008 & customer (if COD confirmed)
     let whatsappResult: any = null;
     try {
       const isCod = paymentMethod?.type === "COD";
@@ -540,6 +540,27 @@ export async function POST(request: Request) {
         notes: notes || "",
         createdAt: now,
       });
+
+      // For COD orders, order is confirmed immediately upon placement — notify customer
+      if (isCod && customerPhone) {
+        sendCustomerOrderNotification({
+          orderId,
+          customerName,
+          customerPhone,
+          items: validatedOrderItems.map((it) => ({
+            name: it.productName,
+            quantity: it.quantity,
+            price: it.productPrice,
+            subtotal: it.subtotal,
+          })),
+          finalAmount,
+          orderStatus: "confirmed",
+          paymentStatus: "pending",
+          deliveryDate: delivery?.deliveryDate,
+          deliveryTime: delivery?.deliveryTime,
+          deliveryAddress: `${delivery?.houseBuilding || delivery?.house || ""}, ${delivery?.street || ""}, ${delivery?.city || "Kozhikode"}`,
+        }).catch((err) => console.warn("[WhatsApp] Customer COD notification error:", err));
+      }
     } catch (wpErr) {
       console.warn("WhatsApp notification error on order create:", wpErr);
     }

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { verifyPaymentSignature } from "@/lib/payment/razorpay";
 import { sql } from "@/lib/db/neon";
-import { sendWhatsAppToOwner } from "@/lib/whatsapp/service";
+import { sendWhatsAppToOwner, sendCustomerOrderNotification } from "@/lib/whatsapp/service";
 import { isSpecificOrCustomSlot } from "@/lib/delivery/schedule";
 
 export async function POST(request: Request) {
@@ -132,6 +132,27 @@ export async function POST(request: Request) {
             notes: order.notes || "",
             createdAt: order.created_at,
           });
+
+          // Send payment confirmation & order details to customer
+          if (order.customer_phone) {
+            sendCustomerOrderNotification({
+              orderId: cleanOrderId,
+              customerName: order.customer_name || "Customer",
+              customerPhone: order.customer_phone,
+              items: (orderItems || []).map((it: any) => ({
+                name: it.product_name,
+                quantity: it.quantity,
+                price: it.product_price,
+                subtotal: it.subtotal,
+              })),
+              finalAmount: Number(order.final_amount) || 0,
+              orderStatus: order.order_status || "confirmed",
+              paymentStatus: "paid",
+              deliveryDate: deliveryAddr.deliveryDate || "",
+              deliveryTime: deliveryAddr.deliveryTime || "",
+              deliveryAddress: `${deliveryAddr.houseBuilding || deliveryAddr.house || ""}, ${deliveryAddr.street || ""}, ${deliveryAddr.city || "Kozhikode"}`,
+            }).catch((cErr) => console.warn("[WhatsApp] Customer payment confirmation notification error:", cErr));
+          }
         } catch (wpErr) {
           console.warn("WhatsApp notification error in verify-payment:", wpErr);
         }
