@@ -84,6 +84,8 @@ export function StoreSettingsProvider({ children }: { children: React.ReactNode 
       // Dynamic colors
       if (settings.primary_color) {
         document.documentElement.style.setProperty("--brand-primary", settings.primary_color);
+        document.documentElement.style.setProperty("--color-rose-dark", settings.primary_color);
+        document.documentElement.style.setProperty("--color-rose", settings.primary_color);
       }
       if (settings.secondary_color) {
         document.documentElement.style.setProperty("--brand-secondary", settings.secondary_color);
