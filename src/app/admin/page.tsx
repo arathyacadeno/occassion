@@ -53,7 +53,7 @@ const DEFAULT_CATEGORIES_LIST = [
 ];
 
 export default function AdminPage() {
-  const { user, isAdmin, isAuthenticated, login, logout } = useAuth();
+  const { user, isAdmin, isAuthenticated, isLoading, login, logout } = useAuth();
 
   // Admin login form state
   const [adminEmail, setAdminEmail] = useState("");
@@ -530,6 +530,17 @@ export default function AdminPage() {
     (productPage - 1) * productPageSize,
     productPage * productPageSize
   );
+
+  if (isLoading) {
+    return (
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#fdf2f8" }}>
+        <div style={{ textAlign: "center" }}>
+          <RefreshCw size={36} color="#be185d" style={{ margin: "0 auto 12px", animation: "spin 1s linear infinite" }} />
+          <div style={{ fontSize: "0.92rem", color: "#831843", fontWeight: 600 }}>Verifying admin session...</div>
+        </div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated || !isAdmin) {
     return (
