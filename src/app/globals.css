@@ -122,9 +122,16 @@ a {
   transition: color var(--transition-fast);
 }
 
+button, select, input[type="button"], input[type="submit"], input[type="checkbox"], input[type="radio"] {
+  cursor: pointer;
+}
+
+input, textarea {
+  cursor: text;
+}
+
 button, input, select, textarea {
   font-family: var(--font-sans);
-  cursor: pointer;
   border: none;
   background: none;
   outline: none;

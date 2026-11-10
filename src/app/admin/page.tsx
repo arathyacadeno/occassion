@@ -569,11 +569,12 @@ export default function AdminPage() {
                 </label>
                 <input
                   type="email"
+                  autoFocus
                   className={styles.inputControl}
                   style={{ width: "100%", boxSizing: "border-box" }}
                   value={adminEmail}
                   onChange={(e) => setAdminEmail(e.target.value)}
-                  placeholder="admin@occasions.in"
+                  placeholder="occassions.flowers@gmail.com"
                   required
                 />
               </div>

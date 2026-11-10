@@ -5,6 +5,7 @@
   background-color: #f8fafc;
   color: #1e293b;
   font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
+  cursor: default;
 }
 
 .mainContainer {
@@ -14,6 +15,7 @@
   margin: 0 auto;
   padding: 32px 24px 64px;
   box-sizing: border-box;
+  cursor: default;
 }
 
 .adminHeader {
@@ -142,6 +144,7 @@
   border: 1px solid #e2e8f0;
   padding: 24px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  cursor: default;
 }
 
 .tableResponsive {
@@ -249,6 +252,7 @@
 }
 
 .inputControl {
+  cursor: text;
   padding: 10px 12px;
   border-radius: 10px;
   border: 1.5px solid #e2e8f0;
@@ -279,6 +283,7 @@
   padding: 32px 28px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   text-align: center;
+  cursor: default;
 }
 
 /* ================= CUSTOMIZATION ADMIN STYLES ================= */
@@ -602,4 +607,44 @@
     flex-wrap: wrap;
     width: 100%;
   }
+}
+
+
+/* Ensure text labels and headings maintain clean arrow cursor instead of I-beam */
+.pageWrapper h1,
+.pageWrapper h2,
+.pageWrapper h3,
+.pageWrapper h4,
+.pageWrapper p,
+.pageWrapper label,
+.pageWrapper span,
+.pageWrapper th,
+.pageWrapper td,
+.pageWrapper div {
+  cursor: default;
+}
+
+/* Ensure inputs and textareas have text cursor */
+.pageWrapper input[type="text"],
+.pageWrapper input[type="email"],
+.pageWrapper input[type="password"],
+.pageWrapper input[type="number"],
+.pageWrapper input[type="search"],
+.pageWrapper textarea,
+.inputControl {
+  cursor: text !important;
+}
+
+/* Ensure interactive controls maintain pointer hand cursor */
+.pageWrapper button,
+.pageWrapper a,
+.pageWrapper select,
+.pageWrapper input[type="checkbox"],
+.pageWrapper input[type="radio"],
+.tabBtn,
+.actionBtn,
+.submitBtn,
+.badgeAdmin,
+.customCatPill {
+  cursor: pointer !important;
 }
