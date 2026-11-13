@@ -622,22 +622,6 @@ export default function AdminPage() {
             >
               <RefreshCw size={14} /> Refresh Data
             </button>
-            <button
-              type="button"
-              className={styles.actionBtn}
-              onClick={handleAdminLogout}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 6,
-                color: "#e11d48",
-                borderColor: "#fecdd3",
-                background: "#fff1f2",
-              }}
-              title="Log Out from Admin Portal"
-            >
-              <LogOut size={14} /> Log Out
-            </button>
           </div>
         </div>
 

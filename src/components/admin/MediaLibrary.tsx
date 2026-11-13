@@ -197,8 +197,8 @@ export default function MediaLibrary({ onSelectImage, isPickerMode = false, pref
               boxShadow: "0 2px 8px rgba(219, 39, 119, 0.25)",
             }}
           >
-            <Upload size={16} />
-            <span>{uploading ? "Uploading..." : "Upload New Files"}</span>
+            <Upload size={16} style={{ cursor: uploading ? "not-allowed" : "pointer" }} />
+            <span style={{ cursor: uploading ? "not-allowed" : "pointer" }}>{uploading ? "Uploading..." : "Upload New Files"}</span>
             <input type="file" accept="image/*" multiple disabled={uploading} onChange={handleUploadFiles} style={{ display: "none" }} />
           </label>
         </div>

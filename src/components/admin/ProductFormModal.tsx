@@ -8,7 +8,6 @@ import {
   Image as ImageIcon,
   Plus,
   Trash2,
-  Sparkles,
   Check,
   AlertCircle,
   Tag,
@@ -837,10 +836,11 @@ export default function ProductFormModal({
                   fontWeight: 600,
                   cursor: uploading ? "not-allowed" : "pointer",
                   boxShadow: "0 2px 8px rgba(190, 24, 93, 0.25)",
+                  userSelect: "none",
                 }}
               >
-                <Upload size={16} />
-                <span>{uploading ? "Uploading to Server Storage..." : "Upload from Computer"}</span>
+                <Upload size={16} style={{ cursor: uploading ? "not-allowed" : "pointer" }} />
+                <span style={{ cursor: uploading ? "not-allowed" : "pointer" }}>{uploading ? "Uploading to Server Storage..." : "Upload from Computer"}</span>
                 <input
                   type="file"
                   accept="image/*"
@@ -866,16 +866,18 @@ export default function ProductFormModal({
                   fontSize: "0.88rem",
                   fontWeight: 600,
                   cursor: "pointer",
+                  userSelect: "none",
                 }}
               >
-                <ImageIcon size={16} color="#be185d" />
-                <span>Browse Existing Category Images</span>
+                <ImageIcon size={16} color="#be185d" style={{ cursor: "pointer" }} />
+                <span style={{ cursor: "pointer" }}>Browse Existing Category Images</span>
               </button>
             </div>
 
             {/* Gallery Thumbnails List */}
             {images.length === 0 ? (
               <div
+                onClick={() => setIsMediaPickerOpen(true)}
                 style={{
                   padding: "20px",
                   background: "#fff",
@@ -888,10 +890,12 @@ export default function ProductFormModal({
                   alignItems: "center",
                   justifyContent: "center",
                   gap: 8,
+                  cursor: "pointer",
+                  userSelect: "none",
                 }}
               >
-                <ImageIcon size={18} color="#db2777" />
-                <span>No images selected yet. Click <strong>Browse Media Library</strong> above to choose photography.</span>
+                <ImageIcon size={18} color="#db2777" style={{ cursor: "pointer" }} />
+                <span style={{ cursor: "pointer" }}>No images selected yet. Click <strong>Browse Existing Category Images</strong> or <strong>Upload from Computer</strong> above to choose photography.</span>
               </div>
             ) : (
               <div style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 8 }}>
@@ -1082,45 +1086,29 @@ export default function ProductFormModal({
             </div>
           )}
 
-          {/* Section 6: Publishing Status & Highlights */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-            <div>
-              <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, color: "#475569", marginBottom: 6 }}>
-                Visibility Status
-              </label>
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value as any)}
-                style={{
-                  width: "100%",
-                  padding: "10px 14px",
-                  borderRadius: 10,
-                  border: "1.5px solid #cbd5e1",
-                  fontSize: "0.92rem",
-                  background: "#fff",
-                  fontWeight: 600,
-                  color: status === "published" ? "#166534" : "#92400e",
-                }}
-              >
-                <option value="published">Published (Visible in Storefront)</option>
-                <option value="draft">Draft (Hidden from Customers)</option>
-                <option value="archived">Archived / Unpublished</option>
-              </select>
-            </div>
-
-            <div style={{ display: "flex", alignItems: "center", gap: 10, paddingTop: 26 }}>
-              <input
-                type="checkbox"
-                id="featuredCheck"
-                checked={featured}
-                onChange={(e) => setFeatured(e.target.checked)}
-                style={{ width: 20, height: 20, cursor: "pointer" }}
-              />
-              <label htmlFor="featuredCheck" style={{ fontSize: "0.92rem", fontWeight: 600, color: "#1e293b", cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
-                <Sparkles size={16} color="#d97706" />
-                <span>Feature in Homepage Highlights &amp; New Arrivals</span>
-              </label>
-            </div>
+          {/* Section 6: Publishing Status */}
+          <div style={{ marginBottom: 12 }}>
+            <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, color: "#475569", marginBottom: 6 }}>
+              Visibility Status
+            </label>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value as any)}
+              style={{
+                width: "100%",
+                padding: "10px 14px",
+                borderRadius: 10,
+                border: "1.5px solid #cbd5e1",
+                fontSize: "0.92rem",
+                background: "#fff",
+                fontWeight: 600,
+                color: status === "published" ? "#166534" : "#92400e",
+              }}
+            >
+              <option value="published">Published (Visible in Category Section Page)</option>
+              <option value="draft">Draft (Hidden from Customers)</option>
+              <option value="archived">Archived / Unpublished</option>
+            </select>
           </div>
         </form>
 

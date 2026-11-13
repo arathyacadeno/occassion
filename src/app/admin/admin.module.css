@@ -610,17 +610,20 @@
 }
 
 
-/* Ensure text labels and headings maintain clean arrow cursor instead of I-beam */
+/* Ensure text headings, paragraphs, and table cells maintain clean arrow cursor instead of I-beam */
 .pageWrapper h1,
 .pageWrapper h2,
 .pageWrapper h3,
 .pageWrapper h4,
 .pageWrapper p,
-.pageWrapper label,
-.pageWrapper span,
 .pageWrapper th,
-.pageWrapper td,
-.pageWrapper div {
+.pageWrapper td {
+  cursor: default;
+}
+
+/* Standard static form labels above inputs */
+.inputGroup > label,
+.pageWrapper form label {
   cursor: default;
 }
 
@@ -635,16 +638,34 @@
   cursor: text !important;
 }
 
-/* Ensure interactive controls maintain pointer hand cursor */
+/* Ensure all interactive controls, buttons, links, and file upload labels show pointer hand cursor */
 .pageWrapper button,
+.pageWrapper button *,
 .pageWrapper a,
+.pageWrapper a *,
 .pageWrapper select,
+.pageWrapper select *,
 .pageWrapper input[type="checkbox"],
 .pageWrapper input[type="radio"],
+.pageWrapper label:has(input[type="file"]),
+.pageWrapper label:has(input[type="file"]) *,
+.pageWrapper label:has(input[type="checkbox"]),
+.pageWrapper label:has(input[type="checkbox"]) *,
+.pageWrapper label:has(input[type="radio"]),
+.pageWrapper label:has(input[type="radio"]) *,
+.pageWrapper label[style*="pointer"],
+.pageWrapper label[style*="pointer"] *,
+.pageWrapper [role="button"],
+.pageWrapper [role="button"] *,
 .tabBtn,
+.tabBtn *,
 .actionBtn,
+.actionBtn *,
 .submitBtn,
+.submitBtn *,
 .badgeAdmin,
-.customCatPill {
+.badgeAdmin *,
+.customCatPill,
+.customCatPill * {
   cursor: pointer !important;
 }
