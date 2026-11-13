@@ -84,16 +84,19 @@ export default function HomepageManager() {
   });
   const [uploadingOccasionImg, setUploadingOccasionImg] = useState(false);
   const [savingOccasion, setSavingOccasion] = useState(false);
+  const [deleteOccasionTarget, setDeleteOccasionTarget] = useState<{ id: string; name: string } | null>(null);
+  const [deleteBannerTarget, setDeleteBannerTarget] = useState<{ id: string; title?: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Lock background body scroll when any modal is open
   useEffect(() => {
-    if (!isBannerModalOpen && !isOccasionModalOpen) return;
+    if (!isBannerModalOpen && !isOccasionModalOpen && !deleteOccasionTarget && !deleteBannerTarget) return;
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = prevOverflow;
     };
-  }, [isBannerModalOpen, isOccasionModalOpen]);
+  }, [isBannerModalOpen, isOccasionModalOpen, deleteOccasionTarget, deleteBannerTarget]);
 
   const fetchData = useCallback(async () => {
     try {
@@ -234,21 +237,28 @@ export default function HomepageManager() {
     }
   };
 
-  const handleDeleteBanner = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this homepage banner?")) return;
+  const handleDeleteBanner = (id: string, title?: string) => {
+    setDeleteBannerTarget({ id, title: title || "this homepage banner" });
+  };
 
+  const confirmDeleteBanner = async () => {
+    if (!deleteBannerTarget) return;
     try {
+      setIsDeleting(true);
       setErrorMsg(null);
-      const res = await fetch(`/api/admin/homepage?id=${encodeURIComponent(id)}`, {
+      const res = await fetch(`/api/admin/homepage?id=${encodeURIComponent(deleteBannerTarget.id)}`, {
         method: "DELETE",
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || "Failed to delete banner");
       setSuccessMsg("Banner removed successfully!");
+      setDeleteBannerTarget(null);
       await fetchData();
       setTimeout(() => setSuccessMsg(null), 4000);
     } catch (err: any) {
       setErrorMsg(err.message || "Error deleting banner");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -342,9 +352,19 @@ export default function HomepageManager() {
       const isEdit = !!editingOccasion;
       const url = "/api/occasions";
       const method = isEdit ? "PUT" : "POST";
+      const cleanSlug = (occasionForm.slug || occasionForm.name)
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+      const finalHref = occasionForm.href?.trim() || `/flower-bouquets?occasion=${cleanSlug}`;
+      const payload = {
+        ...occasionForm,
+        slug: cleanSlug,
+        href: finalHref,
+      };
       const body = isEdit
-        ? { id: editingOccasion.id, ...occasionForm }
-        : occasionForm;
+        ? { id: editingOccasion.id, ...payload }
+        : payload;
 
       const res = await fetch(url, {
         method,
@@ -369,11 +389,15 @@ export default function HomepageManager() {
     }
   };
 
-  const handleDeleteOccasion = async (id: string, name: string) => {
-    if (!confirm(`Are you sure you want to delete the occasion "${name}"?`)) return;
+  const handleDeleteOccasion = (id: string, name: string) => {
+    setDeleteOccasionTarget({ id, name });
+  };
 
+  const confirmDeleteOccasion = async () => {
+    if (!deleteOccasionTarget) return;
+    const { id, name } = deleteOccasionTarget;
     try {
-      setLoading(true);
+      setIsDeleting(true);
       setErrorMsg(null);
 
       const res = await fetch(`/api/occasions?id=${id}`, {
@@ -387,11 +411,12 @@ export default function HomepageManager() {
 
       setSuccessMsg(`Occasion "${name}" deleted successfully.`);
       setTimeout(() => setSuccessMsg(null), 4000);
+      setDeleteOccasionTarget(null);
       await fetchData();
     } catch (err: any) {
       setErrorMsg(err.message || "Failed to delete occasion");
     } finally {
-      setLoading(false);
+      setIsDeleting(false);
     }
   };
 
@@ -1334,26 +1359,6 @@ export default function HomepageManager() {
 
               <div>
                 <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#334155", marginBottom: 6 }}>
-                  Target Page Link
-                </label>
-                <input
-                  type="text"
-                  value={occasionForm.href}
-                  placeholder="/flower-bouquets?occasion=birthday"
-                  onChange={(e) => setOccasionForm((p) => ({ ...p, href: e.target.value }))}
-                  style={{
-                    width: "100%",
-                    padding: "8px 12px",
-                    border: "1px solid #cbd5e1",
-                    borderRadius: 8,
-                    fontSize: "0.85rem",
-                    boxSizing: "border-box",
-                  }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#334155", marginBottom: 6 }}>
                   WhatsApp Inquire Message
                 </label>
                 <textarea
@@ -1424,6 +1429,147 @@ export default function HomepageManager() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Centered Delete Confirmation Warning Modal */}
+      {(deleteOccasionTarget || deleteBannerTarget) && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(15, 23, 42, 0.65)",
+            backdropFilter: "blur(4px)",
+            zIndex: 99999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 16,
+          }}
+          onClick={() => {
+            if (!isDeleting) {
+              setDeleteOccasionTarget(null);
+              setDeleteBannerTarget(null);
+            }
+          }}
+        >
+          <div
+            style={{
+              background: "#ffffff",
+              borderRadius: 18,
+              width: "100%",
+              maxWidth: 440,
+              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+              overflow: "hidden",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div
+              style={{
+                padding: "18px 22px",
+                background: "#fef2f2",
+                borderBottom: "1px solid #fee2e2",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <AlertTriangle size={20} color="#dc2626" />
+                <h3 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 700, color: "#991b1b" }}>
+                  Confirm Deletion
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setDeleteOccasionTarget(null);
+                  setDeleteBannerTarget(null);
+                }}
+                disabled={isDeleting}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: isDeleting ? "not-allowed" : "pointer",
+                  color: "#991b1b",
+                  padding: 4,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div style={{ padding: "22px 24px" }}>
+              <p style={{ margin: "0 0 10px", fontSize: "0.95rem", color: "#1e293b", lineHeight: 1.5 }}>
+                {deleteOccasionTarget
+                  ? <>Are you sure you want to delete the occasion <strong>&ldquo;{deleteOccasionTarget.name}&rdquo;</strong>?</>
+                  : <>Are you sure you want to delete this homepage banner?</>}
+              </p>
+              <p style={{ margin: 0, fontSize: "0.82rem", color: "#64748b" }}>
+                This action cannot be undone and will permanently remove this item from the storefront.
+              </p>
+            </div>
+
+            {/* Footer Buttons */}
+            <div
+              style={{
+                padding: "14px 22px",
+                background: "#fafafa",
+                borderTop: "1px solid #f1f5f9",
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 10,
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  setDeleteOccasionTarget(null);
+                  setDeleteBannerTarget(null);
+                }}
+                disabled={isDeleting}
+                style={{
+                  padding: "9px 18px",
+                  borderRadius: 8,
+                  border: "1px solid #cbd5e1",
+                  background: "#fff",
+                  color: "#475569",
+                  fontWeight: 600,
+                  fontSize: "0.88rem",
+                  cursor: isDeleting ? "not-allowed" : "pointer",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={deleteOccasionTarget ? confirmDeleteOccasion : confirmDeleteBanner}
+                disabled={isDeleting}
+                style={{
+                  padding: "9px 20px",
+                  borderRadius: 8,
+                  border: "none",
+                  background: "#dc2626",
+                  color: "#fff",
+                  fontWeight: 600,
+                  fontSize: "0.88rem",
+                  cursor: isDeleting ? "not-allowed" : "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                  boxShadow: "0 2px 8px rgba(220, 38, 38, 0.25)",
+                }}
+              >
+                <Trash2 size={15} />
+                <span>{isDeleting ? "Deleting..." : "Delete"}</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
