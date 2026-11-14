@@ -27,22 +27,22 @@ export default function CustomBouquetBuilder({ onAddCustomBouquet }: CustomBouqu
     {
       name: "Blush & Rose Quartz",
       color: "linear-gradient(135deg, #f7dcd6 0%, #e8a598 100%)",
-      img: "/images/slide1-flower.jpg",
+      img: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647380/occasions/products/flower-bouquet/flower-bouquet-rose-garden-bliss.png",
     },
     {
       name: "Twilight Hydrangea",
       color: "linear-gradient(135deg, #9787a4 0%, #5d5069 100%)",
-      img: "/images/slide2-flower.jpg",
+      img: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647384/occasions/products/flower-bouquet/flower-bouquet-white-casablanca-lilies.jpg",
     },
     {
       name: "Sunlit Peach Coral",
       color: "linear-gradient(135deg, #f9c29d 0%, #d87654 100%)",
-      img: "/images/slide3-flower.jpg",
+      img: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647383/occasions/products/flower-bouquet/flower-bouquet-sunshine-orchids.png",
     },
     {
       name: "White Eden Orchid",
       color: "linear-gradient(135deg, #ffffff 0%, #e4ded7 100%)",
-      img: "/images/bouquet-4.jpg",
+      img: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647383/occasions/products/flower-bouquet/flower-bouquet-sunshine-orchids.png",
     },
   ];
 

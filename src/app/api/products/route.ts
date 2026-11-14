@@ -206,7 +206,7 @@ export async function GET(request: Request) {
         shortDescription: r.short_description || "",
         price: Number(r.price),
         originalPrice: r.discount_price ? Number(r.discount_price) : undefined,
-        image: parsedImages[0] || "/images/cat-flower-bouquet-luxe.jpg",
+        image: parsedImages[0] || "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg",
         images: parsedImages,
         stock: Number(r.stock),
         lowStockThreshold: r.low_stock_threshold ?? 5,
@@ -332,7 +332,14 @@ export async function POST(request: Request) {
     }
 
     const id = body.id || `prod-${cleanSlug}`;
-    const imageArray = Array.isArray(images) && images.length > 0 ? images : ["/images/sunflower-bouquet.jpg"];
+    const DEFAULT_CLOUDINARY_IMAGE = "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647383/occasions/products/flower-bouquet/flower-bouquet-sunshine-and-peach-orchids.jpg";
+    const imageArray = Array.isArray(images) && images.length > 0
+      ? images.filter((img: any) => typeof img === "string" && img.trim().length > 0)
+      : [DEFAULT_CLOUDINARY_IMAGE];
+
+    if (imageArray.length === 0) {
+      imageArray.push(DEFAULT_CLOUDINARY_IMAGE);
+    }
 
     // Infer product type if omitted
     let inferredType = type || "general";
@@ -354,7 +361,7 @@ export async function POST(request: Request) {
           .split("-")
           .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
           .join(" ");
-        const catImg = imageArray[0] || "/images/cat-flower-bouquet-luxe.jpg";
+        const catImg = imageArray[0] || "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg";
         try {
           await sql`
             INSERT INTO categories (id, name, slug, description, image, display_order, active)

@@ -99,7 +99,7 @@ export default async function DynamicCategoryPage({ params }: PageProps) {
       parsedImages = p.images;
     }
 
-    const mainImg = parsedImages[0] || p.image || "/images/cat-flower-bouquet-luxe.jpg";
+    const mainImg = parsedImages[0] || p.image || "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg";
 
     let parsedOffers: string[] = [];
     if (typeof p.offers === "string") {

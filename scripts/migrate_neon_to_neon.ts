@@ -29,9 +29,9 @@ setGlobalDispatcher(agent);
 
 dotenv.config({ path: '.env.local' });
 
-const OLD_DATABASE_URL = process.env.DATABASE_URL;
+const OLD_DATABASE_URL = process.env.OLD_DATABASE_URL || process.env.DATABASE_URL;
 const NEW_DATABASE_URL =
-  'postgresql://neondb_owner:npg_cAHeSi5NLtn0@ep-wild-bird-b3xxb01h-pooler.c-4.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
+  process.env.NEW_DATABASE_URL || 'postgresql://neondb_owner:password@host/neondb?sslmode=require';
 
 if (!OLD_DATABASE_URL) {
   throw new Error('DATABASE_URL is not set in .env.local');

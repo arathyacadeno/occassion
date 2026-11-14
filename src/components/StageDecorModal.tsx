@@ -20,70 +20,70 @@ export interface StageDecorImageItem {
 
 export const STAGE_DECOR_GALLERY: StageDecorImageItem[] = [
   {
-    src: "/images/stage decor/1.jpg",
+    src: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647423/occasions/products/stage-decor/stage-decor-1.jpg",
     alt: "Imperial Marble Arch and Bloom Wall Wedding Stage",
     price: 45000,
     description:
       "An architectural masterpiece featuring sleek Italian-veined marble panels framing two dense floral garden alcoves in soft pink, lavender, and ivory blooms. Complete with an overhead arch floral swag, plush gold velvet chaise lounge, and gilded ruffled stage skirting with matching front posies.",
   },
   {
-    src: "/images/stage decor/2.jpg",
+    src: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647424/occasions/products/stage-decor/stage-decor-2.jpg",
     alt: "Enchanted Circular Golden Ring Arch Wedding Stage",
     price: 40000,
     description:
       "A contemporary circular metallic gold floral ring intertwined with fresh blush garden roses, custom couple monogram medallion, romantic golden tubular candlelight pillars, and a tufted mauve velvet loveseat resting over rich crimson carpets.",
   },
   {
-    src: "/images/stage decor/3.jpg",
+    src: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647424/occasions/products/stage-decor/stage-decor-3.jpg",
     alt: "Royal Victorian White Chaise and Crystal Candelabra Stage",
     price: 45000,
     description:
       "A regal wedding stage styled with an antique white tufted scroll-arm chaise, suspended rustic wooden floral beams, multi-tier crystal candelabras, and opulent golden satin stage borders adorned with wild baby's breath and pastel peach Dutch roses.",
   },
   {
-    src: "/images/stage decor/4.jpeg",
+    src: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647424/occasions/products/stage-decor/stage-decor-4.jpg",
     alt: "Warm Filament Light and Peach Drape Wedding Stage Decor",
     price: 18000,
     description:
       "An intimate, atmospheric wedding ambiance blending gentle pleated ivory drapes, suspended warm Edison filament bulbs, asymmetric peach and magenta floral swags, and elegant white ceramic floor urns with fresh blossoms.",
   },
   {
-    src: "/images/stage decor/5.jpg",
+    src: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647424/occasions/products/stage-decor/stage-decor-5.jpg",
     alt: "Grand Celestial Fairy Light Canopy Multi-Arch Wedding Stage",
     price: 55000,
     description:
       "A breathtaking ballroom installation featuring a sprawling starry fairy light ceiling canopy, cascading sheer drapery, five interlocking golden floral arches with warm hanging chandeliers, and a traditional hand-carved Kerala teak diwan.",
   },
   {
-    src: "/images/stage decor/10.jpg",
+    src: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647423/occasions/products/stage-decor/stage-decor-10.png",
     alt: "Golden Sunburst Floral Arch and Hanging Rings Stage",
     price: 20000,
     description:
       "An elegant golden floral stage featuring a circular sunburst arch, vibrant coral roses, delicate pastel blooms, cascading greenery, and warm hanging lights, creating a romantic and sophisticated backdrop for memorable wedding celebrations.",
   },
   {
-    src: "/images/stage decor/6.jpeg",
+    src: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647424/occasions/products/stage-decor/stage-decor-6.jpg",
     alt: "Geometric Suspended Golden Rings Wedding Stage",
     price: 18000,
     description:
       "Modern symmetry meets botanical luxury with tiered suspended golden ring lights, lush rose and carnation mini-swags, glowing geometric side towers with miniature lanterns, and a comfortable contemporary couple sofa.",
   },
   {
-    src: "/images/stage decor/7.jpg",
+    src: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647424/occasions/products/stage-decor/stage-decor-7.jpg",
     alt: "Heritage Rosewood Bench and Pristine White Floral Arch Stage",
     price: 35000,
     description:
       "Honoring Kerala tradition with an authentic antique carved rosewood tharavadu bench set against a minimalist circular arch of pure white chrysanthemums, ivory Dutch roses, and cascading English ivy on an all-white carpeted platform.",
   },
   {
-    src: "/images/stage decor/8.jpg",
+    src: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647424/occasions/products/stage-decor/stage-decor-8.jpg",
     alt: "Majestic Grand Palace Five Arch Wedding Stage Decor",
     price: 65000,
     description:
       "A grand palace-inspired stage facade featuring five monumental architectural white arches, two floor-to-ceiling multi-color flower walls, a couple monogram crest, and shimmering gold satin pleated borders with lush stage-front floral clusters.",
   },
   {
-    src: "/images/stage decor/9.jpg",
+    src: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647425/occasions/products/stage-decor/stage-decor-9.jpg",
     alt: "Golden Sunburst Floral Arch and Hanging Rings Stage",
     price: 22000,
     description:

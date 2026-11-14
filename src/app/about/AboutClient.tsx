@@ -161,7 +161,7 @@ export default function AboutClient() {
             <div className={styles.storyImagesWrapper}>
               <div className={styles.storyMainImageCard}>
                 <img
-                  src="/images/about/story-workshop.jpg"
+                  src="https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647338/occasions/about/about-story-workshop.jpg"
                   alt="Occasions pastry chefs decorating celebration cakes"
                   className={styles.storyMainImg}
                   loading="lazy"
@@ -182,7 +182,7 @@ export default function AboutClient() {
 
               <div className={styles.storySubImageCard}>
                 <img
-                  src="/images/about/story-florists.jpg"
+                  src="https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647339/occasions/about/about-story-florists.png"
                   alt="Occasions florists arranging fresh bouquets"
                   className={styles.storySubImg}
                   loading="lazy"
@@ -399,8 +399,8 @@ export default function AboutClient() {
                 key={activeTab}
                 src={
                   activeTab === "vision"
-                    ? "/images/about/vission-interior.jpg"
-                    : "/images/about/mission-interior.jpg"
+                    ? "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647339/occasions/about/about-vission-interior.png"
+                    : "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647340/occasions/about/about-mission-interior.png"
                 }
                 alt={
                   activeTab === "vision"

@@ -6,7 +6,7 @@ export const BOUQUETS_DATA: Bouquet[] = [
     name: "Celebration Floral & Cake Hamper",
     subtitle: "Fresh Blooms with Gourmet Birthday Cake",
     price: 1799,
-    image: "/images/bouquet-2.jpg",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647376/occasions/products/flower-bouquet/flower-bouquet-golden-blush-orchid-rose.png",
     occasion: "celebration",
     rating: 4.9,
     reviewsCount: 82,
@@ -28,7 +28,7 @@ export const BOUQUETS_DATA: Bouquet[] = [
     name: "Exotic Orchid Cascade",
     subtitle: "Dendrobium Purple Orchids & Anthuriums",
     price: 1599,
-    image: "/images/bouquet-3.jpg",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647380/occasions/products/flower-bouquet/flower-bouquet-rose-garden-bliss.png",
     occasion: "curated",
     rating: 5.0,
     reviewsCount: 41,
@@ -49,7 +49,7 @@ export const BOUQUETS_DATA: Bouquet[] = [
     name: "Royal Rose & Orchid Cascade",
     subtitle: "Grand Hand-Tied Bridal & Celebration Bouquet",
     price: 2999,
-    image: "/images/slide3-flower.jpg",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647383/occasions/products/flower-bouquet/flower-bouquet-sunshine-orchids.png",
     occasion: "wedding",
     rating: 5.0,
     reviewsCount: 68,
@@ -70,7 +70,7 @@ export const BOUQUETS_DATA: Bouquet[] = [
     name: "Serene Lily & Carnation Sympathy",
     subtitle: "Pristine Casablanca Lilies & Snow Carnations",
     price: 1199,
-    image: "/images/bouquet-4.jpg",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647383/occasions/products/flower-bouquet/flower-bouquet-sunshine-orchids.png",
     occasion: "sympathy",
     rating: 4.8,
     reviewsCount: 24,
@@ -91,7 +91,7 @@ export const BOUQUETS_DATA: Bouquet[] = [
     name: "Grand Stage & Church Floral Setup",
     subtitle: "Custom Mandap, Stage Backdrop & Aisle Decor",
     price: 17999,
-    image: "/images/story-bg.jpg",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647338/occasions/about/about-story-workshop.jpg",
     occasion: "wedding",
     rating: 5.0,
     reviewsCount: 94,
@@ -114,28 +114,28 @@ export const OCCASIONS_LIST = [
     id: "stage-decor",
     name: "Stage Decoration",
     tagline: "Grand Wedding Mandaps & Reception Backdrops",
-    image: "/images/story-bg.jpg",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647338/occasions/about/about-story-workshop.jpg",
     count: "Over 500+ Stages Styled"
   },
   {
     id: "flower-baskets",
     name: "Artisanal Flower Baskets",
     tagline: "Handwoven Cane Baskets Brimmed with Fresh Blooms",
-    image: "/images/flower-basket/pastel-rose-wicker-basket.jpg",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647365/occasions/products/flower-basket/flower-basket-pastel-rose-wicker-basket.jpg",
     count: "Handcrafted Daily in Calicut"
   },
   {
     id: "bridal-bouquets",
     name: "Bridal Bouquets",
     tagline: "Hand-Tied Couture Bouquets for Every Bride",
-    image: "/images/bouquet-1.jpg",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg",
     count: "Custom Color Matching"
   },
   {
     id: "online-delivery",
     name: "Bouquet & Cake Delivery",
     tagline: "Same-Day Delivery Across Calicut & Suburbs",
-    image: "/images/bouquet-2.jpg",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647376/occasions/products/flower-bouquet/flower-bouquet-golden-blush-orchid-rose.png",
     count: "Doorstep Delivery in 2 Hours"
   }
 ];

@@ -18,7 +18,7 @@ export const FESTIVE_BANNERS: BannerSlide[] = [
     id: "xmas-special",
     title: "Xmas Special",
     subtitle: "Celebrate with Festive Gifts & Sweets",
-    image: "/images/banners/love-romance.png",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647343/occasions/banners/banners-love-romance.jpg",
     href: "/occasions",
     accent: "#dc2626"
   },
@@ -26,7 +26,7 @@ export const FESTIVE_BANNERS: BannerSlide[] = [
     id: "diwali-offer",
     title: "Diwali Offer",
     subtitle: "Share Happiness, Lights & Gift Hampers",
-    image: "/images/banners/dwali.jpg.jpeg",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647343/occasions/banners/banners-dwali-jpg.jpg",
     href: "/occasions",
     accent: "#d97706"
   },
@@ -34,7 +34,7 @@ export const FESTIVE_BANNERS: BannerSlide[] = [
     id: "new-year",
     title: "New Year Offer",
     subtitle: "Welcome the New Year with Floral Celebrations",
-    image: "/images/banners/NEW YEAR.jpeg",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647344/occasions/banners/banners-new-year.jpg",
     href: "/occasions",
     accent: "#d97706"
   },
@@ -42,7 +42,7 @@ export const FESTIVE_BANNERS: BannerSlide[] = [
     id: "mothers-day",
     title: "Mother's Day Special",
     subtitle: "Celebrate Mom with Heartfelt Blooms & Gifts",
-    image: "/images/banners/mothers day.jpg.jpeg",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647344/occasions/banners/banners-mothers-day-jpg.jpg",
     href: "/occasions",
     accent: "#ec4899"
   }

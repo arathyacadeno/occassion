@@ -54,7 +54,7 @@ export async function GET() {
               description: r.description,
               price: Number(r.price),
               originalPrice: r.discount_price ? Number(r.discount_price) : undefined,
-              image: parsedImages[0] || "/images/cat-flower-bouquet-luxe.jpg",
+              image: parsedImages[0] || "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg",
               images: parsedImages,
               category: r.category_slug || (r.category_id ? r.category_id.replace(/^cat-/, "") : "flowers"),
               badge: r.badge,

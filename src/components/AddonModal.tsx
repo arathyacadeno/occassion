@@ -256,7 +256,7 @@ export default function AddonModal({
                         className={styles.cardImage}
                         loading="lazy"
                         onError={(e) => {
-                          (e.target as HTMLImageElement).src = "/images/cat-flower-bouquet-luxe.jpg";
+                          (e.target as HTMLImageElement).src = "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg";
                         }}
                       />
                     </div>

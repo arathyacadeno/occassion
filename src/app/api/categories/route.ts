@@ -24,11 +24,11 @@ export async function GET(request: Request) {
       let img = c.image;
       if (!img || img.includes("lily-6-stems") || img.includes("flower-basket-pink-lilies") || img.includes("cake-chocolate") || img.includes("table-arrangement") || img.includes("wreath-white-lilies")) {
         const s = (c.slug || c.id || "").toLowerCase();
-        if (s.includes("basket")) img = "/images/categories/flower-basket.jpg";
-        else if (s.includes("cake")) img = "/images/cakes/cat-cakes-luxe.jpg";
-        else if (s.includes("table")) img = "/images/categories/table-decor.jpg";
-        else if (s.includes("wreath")) img = "/images/categories/wreath.jpg";
-        else img = "/images/categories/flower-bouquet.jpg";
+        if (s.includes("basket")) img = "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-basket.jpg";
+        else if (s.includes("cake")) img = "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647345/occasions/products/cakes/cakes-cat-cakes-luxe.jpg";
+        else if (s.includes("table")) img = "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647362/occasions/categories/categories-table-decor.jpg";
+        else if (s.includes("wreath")) img = "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647362/occasions/categories/categories-wreath.jpg";
+        else img = "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg";
       }
       return { ...c, image: img, product_count: Number(c.product_count) || 0 };
     });
@@ -61,7 +61,7 @@ export async function POST(request: Request) {
     const id = body.id || `cat-${cleanSlug}`;
     const cleanOrder = Number(displayOrder) || 0;
     const cleanActive = active !== undefined ? (active ? 1 : 0) : 1;
-    const cleanImage = image || "/images/sunflower-bouquet.jpg";
+    const cleanImage = image || "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647383/occasions/products/flower-bouquet/flower-bouquet-sunshine-and-peach-orchids.jpg";
 
     // Check slug uniqueness in Neon
     const existing = await sql`SELECT id FROM categories WHERE slug = ${cleanSlug} OR id = ${id} LIMIT 1`;

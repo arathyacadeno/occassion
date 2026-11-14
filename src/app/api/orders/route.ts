@@ -222,7 +222,7 @@ export async function POST(request: Request) {
             price: Number(it.price) || 0,
             active: 1,
             stock: 999,
-            images: JSON.stringify([it.image || "/images/lily-6-stems.png"]),
+            images: JSON.stringify([it.image || "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647384/occasions/products/flower-bouquet/flower-bouquet-white-casablanca-lilies.jpg"]),
           };
         }
       }
@@ -256,7 +256,7 @@ export async function POST(request: Request) {
         (it.image && !it.image.includes("/side-view/") ? it.image : null) ||
         (it.image ? it.image.replace(/\/side-view\/[0-9]+-/, "/").replace(/\/side-view\/[0-9]+\//, "/").replace(/\/side-view\//, "/") : null) ||
         images[0] ||
-        "/images/lily-6-stems.png";
+        "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647384/occasions/products/flower-bouquet/flower-bouquet-white-casablanca-lilies.jpg";
 
       validatedOrderItems.push({
         productId: product.id,

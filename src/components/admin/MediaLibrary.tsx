@@ -331,7 +331,7 @@ export default function MediaLibrary({ onSelectImage, isPickerMode = false, pref
                   style={{ width: "100%", height: "100%", objectFit: "cover" }}
                   onError={(e) => {
                     e.currentTarget.onerror = null;
-                    e.currentTarget.src = "/images/cat-flower-bouquet-luxe.jpg";
+                    e.currentTarget.src = "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg";
                   }}
                 />
 
@@ -468,7 +468,7 @@ export default function MediaLibrary({ onSelectImage, isPickerMode = false, pref
                   style={{ width: "100%", height: "100%", objectFit: "contain" }}
                   onError={(e) => {
                     e.currentTarget.onerror = null;
-                    e.currentTarget.src = "/images/cat-flower-bouquet-luxe.jpg";
+                    e.currentTarget.src = "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg";
                   }}
                 />
               </div>

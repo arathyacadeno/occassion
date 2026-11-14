@@ -16,7 +16,7 @@ export function mapDbToProduct(dbProduct: any): Product {
     images = dbProduct.images ? [dbProduct.images] : [];
   }
   if (!images.length) {
-    images = ["/images/flower-bouquet/Sunflower Bouquet with Ribbon Tag.png"];
+    images = ["https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647413/occasions/products/flower-bouquet/flower-bouquet-sunflower-bouquet-with-ribbon-tag.png"];
   }
 
   let offers: string[] = [];

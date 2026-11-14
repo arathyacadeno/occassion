@@ -812,7 +812,7 @@ export default function HomepageManager() {
                 }}
               >
                 <img
-                  src={occ.image || "/images/occasion-birthday.jpg"}
+                  src={occ.image || "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647420/occasions/branding/occasion-birthday.png"}
                   alt={occ.name}
                   style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 />

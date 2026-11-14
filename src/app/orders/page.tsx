@@ -165,7 +165,7 @@ export default function OrdersPage() {
               productId: firstItem?.product_id || "flower-item",
               productSlug: matchedProduct?.slug,
               productName: resolvedName,
-              productImage: firstItem?.product_image || "/images/lily-6-stems.png",
+              productImage: firstItem?.product_image || "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647384/occasions/products/flower-bouquet/flower-bouquet-white-casablanca-lilies.jpg",
               productCategory:
                 (matchedProduct && "categoryLabel" in matchedProduct
                   ? (matchedProduct as any).categoryLabel

@@ -44,7 +44,7 @@ export default function DeleteConfirmModal({
     try {
       imgUrl = Array.isArray(product.images) ? product.images[0] : JSON.parse(product.images)[0];
     } catch {
-      imgUrl = typeof product.images === "string" ? product.images : "/images/cat-flower-bouquet-luxe.jpg";
+      imgUrl = typeof product.images === "string" ? product.images : "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg";
     }
   }
 
@@ -130,7 +130,7 @@ export default function DeleteConfirmModal({
 
           <div style={{ display: "flex", gap: 14, alignItems: "center", marginBottom: 18, padding: 12, background: "#f8fafc", borderRadius: 12, border: "1px solid #e2e8f0" }}>
             <img
-              src={imgUrl || "/images/cat-flower-bouquet-luxe.jpg"}
+              src={imgUrl || "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg"}
               alt={product.name}
               style={{ width: 64, height: 64, borderRadius: 8, objectFit: "cover", flexShrink: 0 }}
               onError={(e: any) => {

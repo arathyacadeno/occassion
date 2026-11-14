@@ -11,7 +11,7 @@ export default function StorySection() {
             Authentic Florist Photograph, Swooping Organic Waves, Cherry Blossom Branch, and Botanical Leaf Branch */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/images/story-bg-hd.png"
+          src="https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647338/occasions/about/about-story-florists.jpg"
           alt="Artisan florist arranging fresh bouquet inside floral boutique"
           className={styles.bgImage}
           loading="eager"

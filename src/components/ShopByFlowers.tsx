@@ -17,16 +17,16 @@ interface FlowerCategory {
 }
 
 const FLOWER_CATEGORIES: FlowerCategory[] = [
-  { id: "roses", title: "Roses", description: "Romantic & timeless", image: "/images/rose.jpg", href: "/flowers/roses", coverFull: true },
-  { id: "orchids", title: "Orchids", description: "Exotic & graceful", image: "/images/orchid.jpg", href: "/flowers/orchids", coverFull: true },
-  { id: "chrysanthemums", title: "Chrysanthemums", description: "Vibrant & cheerful", image: "/images/Chrysanthemum.jpg", href: "/flowers/chrysanthemums", coverFull: true },
-  { id: "gerberas", title: "Gerberas", description: "Playful & vivid", image: "/images/Gerbera.jpg", href: "/flowers/gerberas", coverFull: true },
-  { id: "sunflowers", title: "Sunflowers", description: "Bright & joyful", image: "/images/sunflower.jpg", href: "/flowers/sunflowers", coverFull: true },
-  { id: "carnations", title: "Carnations", description: "Charming & delicate", image: "/images/Carnations.jpg", href: "/flowers/carnations", coverFull: true, objectPosition: "center 82%" },
-  { id: "lilies", title: "Lilies", description: "Elegant & graceful", image: "/images/lilies.jpg", href: "/flowers/lilies", coverFull: true },
-  { id: "gladiolus", title: "Gladiolus", description: "Majestic & stately", image: "/images/Gladiolus.jpg", href: "/flowers/gladiolus", coverFull: true },
-  { id: "rajnigandha", title: "Rajnigandha", description: "Aromatic & traditional", image: "/images/Rajnigandha.jpg", href: "/flowers/rajnigandha", coverFull: true },
-  { id: "heliconia", title: "Heliconia", description: "Tropical & exotic", image: "/images/Heliconia.png", href: "/flowers/heliconia", coverFull: true },
+  { id: "roses", title: "Roses", description: "Romantic & timeless", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647423/occasions/products/general/rose.jpg", href: "/flowers/roses", coverFull: true },
+  { id: "orchids", title: "Orchids", description: "Exotic & graceful", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647421/occasions/products/general/orchid.jpg", href: "/flowers/orchids", coverFull: true },
+  { id: "chrysanthemums", title: "Chrysanthemums", description: "Vibrant & cheerful", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647362/occasions/products/general/chrysanthemum.png", href: "/flowers/chrysanthemums", coverFull: true },
+  { id: "gerberas", title: "Gerberas", description: "Playful & vivid", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647416/occasions/products/general/gerbera.jpg", href: "/flowers/gerberas", coverFull: true },
+  { id: "sunflowers", title: "Sunflowers", description: "Bright & joyful", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647425/occasions/products/general/sunflower.jpg", href: "/flowers/sunflowers", coverFull: true },
+  { id: "carnations", title: "Carnations", description: "Charming & delicate", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/products/general/carnations.jpg", href: "/flowers/carnations", coverFull: true, objectPosition: "center 82%" },
+  { id: "lilies", title: "Lilies", description: "Elegant & graceful", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647419/occasions/products/general/lilies.jpg", href: "/flowers/lilies", coverFull: true },
+  { id: "gladiolus", title: "Gladiolus", description: "Majestic & stately", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647417/occasions/products/general/gladiolus.jpg", href: "/flowers/gladiolus", coverFull: true },
+  { id: "rajnigandha", title: "Rajnigandha", description: "Aromatic & traditional", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647422/occasions/products/general/rajnigandha.jpg", href: "/flowers/rajnigandha", coverFull: true },
+  { id: "heliconia", title: "Heliconia", description: "Tropical & exotic", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647418/occasions/branding/heliconia.png", href: "/flowers/heliconia", coverFull: true },
 ];
 
 const ORIGINAL_COUNT = FLOWER_CATEGORIES.length;

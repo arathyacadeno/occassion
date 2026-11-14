@@ -43,7 +43,7 @@ export default function ProductQuickViewModal({
     }
   }
   if (images.length === 0) {
-    images = [product.image || "/images/cat-flower-bouquet-luxe.jpg"];
+    images = [product.image || "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg"];
   }
 
   const liveUrl = product.type === "cake" ? `/cakes` : `/flower-bouquets`;

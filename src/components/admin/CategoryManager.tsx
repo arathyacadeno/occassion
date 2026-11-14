@@ -71,7 +71,7 @@ export default function CategoryManager({ categories, onRefresh }: CategoryManag
     setName("");
     setSlug("");
     setDescription("");
-    setImage("/images/cat-flower-bouquet-luxe.jpg");
+    setImage("https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg");
     setDisplayOrder(categories.length);
     setActive(true);
     setError(null);
@@ -83,7 +83,7 @@ export default function CategoryManager({ categories, onRefresh }: CategoryManag
     setName(cat.name || "");
     setSlug(cat.slug || "");
     setDescription(cat.description || "");
-    setImage(cat.image || "/images/cat-flower-bouquet-luxe.jpg");
+    setImage(cat.image || "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg");
     setDisplayOrder(cat.display_order ?? 0);
     setActive(cat.active !== 0);
     setError(null);
@@ -145,7 +145,7 @@ export default function CategoryManager({ categories, onRefresh }: CategoryManag
         name: name.trim(),
         slug: cleanSlug,
         description: description.trim(),
-        image: image || "/images/cat-flower-bouquet-luxe.jpg",
+        image: image || "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg",
         displayOrder: Number(displayOrder) || 0,
         active: active ? 1 : 0,
       };
@@ -309,7 +309,7 @@ export default function CategoryManager({ categories, onRefresh }: CategoryManag
                 <td style={{ padding: 14 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                     <img
-                      src={c.image || "/images/cat-flower-bouquet-luxe.jpg"}
+                      src={c.image || "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg"}
                       alt={c.name}
                       style={{ width: 44, height: 44, borderRadius: 8, objectFit: "cover", border: "1px solid #e2e8f0", background: "#f8fafc" }}
                       onError={(e: any) => {
@@ -492,7 +492,7 @@ export default function CategoryManager({ categories, onRefresh }: CategoryManag
                 </label>
                 <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
                   <img
-                    src={image || "/images/cat-flower-bouquet-luxe.jpg"}
+                    src={image || "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg"}
                     alt="Category preview"
                     style={{ width: 56, height: 56, borderRadius: 8, objectFit: "cover", border: "1px solid #e2e8f0" }}
                     onError={(e: any) => {

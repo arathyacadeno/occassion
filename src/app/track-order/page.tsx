@@ -123,7 +123,7 @@ export default function TrackOrderPage() {
                 firstItem?.product_id === "cake-blue-floral" || firstItem?.product_image?.includes("blue-floral")
                   ? "Blue Floral Birthday Cake"
                   : firstItem?.product_name || "Handcrafted Fresh Arrangement",
-              image: firstItem?.product_image || "/images/lily-6-stems.png",
+              image: firstItem?.product_image || "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647384/occasions/products/flower-bouquet/flower-bouquet-white-casablanca-lilies.jpg",
               placedAt: new Date(o.created_at).toLocaleDateString("en-IN", {
                 month: "short",
                 day: "numeric",
@@ -227,7 +227,7 @@ export default function TrackOrderPage() {
           firstItem?.product_id === "cake-blue-floral" || firstItem?.product_image?.includes("blue-floral")
             ? "Blue Floral Birthday Cake"
             : firstItem?.product_name || "Handcrafted Fresh Arrangement",
-        image: firstItem?.product_image || "/images/lily-6-stems.png",
+        image: firstItem?.product_image || "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647384/occasions/products/flower-bouquet/flower-bouquet-white-casablanca-lilies.jpg",
         placedAt: new Date(o.created_at).toLocaleDateString("en-IN", {
           month: "short",
           day: "numeric",

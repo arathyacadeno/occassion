@@ -27,7 +27,7 @@ const highlightCards: HighlightCard[] = [
     tag: "VIP Floristry",
     title: "Car Decor",
     subtitle: "VIP Bonnet Florals and Satin Posies",
-    image: "/images/highlight-car-decorations.jpg",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647418/occasions/products/general/highlight-car-decorations.jpg",
     desc: "Transform your wedding arrival into an unforgettable spectacle with bespoke scratch-proof floral bonnets, door handle posies, and satin ribbons crafted with imported orchids and roses.",
     features: [
       "Imported Cymbidium Orchids",
@@ -43,7 +43,7 @@ const highlightCards: HighlightCard[] = [
     tag: "Celebration",
     title: "Stage Decor",
     subtitle: "Opulent Banquet & Centerpiece Styling",
-    image: "/images/stage decor/7.jpg",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647424/occasions/products/stage-decor/stage-decor-7.jpg",
     desc: "Elevate your stage and banquet reception with opulent floral backdrops, elevated crystal centerpieces, blush roses, cascading hydrangeas, and glowing candlelight ambiance.",
     features: [
       "Elevated Crystal Centerpieces",
@@ -59,7 +59,7 @@ const highlightCards: HighlightCard[] = [
     tag: "Ceremony",
     title: "Church Decor",
     subtitle: "Grand Altar Arches and Aisle Florals",
-    image: "/images/highlight-church-arrangements.jpg",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647418/occasions/products/general/highlight-church-arrangements.jpg",
     desc: "Create a sacred, heavenly atmosphere for your wedding ceremony with grand cathedral altar arches, romantic candlelit pew decorations, and cascading aisle runners.",
     features: [
       "Grand Altar Floral Arch",
@@ -75,7 +75,7 @@ const highlightCards: HighlightCard[] = [
     tag: "Tradition",
     title: "Garlands",
     subtitle: "Fresh Jasmine Varmala and Gift Baskets",
-    image: "/images/garlands/1.png",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647414/occasions/products/garlands/garlands-1.webp",
     desc: "Handcrafted traditional and contemporary bridal garlands, reception varmalas, and auspicious gift flower baskets meticulously strung with fresh fragrant jasmine, lotus buds, and Dutch roses.",
     features: [
       "Fragrant Madurai Jasmine",

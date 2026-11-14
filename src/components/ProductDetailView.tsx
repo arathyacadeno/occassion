@@ -243,7 +243,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
             {/* Featured Review Card */}
             <div className={styles.reviewItemCard}>
               <img
-                src={product.image || "/images/basket-yellow-roses.jpg"}
+                src={product.image || "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647364/occasions/products/flower-basket/flower-basket-asiatic-lily-peach-roses-basket.jpg"}
                 alt="Customer Review Photo"
                 className={styles.reviewerImg}
               />

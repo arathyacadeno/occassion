@@ -16,7 +16,7 @@ const OCCASIONS_ITEMS: OccasionCardItem[] = [
   {
     id: "birthday",
     name: "Birthday",
-    image: "/images/occasion-birthday.jpg",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647420/occasions/branding/occasion-birthday.png",
     href: "/flower-bouquets?occasion=birthday",
     whatsappMessage:
       "Hello Occassions Florist Calicut, I would like to order fresh flowers for a Birthday celebration.",
@@ -24,7 +24,7 @@ const OCCASIONS_ITEMS: OccasionCardItem[] = [
   {
     id: "anniversary",
     name: "Anniversary",
-    image: "/images/occasion-anniversary.jpg",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647420/occasions/branding/occasion-anniversary.jpg",
     href: "/flower-bouquets?occasion=anniversary",
     whatsappMessage:
       "Hello Occassions Florist Calicut, I would like to explore luxury flowers for an Anniversary.",
@@ -32,7 +32,7 @@ const OCCASIONS_ITEMS: OccasionCardItem[] = [
   {
     id: "get-well-soon",
     name: "Get Well Soon",
-    image: "/images/occasion-get-well-soon.jpg",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647421/occasions/branding/occasion-get-well-soon.jpg",
     href: "/flower-bouquets?occasion=get-well-soon",
     whatsappMessage:
       "Hello Occassions Florist Calicut, I would like to order cheerful Get Well Soon flowers.",
@@ -40,7 +40,7 @@ const OCCASIONS_ITEMS: OccasionCardItem[] = [
   {
     id: "condolences",
     name: "Condolences",
-    image: "/images/occasion-condolences.jpg",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647420/occasions/branding/occasion-condolences.jpg",
     href: "/flower-bouquets?occasion=condolences",
     whatsappMessage:
       "Hello Occassions Florist Calicut, I would like to inquire about sympathy and Condolences flowers.",
@@ -48,7 +48,7 @@ const OCCASIONS_ITEMS: OccasionCardItem[] = [
   {
     id: "best-wishes",
     name: "Best Wishes",
-    image: "/images/occasion-best-wishes.jpg",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647420/occasions/branding/occasion-best-wishes.jpg",
     href: "/flower-bouquets?occasion=best-wishes",
     whatsappMessage:
       "Hello Occassions Florist Calicut, I would like to order cheerful Best Wishes flowers.",
@@ -56,7 +56,7 @@ const OCCASIONS_ITEMS: OccasionCardItem[] = [
   {
     id: "thank-you",
     name: "Thank You",
-    image: "/images/occasion-thank-you.jpg",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647421/occasions/branding/occasion-thank-you.jpg",
     href: "/flower-bouquets?occasion=thank-you",
     whatsappMessage:
       "Hello Occassions Florist Calicut, I would like to send a Thank You flower arrangement.",
@@ -64,7 +64,7 @@ const OCCASIONS_ITEMS: OccasionCardItem[] = [
   {
     id: "wedding",
     name: "Wedding",
-    image: "/images/occasion-wedding.jpg",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647421/occasions/branding/occasion-wedding.jpg",
     href: "/flower-bouquets?occasion=wedding",
     whatsappMessage:
       "Hello Occassions Florist Calicut, I would like to inquire about Wedding floral decor and bridal bouquets.",
@@ -72,7 +72,7 @@ const OCCASIONS_ITEMS: OccasionCardItem[] = [
   {
     id: "congratulations",
     name: "Congratulations",
-    image: "/images/occasion-congratulations.png",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647421/occasions/branding/occasion-congratulations.png",
     href: "/flower-bouquets?occasion=congratulations",
     whatsappMessage:
       "Hello Occassions Florist Calicut, I would like to send Congratulations flower bouquets.",
@@ -112,7 +112,7 @@ export default function ShopByOccasion({ targetOccasion }: ShopByOccasionProps =
             .map((o: any) => ({
               id: o.slug || o.id,
               name: o.name,
-              image: o.image || "/images/occasion-birthday.jpg",
+              image: o.image || "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647420/occasions/branding/occasion-birthday.png",
               href: o.href || `/flower-bouquets?occasion=${o.slug}`,
               whatsappMessage:
                 o.whatsapp_message ||

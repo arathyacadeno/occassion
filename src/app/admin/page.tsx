@@ -1166,10 +1166,10 @@ export default function AdminPage() {
                         try {
                           mainImg = Array.isArray(p.images) ? p.images[0] : JSON.parse(p.images)[0];
                         } catch {
-                          mainImg = typeof p.images === "string" ? p.images : "/images/cat-flower-bouquet-luxe.jpg";
+                          mainImg = typeof p.images === "string" ? p.images : "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg";
                         }
                       }
-                      if (!mainImg) mainImg = "/images/cat-flower-bouquet-luxe.jpg";
+                      if (!mainImg) mainImg = "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg";
 
                       const isPublished = p.active === 1 || p.status === "published";
 

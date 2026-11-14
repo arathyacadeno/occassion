@@ -116,7 +116,7 @@ export async function GET() {
 
     if (dbRows && dbRows.length > 0) {
       addonsList = dbRows.map((row: any) => {
-        let image = "/images/addons/Cadbury-Dairy-Milk.png";
+        let image = "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647340/occasions/products/addons/addons-bournville.jpg";
         if (row.images) {
           try {
             const parsed = typeof row.images === "string" ? JSON.parse(row.images) : row.images;

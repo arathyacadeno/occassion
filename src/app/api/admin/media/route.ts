@@ -6,33 +6,43 @@ import { getAuthenticatedUser } from "@/lib/auth/jwt";
 import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-function resolveCategoryStorage(folderOrCat: string | null): { subDir: string; folderName: string } {
+function resolveCategoryStorage(folderOrCat: string | null): { subDir: string; folderName: string; cloudinaryFolder: string } {
   const norm = (folderOrCat || "").toLowerCase().replace(/^cat-/, "").trim();
 
   if (norm.includes("bouquet")) {
-    return { subDir: "flower-bouquet", folderName: "flower-bouquet" };
+    return { subDir: "flower-bouquet", folderName: "flower-bouquet", cloudinaryFolder: "occasions/products/flower-bouquet" };
   }
   if (norm.includes("basket")) {
-    return { subDir: "flower-basket", folderName: "flower-basket" };
+    return { subDir: "flower-basket", folderName: "flower-basket", cloudinaryFolder: "occasions/products/flower-basket" };
   }
   if (norm.includes("cake")) {
-    return { subDir: "cakes", folderName: "cakes" };
+    return { subDir: "cakes", folderName: "cakes", cloudinaryFolder: "occasions/products/cakes" };
   }
   if (norm.includes("table") || norm.includes("decor")) {
-    return { subDir: "table decor", folderName: "table-decor" };
+    return { subDir: "table-decor", folderName: "table-decor", cloudinaryFolder: "occasions/products/table-decor" };
   }
   if (norm.includes("wreath")) {
-    return { subDir: "wreaths", folderName: "wreaths" };
+    return { subDir: "wreaths", folderName: "wreaths", cloudinaryFolder: "occasions/products/wreath" };
   }
   if (norm.includes("addon") || norm.includes("add-on")) {
-    return { subDir: "addons", folderName: "addons" };
+    return { subDir: "addons", folderName: "addons", cloudinaryFolder: "occasions/products/addons" };
   }
-  return { subDir: "uploads", folderName: "uploads" };
+  if (norm.includes("banner")) {
+    return { subDir: "banners", folderName: "banners", cloudinaryFolder: "occasions/banners" };
+  }
+  if (norm.includes("categories") || norm.includes("category")) {
+    return { subDir: "categories", folderName: "categories", cloudinaryFolder: "occasions/categories" };
+  }
+  if (norm.includes("branding") || norm.includes("logo") || norm.includes("favicon")) {
+    return { subDir: "branding", folderName: "branding", cloudinaryFolder: "occasions/branding" };
+  }
+  const cleanCat = norm.replace(/[^a-z0-9_-]+/g, "-").replace(/^-+|-+$/g, "") || "general";
+  return { subDir: cleanCat, folderName: cleanCat, cloudinaryFolder: `occasions/products/${cleanCat}` };
 }
 
 export async function GET(request: Request) {
@@ -202,14 +212,30 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: "Failed to read image data" }, { status: 400 });
     }
 
+    if (rawBuffer.length > 10 * 1024 * 1024) {
+      const sizeMB = (rawBuffer.length / (1024 * 1024)).toFixed(2);
+      return NextResponse.json(
+        { success: false, error: `Image file size (${sizeMB} MB) exceeds maximum allowed limit of 10 MB` },
+        { status: 400 }
+      );
+    }
+
     // Clean and sanitize filename
     const ext = (path.extname(originalName) || ".jpg").toLowerCase();
+    const allowed = [".jpg", ".jpeg", ".png", ".webp", ".svg", ".gif", ".avif"];
+    if (!allowed.includes(ext)) {
+      return NextResponse.json(
+        { success: false, error: `Invalid file format "${ext}". Allowed formats: JPG, PNG, WEBP, SVG, GIF, AVIF` },
+        { status: 400 }
+      );
+    }
+
     const base = path.basename(originalName, ext)
       .toLowerCase()
       .replace(/[^a-z0-9_-]+/g, "-")
       .replace(/^-+|-+$/g, "") || "product";
 
-    const { folderName } = resolveCategoryStorage(requestedFolder);
+    const { folderName, cloudinaryFolder } = resolveCategoryStorage(requestedFolder);
     const safeName = `${base}${ext}`;
     const publicId = `${base}-${Date.now().toString().slice(-6)}`;
     const mime = ext === ".png" ? "image/png" : ext === ".webp" ? "image/webp" : ext === ".svg" ? "image/svg+xml" : "image/jpeg";
@@ -217,7 +243,7 @@ export async function POST(request: Request) {
 
     // Upload directly to Cloudinary — strictly NO local disk storage
     const cldResult = await cloudinary.uploader.upload(dataUri, {
-      folder: `occasions/${folderName}`,
+      folder: cloudinaryFolder,
       public_id: publicId,
       resource_type: "image",
     });

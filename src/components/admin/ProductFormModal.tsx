@@ -140,7 +140,7 @@ export default function ProductFormModal({
           parsedImgs = [product.images];
         }
       }
-      setImages(parsedImgs.length > 0 ? parsedImgs : [product.image || "/images/cat-flower-bouquet-luxe.jpg"]);
+      setImages(parsedImgs.length > 0 ? parsedImgs : [product.image || "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg"]);
 
       const attrs = typeof product.attributes === "object" ? product.attributes : {};
       setFlavour(attrs?.flavour || "");
@@ -239,7 +239,7 @@ export default function ProductFormModal({
             break;
           } else {
             setImages((prev) => {
-              const filtered = prev.filter((img) => img !== "/images/lily-6-stems.png" && img !== "/images/cat-flower-bouquet-luxe.jpg");
+              const filtered = prev.filter((img) => img !== "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647384/occasions/products/flower-bouquet/flower-bouquet-white-casablanca-lilies.jpg" && img !== "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg");
               if (filtered.includes(data.url)) return filtered;
               return [data.url, ...filtered];
             });
@@ -325,7 +325,7 @@ export default function ProductFormModal({
         featured,
         badge: badge.trim() || null,
         deliveryInfo: deliveryInfo.trim(),
-        images: images.length > 0 ? images : ["/images/cat-flower-bouquet-luxe.jpg"],
+        images: images.length > 0 ? images : ["https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg"],
         attributes,
         addonCategory: isAddonCategory ? addonCategory : undefined,
       };
@@ -990,7 +990,7 @@ export default function ProductFormModal({
                       style={{ width: "100%", height: "100%", objectFit: "cover" }}
                       onError={(e) => {
                         e.currentTarget.onerror = null;
-                        e.currentTarget.src = "/images/cat-flower-bouquet-luxe.jpg";
+                        e.currentTarget.src = "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg";
                       }}
                     />
                   {idx === 0 && (

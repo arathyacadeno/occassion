@@ -13,7 +13,7 @@ export default function ArtisanStory() {
           <div className={styles.imageSide}>
             <div className={styles.mainImageFrame}>
               <img
-                src="/images/story-bg.jpg"
+                src="https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647338/occasions/about/about-story-workshop.jpg"
                 alt="Florist artisan handcrafting bouquet"
                 className={styles.mainImage}
                 loading="lazy"

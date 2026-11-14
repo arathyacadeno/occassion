@@ -20,7 +20,7 @@ const DEFAULT_CATEGORY_CARDS: CategoryCardItem[] = [
   {
     id: "flower-bouquet",
     name: "Flower Bouquet",
-    image: "/images/categories/flower-bouquet.jpg",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg",
     link: "/flower-bouquets",
     delay: "0s",
     initTx: "0px",
@@ -30,7 +30,7 @@ const DEFAULT_CATEGORY_CARDS: CategoryCardItem[] = [
   {
     id: "flower-basket",
     name: "Flower Basket",
-    image: "/images/categories/flower-basket.jpg",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-basket.jpg",
     link: "/flower-baskets",
     delay: "0.12s",
     initTx: "0px",
@@ -40,7 +40,7 @@ const DEFAULT_CATEGORY_CARDS: CategoryCardItem[] = [
   {
     id: "cakes",
     name: "Cakes",
-    image: "/images/cakes/cat-cakes-luxe.jpg",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647345/occasions/products/cakes/cakes-cat-cakes-luxe.jpg",
     link: "/cakes",
     delay: "0.24s",
     initTx: "0px",
@@ -50,7 +50,7 @@ const DEFAULT_CATEGORY_CARDS: CategoryCardItem[] = [
   {
     id: "table-decor",
     name: "Table Decor",
-    image: "/images/categories/table-decor.jpg",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647362/occasions/categories/categories-table-decor.jpg",
     link: "/table-decor",
     delay: "0.36s",
     initTx: "0px",
@@ -60,7 +60,7 @@ const DEFAULT_CATEGORY_CARDS: CategoryCardItem[] = [
   {
     id: "wreath",
     name: "Wreath",
-    image: "/images/categories/wreath.jpg",
+    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647362/occasions/categories/categories-wreath.jpg",
     link: "/wreaths",
     delay: "0.48s",
     initTx: "0px",
@@ -113,12 +113,12 @@ export default function ShopByCategory() {
 
         const sorted = [...storefrontCategories].sort((a: any, b: any) => getSortRank(a) - getSortRank(b));
         const mapped: CategoryCardItem[] = sorted.map((c: any, index: number) => {
-          let fallbackImg = "/images/categories/flower-bouquet.jpg";
+          let fallbackImg = "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg";
           const s = (c.slug || c.id || "").toLowerCase();
-          if (s.includes("basket")) fallbackImg = "/images/categories/flower-basket.jpg";
-          else if (s.includes("cake")) fallbackImg = "/images/cakes/cat-cakes-luxe.jpg";
-          else if (s.includes("table")) fallbackImg = "/images/categories/table-decor.jpg";
-          else if (s.includes("wreath")) fallbackImg = "/images/categories/wreath.jpg";
+          if (s.includes("basket")) fallbackImg = "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-basket.jpg";
+          else if (s.includes("cake")) fallbackImg = "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647345/occasions/products/cakes/cakes-cat-cakes-luxe.jpg";
+          else if (s.includes("table")) fallbackImg = "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647362/occasions/categories/categories-table-decor.jpg";
+          else if (s.includes("wreath")) fallbackImg = "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647362/occasions/categories/categories-wreath.jpg";
 
           const isBroken = !c.image || c.image.includes("lily-6-stems") || c.image.includes("flower-basket-pink-lilies") || c.image.includes("cake-chocolate") || c.image.includes("table-arrangement") || c.image.includes("wreath-white-lilies");
 
@@ -253,7 +253,7 @@ function CategoryItem({
           src={item.image}
           onError={(e: any) => {
             const el = e.currentTarget || e.target;
-            if (el) el.src = "/images/cat-flower-bouquet-luxe.jpg";
+            if (el) el.src = "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg";
           }}
           alt={item.name}
           fill

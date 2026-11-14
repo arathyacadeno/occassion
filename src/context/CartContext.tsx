@@ -70,8 +70,8 @@ export const isLegacyDemoItem = (item: CartItem): boolean => {
 
   // Known legacy demo images
   if (
-    img === "/images/cat-flower-bouquet-luxe.jpg" ||
-    img === "/images/farm-hand-bouquet-large.jpg"
+    img === "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg" ||
+    img === "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647376/occasions/products/flower-bouquet/flower-bouquet-golden-blush-orchid-rose.png"
   ) {
     return true;
   }

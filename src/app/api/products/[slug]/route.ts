@@ -152,7 +152,7 @@ export async function GET(
         shortDescription: product.short_description || "",
         price: Number(product.price),
         originalPrice: product.discount_price ? Number(product.discount_price) : undefined,
-        image: parsedImages[0] || "/images/sunflower-bouquet.jpg",
+        image: parsedImages[0] || "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647383/occasions/products/flower-bouquet/flower-bouquet-sunshine-and-peach-orchids.jpg",
         images: parsedImages,
         stock: Number(product.stock),
         lowStockThreshold: product.low_stock_threshold ?? 5,

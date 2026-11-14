@@ -21,15 +21,15 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Occassions - Do it with flowers | Calicut",
     description: "Stage Decoration, Floral Bouquets, Flower Baskets, and Fresh Flower Delivery in Calicut.",
-    images: ["/images/slide1-flower.jpg"],
+    images: ["https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647380/occasions/products/flower-bouquet/flower-bouquet-rose-garden-bliss.png"],
   },
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
-      { url: "/images/uploads/pink-rose-bud-logo-icon.png", type: "image/png" },
+      { url: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647444/occasions/branding/uploads-pink-rose-bud-logo-icon.png", type: "image/png" },
     ],
     shortcut: "/favicon.ico",
-    apple: "/images/uploads/pink-rose-bud-logo-icon.png",
+    apple: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647444/occasions/branding/uploads-pink-rose-bud-logo-icon.png",
   },
 };
 

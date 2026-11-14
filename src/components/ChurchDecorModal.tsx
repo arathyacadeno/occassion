@@ -21,7 +21,7 @@ export interface ChurchDecorImageItem {
 
 export const CHURCH_DECOR_GALLERY: ChurchDecorImageItem[] = [
   {
-    src: "/images/highlight-church-arrangements.jpg",
+    src: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647418/occasions/products/general/highlight-church-arrangements.jpg",
     alt: "Grand Cathedral Altar Floral Arch and Pew Decoration",
     title: "Cathedral Grand Altar Floral Arch & Ceremony Decor",
     price: 16500,

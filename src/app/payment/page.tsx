@@ -190,7 +190,7 @@ export default function SinglePageCheckoutPayment() {
         subtitle: "Premium Preserved Roses · Limited Edition",
         price: 649,
         originalPrice: 749,
-        image: "/images/flower-basket/pastel-rose-wicker-basket.jpg",
+        image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647365/occasions/products/flower-basket/flower-basket-pastel-rose-wicker-basket.jpg",
         quantity: 1,
       };
 

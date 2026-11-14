@@ -48,10 +48,10 @@ export default function ProductCard({
 
   const activeImage = isLily
     ? selectedStem === "6"
-      ? "/images/lily-6-stems.png"
+      ? "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647384/occasions/products/flower-bouquet/flower-bouquet-white-casablanca-lilies.jpg"
       : selectedStem === "12"
-      ? "/images/lily-12-stems.png"
-      : "/images/lily-custom-stems.png"
+      ? "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647384/occasions/products/flower-bouquet/flower-bouquet-white-casablanca-lilies.jpg"
+      : "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647384/occasions/products/flower-bouquet/flower-bouquet-white-casablanca-lilies.jpg"
     : product.image;
 
   const toggleWishlist = (e: React.MouseEvent) => {

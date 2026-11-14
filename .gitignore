@@ -34,16 +34,21 @@ yarn-error.log*
 .env*
 !.env.example
 
-# database files & backups
+# database files, backups & archives
 data/*.backup
 data/*.db
 data/*.db-journal
 data/*.db-wal
 data/*.db-shm
+data/backups/
 *.db
 *.backup
 *.sqlite
 *.sqlite3
+*.zip
+*.tar.gz
+*.tgz
+data/backups/*
 
 # scratch & temporary verification scripts
 /scratch/

@@ -40,7 +40,7 @@ export async function GET(request: Request) {
         slug: r.slug,
         price: numPrice,
         originalPrice: r.discount_price ? Number(r.discount_price) : null,
-        image: images[0] || "/images/lily-6-stems.png",
+        image: images[0] || "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647384/occasions/products/flower-bouquet/flower-bouquet-white-casablanca-lilies.jpg",
         quantity: numQty,
         stock: Number(r.stock) || 0,
         inStock: (Number(r.stock) || 0) >= numQty && Number(r.active) === 1,
