@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import { useScrollLock } from "@/lib/scrollLock";
 import {
   LayoutTemplate,
   Plus,
@@ -88,15 +89,8 @@ export default function HomepageManager() {
   const [deleteBannerTarget, setDeleteBannerTarget] = useState<{ id: string; title?: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Lock background body scroll when any modal is open
-  useEffect(() => {
-    if (!isBannerModalOpen && !isOccasionModalOpen && !deleteOccasionTarget && !deleteBannerTarget) return;
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prevOverflow;
-    };
-  }, [isBannerModalOpen, isOccasionModalOpen, deleteOccasionTarget, deleteBannerTarget]);
+  // Lock background body scroll cleanly (fixed background, no layout jumps or movement)
+  useScrollLock(isBannerModalOpen || isOccasionModalOpen || Boolean(deleteOccasionTarget) || Boolean(deleteBannerTarget));
 
   const fetchData = useCallback(async () => {
     try {

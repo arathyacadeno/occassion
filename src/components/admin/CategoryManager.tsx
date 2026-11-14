@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useScrollLock } from "@/lib/scrollLock";
 import {
   Layers,
   Plus,
@@ -56,15 +57,8 @@ export default function CategoryManager({ categories, onRefresh }: CategoryManag
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
 
-  // Lock background body scroll when modal is open
-  React.useEffect(() => {
-    if (!isModalOpen && !deleteModalOpen) return;
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prevOverflow;
-    };
-  }, [isModalOpen, deleteModalOpen]);
+  // Lock background body scroll cleanly (fixed background, no layout jumps or movement)
+  useScrollLock(isModalOpen || deleteModalOpen);
 
   const handleOpenAdd = () => {
     setEditingCategory(null);
@@ -426,8 +420,34 @@ export default function CategoryManager({ categories, onRefresh }: CategoryManag
 
       {/* Add / Edit Category Modal */}
       {isModalOpen && (
-        <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(15, 23, 42, 0.65)", backdropFilter: "blur(4px)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-          <div style={{ background: "#ffffff", borderRadius: 18, width: "100%", maxWidth: "560px", overflow: "hidden", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)" }}>
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            backgroundColor: "rgba(15, 23, 42, 0.65)",
+            backdropFilter: "blur(4px)",
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 16,
+            overscrollBehavior: "contain",
+          }}
+          onWheel={(e) => {
+            if (e.target === e.currentTarget) e.stopPropagation();
+          }}
+        >
+          <div
+            style={{
+              background: "#ffffff",
+              borderRadius: 18,
+              width: "100%",
+              maxWidth: "560px",
+              overflow: "hidden",
+              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+              overscrollBehavior: "contain",
+            }}
+          >
             <div style={{ padding: "18px 24px", borderBottom: "1px solid #f1f5f9", display: "flex", alignItems: "center", justifyContent: "space-between", background: "#fafafa" }}>
               <div style={{ fontWeight: 700, fontSize: "1.15rem", color: "#831843" }}>
                 {editingCategory ? `Edit Category: ${editingCategory.name}` : "Create New Category"}
@@ -594,8 +614,34 @@ export default function CategoryManager({ categories, onRefresh }: CategoryManag
 
       {/* Delete Confirmation Modal */}
       {deleteModalOpen && categoryToDelete && (
-        <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(15, 23, 42, 0.65)", backdropFilter: "blur(4px)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-          <div style={{ background: "#ffffff", borderRadius: 18, width: "100%", maxWidth: "460px", overflow: "hidden", boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2)" }}>
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            backgroundColor: "rgba(15, 23, 42, 0.65)",
+            backdropFilter: "blur(4px)",
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 16,
+            overscrollBehavior: "contain",
+          }}
+          onWheel={(e) => {
+            if (e.target === e.currentTarget) e.stopPropagation();
+          }}
+        >
+          <div
+            style={{
+              background: "#ffffff",
+              borderRadius: 18,
+              width: "100%",
+              maxWidth: "460px",
+              overflow: "hidden",
+              boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2)",
+              overscrollBehavior: "contain",
+            }}
+          >
             <div style={{ padding: "18px 24px", borderBottom: "1px solid #fee2e2", display: "flex", alignItems: "center", justifyContent: "space-between", background: "#fef2f2" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#991b1b", fontWeight: 700 }}>
                 <AlertTriangle size={20} />

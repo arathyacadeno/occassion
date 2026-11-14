@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import MediaLibrary from "@/components/admin/MediaLibrary";
+import { useScrollLock } from "@/lib/scrollLock";
 import {
   X,
   Upload,
@@ -84,15 +85,8 @@ export default function ProductFormModal({
   const [isMediaPickerOpen, setIsMediaPickerOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
-  // Lock background body scroll when modal is open
-  useEffect(() => {
-    if (!isOpen) return;
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prevOverflow;
-    };
-  }, [isOpen]);
+  // Lock background body scroll cleanly (fixed background, no layout jumps or movement)
+  useScrollLock(isOpen);
 
   // Initialize or reset form
   useEffect(() => {
@@ -358,6 +352,10 @@ export default function ProductFormModal({
         alignItems: "center",
         justifyContent: "center",
         padding: "16px",
+        overscrollBehavior: "contain",
+      }}
+      onWheel={(e) => {
+        if (e.target === e.currentTarget) e.stopPropagation();
       }}
     >
       <div
@@ -371,6 +369,7 @@ export default function ProductFormModal({
           flexDirection: "column",
           boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
           overflow: "hidden",
+          overscrollBehavior: "contain",
         }}
       >
         {/* Header */}
@@ -421,7 +420,17 @@ export default function ProductFormModal({
         </div>
 
         {/* Scrollable Form Body */}
-        <form ref={formRef} onSubmit={handleSubmit} style={{ overflowY: "auto", padding: "24px", flex: 1 }}>
+        <form
+          ref={formRef}
+          onSubmit={handleSubmit}
+          style={{
+            overflowY: "auto",
+            padding: "24px",
+            flex: 1,
+            overscrollBehavior: "contain",
+            WebkitOverflowScrolling: "touch",
+          }}
+        >
           {error && (
             <div
               style={{

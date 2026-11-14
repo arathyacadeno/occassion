@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { AlertTriangle, Trash2, X, Archive, Check } from "lucide-react";
+import { useScrollLock } from "@/lib/scrollLock";
 
 interface DeleteConfirmModalProps {
   isOpen: boolean;
@@ -27,15 +28,8 @@ export default function DeleteConfirmModal({
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Lock background body scroll when modal is open
-  React.useEffect(() => {
-    if (!isOpen) return;
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prevOverflow;
-    };
-  }, [isOpen]);
+  // Lock background body scroll cleanly (fixed background, no layout jumps or movement)
+  useScrollLock(isOpen);
 
   if (!isOpen || !product) return null;
 
@@ -75,6 +69,10 @@ export default function DeleteConfirmModal({
         alignItems: "center",
         justifyContent: "center",
         padding: "16px",
+        overscrollBehavior: "contain",
+      }}
+      onWheel={(e) => {
+        if (e.target === e.currentTarget) e.stopPropagation();
       }}
     >
       <div
@@ -85,6 +83,7 @@ export default function DeleteConfirmModal({
           maxWidth: "480px",
           overflow: "hidden",
           boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2)",
+          overscrollBehavior: "contain",
         }}
       >
         <div

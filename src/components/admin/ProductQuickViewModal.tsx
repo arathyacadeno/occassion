@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { X, ExternalLink, Edit, Copy, Sparkles, Check, Package, Tag } from "lucide-react";
+import { useScrollLock } from "@/lib/scrollLock";
 
 interface ProductQuickViewModalProps {
   isOpen: boolean;
@@ -20,15 +21,8 @@ export default function ProductQuickViewModal({
 }: ProductQuickViewModalProps) {
   const [selectedImgIdx, setSelectedImgIdx] = useState(0);
 
-  // Lock background body scroll when modal is open
-  React.useEffect(() => {
-    if (!isOpen) return;
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prevOverflow;
-    };
-  }, [isOpen]);
+  // Lock background body scroll cleanly (fixed background, no layout jumps or movement)
+  useScrollLock(isOpen);
 
   if (!isOpen || !product) return null;
 
@@ -60,6 +54,10 @@ export default function ProductQuickViewModal({
         alignItems: "center",
         justifyContent: "center",
         padding: "16px",
+        overscrollBehavior: "contain",
+      }}
+      onWheel={(e) => {
+        if (e.target === e.currentTarget) e.stopPropagation();
       }}
     >
       <div
@@ -73,6 +71,7 @@ export default function ProductQuickViewModal({
           flexDirection: "column",
           boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
           overflow: "hidden",
+          overscrollBehavior: "contain",
         }}
       >
         {/* Header */}
@@ -125,7 +124,7 @@ export default function ProductQuickViewModal({
         </div>
 
         {/* Content */}
-        <div style={{ padding: "24px", overflowY: "auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+        <div style={{ padding: "24px", overflowY: "auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, overscrollBehavior: "contain" }}>
           {/* Left: Images */}
           <div>
             <div

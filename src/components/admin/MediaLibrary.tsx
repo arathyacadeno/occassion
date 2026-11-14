@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useScrollLock } from "@/lib/scrollLock";
 import {
   Upload,
   Image as ImageIcon,
@@ -57,15 +58,8 @@ export default function MediaLibrary({ onSelectImage, isPickerMode = false, pref
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
 
-  // Lock background body scroll when detail or delete modal is open
-  useEffect(() => {
-    if (!detailItem && !deleteItem) return;
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prevOverflow;
-    };
-  }, [detailItem, deleteItem]);
+  // Lock background body scroll cleanly (fixed background, no layout jumps or movement)
+  useScrollLock(Boolean(detailItem) || Boolean(deleteItem));
 
   const fetchMedia = async (sync = false) => {
     try {
