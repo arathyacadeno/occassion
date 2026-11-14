@@ -373,27 +373,6 @@ export default function StoreBrandingManager() {
             Upload high-resolution PNG, SVG, or JPG branding assets. Changes made here update across your live website immediately.
           </p>
 
-          {/* Live Storefront Impact Notice */}
-          <div
-            style={{
-              background: "#f0fdf4",
-              border: "1px solid #bbf7d0",
-              borderRadius: 10,
-              padding: "12px 16px",
-              marginBottom: 20,
-              fontSize: "0.85rem",
-              color: "#166534",
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-            }}
-          >
-            <Sparkles size={20} color="#16a34a" style={{ flexShrink: 0 }} />
-            <div>
-              <strong>Instant Live Storefront Effect:</strong> When you upload a new logo or favicon here, it immediately updates your live store — updating the top <strong>Header Navbar</strong>, dark <strong>Footer Branding</strong>, and <strong>Browser Tab Icon</strong> in real time.
-            </div>
-          </div>
-
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 20 }}>
             {/* Header Logo */}
             <div
@@ -437,7 +416,13 @@ export default function StoreBrandingManager() {
                   <img
                     src={form.header_logo}
                     alt="Header Logo"
-                    style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }}
+                    style={{
+                      height: "54px",
+                      width: "auto",
+                      maxWidth: "240px",
+                      objectFit: "contain",
+                      display: "block",
+                    }}
                     onError={() => setImgErrors((prev) => ({ ...prev, header_logo: true }))}
                   />
                 ) : (
@@ -451,9 +436,14 @@ export default function StoreBrandingManager() {
               </div>
 
               {form.header_logo && (
-                <div style={{ marginBottom: 10, fontSize: "0.72rem", color: "#166534", fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
+                <div style={{ marginBottom: 4, fontSize: "0.72rem", color: "#166534", fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
                   <Check size={12} color="#16a34a" />
                   <span>Active in Storefront Header</span>
+                </div>
+              )}
+              {form.header_logo && (
+                <div style={{ fontSize: "0.68rem", color: "#64748b", fontFamily: "monospace", marginBottom: 10 }}>
+                  {form.header_logo.split("/").pop()}
                 </div>
               )}
 
@@ -525,16 +515,18 @@ export default function StoreBrandingManager() {
                 Footer Logo
               </div>
               <span style={{ fontSize: "0.72rem", color: "#64748b", marginBottom: 10 }}>
-                Displays on dark footer background (#1e293b)
+                Displays in website footer branding section
               </span>
 
               <div
                 style={{
                   width: "100%",
                   height: 95,
-                  background: "#1e293b",
+                  background: "#ffffff",
+                  backgroundImage: "radial-gradient(#e2e8f0 1px, transparent 1px)",
+                  backgroundSize: "12px 12px",
                   borderRadius: 8,
-                  border: "1.5px solid #334155",
+                  border: "1.5px solid #e2e8f0",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -548,12 +540,18 @@ export default function StoreBrandingManager() {
                   <img
                     src={form.footer_logo}
                     alt="Footer Logo"
-                    style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }}
+                    style={{
+                      height: "54px",
+                      width: "auto",
+                      maxWidth: "240px",
+                      objectFit: "contain",
+                      display: "block",
+                    }}
                     onError={() => setImgErrors((prev) => ({ ...prev, footer_logo: true }))}
                   />
                 ) : (
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, color: "#64748b" }}>
-                    <ImageIcon size={22} color="#475569" />
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, color: "#94a3b8" }}>
+                    <ImageIcon size={22} color="#cbd5e1" />
                     <span style={{ fontSize: "0.76rem" }}>
                       {imgErrors["footer_logo"] ? "Click Upload New to set" : "No Custom Footer Logo"}
                     </span>
@@ -562,9 +560,14 @@ export default function StoreBrandingManager() {
               </div>
 
               {form.footer_logo && (
-                <div style={{ marginBottom: 10, fontSize: "0.72rem", color: "#166534", fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
+                <div style={{ marginBottom: 4, fontSize: "0.72rem", color: "#166534", fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
                   <Check size={12} color="#16a34a" />
                   <span>Active in Storefront Footer</span>
+                </div>
+              )}
+              {form.footer_logo && (
+                <div style={{ fontSize: "0.68rem", color: "#64748b", fontFamily: "monospace", marginBottom: 10 }}>
+                  {form.footer_logo.split("/").pop()}
                 </div>
               )}
 
@@ -659,11 +662,11 @@ export default function StoreBrandingManager() {
               >
                 {form.store_favicon && !imgErrors["store_favicon"] ? (
                   <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <div style={{ width: 44, height: 44, border: "1px solid #cbd5e1", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", background: "#fff", padding: 4 }}>
+                    <div style={{ width: 44, height: 44, border: "1.5px solid #cbd5e1", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", background: "#fff", padding: 3, overflow: "hidden" }}>
                       <img
                         src={form.store_favicon}
                         alt="Favicon"
-                        style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
+                        style={{ width: "36px", height: "36px", objectFit: "contain", display: "block" }}
                         onError={() => setImgErrors((prev) => ({ ...prev, store_favicon: true }))}
                       />
                     </div>
@@ -687,9 +690,14 @@ export default function StoreBrandingManager() {
               </div>
 
               {form.store_favicon && (
-                <div style={{ marginBottom: 10, fontSize: "0.72rem", color: "#166534", fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
+                <div style={{ marginBottom: 4, fontSize: "0.72rem", color: "#166534", fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
                   <Check size={12} color="#16a34a" />
                   <span>Active on Browser Tabs</span>
+                </div>
+              )}
+              {form.store_favicon && (
+                <div style={{ fontSize: "0.68rem", color: "#64748b", fontFamily: "monospace", marginBottom: 10 }}>
+                  {form.store_favicon.split("/").pop()}
                 </div>
               )}
 

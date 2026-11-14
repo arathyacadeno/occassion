@@ -24,9 +24,12 @@ export const metadata: Metadata = {
     images: ["/images/slide1-flower.jpg"],
   },
   icons: {
-    icon: "/images/occasions-logo.png",
-    shortcut: "/images/occasions-logo.png",
-    apple: "/images/occasions-logo.png",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/images/uploads/pink-rose-bud-logo-icon.png", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/images/uploads/pink-rose-bud-logo-icon.png",
   },
 };
 
