@@ -16,6 +16,7 @@
   box-sizing: border-box;
   animation: modalFadeIn 0.24s ease;
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .modalCard {
@@ -30,6 +31,7 @@
   box-sizing: border-box;
   animation: modalCardPop 0.28s ease;
   margin: auto;
+  overscroll-behavior: contain;
 }
 
 .closeButton {

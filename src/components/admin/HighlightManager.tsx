@@ -28,6 +28,7 @@ import {
   Layers,
   Settings as SettingsIcon,
 } from "lucide-react";
+import { useScrollLock } from "@/lib/scrollLock";
 
 export interface HighlightGalleryItem {
   id?: string;
@@ -165,19 +166,8 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
     fetchHighlights();
   }, [fetchHighlights]);
 
-  // Lock background body & html scroll when any modal is open
-  useEffect(() => {
-    if (!isModalOpen && !deleteModalOpen && !previewHighlight) return;
-    const prevBodyOverflow = document.body.style.overflow;
-    const prevHtmlOverflow = document.documentElement.style.overflow;
-    document.body.style.overflow = "hidden";
-    document.documentElement.style.overflow = "hidden";
-
-    return () => {
-      document.body.style.overflow = prevBodyOverflow;
-      document.documentElement.style.overflow = prevHtmlOverflow;
-    };
-  }, [isModalOpen, deleteModalOpen, previewHighlight]);
+  // Lock background body scroll cleanly (fixed background, no layout jumps or movement)
+  useScrollLock(isModalOpen || deleteModalOpen || Boolean(previewHighlight));
 
   // Open modal to add a brand new highlight
   const handleOpenAdd = () => {
@@ -1075,8 +1065,12 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
             justifyContent: "center",
             zIndex: 9999,
             padding: 20,
+            overscrollBehavior: "contain",
           }}
           onClick={() => !saving && setIsModalOpen(false)}
+          onWheel={(e) => {
+            if (e.target === e.currentTarget) e.stopPropagation();
+          }}
         >
           <div
             style={{
@@ -1089,6 +1083,7 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
               flexDirection: "column",
               boxShadow: "0 25px 50px -12px rgba(131, 24, 67, 0.2)",
               overflow: "hidden",
+              overscrollBehavior: "contain",
             }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -1185,7 +1180,16 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
             </div>
 
             {/* Modal Body */}
-            <form onSubmit={handleSave} style={{ overflowY: "auto", padding: "24px 28px", flex: 1 }}>
+            <form
+              onSubmit={handleSave}
+              style={{
+                overflowY: "auto",
+                padding: "24px 28px",
+                flex: 1,
+                overscrollBehavior: "contain",
+                WebkitOverflowScrolling: "touch",
+              }}
+            >
               {modalError && (
                 <div
                   style={{
@@ -1967,8 +1971,12 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
             justifyContent: "center",
             zIndex: 10000,
             padding: 20,
+            overscrollBehavior: "contain",
           }}
           onClick={() => !deleting && setDeleteModalOpen(false)}
+          onWheel={(e) => {
+            if (e.target === e.currentTarget) e.stopPropagation();
+          }}
         >
           <div
             style={{
@@ -1978,6 +1986,7 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
               width: "100%",
               padding: 26,
               boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2)",
+              overscrollBehavior: "contain",
             }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -2060,8 +2069,12 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
             justifyContent: "center",
             zIndex: 10001,
             padding: 20,
+            overscrollBehavior: "contain",
           }}
           onClick={() => setPreviewHighlight(null)}
+          onWheel={(e) => {
+            if (e.target === e.currentTarget) e.stopPropagation();
+          }}
         >
           <div
             style={{
@@ -2074,6 +2087,7 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
               boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.3)",
               padding: 24,
               position: "relative",
+              overscrollBehavior: "contain",
             }}
             onClick={(e) => e.stopPropagation()}
           >

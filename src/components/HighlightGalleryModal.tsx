@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import styles from "./CarDecorModal.module.css";
 import { Highlight, HighlightGalleryItem } from "./admin/HighlightManager";
+import { useScrollLock } from "@/lib/scrollLock";
 
 interface HighlightGalleryModalProps {
   isOpen: boolean;
@@ -31,12 +32,12 @@ export default function HighlightGalleryModal({
     setActiveIndex(0);
   }, [highlight?.id]);
 
-  // Keyboard navigation & body scroll lock
+  // Lock background body scroll cleanly (fixed background, no layout jumps or movement)
+  useScrollLock(isOpen);
+
+  // Keyboard navigation
   useEffect(() => {
     if (!isOpen) return;
-
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -50,10 +51,9 @@ export default function HighlightGalleryModal({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => {
-      document.body.style.overflow = prevOverflow;
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isOpen, activeIndex, highlight]);
+  }, [isOpen, activeIndex, highlight, onClose]);
 
   if (!isOpen || !highlight) return null;
 
@@ -112,6 +112,9 @@ export default function HighlightGalleryModal({
     <div
       className={styles.modalBackdrop}
       onClick={onClose}
+      onWheel={(e) => {
+        if (e.target === e.currentTarget) e.stopPropagation();
+      }}
       role="dialog"
       aria-modal="true"
       aria-labelledby="highlight-modal-title"
