@@ -916,57 +916,100 @@ export default function AdminPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {orders.map((o) => (
-                    <tr key={o.id}>
-                      <td style={{ fontWeight: 700, color: "#831843" }}>#{o.id}</td>
-                      <td>
-                        <div style={{ fontWeight: 600 }}>{o.customer_name}</div>
-                        <div style={{ fontSize: "0.78rem", color: "#64748b" }}>
-                          {o.customer_phone || o.deliveryAddress?.senderMobile || o.deliveryAddress?.receiverMobile || "—"}
+                  {loading ? (
+                    <tr>
+                      <td colSpan={7} style={{ textAlign: "center", padding: "48px 20px" }}>
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12 }}>
+                          <Clock size={28} style={{ color: "#db2777" }} />
+                          <div style={{ fontWeight: 600, color: "#1e293b", fontSize: "0.95rem" }}>
+                            Loading orders...
+                          </div>
                         </div>
-                      </td>
-                      <td>
-                        <div style={{ fontSize: "0.82rem" }}>
-                          {o.deliveryAddress?.area || "Calicut"}, PIN: {o.deliveryAddress?.pinCode || "673001"}
-                        </div>
-                      </td>
-                      <td style={{ fontWeight: 700 }}>₹{o.final_amount}</td>
-                      <td>
-                        <span
-                          className={styles.statusBadge}
-                          style={{
-                            background: o.payment_status === "paid" ? "#dcfce7" : "#fef3c7",
-                            color: o.payment_status === "paid" ? "#166534" : "#92400e",
-                          }}
-                        >
-                          {o.payment_status}
-                        </span>
-                      </td>
-                      <td>
-                        <select
-                          className={styles.statusSelect}
-                          value={o.order_status}
-                          onChange={(e) => handleUpdateOrderStatus(o.id, e.target.value)}
-                        >
-                          <option value="confirmed">Confirmed</option>
-                          <option value="preparing">Floral Crafting (Preparing)</option>
-                          <option value="out_for_delivery">Out for Delivery</option>
-                          <option value="delivered">Delivered</option>
-                          <option value="cancelled">Cancelled</option>
-                        </select>
-                      </td>
-                      <td>
-                        <a
-                          href={`/track-order`}
-                          className={styles.actionBtn}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          Track
-                        </a>
                       </td>
                     </tr>
-                  ))}
+                  ) : orders.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} style={{ textAlign: "center", padding: "56px 20px" }}>
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12 }}>
+                          <div
+                            style={{
+                              width: 56,
+                              height: 56,
+                              borderRadius: "50%",
+                              background: "#fdf2f8",
+                              border: "1px solid #fce7f3",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              color: "#db2777",
+                            }}
+                          >
+                            <Package size={28} />
+                          </div>
+                          <div>
+                            <div style={{ fontWeight: 700, color: "#1e293b", fontSize: "1.05rem", marginBottom: 4 }}>
+                              No orders found
+                            </div>
+                            <div style={{ color: "#64748b", fontSize: "0.88rem", maxWidth: 420, lineHeight: 1.5 }}>
+                              There are currently no customer orders to display. New orders placed on the website will appear here in real time.
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    orders.map((o) => (
+                      <tr key={o.id}>
+                        <td style={{ fontWeight: 700, color: "#831843" }}>#{o.id}</td>
+                        <td>
+                          <div style={{ fontWeight: 600 }}>{o.customer_name}</div>
+                          <div style={{ fontSize: "0.78rem", color: "#64748b" }}>
+                            {o.customer_phone || o.deliveryAddress?.senderMobile || o.deliveryAddress?.receiverMobile || "—"}
+                          </div>
+                        </td>
+                        <td>
+                          <div style={{ fontSize: "0.82rem" }}>
+                            {o.deliveryAddress?.area || "Calicut"}, PIN: {o.deliveryAddress?.pinCode || "673001"}
+                          </div>
+                        </td>
+                        <td style={{ fontWeight: 700 }}>₹{o.final_amount}</td>
+                        <td>
+                          <span
+                            className={styles.statusBadge}
+                            style={{
+                              background: o.payment_status === "paid" ? "#dcfce7" : "#fef3c7",
+                              color: o.payment_status === "paid" ? "#166534" : "#92400e",
+                            }}
+                          >
+                            {o.payment_status}
+                          </span>
+                        </td>
+                        <td>
+                          <select
+                            className={styles.statusSelect}
+                            value={o.order_status}
+                            onChange={(e) => handleUpdateOrderStatus(o.id, e.target.value)}
+                          >
+                            <option value="confirmed">Confirmed</option>
+                            <option value="preparing">Floral Crafting (Preparing)</option>
+                            <option value="out_for_delivery">Out for Delivery</option>
+                            <option value="delivered">Delivered</option>
+                            <option value="cancelled">Cancelled</option>
+                          </select>
+                        </td>
+                        <td>
+                          <a
+                            href={`/track-order`}
+                            className={styles.actionBtn}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Track
+                          </a>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -1413,43 +1456,59 @@ export default function AdminPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {products
-                    .filter((p) => {
-                      if (customCatFilter === "all") return true;
-                      const text = (p.name + " " + (p.description || "") + " " + (p.slug || "")).toLowerCase();
-                      return text.includes(customCatFilter.replace(/s$/, ""));
-                    })
-                    .slice(0, 40)
-                    .map((p) => {
-                      const disabledList: string[] = customConfig.disabledProductIds || [];
-                      const isCustomizable = !disabledList.includes(p.id) && !disabledList.includes(p.slug);
-                      return (
-                        <tr key={p.id}>
-                          <td>
-                            <div style={{ fontWeight: 600, color: "#111827" }}>{p.name}</div>
-                            <div style={{ fontSize: "0.76rem", color: "#64748b" }}>ID: {p.id}</div>
-                          </td>
-                          <td style={{ fontWeight: 700, color: "#be185d" }}>
-                            ₹{p.price}
-                          </td>
-                          <td>{p.stock} in stock</td>
-                          <td>
-                            <span className={`${styles.statusBadge} ${isCustomizable ? styles.statusDelivered : styles.statusCancelled}`}>
-                              {isCustomizable ? "Customization Enabled" : "Disabled"}
-                            </span>
-                          </td>
-                          <td>
-                            <button
-                              type="button"
-                              className={`${styles.toggleBtn} ${isCustomizable ? styles.toggleDisabled : styles.toggleEnabled}`}
-                              onClick={() => handleToggleProductCustomizable(p.id)}
-                            >
-                              {isCustomizable ? "Disable" : "Enable"}
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    })}
+                  {products.filter((p) => {
+                    if (customCatFilter === "all") return true;
+                    const text = (p.name + " " + (p.description || "") + " " + (p.slug || "")).toLowerCase();
+                    return text.includes(customCatFilter.replace(/s$/, ""));
+                  }).length === 0 ? (
+                    <tr>
+                      <td colSpan={5} style={{ textAlign: "center", padding: "40px 20px", color: "#64748b" }}>
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10 }}>
+                          <Sliders size={26} style={{ color: "#db2777" }} />
+                          <div style={{ fontWeight: 600, color: "#1e293b", fontSize: "0.95rem" }}>No products found</div>
+                          <div style={{ fontSize: "0.85rem", color: "#64748b" }}>No products match the selected customization category filter.</div>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    products
+                      .filter((p) => {
+                        if (customCatFilter === "all") return true;
+                        const text = (p.name + " " + (p.description || "") + " " + (p.slug || "")).toLowerCase();
+                        return text.includes(customCatFilter.replace(/s$/, ""));
+                      })
+                      .slice(0, 40)
+                      .map((p) => {
+                        const disabledList: string[] = customConfig.disabledProductIds || [];
+                        const isCustomizable = !disabledList.includes(p.id) && !disabledList.includes(p.slug);
+                        return (
+                          <tr key={p.id}>
+                            <td>
+                              <div style={{ fontWeight: 600, color: "#111827" }}>{p.name}</div>
+                              <div style={{ fontSize: "0.76rem", color: "#64748b" }}>ID: {p.id}</div>
+                            </td>
+                            <td style={{ fontWeight: 700, color: "#be185d" }}>
+                              ₹{p.price}
+                            </td>
+                            <td>{p.stock} in stock</td>
+                            <td>
+                              <span className={`${styles.statusBadge} ${isCustomizable ? styles.statusDelivered : styles.statusCancelled}`}>
+                                {isCustomizable ? "Customization Enabled" : "Disabled"}
+                              </span>
+                            </td>
+                            <td>
+                              <button
+                                type="button"
+                                className={`${styles.toggleBtn} ${isCustomizable ? styles.toggleDisabled : styles.toggleEnabled}`}
+                                onClick={() => handleToggleProductCustomizable(p.id)}
+                              >
+                                {isCustomizable ? "Disable" : "Enable"}
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })
+                  )}
                 </tbody>
               </table>
             </div>
@@ -1770,28 +1829,60 @@ export default function AdminPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {usersList.map((u) => (
-                    <tr key={u.id}>
-                      <td style={{ fontSize: "0.8rem", color: "#64748b" }}>{u.id}</td>
-                      <td style={{ fontWeight: 600 }}>{u.name}</td>
-                      <td>{u.email}</td>
-                      <td>{u.phone || "—"}</td>
-                      <td>
-                        <span
-                          className={styles.statusBadge}
-                          style={{
-                            background: u.role === "admin" ? "#fce7f3" : "#f1f5f9",
-                            color: u.role === "admin" ? "#be185d" : "#475569",
-                          }}
-                        >
-                          {u.role}
-                        </span>
-                      </td>
-                      <td>
-                        {u.created_at ? new Date(u.created_at).toLocaleDateString("en-IN") : "—"}
+                  {usersList.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} style={{ textAlign: "center", padding: "56px 20px" }}>
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12 }}>
+                          <div
+                            style={{
+                              width: 56,
+                              height: 56,
+                              borderRadius: "50%",
+                              background: "#fdf2f8",
+                              border: "1px solid #fce7f3",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              color: "#db2777",
+                            }}
+                          >
+                            <Users size={28} />
+                          </div>
+                          <div>
+                            <div style={{ fontWeight: 700, color: "#1e293b", fontSize: "1.05rem", marginBottom: 4 }}>
+                              No registered users found
+                            </div>
+                            <div style={{ color: "#64748b", fontSize: "0.88rem", maxWidth: 420, lineHeight: 1.5 }}>
+                              Customer accounts created on the storefront will appear here.
+                            </div>
+                          </div>
+                        </div>
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    usersList.map((u) => (
+                      <tr key={u.id}>
+                        <td style={{ fontSize: "0.8rem", color: "#64748b" }}>{u.id}</td>
+                        <td style={{ fontWeight: 600 }}>{u.name}</td>
+                        <td>{u.email}</td>
+                        <td>{u.phone || "—"}</td>
+                        <td>
+                          <span
+                            className={styles.statusBadge}
+                            style={{
+                              background: u.role === "admin" ? "#fce7f3" : "#f1f5f9",
+                              color: u.role === "admin" ? "#be185d" : "#475569",
+                            }}
+                          >
+                            {u.role}
+                          </span>
+                        </td>
+                        <td>
+                          {u.created_at ? new Date(u.created_at).toLocaleDateString("en-IN") : "—"}
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>

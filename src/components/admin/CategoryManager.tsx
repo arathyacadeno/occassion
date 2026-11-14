@@ -14,6 +14,7 @@ import {
   FolderOpen,
   ArrowUpDown,
   ShoppingBag,
+  Tag,
 } from "lucide-react";
 
 interface Category {
@@ -286,7 +287,24 @@ export default function CategoryManager({ categories, onRefresh }: CategoryManag
             </tr>
           </thead>
           <tbody>
-            {categories.map((c) => (
+            {categories.length === 0 ? (
+              <tr>
+                <td colSpan={6} style={{ textAlign: "center", padding: "48px 20px", color: "#64748b" }}>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10 }}>
+                    <div style={{ width: 50, height: 50, borderRadius: "50%", background: "#fdf2f8", border: "1px solid #fce7f3", display: "flex", alignItems: "center", justifyContent: "center", color: "#db2777" }}>
+                      <Tag size={24} />
+                    </div>
+                    <div style={{ fontWeight: 600, color: "#1e293b", fontSize: "0.95rem" }}>
+                      No categories found
+                    </div>
+                    <div style={{ color: "#64748b", fontSize: "0.85rem" }}>
+                      Click &quot;Add New Category&quot; above to create your first store category.
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              categories.map((c) => (
               <tr key={c.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
                 <td style={{ padding: 14 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -401,7 +419,7 @@ export default function CategoryManager({ categories, onRefresh }: CategoryManag
                   </div>
                 </td>
               </tr>
-            ))}
+            )))}
           </tbody>
         </table>
       </div>
