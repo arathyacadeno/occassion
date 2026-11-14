@@ -31,6 +31,7 @@ import {
   ChevronRight,
   Filter,
   Globe,
+  X,
 } from "lucide-react";
 import ProductFormModal from "@/components/admin/ProductFormModal";
 import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
@@ -111,6 +112,9 @@ export default function AdminPage() {
     maxDiscount: 200,
   });
   const [couponMsg, setCouponMsg] = useState<string | null>(null);
+  const [couponToDelete, setCouponToDelete] = useState<any | null>(null);
+  const [deletingCoupon, setDeletingCoupon] = useState(false);
+  const [couponDeleteError, setCouponDeleteError] = useState<string | null>(null);
 
   // Customization state
   const [customConfig, setCustomConfig] = useState<any>({
@@ -238,6 +242,16 @@ export default function AdminPage() {
     };
   }, [isAdmin, fetchAdminData]);
 
+  // Lock background body scroll when coupon delete modal is open
+  useEffect(() => {
+    if (!couponToDelete) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [couponToDelete]);
+
   const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError(null);
@@ -358,6 +372,35 @@ export default function AdminPage() {
       }
     } catch {
       setCouponMsg("Network error creating coupon");
+    }
+  };
+
+  const handleOpenDeleteCoupon = (coupon: any) => {
+    setCouponToDelete(coupon);
+    setCouponDeleteError(null);
+  };
+
+  const handleConfirmDeleteCoupon = async () => {
+    if (!couponToDelete) return;
+    setDeletingCoupon(true);
+    setCouponDeleteError(null);
+    try {
+      const codeOrId = couponToDelete.code || couponToDelete.id;
+      const res = await fetch(`/api/coupons?code=${encodeURIComponent(codeOrId)}&id=${encodeURIComponent(couponToDelete.id || "")}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (data.success) {
+        setCoupons((prev) => prev.filter((c) => c.code !== couponToDelete.code && c.id !== couponToDelete.id));
+        setCouponToDelete(null);
+      } else {
+        setCouponDeleteError(data.error || "Failed to delete coupon");
+      }
+    } catch {
+      setCouponDeleteError("Network error while deleting coupon");
+    } finally {
+      setDeletingCoupon(false);
     }
   };
 
@@ -822,7 +865,7 @@ export default function AdminPage() {
             </div>
 
             {/* Group 4: Account & Session */}
-            <div className={styles.sidebarSection} style={{ marginTop: 18, paddingTop: 14, borderTop: "1px dashed #e2e8f0" }}>
+            <div className={styles.sidebarSection} style={{ paddingTop: 16, borderTop: "1px dashed #e2e8f0" }}>
               <div className={styles.sidebarSectionTitle}>Account &amp; Session</div>
               <button
                 type="button"
@@ -1605,25 +1648,66 @@ export default function AdminPage() {
                     <th>Min. Order</th>
                     <th>Max. Discount</th>
                     <th>Status</th>
+                    <th style={{ textAlign: "right" }}>Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {coupons.map((c) => (
-                    <tr key={c.id || c.code}>
-                      <td style={{ fontWeight: 700, color: "#831843" }}>{c.code}</td>
-                      <td style={{ textTransform: "capitalize" }}>{c.discount_type || c.type}</td>
-                      <td>
-                        {c.discount_type === "percentage" ? `${c.discount_value}%` : `₹${c.discount_value}`}
-                      </td>
-                      <td>₹{c.min_order_value || 0}</td>
-                      <td>{c.max_discount ? `₹${c.max_discount}` : "No Limit"}</td>
-                      <td>
-                        <span className={styles.statusBadge} style={{ background: "#dcfce7", color: "#166534" }}>
-                          Active
-                        </span>
+                  {coupons.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} style={{ textAlign: "center", padding: "28px", color: "#64748b" }}>
+                        No coupons created yet. Use the form above to add your first promo code.
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    coupons.map((c) => (
+                      <tr key={c.id || c.code}>
+                        <td style={{ fontWeight: 700, color: "#831843" }}>{c.code}</td>
+                        <td style={{ textTransform: "capitalize" }}>{c.discount_type || c.type}</td>
+                        <td>
+                          {c.discount_type === "percentage" ? `${c.discount_value}%` : `₹${c.discount_value}`}
+                        </td>
+                        <td>₹{c.min_order_value || 0}</td>
+                        <td>{c.max_discount ? `₹${c.max_discount}` : "No Limit"}</td>
+                        <td>
+                          <span className={styles.statusBadge} style={{ background: "#dcfce7", color: "#166534" }}>
+                            Active
+                          </span>
+                        </td>
+                        <td style={{ textAlign: "right" }}>
+                          <button
+                            type="button"
+                            onClick={() => handleOpenDeleteCoupon(c)}
+                            title={`Delete coupon ${c.code}`}
+                            style={{
+                              padding: "6px 12px",
+                              borderRadius: 6,
+                              border: "1px solid #fecaca",
+                              background: "#fff",
+                              color: "#dc2626",
+                              fontSize: "0.8rem",
+                              fontWeight: 600,
+                              cursor: "pointer",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 6,
+                              transition: "all 0.15s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.background = "#fef2f2";
+                              e.currentTarget.style.borderColor = "#f87171";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background = "#fff";
+                              e.currentTarget.style.borderColor = "#fecaca";
+                            }}
+                          >
+                            <Trash2 size={13} />
+                            <span>Delete</span>
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -1734,6 +1818,170 @@ export default function AdminPage() {
           onEdit={handleOpenEditProduct}
           onDuplicate={handleDuplicateProduct}
         />
+
+        {/* Delete Confirmation Modal for Coupon */}
+        {couponToDelete && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              backgroundColor: "rgba(15, 23, 42, 0.65)",
+              backdropFilter: "blur(4px)",
+              zIndex: 9999,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: 16,
+            }}
+          >
+            <div
+              style={{
+                background: "#ffffff",
+                borderRadius: 18,
+                width: "100%",
+                maxWidth: "460px",
+                overflow: "hidden",
+                boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2)",
+              }}
+            >
+              <div
+                style={{
+                  padding: "18px 24px",
+                  borderBottom: "1px solid #fee2e2",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  background: "#fef2f2",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#991b1b", fontWeight: 700 }}>
+                  <AlertTriangle size={20} />
+                  <span>Delete Coupon Code</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setCouponToDelete(null)}
+                  style={{ background: "transparent", border: "none", cursor: "pointer", color: "#991b1b" }}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div style={{ padding: 24 }}>
+                {couponDeleteError && (
+                  <div
+                    style={{
+                      padding: "10px 14px",
+                      borderRadius: 8,
+                      background: "#fee2e2",
+                      color: "#991b1b",
+                      fontSize: "0.85rem",
+                      marginBottom: 16,
+                    }}
+                  >
+                    {couponDeleteError}
+                  </div>
+                )}
+
+                <p style={{ margin: "0 0 14px", fontSize: "0.95rem", color: "#1e293b", lineHeight: 1.5 }}>
+                  Are you sure you want to permanently delete promo coupon{" "}
+                  <strong style={{ color: "#be185d", background: "#fdf2f8", padding: "2px 8px", borderRadius: 4, border: "1px solid #fce7f3" }}>
+                    {couponToDelete.code}
+                  </strong>
+                  ?
+                </p>
+
+                <div
+                  style={{
+                    padding: "12px 14px",
+                    borderRadius: 10,
+                    background: "#f8fafc",
+                    border: "1px solid #e2e8f0",
+                    fontSize: "0.82rem",
+                    color: "#475569",
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: 8,
+                  }}
+                >
+                  <div>
+                    <span style={{ color: "#64748b" }}>Discount:</span>{" "}
+                    <strong>
+                      {couponToDelete.discount_type === "percentage" || couponToDelete.type === "percentage"
+                        ? `${couponToDelete.discount_value}%`
+                        : `₹${couponToDelete.discount_value}`}
+                    </strong>
+                  </div>
+                  <div>
+                    <span style={{ color: "#64748b" }}>Min. Order:</span>{" "}
+                    <strong>₹{couponToDelete.min_order_value || 0}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: "#64748b" }}>Max Discount:</span>{" "}
+                    <strong>{couponToDelete.max_discount ? `₹${couponToDelete.max_discount}` : "No Limit"}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: "#64748b" }}>Status:</span>{" "}
+                    <strong style={{ color: "#166534" }}>Active</strong>
+                  </div>
+                </div>
+
+                <p style={{ margin: "14px 0 0", fontSize: "0.8rem", color: "#ef4444" }}>
+                  Customers will no longer be able to apply this discount at checkout once deleted.
+                </p>
+              </div>
+
+              <div
+                style={{
+                  padding: "16px 24px",
+                  borderTop: "1px solid #f1f5f9",
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: 10,
+                  background: "#fafafa",
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={() => setCouponToDelete(null)}
+                  disabled={deletingCoupon}
+                  style={{
+                    padding: "8px 16px",
+                    borderRadius: 8,
+                    border: "1px solid #cbd5e1",
+                    background: "#fff",
+                    color: "#475569",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  disabled={deletingCoupon}
+                  onClick={handleConfirmDeleteCoupon}
+                  style={{
+                    padding: "8px 18px",
+                    borderRadius: 8,
+                    border: "none",
+                    background: "#dc2626",
+                    color: "#fff",
+                    fontWeight: 700,
+                    cursor: deletingCoupon ? "not-allowed" : "pointer",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                  }}
+                >
+                  <Trash2 size={14} />
+                  <span>{deletingCoupon ? "Deleting..." : "Delete Coupon"}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
 
       <Footer />

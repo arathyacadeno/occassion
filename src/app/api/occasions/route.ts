@@ -137,27 +137,17 @@ async function ensureOccasionsSchema() {
     await sql`ALTER TABLE occasions ADD COLUMN IF NOT EXISTS active INT DEFAULT 1;`;
     await sql`ALTER TABLE occasions ADD COLUMN IF NOT EXISTS display_order INT DEFAULT 0;`;
 
-    // Upsert all 11 occasions with their images and distinct display orders
-    for (const o of ALL_OCCASIONS) {
-      await sql`
-        INSERT INTO occasions (id, name, slug, image, href, whatsapp_message, active, display_order)
-        VALUES (${o.id}, ${o.name}, ${o.slug}, ${o.image}, ${o.href}, ${o.whatsapp_message}, ${o.active}, ${o.display_order})
-        ON CONFLICT (id) DO UPDATE SET
-          name = EXCLUDED.name,
-          slug = EXCLUDED.slug,
-          image = CASE 
-            WHEN occasions.image IS NULL OR occasions.image = '' OR (occasions.image = '/images/occasion-birthday.jpg' AND occasions.slug != 'birthday')
-            THEN EXCLUDED.image 
-            ELSE occasions.image 
-          END,
-          href = COALESCE(occasions.href, EXCLUDED.href),
-          whatsapp_message = COALESCE(occasions.whatsapp_message, EXCLUDED.whatsapp_message),
-          display_order = CASE 
-            WHEN occasions.display_order IS NULL OR occasions.display_order = 0 
-            THEN EXCLUDED.display_order 
-            ELSE occasions.display_order 
-          END;
-      `;
+    // Only seed initial default occasions ONCE if the table is completely empty!
+    // Never re-seed or upsert on startup, otherwise deleted occasions will keep coming back!
+    const countRows = await sql`SELECT count(*)::int as count FROM occasions`;
+    const count = Number(countRows[0]?.count || 0);
+    if (count === 0) {
+      for (const o of ALL_OCCASIONS) {
+        await sql`
+          INSERT INTO occasions (id, name, slug, image, href, whatsapp_message, active, display_order)
+          VALUES (${o.id}, ${o.name}, ${o.slug}, ${o.image}, ${o.href}, ${o.whatsapp_message}, ${o.active}, ${o.display_order});
+        `;
+      }
     }
     schemaEnsured = true;
   } catch (err) {

@@ -68,3 +68,44 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, error: error.message || "Failed to create coupon" }, { status: 500 });
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const auth = getAuthenticatedUser(request);
+    if (!auth || auth.role !== "admin") {
+      return NextResponse.json({ success: false, error: "Forbidden: Admin access required" }, { status: 403 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    let id = searchParams.get("id");
+    let code = searchParams.get("code");
+
+    if (!id && !code) {
+      try {
+        const body = await request.json();
+        id = body?.id || null;
+        code = body?.code || null;
+      } catch {
+        // empty body
+      }
+    }
+
+    if (!id && !code) {
+      return NextResponse.json({ success: false, error: "Coupon ID or Code is required" }, { status: 400 });
+    }
+
+    const cleanCode = code ? code.trim().toUpperCase() : "";
+    const cleanId = id ? id.trim() : "";
+
+    await sql`
+      DELETE FROM coupons 
+      WHERE (id = ${cleanId} AND ${cleanId} != '') 
+         OR (code = ${cleanCode} AND ${cleanCode} != '')
+    `;
+
+    return NextResponse.json({ success: true, message: "Coupon deleted successfully" });
+  } catch (error: any) {
+    console.error("Coupon DELETE error:", error);
+    return NextResponse.json({ success: false, error: error.message || "Failed to delete coupon" }, { status: 500 });
+  }
+}

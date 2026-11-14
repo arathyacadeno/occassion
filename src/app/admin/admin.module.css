@@ -505,29 +505,29 @@
   border-radius: 16px;
   border: 1px solid #f1f5f9;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-  padding: 16px 12px;
+  padding: 20px 12px;
   position: sticky;
   top: 86px;
   max-height: calc(100vh - 105px);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 28px;
 }
 
 .sidebarSection {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
 }
 
 .sidebarSectionTitle {
-  font-size: 0.72rem;
-  font-weight: 700;
+  font-size: 0.76rem;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #94a3b8;
-  padding: 6px 12px 4px;
+  letter-spacing: 0.09em;
+  color: #0f172a;
+  padding: 0 12px 6px;
 }
 
 .sidebarBtn {
