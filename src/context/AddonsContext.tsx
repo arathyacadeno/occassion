@@ -79,3 +79,4 @@ export function AddonsProvider({ children }: { children: React.ReactNode }) {
 export function useAddons() {
   return useContext(AddonsContext);
 }
+
