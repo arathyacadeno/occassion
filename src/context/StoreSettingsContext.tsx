@@ -95,23 +95,22 @@ export function StoreSettingsProvider({ children }: { children: React.ReactNode 
       // Dynamic favicon
       if (settings.store_favicon) {
         try {
-          // Remove existing static icon link elements so Chrome doesn't prioritize old favicon
+          // Mutate existing icon link hrefs without removing DOM nodes so React reconciliation never fails
           const existingIcons = document.querySelectorAll("link[rel*='icon']");
-          existingIcons.forEach((el) => {
-            if (el.id !== "dynamic-favicon") {
-              el.remove();
+          if (existingIcons.length > 0) {
+            existingIcons.forEach((el) => {
+              (el as HTMLLinkElement).href = settings.store_favicon;
+            });
+          } else {
+            let link = document.getElementById("dynamic-favicon") as HTMLLinkElement;
+            if (!link) {
+              link = document.createElement("link");
+              link.id = "dynamic-favicon";
+              link.rel = "icon";
+              document.head.appendChild(link);
             }
-          });
-
-          let link = document.getElementById("dynamic-favicon") as HTMLLinkElement;
-          if (!link) {
-            link = document.createElement("link");
-            link.id = "dynamic-favicon";
-            link.rel = "icon";
-            document.head.appendChild(link);
+            link.href = settings.store_favicon;
           }
-          link.type = settings.store_favicon.endsWith(".ico") ? "image/x-icon" : "image/png";
-          link.href = settings.store_favicon;
         } catch (e) {
           console.warn("Could not update dynamic favicon:", e);
         }
