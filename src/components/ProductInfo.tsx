@@ -17,6 +17,7 @@ import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { useCheckout, CheckoutItem } from "@/context/CheckoutContext";
 import { useAuth } from "@/context/AuthContext";
+import { useAddons } from "@/context/AddonsContext";
 import { ADDON_PRODUCTS } from "@/components/RecommendedAddons";
 import AddonModal from "@/components/AddonModal";
 import styles from "./ProductInfo.module.css";
@@ -64,6 +65,7 @@ export default function ProductInfo({
   const { addItem } = useCart();
   const { startBuyNow } = useCheckout();
   const { isAuthenticated } = useAuth();
+  const { getAddonById } = useAddons();
 
   const isLily =
     (product.category as string) === "lilies" ||
@@ -549,7 +551,7 @@ export default function ProductInfo({
     if (selectedAddons) {
       Object.entries(selectedAddons).forEach(([addonId, qty]) => {
         if (qty > 0) {
-          const addon = ADDON_PRODUCTS.find((p) => p.id === addonId);
+          const addon = getAddonById(addonId) || ADDON_PRODUCTS.find((p) => p.id === addonId);
           if (addon) {
             addItem(
               {
@@ -618,7 +620,7 @@ export default function ProductInfo({
     const addonItems: CheckoutItem[] = [];
     Object.entries(activeAddonsMap).forEach(([addonId, qty]) => {
       if (qty > 0) {
-        const addon = ADDON_PRODUCTS.find((p) => p.id === addonId);
+        const addon = getAddonById(addonId) || ADDON_PRODUCTS.find((p) => p.id === addonId);
         if (addon) {
           addonItems.push({
             id: addon.id,

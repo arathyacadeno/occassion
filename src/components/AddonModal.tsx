@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Minus, Plus, X, ArrowRight } from "lucide-react";
 import { ADDON_PRODUCTS, getAddonProducts } from "@/components/RecommendedAddons";
+import { useAddons } from "@/context/AddonsContext";
 import styles from "./AddonModal.module.css";
 
 export interface AddonModalProps {
@@ -58,7 +59,12 @@ export default function AddonModal({
     };
   }, [isOpen, onClose]);
 
-  const filteredAddons = useMemo(() => getAddonProducts(mainCategory, currentProductId, currentProductSlug), [mainCategory, currentProductId, currentProductSlug]);
+  const { addons: liveAddons, getAddonById } = useAddons();
+
+  const filteredAddons = useMemo(
+    () => getAddonProducts(mainCategory, currentProductId, currentProductSlug, liveAddons),
+    [mainCategory, currentProductId, currentProductSlug, liveAddons]
+  );
 
   // Categories list with contextual priority
   const categories = useMemo(() => {
@@ -88,7 +94,7 @@ export default function AddonModal({
     const counts: Record<string, number> = { All: 0 };
     Object.entries(selectedAddons).forEach(([id, qty]) => {
       if (qty > 0) {
-        const item = ADDON_PRODUCTS.find((p) => p.id === id);
+        const item = getAddonById(id) || ADDON_PRODUCTS.find((p) => p.id === id);
         counts.All = (counts.All || 0) + qty;
         if (item) {
           counts[item.category] = (counts[item.category] || 0) + qty;
@@ -96,7 +102,7 @@ export default function AddonModal({
       }
     });
     return counts;
-  }, [selectedAddons]);
+  }, [selectedAddons, getAddonById]);
 
   // Filtered addons to display
   const displayedAddons = useMemo(() => {
@@ -128,7 +134,7 @@ export default function AddonModal({
 
   // Add-ons total
   const addonsTotal = Object.entries(selectedAddons).reduce((sum, [id, qty]) => {
-    const item = ADDON_PRODUCTS.find((p) => p.id === id);
+    const item = getAddonById(id) || ADDON_PRODUCTS.find((p) => p.id === id);
     return sum + (item ? item.price * qty : 0);
   }, 0);
 

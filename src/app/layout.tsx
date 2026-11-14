@@ -38,6 +38,7 @@ import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { CheckoutProvider } from "@/context/CheckoutContext";
 import { StoreSettingsProvider } from "@/context/StoreSettingsContext";
+import { AddonsProvider } from "@/context/AddonsContext";
 
 export default function RootLayout({
   children,
@@ -89,7 +90,9 @@ export default function RootLayout({
           <AuthProvider>
             <CartProvider>
               <WishlistProvider>
-                <CheckoutProvider>{children}</CheckoutProvider>
+                <AddonsProvider>
+                  <CheckoutProvider>{children}</CheckoutProvider>
+                </AddonsProvider>
               </WishlistProvider>
             </CartProvider>
           </AuthProvider>

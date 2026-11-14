@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Minus, Plus, X } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import { useAddons } from "@/context/AddonsContext";
 import AddonModal from "@/components/AddonModal";
 import styles from "./RecommendedAddons.module.css";
 
@@ -22,8 +23,10 @@ export interface RecommendedAddonsProps {
 export const getAddonProducts = (
   category?: string,
   currentProductId?: string,
-  currentProductSlug?: string
+  currentProductSlug?: string,
+  customList?: AddonProduct[]
 ) => {
+  const sourceList = customList && customList.length > 0 ? customList : ADDON_PRODUCTS;
   const norm = category?.toLowerCase().replace(/^cat-/, "") || "";
   if (norm === "wreaths" || norm === "wreath") {
     return [];
@@ -46,11 +49,11 @@ export const getAddonProducts = (
 
   const filterCurrent = (items: AddonProduct[]) => items.filter((p) => !isCurrentProduct(p));
 
-  const cakes = filterCurrent(ADDON_PRODUCTS.filter((p) => p.category === "Cakes"));
-  const bouquets = filterCurrent(ADDON_PRODUCTS.filter((p) => p.category === "Flower Bouquets"));
-  const baskets = filterCurrent(ADDON_PRODUCTS.filter((p) => p.category === "Flower Baskets"));
-  const chocolates = filterCurrent(ADDON_PRODUCTS.filter((p) => p.category === "Chocolates"));
-  const softToys = filterCurrent(ADDON_PRODUCTS.filter((p) => p.category === "Soft Toys"));
+  const cakes = filterCurrent(sourceList.filter((p) => p.category === "Cakes"));
+  const bouquets = filterCurrent(sourceList.filter((p) => p.category === "Flower Bouquets"));
+  const baskets = filterCurrent(sourceList.filter((p) => p.category === "Flower Baskets"));
+  const chocolates = filterCurrent(sourceList.filter((p) => p.category === "Chocolates"));
+  const softToys = filterCurrent(sourceList.filter((p) => p.category === "Soft Toys"));
 
   let groups: AddonProduct[][];
 
@@ -90,8 +93,9 @@ export default function RecommendedAddons({
   currentProductSlug,
 }: RecommendedAddonsProps = {}) {
   const { addItem } = useCart();
+  const { addons: liveAddons } = useAddons();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const filteredAddons = getAddonProducts(mainCategory, currentProductId, currentProductSlug);
+  const filteredAddons = getAddonProducts(mainCategory, currentProductId, currentProductSlug, liveAddons);
 
   if (filteredAddons.length === 0) {
     return null;

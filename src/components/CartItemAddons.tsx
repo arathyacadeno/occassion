@@ -11,6 +11,7 @@ import {
   Check,
 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import { useAddons } from "@/context/AddonsContext";
 import { ADDON_PRODUCTS, AddonProduct } from "@/data/addons";
 import styles from "./CartItemAddons.module.css";
 
@@ -31,6 +32,9 @@ interface CartItemAddonsProps {
 
 export default function CartItemAddons({ attachedAddons }: CartItemAddonsProps) {
   const { addItem, removeItem } = useCart();
+  const { addons: liveAddons } = useAddons();
+  const allAddons = liveAddons && liveAddons.length > 0 ? liveAddons : ADDON_PRODUCTS;
+
   // 1) Starts collapsed on page load
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
@@ -38,11 +42,16 @@ export default function CartItemAddons({ attachedAddons }: CartItemAddonsProps) 
   const [canScrollRight, setCanScrollRight] = useState<boolean>(true);
   const trackRef = useRef<HTMLDivElement | null>(null);
 
+  const categories = useMemo(
+    () => ["All", ...Array.from(new Set(allAddons.map((p) => p.category)))],
+    [allAddons]
+  );
+
   // Filter products by selected category
   const filteredProducts = useMemo(() => {
-    if (selectedCategory === "All") return ADDON_PRODUCTS;
-    return ADDON_PRODUCTS.filter((p) => p.category === selectedCategory);
-  }, [selectedCategory]);
+    if (selectedCategory === "All") return allAddons;
+    return allAddons.filter((p) => p.category === selectedCategory);
+  }, [selectedCategory, allAddons]);
 
   // Set of attached addon IDs for rapid check
   const attachedIdsSet = useMemo(() => {
@@ -149,7 +158,7 @@ export default function CartItemAddons({ attachedAddons }: CartItemAddonsProps) 
         <div className={styles.expandedContent}>
           {/* Category Filter Pills */}
           <div className={styles.categoryPillsTrack}>
-            {CATEGORIES.map((cat) => (
+            {categories.map((cat) => (
               <button
                 key={cat}
                 type="button"
