@@ -124,6 +124,14 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
   // Customer Preview Modal
   const [previewHighlight, setPreviewHighlight] = useState<Highlight | null>(null);
   const [previewIndex, setPreviewIndex] = useState(0);
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+
+  // Select card to see the highlight
+  const handleSelectCard = (item: Highlight) => {
+    setSelectedCardId(item.id);
+    setPreviewHighlight(item);
+    setPreviewIndex(0);
+  };
 
   // Hidden file input for replacing single gallery image
   const replaceIdxRef = useRef<number | null>(null);
@@ -630,7 +638,7 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
             onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
           >
             <Plus size={18} strokeWidth={2.4} />
-            <span>+ Add New Highlight</span>
+            <span>Add New Highlight</span>
           </button>
         </div>
       </div>
@@ -819,41 +827,96 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
           {filteredHighlights.map((item) => {
             const galleryCount = item.gallery ? item.gallery.length : (item.gallery_count || 0);
             const isItemActive = item.active === 1;
+            const isSelected = item.id === selectedCardId;
 
             return (
               <div
                 key={item.id}
+                onClick={() => handleSelectCard(item)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    handleSelectCard(item);
+                  }
+                }}
                 style={{
                   background: "#fff",
                   borderRadius: 20,
-                  border: "1px solid #f1f5f9",
+                  border: isSelected ? "2px solid #db2777" : "1px solid #f1f5f9",
                   overflow: "hidden",
-                  boxShadow: "0 4px 18px rgba(0, 0, 0, 0.04)",
+                  boxShadow: isSelected
+                    ? "0 12px 30px rgba(219, 39, 119, 0.16)"
+                    : "0 4px 18px rgba(0, 0, 0, 0.04)",
                   display: "flex",
                   flexDirection: "column",
-                  transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                  cursor: "pointer",
+                  transition: "transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease",
+                  position: "relative",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-3px)";
-                  e.currentTarget.style.boxShadow = "0 10px 25px rgba(219, 39, 119, 0.08)";
+                  e.currentTarget.style.transform = "translateY(-4px)";
+                  e.currentTarget.style.boxShadow = "0 12px 30px rgba(219, 39, 119, 0.12)";
+                  if (!isSelected) e.currentTarget.style.borderColor = "#f472b6";
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = "0 4px 18px rgba(0, 0, 0, 0.04)";
+                  e.currentTarget.style.boxShadow = isSelected
+                    ? "0 12px 30px rgba(219, 39, 119, 0.16)"
+                    : "0 4px 18px rgba(0, 0, 0, 0.04)";
+                  if (!isSelected) e.currentTarget.style.borderColor = "#f1f5f9";
                 }}
               >
                 {/* Card Top: Cover Image with Overlaid Badges */}
-                <div style={{ position: "relative", width: "100%", height: 180, background: "#f8fafc" }}>
+                <div style={{ position: "relative", width: "100%", height: 180, background: "#f8fafc", overflow: "hidden" }}>
                   <img
                     src={item.cover_image}
                     alt={item.title}
                     style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                   />
 
+                  {/* Hover Overlay: Click to See Highlight */}
+                  <div
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      background: "rgba(15, 23, 42, 0.25)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      opacity: 0,
+                      transition: "opacity 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+                    onMouseLeave={(e) => (e.currentTarget.style.opacity = "0")}
+                  >
+                    <span
+                      style={{
+                        background: "rgba(255, 255, 255, 0.95)",
+                        color: "#be185d",
+                        padding: "7px 14px",
+                        borderRadius: 20,
+                        fontWeight: 700,
+                        fontSize: "0.82rem",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 6,
+                        boxShadow: "0 4px 14px rgba(0, 0, 0, 0.15)",
+                      }}
+                    >
+                      <Eye size={15} />
+                      <span>Click to See Highlight</span>
+                    </span>
+                  </div>
+
                   {/* Active / Inactive Status Pill */}
                   <button
                     type="button"
-                    onClick={(e) => handleToggleActive(item, e)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleToggleActive(item, e);
+                    }}
                     style={{
                       position: "absolute",
                       top: 12,
@@ -870,6 +933,7 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                       display: "flex",
                       alignItems: "center",
                       gap: 5,
+                      zIndex: 2,
                     }}
                     title="Click to toggle Show/Hide"
                   >
@@ -900,6 +964,7 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                       display: "flex",
                       alignItems: "center",
                       gap: 5,
+                      zIndex: 2,
                     }}
                   >
                     <ImageIcon size={13} />
@@ -919,6 +984,7 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                         color: "#be185d",
                         fontSize: "0.72rem",
                         fontWeight: 700,
+                        zIndex: 2,
                       }}
                     >
                       {item.tag}
@@ -970,12 +1036,17 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                       paddingTop: 14,
                       borderTop: "1px solid #f1f5f9",
                     }}
+                    onClick={(e) => e.stopPropagation()}
                   >
+                    {/* Primary Button: See Highlight */}
                     <button
                       type="button"
-                      onClick={() => handleOpenEdit(item)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSelectCard(item);
+                      }}
                       style={{
-                        flex: 1,
+                        flex: 1.2,
                         padding: "10px 14px",
                         borderRadius: 10,
                         border: "1px solid #fce7f3",
@@ -988,41 +1059,64 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                         alignItems: "center",
                         justifyContent: "center",
                         gap: 6,
-                        transition: "background 0.15s ease",
+                        transition: "all 0.15s ease",
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = "#fce7f3")}
-                      onMouseLeave={(e) => (e.currentTarget.style.background = "#fdf2f8")}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = "#fce7f3";
+                        e.currentTarget.style.borderColor = "#f472b6";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "#fdf2f8";
+                        e.currentTarget.style.borderColor = "#fce7f3";
+                      }}
+                      title="See full highlight gallery, prices, and inquiry preview"
                     >
-                      <Edit size={15} />
-                      <span>Edit Highlight</span>
+                      <Eye size={15} />
+                      <span>See Highlight</span>
                     </button>
 
+                    {/* Edit Highlight Button */}
                     <button
                       type="button"
-                      onClick={() => {
-                        setPreviewHighlight(item);
-                        setPreviewIndex(0);
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenEdit(item);
                       }}
                       style={{
-                        width: 38,
-                        height: 38,
+                        flex: 0.9,
+                        padding: "10px 12px",
                         borderRadius: 10,
                         border: "1px solid #e2e8f0",
                         background: "#fff",
-                        color: "#475569",
+                        color: "#334155",
+                        fontWeight: 600,
+                        fontSize: "0.84rem",
                         cursor: "pointer",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
+                        gap: 5,
+                        transition: "all 0.15s ease",
                       }}
-                      title="Preview how customers see this modal"
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = "#f8fafc";
+                        e.currentTarget.style.borderColor = "#cbd5e1";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "#fff";
+                        e.currentTarget.style.borderColor = "#e2e8f0";
+                      }}
+                      title="Edit basic info, photo gallery, and contacts"
                     >
-                      <Eye size={16} />
+                      <Edit size={14} />
+                      <span>Edit</span>
                     </button>
 
+                    {/* Delete Highlight Button */}
                     <button
                       type="button"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         setHighlightToDelete(item);
                         setDeleteModalOpen(true);
                       }}
@@ -1037,7 +1131,11 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
+                        flexShrink: 0,
+                        transition: "background 0.15s ease",
                       }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "#fee2e2")}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = "#fff5f5")}
                       title="Delete Highlight"
                     >
                       <Trash2 size={16} />
@@ -2114,19 +2212,93 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
               <X size={18} />
             </button>
 
+            {/* Header: Switch between cards & quick edit */}
             <div
               style={{
-                background: "#fdf2f8",
-                borderRadius: 8,
-                padding: "6px 12px",
-                display: "inline-block",
-                color: "#be185d",
-                fontSize: "0.8rem",
-                fontWeight: 700,
-                marginBottom: 16,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 20,
+                flexWrap: "wrap",
+                gap: 12,
+                paddingRight: 44,
               }}
             >
-              Customer View Preview: {previewHighlight.title}
+              {/* Highlight Card Selector Pills */}
+              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                <span
+                  style={{
+                    fontSize: "0.78rem",
+                    fontWeight: 700,
+                    color: "#64748b",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.04em",
+                  }}
+                >
+                  Select Card:
+                </span>
+                {filteredHighlights.map((hl) => {
+                  const isCurrent = hl.id === previewHighlight.id;
+                  return (
+                    <button
+                      key={hl.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedCardId(hl.id);
+                        setPreviewHighlight(hl);
+                        setPreviewIndex(0);
+                      }}
+                      style={{
+                        padding: "5px 12px",
+                        borderRadius: 20,
+                        border: isCurrent ? "1.5px solid #db2777" : "1px solid #e2e8f0",
+                        background: isCurrent ? "#fdf2f8" : "#fff",
+                        color: isCurrent ? "#be185d" : "#475569",
+                        fontWeight: isCurrent ? 700 : 500,
+                        fontSize: "0.82rem",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 5,
+                        transition: "all 0.15s ease",
+                      }}
+                    >
+                      {isCurrent && <Check size={12} color="#db2777" />}
+                      <span>{hl.title}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Direct Edit Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  const toEdit = previewHighlight;
+                  setPreviewHighlight(null);
+                  handleOpenEdit(toEdit);
+                }}
+                style={{
+                  padding: "7px 14px",
+                  borderRadius: 10,
+                  border: "1px solid #fce7f3",
+                  background: "#fff",
+                  color: "#be185d",
+                  fontWeight: 700,
+                  fontSize: "0.82rem",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  transition: "all 0.15s ease",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "#fdf2f8")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "#fff")}
+                title="Open editor to modify this highlight"
+              >
+                <Edit size={14} />
+                <span>Edit Highlight</span>
+              </button>
             </div>
 
             {(() => {
