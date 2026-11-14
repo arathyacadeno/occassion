@@ -151,11 +151,12 @@ export default function AdminPage() {
   const [customCatFilter, setCustomCatFilter] = useState("all");
   const [customSaveMsg, setCustomSaveMsg] = useState<string | null>(null);
   const [customSaving, setCustomSaving] = useState(false);
+  const statsLoadedRef = React.useRef(false);
 
   const fetchAdminData = useCallback(async () => {
     if (!isAdmin) return;
-    setLoading(true);
-    if (!stats) {
+    if (!statsLoadedRef.current) {
+      setLoading(true);
       setStatsLoading(true);
     }
 
@@ -172,6 +173,7 @@ export default function AdminPage() {
           if (data.success && data.stats) {
             setStats(data.stats);
             if (data.users) setUsersList(data.users);
+            statsLoadedRef.current = true;
           }
         }
       } catch (e) {
@@ -218,7 +220,7 @@ export default function AdminPage() {
     })();
 
     await Promise.all([statsPromise, othersPromise]);
-  }, [isAdmin, stats]);
+  }, [isAdmin]);
 
   useEffect(() => {
     if (isAdmin) {
