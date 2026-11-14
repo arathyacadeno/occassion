@@ -201,6 +201,11 @@ export default function ProductFormModal({
     }
   };
 
+  const isAddonCategory =
+    categoryId.toLowerCase().includes("addon") ||
+    categoryId.toLowerCase().includes("add-on") ||
+    type === "general";
+
   // Upload to local server storage and database via backend endpoint
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -210,12 +215,13 @@ export default function ProductFormModal({
     setError(null);
 
     try {
-      for (let i = 0; i < files.length; i++) {
+      const uploadLimit = isAddonCategory ? 1 : files.length;
+      for (let i = 0; i < uploadLimit; i++) {
         const file = files[i];
         const formData = new FormData();
         formData.append("file", file);
         formData.append("categoryId", categoryId);
-        formData.append("folder", categoryId.replace(/^cat-/, ""));
+        formData.append("folder", isAddonCategory ? "addons" : categoryId.replace(/^cat-/, ""));
 
         const res = await fetch("/api/admin/upload", {
           method: "POST",
@@ -224,11 +230,16 @@ export default function ProductFormModal({
 
         const data = await res.json();
         if (data.success && data.url) {
-          setImages((prev) => {
-            const filtered = prev.filter((img) => img !== "/images/lily-6-stems.png" && img !== "/images/cat-flower-bouquet-luxe.jpg");
-            if (filtered.includes(data.url)) return filtered;
-            return [data.url, ...filtered];
-          });
+          if (isAddonCategory) {
+            setImages([data.url]);
+            break;
+          } else {
+            setImages((prev) => {
+              const filtered = prev.filter((img) => img !== "/images/lily-6-stems.png" && img !== "/images/cat-flower-bouquet-luxe.jpg");
+              if (filtered.includes(data.url)) return filtered;
+              return [data.url, ...filtered];
+            });
+          }
         } else {
           throw new Error(data.error || "Failed to upload to server storage");
         }
@@ -609,7 +620,23 @@ export default function ProductFormModal({
                       if (e.target.value === "CREATE_NEW") {
                         setShowNewCatInput(true);
                       } else {
-                        setCategoryId(e.target.value);
+                        const val = e.target.value;
+                        setCategoryId(val);
+                        // Auto-select matching product architecture
+                        const lower = val.toLowerCase();
+                        if (lower.includes("addon") || lower.includes("add-on")) {
+                          setType("general");
+                        } else if (lower.includes("cake")) {
+                          setType("cake");
+                        } else if (lower.includes("basket")) {
+                          setType("basket");
+                        } else if (lower.includes("wreath")) {
+                          setType("wreath");
+                        } else if (lower.includes("decor")) {
+                          setType("decor");
+                        } else if (lower.includes("bouquet") || lower.includes("flower")) {
+                          setType("flower");
+                        }
                       }
                     }}
                     style={{
@@ -681,7 +708,7 @@ export default function ProductFormModal({
                   <option value="basket">Flower Basket</option>
                   <option value="wreath">Floral Wreath</option>
                   <option value="decor">Table / Event Decor</option>
-                  <option value="general">General Gift</option>
+                  <option value="general">General Gift (Add-ons, Chocolates, Bears, Cards)</option>
                 </select>
               </div>
             </div>

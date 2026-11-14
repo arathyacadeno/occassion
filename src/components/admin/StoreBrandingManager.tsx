@@ -45,6 +45,31 @@ export default function StoreBrandingManager() {
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [uploadingField, setUploadingField] = useState<string | null>(null);
+  const [imgErrors, setImgErrors] = useState<Record<string, boolean>>({});
+
+  const handleRemoveLogo = async (fieldName: "header_logo" | "footer_logo" | "store_favicon") => {
+    const updated = { ...form, [fieldName]: "" };
+    setForm(updated);
+    try {
+      await fetch("/api/admin/settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ settings: updated }),
+      });
+      updateLocalSettings(updated);
+      await refreshSettings();
+      const label =
+        fieldName === "store_favicon"
+          ? "Browser Favicon"
+          : fieldName === "header_logo"
+          ? "Header Logo"
+          : "Footer Logo";
+      setSuccessMsg(`${label} removed successfully!`);
+      setTimeout(() => setSuccessMsg(null), 4000);
+    } catch (err) {
+      console.error("Remove logo error:", err);
+    }
+  };
 
   useEffect(() => {
     if (settings) {
@@ -341,9 +366,33 @@ export default function StoreBrandingManager() {
             boxShadow: "0 2px 10px rgba(0,0,0,0.02)",
           }}
         >
-          <h3 style={{ fontSize: "1.1rem", color: "#831843", margin: "0 0 16px", fontWeight: 700 }}>
+          <h3 style={{ fontSize: "1.1rem", color: "#831843", margin: "0 0 8px", fontWeight: 700 }}>
             2. Logos &amp; Favicon Management (Cloudinary)
           </h3>
+          <p style={{ margin: "0 0 16px", fontSize: "0.84rem", color: "#64748b" }}>
+            Upload high-resolution PNG, SVG, or JPG branding assets. Changes made here update across your live website immediately.
+          </p>
+
+          {/* Live Storefront Impact Notice */}
+          <div
+            style={{
+              background: "#f0fdf4",
+              border: "1px solid #bbf7d0",
+              borderRadius: 10,
+              padding: "12px 16px",
+              marginBottom: 20,
+              fontSize: "0.85rem",
+              color: "#166534",
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+            }}
+          >
+            <Sparkles size={20} color="#16a34a" style={{ flexShrink: 0 }} />
+            <div>
+              <strong>Instant Live Storefront Effect:</strong> When you upload a new logo or favicon here, it immediately updates your live store — updating the top <strong>Header Navbar</strong>, dark <strong>Footer Branding</strong>, and <strong>Browser Tab Icon</strong> in real time.
+            </div>
+          </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 20 }}>
             {/* Header Logo */}
@@ -359,34 +408,54 @@ export default function StoreBrandingManager() {
                 textAlign: "center",
               }}
             >
-              <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "#475569", marginBottom: 10 }}>
+              <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#334155", marginBottom: 4 }}>
                 Header Logo
               </div>
+              <span style={{ fontSize: "0.72rem", color: "#64748b", marginBottom: 10 }}>
+                Displays in top navbar on white header
+              </span>
+
               <div
                 style={{
                   width: "100%",
-                  height: 90,
-                  background: "#fff",
+                  height: 95,
+                  background: "#ffffff",
+                  backgroundImage: "radial-gradient(#e2e8f0 1px, transparent 1px)",
+                  backgroundSize: "12px 12px",
                   borderRadius: 8,
-                  border: "1px solid #e2e8f0",
+                  border: "1.5px solid #e2e8f0",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   overflow: "hidden",
-                  marginBottom: 12,
-                  padding: 8,
+                  marginBottom: 8,
+                  padding: 10,
+                  position: "relative",
                 }}
               >
-                {form.header_logo ? (
+                {form.header_logo && !imgErrors["header_logo"] ? (
                   <img
                     src={form.header_logo}
                     alt="Header Logo"
                     style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }}
+                    onError={() => setImgErrors((prev) => ({ ...prev, header_logo: true }))}
                   />
                 ) : (
-                  <span style={{ fontSize: "0.8rem", color: "#94a3b8" }}>No Logo Set</span>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, color: "#94a3b8" }}>
+                    <ImageIcon size={22} color="#cbd5e1" />
+                    <span style={{ fontSize: "0.76rem" }}>
+                      {imgErrors["header_logo"] ? "Click Upload New to set" : "No Custom Logo Uploaded"}
+                    </span>
+                  </div>
                 )}
               </div>
+
+              {form.header_logo && (
+                <div style={{ marginBottom: 10, fontSize: "0.72rem", color: "#166534", fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
+                  <Check size={12} color="#16a34a" />
+                  <span>Active in Storefront Header</span>
+                </div>
+              )}
 
               <div style={{ display: "flex", gap: 8, width: "100%", justifyContent: "center" }}>
                 <label
@@ -394,13 +463,13 @@ export default function StoreBrandingManager() {
                     display: "inline-flex",
                     alignItems: "center",
                     gap: 6,
-                    padding: "6px 12px",
+                    padding: "7px 14px",
                     background: "#fdf2f8",
                     color: "#be185d",
                     borderRadius: 6,
-                    fontSize: "0.78rem",
+                    fontSize: "0.8rem",
                     fontWeight: 600,
-                    cursor: "pointer",
+                    cursor: uploadingField ? "not-allowed" : "pointer",
                     border: "1px solid #fbcfe8",
                   }}
                 >
@@ -411,21 +480,25 @@ export default function StoreBrandingManager() {
                     accept="image/*"
                     style={{ display: "none" }}
                     disabled={uploadingField !== null}
-                    onChange={(e) => handleImageUpload(e, "header_logo")}
+                    onChange={(e) => {
+                      setImgErrors((prev) => ({ ...prev, header_logo: false }));
+                      handleImageUpload(e, "header_logo");
+                    }}
                   />
                 </label>
 
                 {form.header_logo && (
                   <button
                     type="button"
-                    onClick={() => setForm((p) => ({ ...p, header_logo: "" }))}
+                    onClick={() => handleRemoveLogo("header_logo")}
                     style={{
-                      padding: "6px 10px",
+                      padding: "7px 12px",
                       background: "#fff1f2",
                       color: "#e11d48",
                       border: "1px solid #ffe4e6",
                       borderRadius: 6,
-                      fontSize: "0.78rem",
+                      fontSize: "0.8rem",
+                      fontWeight: 600,
                       cursor: "pointer",
                     }}
                   >
@@ -448,34 +521,52 @@ export default function StoreBrandingManager() {
                 textAlign: "center",
               }}
             >
-              <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "#475569", marginBottom: 10 }}>
+              <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#334155", marginBottom: 4 }}>
                 Footer Logo
               </div>
+              <span style={{ fontSize: "0.72rem", color: "#64748b", marginBottom: 10 }}>
+                Displays on dark footer background (#1e293b)
+              </span>
+
               <div
                 style={{
                   width: "100%",
-                  height: 90,
+                  height: 95,
                   background: "#1e293b",
                   borderRadius: 8,
-                  border: "1px solid #334155",
+                  border: "1.5px solid #334155",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   overflow: "hidden",
-                  marginBottom: 12,
-                  padding: 8,
+                  marginBottom: 8,
+                  padding: 10,
+                  position: "relative",
                 }}
               >
-                {form.footer_logo ? (
+                {form.footer_logo && !imgErrors["footer_logo"] ? (
                   <img
                     src={form.footer_logo}
                     alt="Footer Logo"
                     style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }}
+                    onError={() => setImgErrors((prev) => ({ ...prev, footer_logo: true }))}
                   />
                 ) : (
-                  <span style={{ fontSize: "0.8rem", color: "#94a3b8" }}>No Logo Set</span>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, color: "#64748b" }}>
+                    <ImageIcon size={22} color="#475569" />
+                    <span style={{ fontSize: "0.76rem" }}>
+                      {imgErrors["footer_logo"] ? "Click Upload New to set" : "No Custom Footer Logo"}
+                    </span>
+                  </div>
                 )}
               </div>
+
+              {form.footer_logo && (
+                <div style={{ marginBottom: 10, fontSize: "0.72rem", color: "#166534", fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
+                  <Check size={12} color="#16a34a" />
+                  <span>Active in Storefront Footer</span>
+                </div>
+              )}
 
               <div style={{ display: "flex", gap: 8, width: "100%", justifyContent: "center" }}>
                 <label
@@ -483,13 +574,13 @@ export default function StoreBrandingManager() {
                     display: "inline-flex",
                     alignItems: "center",
                     gap: 6,
-                    padding: "6px 12px",
+                    padding: "7px 14px",
                     background: "#fdf2f8",
                     color: "#be185d",
                     borderRadius: 6,
-                    fontSize: "0.78rem",
+                    fontSize: "0.8rem",
                     fontWeight: 600,
-                    cursor: "pointer",
+                    cursor: uploadingField ? "not-allowed" : "pointer",
                     border: "1px solid #fbcfe8",
                   }}
                 >
@@ -500,21 +591,25 @@ export default function StoreBrandingManager() {
                     accept="image/*"
                     style={{ display: "none" }}
                     disabled={uploadingField !== null}
-                    onChange={(e) => handleImageUpload(e, "footer_logo")}
+                    onChange={(e) => {
+                      setImgErrors((prev) => ({ ...prev, footer_logo: false }));
+                      handleImageUpload(e, "footer_logo");
+                    }}
                   />
                 </label>
 
                 {form.footer_logo && (
                   <button
                     type="button"
-                    onClick={() => setForm((p) => ({ ...p, footer_logo: "" }))}
+                    onClick={() => handleRemoveLogo("footer_logo")}
                     style={{
-                      padding: "6px 10px",
+                      padding: "7px 12px",
                       background: "#fff1f2",
                       color: "#e11d48",
                       border: "1px solid #ffe4e6",
                       borderRadius: 6,
-                      fontSize: "0.78rem",
+                      fontSize: "0.8rem",
+                      fontWeight: 600,
                       cursor: "pointer",
                     }}
                   >
@@ -537,34 +632,66 @@ export default function StoreBrandingManager() {
                 textAlign: "center",
               }}
             >
-              <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "#475569", marginBottom: 10 }}>
+              <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#334155", marginBottom: 4 }}>
                 Browser Favicon (.ico, .png)
               </div>
+              <span style={{ fontSize: "0.72rem", color: "#64748b", marginBottom: 10 }}>
+                Icon displayed next to site title in browser tabs
+              </span>
+
               <div
                 style={{
                   width: "100%",
-                  height: 90,
-                  background: "#fff",
+                  height: 95,
+                  background: "#ffffff",
+                  backgroundImage: "radial-gradient(#e2e8f0 1px, transparent 1px)",
+                  backgroundSize: "12px 12px",
                   borderRadius: 8,
-                  border: "1px solid #e2e8f0",
+                  border: "1.5px solid #e2e8f0",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   overflow: "hidden",
-                  marginBottom: 12,
-                  padding: 8,
+                  marginBottom: 8,
+                  padding: 10,
+                  position: "relative",
                 }}
               >
-                {form.store_favicon ? (
-                  <img
-                    src={form.store_favicon}
-                    alt="Favicon"
-                    style={{ width: 36, height: 36, objectFit: "contain" }}
-                  />
+                {form.store_favicon && !imgErrors["store_favicon"] ? (
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <div style={{ width: 44, height: 44, border: "1px solid #cbd5e1", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", background: "#fff", padding: 4 }}>
+                      <img
+                        src={form.store_favicon}
+                        alt="Favicon"
+                        style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
+                        onError={() => setImgErrors((prev) => ({ ...prev, store_favicon: true }))}
+                      />
+                    </div>
+                    <div style={{ textAlign: "left" }}>
+                      <span style={{ fontSize: "0.74rem", fontWeight: 700, color: "#334155", display: "block" }}>
+                        Tab Icon
+                      </span>
+                      <span style={{ fontSize: "0.68rem", color: "#64748b" }}>
+                        Square 32×32 / 64×64
+                      </span>
+                    </div>
+                  </div>
                 ) : (
-                  <span style={{ fontSize: "0.8rem", color: "#94a3b8" }}>Default</span>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, color: "#94a3b8" }}>
+                    <Globe size={22} color="#cbd5e1" />
+                    <span style={{ fontSize: "0.76rem" }}>
+                      {imgErrors["store_favicon"] ? "Click Upload New to set" : "Using Default Favicon"}
+                    </span>
+                  </div>
                 )}
               </div>
+
+              {form.store_favicon && (
+                <div style={{ marginBottom: 10, fontSize: "0.72rem", color: "#166534", fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
+                  <Check size={12} color="#16a34a" />
+                  <span>Active on Browser Tabs</span>
+                </div>
+              )}
 
               <div style={{ display: "flex", gap: 8, width: "100%", justifyContent: "center" }}>
                 <label
@@ -572,13 +699,13 @@ export default function StoreBrandingManager() {
                     display: "inline-flex",
                     alignItems: "center",
                     gap: 6,
-                    padding: "6px 12px",
+                    padding: "7px 14px",
                     background: "#fdf2f8",
                     color: "#be185d",
                     borderRadius: 6,
-                    fontSize: "0.78rem",
+                    fontSize: "0.8rem",
                     fontWeight: 600,
-                    cursor: "pointer",
+                    cursor: uploadingField ? "not-allowed" : "pointer",
                     border: "1px solid #fbcfe8",
                   }}
                 >
@@ -589,37 +716,25 @@ export default function StoreBrandingManager() {
                     accept="image/*"
                     style={{ display: "none" }}
                     disabled={uploadingField !== null}
-                    onChange={(e) => handleImageUpload(e, "store_favicon")}
+                    onChange={(e) => {
+                      setImgErrors((prev) => ({ ...prev, store_favicon: false }));
+                      handleImageUpload(e, "store_favicon");
+                    }}
                   />
                 </label>
 
                 {form.store_favicon && (
                   <button
                     type="button"
-                    onClick={async () => {
-                      const updated = { ...form, store_favicon: "" };
-                      setForm(updated);
-                      try {
-                        await fetch("/api/admin/settings", {
-                          method: "PUT",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({ settings: updated }),
-                        });
-                        updateLocalSettings(updated);
-                        await refreshSettings();
-                        setSuccessMsg("Favicon reset to default successfully!");
-                        setTimeout(() => setSuccessMsg(null), 4000);
-                      } catch (err) {
-                        console.error(err);
-                      }
-                    }}
+                    onClick={() => handleRemoveLogo("store_favicon")}
                     style={{
-                      padding: "6px 10px",
+                      padding: "7px 12px",
                       background: "#fff1f2",
                       color: "#e11d48",
                       border: "1px solid #ffe4e6",
                       borderRadius: 6,
-                      fontSize: "0.78rem",
+                      fontSize: "0.8rem",
+                      fontWeight: 600,
                       cursor: "pointer",
                     }}
                   >

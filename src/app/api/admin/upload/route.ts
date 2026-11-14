@@ -29,6 +29,9 @@ function resolveCategoryStorage(folderOrCat: string | null): { subDir: string; f
   if (norm.includes("wreath")) {
     return { subDir: "wreaths", folderName: "wreaths" };
   }
+  if (norm.includes("addon") || norm.includes("add-on")) {
+    return { subDir: "addons", folderName: "addons" };
+  }
   return { subDir: "uploads", folderName: "uploads" };
 }
 

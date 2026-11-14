@@ -213,8 +213,9 @@ export default function MediaLibrary({ onSelectImage, isPickerMode = false, pref
             { id: "flower-basket", label: "Flower Baskets" },
             { id: "table-decor", label: "Table Decor" },
             { id: "cakes", label: "Cakes" },
-            { id: "uploads", label: "Uploads" },
             { id: "wreaths", label: "Wreaths" },
+            { id: "addons", label: "Add-ons" },
+            { id: "uploads", label: "Uploads" },
           ].map((f) => (
             <button
               key={f.id}

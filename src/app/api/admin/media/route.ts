@@ -29,6 +29,9 @@ function resolveCategoryStorage(folderOrCat: string | null): { subDir: string; f
   if (norm.includes("wreath")) {
     return { subDir: "wreaths", folderName: "wreaths" };
   }
+  if (norm.includes("addon") || norm.includes("add-on")) {
+    return { subDir: "addons", folderName: "addons" };
+  }
   return { subDir: "uploads", folderName: "uploads" };
 }
 
@@ -66,6 +69,8 @@ export async function GET(request: Request) {
         whereClauses.push("(folder = 'uploads' OR url LIKE '%/uploads/%')");
       } else if (folder === "wreaths") {
         whereClauses.push("(folder = 'wreaths' OR url LIKE '%/wreath%')");
+      } else if (folder === "addons") {
+        whereClauses.push("(folder = 'addons' OR url LIKE '%/addons/%')");
       } else {
         whereClauses.push(`folder = ${addParam(folder)}`);
       }
@@ -143,7 +148,7 @@ export async function GET(request: Request) {
       success: true,
       media: enrichedMedia,
       total: enrichedMedia.length,
-      folders: ["all", "flower-bouquet", "flower-basket", "table-decor", "cakes", "uploads", "wreaths"],
+      folders: ["all", "flower-bouquet", "flower-basket", "table-decor", "cakes", "wreaths", "addons", "uploads"],
     });
   } catch (error: any) {
     console.error("Media list error:", error);
