@@ -41,6 +41,7 @@ import MediaLibrary from "@/components/admin/MediaLibrary";
 import StoreBrandingManager from "@/components/admin/StoreBrandingManager";
 import HomepageManager from "@/components/admin/HomepageManager";
 import DeliveryManager from "@/components/admin/DeliveryManager";
+import HighlightManager from "@/components/admin/HighlightManager";
 import { Layers, Palette, LayoutTemplate, Image as ImageIcon } from "lucide-react";
 import styles from "./admin.module.css";
 
@@ -63,7 +64,7 @@ export default function AdminPage() {
   const [loggingIn, setLoggingIn] = useState(false);
 
   // Tab
-  const [activeTab, setActiveTab] = useState<"orders" | "stock" | "categories" | "media" | "branding" | "homepage" | "customization" | "coupons" | "delivery" | "users">("orders");
+  const [activeTab, setActiveTab] = useState<"orders" | "stock" | "categories" | "media" | "branding" | "homepage" | "highlights" | "customization" | "coupons" | "delivery" | "users">("orders");
 
   // Admin stats & data
   const [stats, setStats] = useState<{
@@ -852,6 +853,17 @@ export default function AdminPage() {
                 <div className={styles.sidebarBtnLeft}>
                   <LayoutTemplate size={17} />
                   <span>Homepage CMS</span>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                className={`${styles.sidebarBtn} ${activeTab === "highlights" ? styles.sidebarBtnActive : ""}`}
+                onClick={() => setActiveTab("highlights")}
+              >
+                <div className={styles.sidebarBtnLeft}>
+                  <Sparkles size={17} />
+                  <span>Highlights Management</span>
                 </div>
               </button>
 
@@ -1810,6 +1822,11 @@ export default function AdminPage() {
         {/* TAB 9: Homepage CMS */}
         {activeTab === "homepage" && (
           <HomepageManager />
+        )}
+
+        {/* TAB: Highlights & Service Galleries */}
+        {activeTab === "highlights" && (
+          <HighlightManager onRefresh={fetchAdminData} />
         )}
 
         {/* TAB 5: Users */}

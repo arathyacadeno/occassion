@@ -57,6 +57,9 @@ function resolveCategoryStorage(folderOrCat: string | null): { subDir: string; f
   if (norm.includes("branding") || norm.includes("logo") || norm.includes("favicon")) {
     return { subDir: "branding", folderName: "branding", cloudinaryFolder: "occasions/branding" };
   }
+  if (norm.includes("highlight") || norm.includes("gallery") || norm.includes("car-decor") || norm.includes("stage-decor") || norm.includes("church") || norm.includes("garland")) {
+    return { subDir: "highlights", folderName: "highlights", cloudinaryFolder: "occasions/highlights" };
+  }
 
   // Support future custom product categories seamlessly
   const cleanCat = norm.replace(/[^a-z0-9_-]+/g, "-").replace(/^-+|-+$/g, "") || "general";

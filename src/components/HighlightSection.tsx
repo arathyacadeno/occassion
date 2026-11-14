@@ -1,139 +1,191 @@
 "use client";
+
 import React, { useState, useEffect, useRef } from "react";
-import Link from "next/link";
-import { MessageCircle, Phone, X, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import BloomingFlowerAnimation from "./BloomingFlowerAnimation";
-import CarDecorModal from "./CarDecorModal";
-import StageDecorModal from "./StageDecorModal";
-import GarlandsModal from "./GarlandsModal";
-import ChurchDecorModal from "./ChurchDecorModal";
+import HighlightGalleryModal from "./HighlightGalleryModal";
+import { Highlight } from "./admin/HighlightManager";
 import styles from "./HighlightSection.module.css";
 
-export interface HighlightCard {
-  id: string;
-  tag: string;
-  title: string;
-  subtitle: string;
-  image: string;
-  desc: string;
-  features: string[];
-  whatsAppText: string;
-  href: string;
-}
-
-const highlightCards: HighlightCard[] = [
+// Initial default highlights for instant SSR & fast initial render before API responds
+const DEFAULT_HIGHLIGHTS: Highlight[] = [
   {
     id: "car-decor",
+    slug: "car-decor",
     tag: "VIP Floristry",
     title: "Car Decor",
     subtitle: "VIP Bonnet Florals and Satin Posies",
-    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647418/occasions/products/general/highlight-car-decorations.jpg",
-    desc: "Transform your wedding arrival into an unforgettable spectacle with bespoke scratch-proof floral bonnets, door handle posies, and satin ribbons crafted with imported orchids and roses.",
+    cover_image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647418/occasions/products/general/highlight-car-decorations.jpg",
+    description: "Transform your wedding arrival into an unforgettable spectacle with bespoke scratch-proof floral bonnets, door handle posies, and satin ribbons crafted with imported orchids and roses.",
+    starting_price: 1800,
+    price_display: "₹ 1,800",
+    whatsapp_number: "918606464700",
+    whatsapp_text: "Hello Occasions Florist Calicut, I would like to inquire about wedding Car Decoration.",
+    call_number: "+918606464700",
+    call_text: "Call Atelier Directly",
+    guarantee_text: "100% Freshness Guarantee",
     features: [
       "Imported Cymbidium Orchids",
       "Scratch-Proof Suction Mounting",
       "Door Posies and Satin Ribbons",
       "On-Site Venue Setup in Calicut",
     ],
-    whatsAppText: "Hello Occassions Florist Calicut, I would like to inquire about wedding Car Decoration.",
-    href: "/#highlights",
+    active: 1,
+    display_order: 1,
   },
   {
     id: "stage-decor",
+    slug: "stage-decor",
     tag: "Celebration",
     title: "Stage Decor",
     subtitle: "Opulent Banquet & Centerpiece Styling",
-    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647424/occasions/products/stage-decor/stage-decor-7.jpg",
-    desc: "Elevate your stage and banquet reception with opulent floral backdrops, elevated crystal centerpieces, blush roses, cascading hydrangeas, and glowing candlelight ambiance.",
+    cover_image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647424/occasions/products/stage-decor/stage-decor-7.jpg",
+    description: "Elevate your stage and banquet reception with opulent floral backdrops, elevated crystal centerpieces, blush roses, cascading hydrangeas, and glowing candlelight ambiance.",
+    starting_price: 18000,
+    price_display: "₹ 18,000",
+    whatsapp_number: "918606464700",
+    whatsapp_text: "Hello Occasions Florist Calicut, I would like to inquire about wedding Table & Stage Arrangements.",
+    call_number: "+918606464700",
+    call_text: "Call Atelier Directly",
+    guarantee_text: "100% Freshness Guarantee",
     features: [
       "Elevated Crystal Centerpieces",
       "Lush Floral Banquet Runners",
       "Floating Candle & Glass Ambiance",
       "VIP Head Table Styling",
     ],
-    whatsAppText: "Hello Occassions Florist Calicut, I would like to inquire about wedding Table & Stage Arrangements.",
-    href: "/#highlights",
+    active: 1,
+    display_order: 2,
   },
   {
-    id: "church-arrangement",
+    id: "church-decor",
+    slug: "church-decor",
     tag: "Ceremony",
     title: "Church Decor",
     subtitle: "Grand Altar Arches and Aisle Florals",
-    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647418/occasions/products/general/highlight-church-arrangements.jpg",
-    desc: "Create a sacred, heavenly atmosphere for your wedding ceremony with grand cathedral altar arches, romantic candlelit pew decorations, and cascading aisle runners.",
+    cover_image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647418/occasions/products/general/highlight-church-arrangements.jpg",
+    description: "Create a sacred, heavenly atmosphere for your wedding ceremony with grand cathedral altar arches, romantic candlelit pew decorations, and cascading aisle runners.",
+    starting_price: 16500,
+    price_display: "₹ 16,500",
+    whatsapp_number: "918606464700",
+    whatsapp_text: "Hello Occasions Florist Calicut, I would like to inquire about Church Arrangements and wedding altar florals.",
+    call_number: "+918606464700",
+    call_text: "Call Atelier Directly",
+    guarantee_text: "100% Freshness Guarantee",
     features: [
       "Grand Altar Floral Arch",
       "Romantic Candlelit Pew Posies",
       "Casablanca Lilies and Hydrangeas",
       "Parish Protocol Coordination",
     ],
-    whatsAppText: "Hello Occassions Florist Calicut, I would like to inquire about Church Arrangements and wedding altar florals.",
-    href: "/#highlights",
+    active: 1,
+    display_order: 3,
   },
   {
     id: "garlands",
+    slug: "garlands",
     tag: "Tradition",
     title: "Garlands",
     subtitle: "Fresh Jasmine Varmala and Gift Baskets",
-    image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647414/occasions/products/garlands/garlands-1.webp",
-    desc: "Handcrafted traditional and contemporary bridal garlands, reception varmalas, and auspicious gift flower baskets meticulously strung with fresh fragrant jasmine, lotus buds, and Dutch roses.",
+    cover_image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647414/occasions/products/garlands/garlands-1.webp",
+    description: "Handcrafted traditional and contemporary bridal garlands, reception varmalas, and auspicious gift flower baskets meticulously strung with fresh fragrant jasmine, lotus buds, and Dutch roses.",
+    starting_price: 2500,
+    price_display: "₹ 2,500",
+    whatsapp_number: "918606464700",
+    whatsapp_text: "Hello Occasions Florist Calicut, I would like to inquire about fresh floral Garlands and wedding varmalas.",
+    call_number: "+918606464700",
+    call_text: "Call Atelier Directly",
+    guarantee_text: "100% Freshness Guarantee",
     features: [
       "Fragrant Madurai Jasmine",
       "Feather-Light Ceremony Comfort",
       "Grade-A Dutch Rose Petals",
       "Traditional Uruli and Gift Baskets",
     ],
-    whatsAppText: "Hello Occassions Florist Calicut, I would like to inquire about fresh floral Garlands and wedding varmalas.",
-    href: "/#highlights",
+    active: 1,
+    display_order: 4,
   },
 ];
 
 export default function HighlightSection() {
-  const [modalItem, setModalItem] = useState<HighlightCard | null>(null);
-  const [isCarDecorModalOpen, setIsCarDecorModalOpen] = useState(false);
-  const [isStageDecorModalOpen, setIsStageDecorModalOpen] = useState(false);
-  const [isGarlandsModalOpen, setIsGarlandsModalOpen] = useState(false);
-  const [isChurchDecorModalOpen, setIsChurchDecorModalOpen] = useState(false);
+  const [highlights, setHighlights] = useState<Highlight[]>(DEFAULT_HIGHLIGHTS);
+  const [selectedHighlight, setSelectedHighlight] = useState<Highlight | null>(null);
   const [isInView, setIsInView] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
-  const handleCardClick = (card: HighlightCard) => {
-    if (card.id === "car-decor") {
-      setIsCarDecorModalOpen(true);
-    } else if (card.id === "stage-decor") {
-      setIsStageDecorModalOpen(true);
-    } else if (card.id === "garlands") {
-      setIsGarlandsModalOpen(true);
-    } else if (card.id === "church-arrangement" || card.id === "church-decor") {
-      setIsChurchDecorModalOpen(true);
+  // Fetch highlights dynamically from Neon PostgreSQL
+  useEffect(() => {
+    let isMounted = true;
+    fetch("/api/highlights", { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (isMounted && data?.success && Array.isArray(data.highlights) && data.highlights.length > 0) {
+          setHighlights(data.highlights);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load highlights from DB:", err);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const handleCardClick = (item: Highlight) => {
+    // If the highlight object doesn't have its full gallery loaded, fetch it
+    if (!item.gallery || item.gallery.length === 0) {
+      fetch(`/api/highlights?id=${encodeURIComponent(item.id)}`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => {
+          if (d?.success && d.highlight) {
+            setSelectedHighlight(d.highlight);
+          } else {
+            setSelectedHighlight(item);
+          }
+        })
+        .catch(() => setSelectedHighlight(item));
     } else {
-      setModalItem(card);
+      setSelectedHighlight(item);
     }
   };
 
+  // URL Hash & Custom event navigation support
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const checkHash = () => {
-      if (window.location.hash === "#car-decor") {
-        setIsCarDecorModalOpen(true);
-      } else if (window.location.hash === "#stage-decor") {
-        setIsStageDecorModalOpen(true);
-      } else if (window.location.hash === "#garlands") {
-        setIsGarlandsModalOpen(true);
-      } else if (window.location.hash === "#church-decor" || window.location.hash === "#church-arrangement") {
-        setIsChurchDecorModalOpen(true);
+
+    const openBySlug = (slugOrId: string) => {
+      const match = highlights.find(
+        (h) =>
+          h.slug === slugOrId ||
+          h.id === slugOrId ||
+          (slugOrId === "church-arrangement" && (h.slug === "church-decor" || h.id === "church-decor"))
+      );
+      if (match) {
+        handleCardClick(match);
       }
     };
+
+    const checkHash = () => {
+      const hash = window.location.hash.replace(/^#/, "");
+      if (hash) {
+        openBySlug(hash);
+      }
+    };
+
     checkHash();
     window.addEventListener("hashchange", checkHash);
-    const handleCarOpen = () => setIsCarDecorModalOpen(true);
-    const handleStageOpen = () => setIsStageDecorModalOpen(true);
-    const handleGarlandsOpen = () => setIsGarlandsModalOpen(true);
-    const handleChurchOpen = () => setIsChurchDecorModalOpen(true);
+
+    const handleCarOpen = () => openBySlug("car-decor");
+    const handleStageOpen = () => openBySlug("stage-decor");
+    const handleGarlandsOpen = () => openBySlug("garlands");
+    const handleChurchOpen = () => openBySlug("church-decor");
+
     window.addEventListener("open-car-decor-modal", handleCarOpen);
     window.addEventListener("open-stage-decor-modal", handleStageOpen);
     window.addEventListener("open-garlands-modal", handleGarlandsOpen);
     window.addEventListener("open-church-decor-modal", handleChurchOpen);
+
     return () => {
       window.removeEventListener("hashchange", checkHash);
       window.removeEventListener("open-car-decor-modal", handleCarOpen);
@@ -141,8 +193,9 @@ export default function HighlightSection() {
       window.removeEventListener("open-garlands-modal", handleGarlandsOpen);
       window.removeEventListener("open-church-decor-modal", handleChurchOpen);
     };
-  }, []);
+  }, [highlights]);
 
+  // Viewport animation observer
   useEffect(() => {
     if (typeof window === "undefined") return;
     const el = sectionRef.current;
@@ -160,8 +213,12 @@ export default function HighlightSection() {
     return () => observer.disconnect();
   }, []);
 
-  const getWhatsAppLink = (text: string) =>
-    `https://wa.me/918606464700?text=${encodeURIComponent(text)}`;
+  const handleCloseModal = () => {
+    setSelectedHighlight(null);
+    if (typeof window !== "undefined" && window.location.hash) {
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    }
+  };
 
   return (
     <section
@@ -233,10 +290,10 @@ export default function HighlightSection() {
               </div>
             </div>
 
-            {/* Right Column: 2x2 Grid of Cards */}
+            {/* Right Column: Dynamic Grid of Cards */}
             <div className={styles.rightCol}>
               <div className={styles.cardsGrid}>
-                {highlightCards.map((card, idx) => (
+                {highlights.map((card, idx) => (
                   <div
                     key={card.id}
                     className={styles.card}
@@ -249,7 +306,7 @@ export default function HighlightSection() {
                   >
                     <div className={styles.cardImgWrap}>
                       <img
-                        src={card.image}
+                        src={card.cover_image}
                         alt={card.title}
                         className={styles.cardImg}
                         loading="lazy"
@@ -277,89 +334,11 @@ export default function HighlightSection() {
         </div>
       </div>
 
-      {/* Detail Modal */}
-      {modalItem && (
-        <div
-          className={styles.modalBackdrop}
-          onClick={() => setModalItem(null)}
-          role="dialog"
-          aria-modal="true"
-        >
-          <div
-            className={styles.modalContent}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              type="button"
-              className={styles.modalCloseBtn}
-              onClick={() => setModalItem(null)}
-              aria-label="Close modal"
-            >
-              <X size={18} />
-            </button>
-            <div className={styles.modalImageCol}>
-              <img
-                src={modalItem.image}
-                alt={modalItem.title}
-                className={styles.modalBigImg}
-              />
-            </div>
-            <div className={styles.modalDetailsCol}>
-              <div>
-                <span className={styles.modalTag}>{modalItem.tag}</span>
-                <h3 className={styles.modalTitle}>{modalItem.title}</h3>
-                <p className={styles.modalDesc}>{modalItem.desc}</p>
-                <ul className={styles.modalFeaturesList}>
-                  {modalItem.features.map((feat) => (
-                    <li key={feat} className={styles.modalFeatureItem}>
-                      <span className={styles.modalFeatureDot} />
-                      <span>{feat}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className={styles.modalActions}>
-                <a
-                  href={getWhatsAppLink(modalItem.whatsAppText)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.modalWhatsAppBtn}
-                >
-                  <MessageCircle size={16} />
-                  <span>Inquire on WhatsApp</span>
-                </a>
-                <a href="tel:+918606464700" className={styles.modalCallBtn}>
-                  <Phone size={14} color="#ec4899" />
-                  <span>Call Atelier Directly</span>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Car Decor Dedicated Showcase Modal */}
-      <CarDecorModal
-        isOpen={isCarDecorModalOpen}
-        onClose={() => setIsCarDecorModalOpen(false)}
-      />
-
-      {/* Stage Decor Dedicated Showcase Modal */}
-      <StageDecorModal
-        isOpen={isStageDecorModalOpen}
-        onClose={() => setIsStageDecorModalOpen(false)}
-      />
-
-      {/* Garlands Dedicated Showcase Modal */}
-      <GarlandsModal
-        isOpen={isGarlandsModalOpen}
-        onClose={() => setIsGarlandsModalOpen(false)}
-      />
-
-      {/* Church Decor Dedicated Showcase Modal */}
-      <ChurchDecorModal
-        isOpen={isChurchDecorModalOpen}
-        onClose={() => setIsChurchDecorModalOpen(false)}
+      {/* Unified Dynamic Showcase Modal */}
+      <HighlightGalleryModal
+        isOpen={!!selectedHighlight}
+        onClose={handleCloseModal}
+        highlight={selectedHighlight}
       />
     </section>
   );
