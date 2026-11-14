@@ -867,7 +867,7 @@ export default function ProductFormModal({
                 }}
               >
                 <Upload size={16} style={{ cursor: uploading ? "not-allowed" : "pointer" }} />
-                <span style={{ cursor: uploading ? "not-allowed" : "pointer" }}>{uploading ? "Uploading to Server Storage..." : "Upload from Computer"}</span>
+                <span style={{ cursor: uploading ? "not-allowed" : "pointer" }}>{uploading ? "Uploading to Cloudinary..." : "Upload from Computer"}</span>
                 <input
                   type="file"
                   accept="image/*"

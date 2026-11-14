@@ -202,13 +202,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: "Failed to read image data" }, { status: 400 });
     }
 
-    // Determine target local directory on server storage
-    const { subDir, folderName } = resolveCategoryStorage(requestedFolder);
-    const targetDir = path.join(process.cwd(), "public", "images", subDir);
-    if (!fs.existsSync(targetDir)) {
-      fs.mkdirSync(targetDir, { recursive: true });
-    }
-
     // Clean and sanitize filename
     const ext = (path.extname(originalName) || ".jpg").toLowerCase();
     const base = path.basename(originalName, ext)
@@ -216,26 +209,29 @@ export async function POST(request: Request) {
       .replace(/[^a-z0-9_-]+/g, "-")
       .replace(/^-+|-+$/g, "") || "product";
 
-    let safeName = `${base}${ext}`;
-    let targetFilePath = path.join(targetDir, safeName);
+    const { folderName } = resolveCategoryStorage(requestedFolder);
+    const safeName = `${base}${ext}`;
+    const publicId = `${base}-${Date.now().toString().slice(-6)}`;
+    const mime = ext === ".png" ? "image/png" : ext === ".webp" ? "image/webp" : ext === ".svg" ? "image/svg+xml" : "image/jpeg";
+    const dataUri = `data:${mime};base64,${rawBuffer.toString("base64")}`;
 
-    if (fs.existsSync(targetFilePath)) {
-      safeName = `${base}-${Date.now().toString().slice(-6)}${ext}`;
-      targetFilePath = path.join(targetDir, safeName);
-    }
+    // Upload directly to Cloudinary — strictly NO local disk storage
+    const cldResult = await cloudinary.uploader.upload(dataUri, {
+      folder: `occasions/${folderName}`,
+      public_id: publicId,
+      resource_type: "image",
+    });
 
-    // Save to local server storage
-    fs.writeFileSync(targetFilePath, rawBuffer);
-
-    const localUrl = `/images/${subDir}/${safeName}`;
+    const cloudinaryUrl = cldResult.secure_url;
     const mediaId = `med-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
     const now = new Date().toISOString();
 
     await sql`
       INSERT INTO media (id, url, public_id, filename, format, size, width, height, folder, created_at)
       VALUES (
-        ${mediaId}, ${localUrl}, ${localUrl}, ${safeName},
-        ${ext.replace(".", "")}, ${rawBuffer.length}, 800, 800, ${folderName}, ${now}
+        ${mediaId}, ${cloudinaryUrl}, ${cldResult.public_id}, ${safeName},
+        ${cldResult.format || ext.replace(".", "")}, ${cldResult.bytes || rawBuffer.length},
+        ${cldResult.width || 800}, ${cldResult.height || 800}, ${folderName}, ${now}
       )
       ON CONFLICT (id) DO NOTHING
     `;
@@ -244,13 +240,13 @@ export async function POST(request: Request) {
       success: true,
       mediaItem: {
         id: mediaId,
-        url: localUrl,
-        public_id: localUrl,
+        url: cloudinaryUrl,
+        public_id: cldResult.public_id,
         filename: safeName,
-        format: ext.replace(".", ""),
-        size: rawBuffer.length,
-        width: 800,
-        height: 800,
+        format: cldResult.format || ext.replace(".", ""),
+        size: cldResult.bytes || rawBuffer.length,
+        width: cldResult.width || 800,
+        height: cldResult.height || 800,
         folder: folderName,
         created_at: now,
         referencedBy: [],
@@ -259,8 +255,8 @@ export async function POST(request: Request) {
       },
     });
   } catch (error: any) {
-    console.error("Media upload error:", error);
-    return NextResponse.json({ success: false, error: error.message || "Failed to upload media" }, { status: 500 });
+    console.error("Cloudinary media upload error:", error);
+    return NextResponse.json({ success: false, error: error.message || "Failed to upload image to Cloudinary" }, { status: 500 });
   }
 }
 

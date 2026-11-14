@@ -85,75 +85,57 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: "Failed to read image data" }, { status: 400 });
     }
 
-    // Determine target local directory on server storage
-    const { subDir, folderName } = resolveCategoryStorage(requestedFolder);
-    const targetDir = path.join(process.cwd(), "public", "images", subDir);
-    if (!fs.existsSync(targetDir)) {
-      fs.mkdirSync(targetDir, { recursive: true });
-    }
-
-    // Clean and sanitize filename to prevent overwrites or illegal characters
+    // Clean and sanitize filename to prevent illegal characters
     const ext = (path.extname(originalName) || ".jpg").toLowerCase();
     const base = path.basename(originalName, ext)
       .toLowerCase()
       .replace(/[^a-z0-9_-]+/g, "-")
       .replace(/^-+|-+$/g, "") || "product";
 
-    let safeName = `${base}${ext}`;
-    let targetFilePath = path.join(targetDir, safeName);
+    const { folderName } = resolveCategoryStorage(requestedFolder);
+    const safeName = `${base}${ext}`;
+    const publicId = `${base}-${Date.now().toString().slice(-6)}`;
+    const mime = ext === ".png" ? "image/png" : ext === ".webp" ? "image/webp" : ext === ".svg" ? "image/svg+xml" : "image/jpeg";
+    const dataUri = `data:${mime};base64,${rawBuffer.toString("base64")}`;
 
-    // If file exists, append timestamp suffix
-    if (fs.existsSync(targetFilePath)) {
-      safeName = `${base}-${Date.now().toString().slice(-6)}${ext}`;
-      targetFilePath = path.join(targetDir, safeName);
-    }
+    // Upload directly to Cloudinary — strictly NO local disk storage
+    const cldResult = await cloudinary.uploader.upload(dataUri, {
+      folder: `occasions/${folderName}`,
+      public_id: publicId,
+      resource_type: "image",
+    });
 
-    // Write file directly to local server storage
-    fs.writeFileSync(targetFilePath, rawBuffer);
-
-    // Storefront accessible local path
-    const localUrl = `/images/${subDir}/${safeName}`;
+    const cloudinaryUrl = cldResult.secure_url;
     const mediaId = `med-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
     const now = new Date().toISOString();
 
-    // Record to Neon PostgreSQL media database
+    // Record to Neon PostgreSQL media database with Cloudinary secure URL
     await sql`
       INSERT INTO media (id, url, public_id, filename, format, size, width, height, folder, created_at)
       VALUES (
-        ${mediaId}, ${localUrl}, ${localUrl}, ${safeName},
-        ${ext.replace(".", "")}, ${rawBuffer.length}, 800, 800, ${folderName}, ${now}
+        ${mediaId}, ${cloudinaryUrl}, ${cldResult.public_id}, ${safeName},
+        ${cldResult.format || ext.replace(".", "")}, ${cldResult.bytes || rawBuffer.length},
+        ${cldResult.width || 800}, ${cldResult.height || 800}, ${folderName}, ${now}
       )
       ON CONFLICT (id) DO NOTHING
     `;
 
-    // Optional Cloudinary backup upload in background
-    if (process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
-      const mime = ext === ".png" ? "image/png" : ext === ".webp" ? "image/webp" : "image/jpeg";
-      const dataUri = `data:${mime};base64,${rawBuffer.toString("base64")}`;
-      cloudinary.uploader
-        .upload(dataUri, {
-          folder: `occasions/${folderName}`,
-          public_id: `${base}-${Date.now().toString().slice(-6)}`,
-          resource_type: "image",
-        })
-        .catch((cldErr) => {
-          console.warn("Cloudinary background upload warning:", cldErr.message);
-        });
-    }
-
     return NextResponse.json({
       success: true,
-      url: localUrl,
+      url: cloudinaryUrl,
+      public_id: cldResult.public_id,
       filename: safeName,
       mediaId,
       folder: folderName,
-      size: rawBuffer.length,
-      storage: "server",
+      size: cldResult.bytes || rawBuffer.length,
+      width: cldResult.width || 800,
+      height: cldResult.height || 800,
+      storage: "cloudinary",
     });
   } catch (error: any) {
-    console.error("Server image upload error:", error);
+    console.error("Cloudinary image upload error:", error);
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to upload image to server storage" },
+      { success: false, error: error.message || "Failed to upload image to Cloudinary" },
       { status: 500 }
     );
   }
