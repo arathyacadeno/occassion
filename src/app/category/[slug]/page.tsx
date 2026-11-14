@@ -1,5 +1,5 @@
 import React from "react";
-import { redirect } from "next/navigation";
+import { redirect, notFound } from "next/navigation";
 import { Metadata } from "next";
 import CategoryPage from "@/components/CategoryPage";
 import { sql } from "@/lib/db/neon";
@@ -81,6 +81,10 @@ export default async function DynamicCategoryPage({ params }: PageProps) {
     `;
   } catch (e) {
     console.error("Neon category products query error:", e);
+  }
+
+  if (!category && (!rawProducts || rawProducts.length === 0)) {
+    notFound();
   }
 
   const products: Product[] = (rawProducts || []).map((p) => {

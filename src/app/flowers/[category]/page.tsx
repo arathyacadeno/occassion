@@ -1,6 +1,6 @@
 import React from "react";
 import { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { redirect, notFound } from "next/navigation";
 import CategoryPage from "@/components/CategoryPage";
 import { getCategoryInfo, CATEGORIES_DATA } from "@/data/flowerProducts";
 import { getProductsForFlower, getAllProducts } from "@/data/catalog";
@@ -51,6 +51,9 @@ export default async function FlowerTypeCategoryPage({ params }: PageProps) {
     redirect("/flower-baskets");
   }
 
+  const normalizedCategory = category.toLowerCase().trim();
+  const isKnownCategory = Boolean(CATEGORIES_DATA[normalizedCategory]);
+
   const info = getCategoryInfo(category);
   let products = getProductsForFlower(category);
   if (!products || products.length === 0) {
@@ -61,6 +64,10 @@ export default async function FlowerTypeCategoryPage({ params }: PageProps) {
         (p.name.toLowerCase().includes(category.toLowerCase()) ||
           p.description?.toLowerCase().includes(category.toLowerCase()))
     );
+  }
+
+  if (!isKnownCategory && (!products || products.length === 0)) {
+    notFound();
   }
 
   const flowerName = info.name || "Flowers";
