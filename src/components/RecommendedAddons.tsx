@@ -54,21 +54,26 @@ export const getAddonProducts = (
   const baskets = filterCurrent(sourceList.filter((p) => p.category === "Flower Baskets"));
   const chocolates = filterCurrent(sourceList.filter((p) => p.category === "Chocolates"));
   const softToys = filterCurrent(sourceList.filter((p) => p.category === "Soft Toys"));
+  const others = filterCurrent(
+    sourceList.filter(
+      (p) => !["Cakes", "Flower Bouquets", "Flower Baskets", "Chocolates", "Soft Toys"].includes(p.category)
+    )
+  );
 
   let groups: AddonProduct[][];
 
   if (norm.includes("cake")) {
     // When buying a Cake: show Flower Bouquets, Flower Baskets, Chocolates, Soft Toys (NEVER any Cakes)
-    groups = [bouquets, baskets, chocolates, softToys];
+    groups = [bouquets, baskets, chocolates, softToys, others];
   } else if (norm.includes("basket")) {
     // When buying a Flower Basket: show Cakes, Flower Bouquets, Chocolates, Soft Toys (No Baskets)
-    groups = [cakes, bouquets, chocolates, softToys];
+    groups = [cakes, bouquets, chocolates, softToys, others];
   } else if (norm.includes("bouquet") || norm === "flower") {
     // When buying a Flower Bouquet: show Cakes, Flower Baskets, Chocolates, Soft Toys (No Bouquets)
-    groups = [cakes, baskets, chocolates, softToys];
+    groups = [cakes, baskets, chocolates, softToys, others];
   } else {
     // Other items / Table decor: show Cakes, Flower Bouquets, Flower Baskets, Chocolates, Soft Toys
-    groups = [cakes, bouquets, baskets, chocolates, softToys];
+    groups = [cakes, bouquets, baskets, chocolates, softToys, others];
   }
 
   const mixed: AddonProduct[] = [];

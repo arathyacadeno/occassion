@@ -446,6 +446,10 @@ export default function AdminPage() {
     setProductActionMsg(`✓ Product '${productData.name}' ${isEdit ? "updated" : "published"} successfully`);
     setTimeout(() => setProductActionMsg(null), 5000);
     await fetchAdminData();
+    if (typeof window !== "undefined") {
+      localStorage.setItem("occasions_addons_updated", Date.now().toString());
+      window.dispatchEvent(new CustomEvent("occasions:addons-changed"));
+    }
     return true;
   };
 
@@ -477,6 +481,10 @@ export default function AdminPage() {
       setProductActionMsg(`✓ '${p.name}' is now ${newActive ? "Published" : "Draft"}`);
       setTimeout(() => setProductActionMsg(null), 4000);
       fetchAdminData();
+      if (typeof window !== "undefined") {
+        localStorage.setItem("occasions_addons_updated", Date.now().toString());
+        window.dispatchEvent(new CustomEvent("occasions:addons-changed"));
+      }
     } else {
       alert(data.error || "Failed to update product status");
     }
@@ -508,6 +516,10 @@ export default function AdminPage() {
       setProductActionMsg(`✓ ${data.message || "Product removed successfully"}`);
       setTimeout(() => setProductActionMsg(null), 5000);
       await fetchAdminData();
+      if (typeof window !== "undefined") {
+        localStorage.setItem("occasions_addons_updated", Date.now().toString());
+        window.dispatchEvent(new CustomEvent("occasions:addons-changed"));
+      }
       return true;
     } else {
       throw new Error(data.error || "Failed to remove product");

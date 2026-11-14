@@ -53,6 +53,7 @@ export default function ProductFormModal({
   const [shortDescription, setShortDescription] = useState("");
   const [description, setDescription] = useState("");
   const [categoryId, setCategoryId] = useState("");
+  const [addonCategory, setAddonCategory] = useState<string>("Chocolates");
   const [showNewCatInput, setShowNewCatInput] = useState(false);
   const [newCatName, setNewCatName] = useState("");
   const [flowerTypeId, setFlowerTypeId] = useState("");
@@ -116,6 +117,7 @@ export default function ProductFormModal({
         if (matched) initialCat = matched.id;
       }
       setCategoryId(initialCat || (categories[0]?.id || "cat-flower-bouquet"));
+      setAddonCategory(product.addonCategory || product.addon_category || "Chocolates");
       setFlowerTypeId(product.flowerTypeId || product.flower_type_id || "");
       setOccasionId(product.occasionId || product.occasion_id || "");
       setPrice(product.price ?? "");
@@ -157,6 +159,7 @@ export default function ProductFormModal({
       setShortDescription("");
       setDescription("");
       setCategoryId(categories[0]?.id || "cat-flower-bouquet");
+      setAddonCategory("Chocolates");
       setFlowerTypeId(flowerTypes[0]?.id || "ft-mixed-flowers");
       setOccasionId(occasions[0]?.id || "occ-birthday");
       setPrice("");
@@ -202,9 +205,10 @@ export default function ProductFormModal({
   };
 
   const isAddonCategory =
+    categoryId === "cat-addons" ||
+    categoryId === "addons" ||
     categoryId.toLowerCase().includes("addon") ||
-    categoryId.toLowerCase().includes("add-on") ||
-    type === "general";
+    categoryId.toLowerCase().includes("add-on");
 
   // Upload to local server storage and database via backend endpoint
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -323,6 +327,7 @@ export default function ProductFormModal({
         deliveryInfo: deliveryInfo.trim(),
         images: images.length > 0 ? images : ["/images/cat-flower-bouquet-luxe.jpg"],
         attributes,
+        addonCategory: isAddonCategory ? addonCategory : undefined,
       };
 
       const success = await onSave(payload);
@@ -687,30 +692,69 @@ export default function ProductFormModal({
                 )}
               </div>
 
-              <div>
-                <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, color: "#475569", marginBottom: 6 }}>
-                  Product Type Architecture
-                </label>
-                <select
-                  value={type}
-                  onChange={(e) => setType(e.target.value as any)}
-                  style={{
-                    width: "100%",
-                    padding: "10px 14px",
-                    borderRadius: 10,
-                    border: "1.5px solid #cbd5e1",
-                    fontSize: "0.92rem",
-                    background: "#fff",
-                  }}
-                >
-                  <option value="flower">Flower Bouquet / Stems</option>
-                  <option value="cake">Gourmet Cake</option>
-                  <option value="basket">Flower Basket</option>
-                  <option value="wreath">Floral Wreath</option>
-                  <option value="decor">Table / Event Decor</option>
-                  <option value="general">General Gift (Add-ons, Chocolates, Bears, Cards)</option>
-                </select>
-              </div>
+              {isAddonCategory ? (
+                <div>
+                  <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 700, color: "#9d174d", marginBottom: 6 }}>
+                    Add-on Category (Popup Filter Tab) *
+                  </label>
+                  <select
+                    value={addonCategory}
+                    onChange={(e) => {
+                      const selected = e.target.value;
+                      setAddonCategory(selected);
+                      if (selected === "Flower Bouquets") setType("flower");
+                      else if (selected === "Flower Baskets") setType("basket");
+                      else if (selected === "Cakes") setType("cake");
+                      else setType("general");
+                    }}
+                    style={{
+                      width: "100%",
+                      padding: "10px 14px",
+                      borderRadius: 10,
+                      border: "2px solid #f472b6",
+                      fontSize: "0.92rem",
+                      fontWeight: 600,
+                      color: "#831843",
+                      background: "#fff1f2",
+                      outline: "none",
+                    }}
+                  >
+                    <option value="Chocolates">Chocolates</option>
+                    <option value="Cakes">Cakes</option>
+                    <option value="Flower Bouquets">Flower Bouquets</option>
+                    <option value="Flower Baskets">Flower Baskets</option>
+                    <option value="Soft Toys">Soft Toys</option>
+                  </select>
+                  <p style={{ margin: "4px 0 0", fontSize: "0.75rem", color: "#64748b" }}>
+                    Determines which filter tab this add-on appears under in the customer popup.
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, color: "#475569", marginBottom: 6 }}>
+                    Product Type Architecture
+                  </label>
+                  <select
+                    value={type}
+                    onChange={(e) => setType(e.target.value as any)}
+                    style={{
+                      width: "100%",
+                      padding: "10px 14px",
+                      borderRadius: 10,
+                      border: "1.5px solid #cbd5e1",
+                      fontSize: "0.92rem",
+                      background: "#fff",
+                    }}
+                  >
+                    <option value="flower">Flower Bouquet / Stems</option>
+                    <option value="cake">Gourmet Cake</option>
+                    <option value="basket">Flower Basket</option>
+                    <option value="wreath">Floral Wreath</option>
+                    <option value="decor">Table / Event Decor</option>
+                    <option value="general">General Gift (Add-ons, Chocolates, Bears, Cards)</option>
+                  </select>
+                </div>
+              )}
             </div>
           </div>
 

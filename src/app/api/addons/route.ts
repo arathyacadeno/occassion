@@ -3,18 +3,66 @@ import { sql } from "@/lib/db/neon";
 import { ADDON_PRODUCTS, AddonProduct } from "@/data/addons";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
 
-function determineCategory(row: any): "Cakes" | "Flower Bouquets" | "Flower Baskets" | "Chocolates" | "Soft Toys" {
+const PREFERRED_CATEGORY_ORDER = [
+  "All",
+  "Flower Bouquets",
+  "Flower Baskets",
+  "Cakes",
+  "Chocolates",
+  "Soft Toys",
+];
+
+function fallbackDetermineCategory(row: any): "Cakes" | "Flower Bouquets" | "Flower Baskets" | "Chocolates" | "Soft Toys" {
   const nameLower = (row.name || "").toLowerCase();
   const typeLower = (row.type || "").toLowerCase();
-  const descLower = (row.description || "").toLowerCase();
+  const idLower = (row.id || "").toLowerCase();
 
+  // Soft Toys
+  if (
+    nameLower.includes("teddy") ||
+    nameLower.includes("bear") ||
+    nameLower.includes("plush") ||
+    nameLower.includes("toy")
+  ) {
+    return "Soft Toys";
+  }
+
+  // Chocolates & Treats (Snickers, Dairy Milk, 5 Star, Kitkat, Ferrero, etc.)
+  if (
+    nameLower.includes("chocolate") ||
+    nameLower.includes("snickers") ||
+    nameLower.includes("snikcers") ||
+    nameLower.includes("kitkat") ||
+    nameLower.includes("ferrero") ||
+    nameLower.includes("cadbury") ||
+    nameLower.includes("dairy milk") ||
+    nameLower.includes("diary milk") ||
+    nameLower.includes("silk") ||
+    nameLower.includes("5 star") ||
+    nameLower.includes("5star") ||
+    nameLower.includes("kisses") ||
+    nameLower.includes("hershey") ||
+    nameLower.includes("toblerone") ||
+    nameLower.includes("bournville") ||
+    nameLower.includes("temptations") ||
+    nameLower.includes("roast almond") ||
+    nameLower.includes("fruit & nut") ||
+    nameLower.includes("fruit and nut") ||
+    nameLower.includes("fruit n nut") ||
+    nameLower.includes("galaxy")
+  ) {
+    return "Chocolates";
+  }
+
+  // Cakes
   if (typeLower === "cake" || nameLower.includes("cake") || nameLower.includes("pastry")) {
     return "Cakes";
   }
-  if (typeLower === "basket" || nameLower.includes("basket")) {
-    return "Flower Baskets";
-  }
+
+  // Flower Bouquets
   if (
     typeLower === "flower" ||
     nameLower.includes("bouquet") ||
@@ -25,16 +73,13 @@ function determineCategory(row: any): "Cakes" | "Flower Bouquets" | "Flower Bask
   ) {
     return "Flower Bouquets";
   }
-  if (
-    nameLower.includes("teddy") ||
-    nameLower.includes("bear") ||
-    nameLower.includes("plush") ||
-    nameLower.includes("toy")
-  ) {
-    return "Soft Toys";
+
+  // Flower Baskets
+  if (typeLower === "basket" || nameLower.includes("basket") || nameLower.includes("cane")) {
+    return "Flower Baskets";
   }
 
-  // Chocolates / Confectionery / Treats (Default for gifts & snacks like Diary milk, 5 Star, etc.)
+  // Default for gifts/snacks is Chocolates
   return "Chocolates";
 }
 
@@ -44,7 +89,7 @@ export async function GET() {
     try {
       dbRows = await sql`
         SELECT p.id, p.name, p.slug, p.price, p.discount_price, p.images, p.type,
-               p.category_id, p.active, p.status, p.description, p.created_at,
+               p.addon_category, p.category_id, p.active, p.status, p.description, p.created_at,
                c.name as category_name, c.slug as category_slug
         FROM products p
         LEFT JOIN categories c ON p.category_id = c.id
@@ -65,81 +110,96 @@ export async function GET() {
       console.error("Neon addons query error:", dbError);
     }
 
-    if (!dbRows || dbRows.length === 0) {
-      return NextResponse.json({ success: true, addons: ADDON_PRODUCTS });
-    }
+    // If database returned active items, use database as SINGLE SOURCE OF TRUTH
+    // (Never resurrect deleted items by merging with static ADDON_PRODUCTS)
+    let addonsList: AddonProduct[] = [];
 
-    // Map database rows into AddonProduct format
-    const dbAddons: AddonProduct[] = dbRows.map((row: any) => {
-      let image = "/images/addons/Cadbury-Dairy-Milk.png";
-      if (row.images) {
-        try {
-          const parsed = typeof row.images === "string" ? JSON.parse(row.images) : row.images;
-          if (Array.isArray(parsed) && parsed.length > 0 && parsed[0]) {
-            image = parsed[0];
-          }
-        } catch {
-          if (typeof row.images === "string" && row.images.trim()) {
-            image = row.images.trim();
+    if (dbRows && dbRows.length > 0) {
+      addonsList = dbRows.map((row: any) => {
+        let image = "/images/addons/Cadbury-Dairy-Milk.png";
+        if (row.images) {
+          try {
+            const parsed = typeof row.images === "string" ? JSON.parse(row.images) : row.images;
+            if (Array.isArray(parsed) && parsed.length > 0 && parsed[0]) {
+              image = parsed[0];
+            }
+          } catch {
+            if (typeof row.images === "string" && row.images.trim()) {
+              image = row.images.trim();
+            }
           }
         }
-      }
 
-      const category = determineCategory(row);
-      const cleanSlug = (row.slug || row.id || "").replace(/^\//, "");
+        // Use database addon_category directly; fallback only if empty
+        const category =
+          row.addon_category && typeof row.addon_category === "string" && row.addon_category.trim()
+            ? (row.addon_category.trim() as any)
+            : fallbackDetermineCategory(row);
 
-      return {
-        id: row.id,
-        name: row.name,
-        price: Number(row.price) || 0,
-        image,
-        category,
-        href: `/special-occasions/${cleanSlug}`,
-        sectionHref: "/special-occasions",
-      };
-    });
+        const cleanSlug = (row.slug || row.id || "").replace(/^\//, "");
 
-    // Merge: DB items take precedence, then append static catalog items that aren't already represented
-    const seenIds = new Set<string>();
-    const seenSlugs = new Set<string>();
-    const seenNames = new Set<string>();
-    const merged: AddonProduct[] = [];
-
-    // 1. Add DB items (most recent first)
-    for (const item of dbAddons) {
-      const cleanId = item.id.toLowerCase();
-      const cleanName = item.name.trim().toLowerCase();
-      const cleanSlug = item.href.toLowerCase().replace(/^\/special-occasions\//, "");
-
-      seenIds.add(cleanId);
-      seenNames.add(cleanName);
-      if (cleanSlug) seenSlugs.add(cleanSlug);
-
-      merged.push(item);
+        return {
+          id: row.id,
+          name: row.name,
+          price: Number(row.price) || 0,
+          image,
+          category,
+          href: `/special-occasions/${cleanSlug}`,
+          sectionHref: "/special-occasions",
+        };
+      });
+    } else {
+      // Fallback only if database connection failed or table is completely empty
+      addonsList = ADDON_PRODUCTS;
     }
 
-    // 2. Append static items that are not in DB
-    for (const item of ADDON_PRODUCTS) {
-      const cleanId = item.id.toLowerCase();
-      const cleanName = item.name.trim().toLowerCase();
-      const cleanSlug = item.href.toLowerCase().replace(/^\/(special-occasions|cakes|flower|flower-bouquets)\//, "");
+    // Compute dynamic categories present in the active addons
+    const distinctCategories = Array.from(
+      new Set(addonsList.map((item) => item.category).filter(Boolean))
+    );
 
-      // Avoid duplicates
-      if (seenIds.has(cleanId) || seenNames.has(cleanName) || (cleanSlug && seenSlugs.has(cleanSlug))) {
-        continue;
-      }
-
-      merged.push(item);
-    }
-
-    return NextResponse.json({
-      success: true,
-      addons: merged,
-      count: merged.length,
+    distinctCategories.sort((a, b) => {
+      const idxA = PREFERRED_CATEGORY_ORDER.indexOf(a);
+      const idxB = PREFERRED_CATEGORY_ORDER.indexOf(b);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      return a.localeCompare(b);
     });
+
+    const categories = ["All", ...distinctCategories];
+
+    return NextResponse.json(
+      {
+        success: true,
+        categories,
+        addons: addonsList,
+        count: addonsList.length,
+      },
+      {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+          Pragma: "no-cache",
+          Expires: "0",
+        },
+      }
+    );
   } catch (error: any) {
     console.error("GET /api/addons error:", error);
-    return NextResponse.json({ success: true, addons: ADDON_PRODUCTS });
+    return NextResponse.json(
+      {
+        success: true,
+        categories: PREFERRED_CATEGORY_ORDER,
+        addons: ADDON_PRODUCTS,
+        count: ADDON_PRODUCTS.length,
+      },
+      {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+        },
+      }
+    );
   }
 }
+
 

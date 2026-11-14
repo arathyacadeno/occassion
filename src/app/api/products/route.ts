@@ -146,7 +146,7 @@ export async function GET(request: Request) {
         p.stock, p.sku, p.featured, p.active, p.rating, p.reviews_count,
         p.delivery_info, p.offers, p.includes, p.badge, p.created_at, p.updated_at,
         p.type, p.status, p.short_description, p.tags, p.low_stock_threshold,
-        p.seo_title, p.seo_description, p.attributes,
+        p.seo_title, p.seo_description, p.attributes, p.addon_category,
         p.category_id, p.flower_type_id, p.occasion_id,
         c.name as category_name, c.slug as category_slug,
         ft.name as flower_type_name, ft.slug as flower_type_slug,
@@ -223,6 +223,7 @@ export async function GET(request: Request) {
           r.category_id === "cat-addons" ? "Add-ons" :
           "Flowers"
         ),
+        addonCategory: r.addon_category || null,
         type: r.type || "general",
         status: r.status || "published",
         flowerType: r.flower_type_slug,
@@ -298,7 +299,13 @@ export async function POST(request: Request) {
       seoTitle,
       seoDescription,
       attributes,
+      addonCategory,
     } = body;
+
+    const finalAddonCategory =
+      addonCategory ||
+      body.addon_category ||
+      (categoryId === "cat-addons" || categoryId === "addons" ? "Chocolates" : null);
 
     // Validation
     if (!name || typeof name !== "string" || !name.trim()) {
@@ -366,7 +373,7 @@ export async function POST(request: Request) {
         stock, low_stock_threshold, sku, category_id, flower_type_id, occasion_id,
         featured, active, rating, reviews_count, delivery_info,
         offers, includes, badge, type, status, tags, seo_title, seo_description,
-        attributes, created_at, updated_at
+        attributes, addon_category, created_at, updated_at
       ) VALUES (
         ${id}, ${name.trim()}, ${cleanSlug}, ${description || ""}, ${shortDescription || ""},
         ${JSON.stringify(imageArray)}, ${numPrice}, ${originalPrice ? Number(originalPrice) : null},
@@ -380,6 +387,7 @@ export async function POST(request: Request) {
         ${JSON.stringify(Array.isArray(tags) ? tags : [])},
         ${seoTitle || ""}, ${seoDescription || ""},
         ${JSON.stringify(typeof attributes === "object" && attributes !== null ? attributes : {})},
+        ${finalAddonCategory},
         ${now}, ${now}
       )
     `;

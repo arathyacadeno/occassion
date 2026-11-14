@@ -59,16 +59,33 @@ export default function AddonModal({
     };
   }, [isOpen, onClose]);
 
-  const { addons: liveAddons, getAddonById } = useAddons();
+  const { addons: liveAddons, categories: liveCategories, getAddonById, refreshAddons } = useAddons();
+
+  // Always refresh live addons when opening the modal
+  useEffect(() => {
+    if (isOpen) {
+      refreshAddons();
+    }
+  }, [isOpen, refreshAddons]);
 
   const filteredAddons = useMemo(
     () => getAddonProducts(mainCategory, currentProductId, currentProductSlug, liveAddons),
     [mainCategory, currentProductId, currentProductSlug, liveAddons]
   );
 
-  // Categories list with contextual priority
+  // Dynamic categories list with contextual priority
   const categories = useMemo(() => {
-    const cats = Array.from(new Set(filteredAddons.map((p) => p.category)));
+    const setOfCats = new Set<string>();
+    if (liveCategories && liveCategories.length > 0) {
+      liveCategories.forEach((c) => {
+        if (c !== "All") setOfCats.add(c);
+      });
+    }
+    filteredAddons.forEach((p) => {
+      if (p.category) setOfCats.add(p.category);
+    });
+
+    const cats = Array.from(setOfCats);
     const norm = (mainCategory || "").toLowerCase().replace(/^cat-/, "");
     let order: string[];
     if (norm.includes("cake")) {
@@ -76,7 +93,7 @@ export default function AddonModal({
     } else if (norm.includes("basket")) {
       order = ["Cakes", "Flower Bouquets", "Chocolates", "Soft Toys", "Flower Baskets"];
     } else {
-      order = ["Cakes", "Flower Baskets", "Chocolates", "Soft Toys", "Flower Bouquets"];
+      order = ["Flower Bouquets", "Flower Baskets", "Cakes", "Chocolates", "Soft Toys"];
     }
     cats.sort((a, b) => {
       const iA = order.indexOf(a);
@@ -87,7 +104,7 @@ export default function AddonModal({
       return a.localeCompare(b);
     });
     return ["All", ...cats];
-  }, [filteredAddons, mainCategory]);
+  }, [filteredAddons, mainCategory, liveCategories]);
 
   // Selected count per category
   const categorySelectedCounts = useMemo(() => {
@@ -110,7 +127,7 @@ export default function AddonModal({
     return filteredAddons.filter((p) => p.category === activeCategory);
   }, [filteredAddons, activeCategory]);
 
-  if (!isOpen || filteredAddons.length === 0) return null;
+  if (!isOpen) return null;
 
   const handleIncrement = (id: string) => {
     const current = selectedAddons[id] || 0;
@@ -207,26 +224,42 @@ export default function AddonModal({
         {/* Modal Body / Products Grid */}
         <div className={styles.modalBody}>
           <div className={styles.modalGrid}>
-            {displayedAddons.map((product) => {
-              const qty = selectedAddons[product.id] || 0;
-              const isSelected = qty > 0;
+            {displayedAddons.length === 0 ? (
+              <div
+                style={{
+                  gridColumn: "1 / -1",
+                  textAlign: "center",
+                  padding: "48px 16px",
+                  color: "#64748b",
+                  fontSize: "0.95rem",
+                }}
+              >
+                No add-on products currently available in this category.
+              </div>
+            ) : (
+              displayedAddons.map((product) => {
+                const qty = selectedAddons[product.id] || 0;
+                const isSelected = qty > 0;
 
-              return (
-                <div
-                  key={product.id}
-                  className={`${styles.addonCard} ${
-                    isSelected ? styles.addonCardSelected : ""
-                  }`}
-                >
-                  {/* Card Image */}
-                  <div className={styles.imageContainer}>
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className={styles.cardImage}
-                      loading="lazy"
-                    />
-                  </div>
+                return (
+                  <div
+                    key={product.id}
+                    className={`${styles.addonCard} ${
+                      isSelected ? styles.addonCardSelected : ""
+                    }`}
+                  >
+                    {/* Card Image */}
+                    <div className={styles.imageContainer}>
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className={styles.cardImage}
+                        loading="lazy"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = "/images/cat-flower-bouquet-luxe.jpg";
+                        }}
+                      />
+                    </div>
 
                   {/* Card Content */}
                   <div className={styles.cardContent}>
@@ -280,7 +313,7 @@ export default function AddonModal({
                   </div>
                 </div>
               );
-            })}
+            }))}
           </div>
         </div>
 

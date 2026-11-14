@@ -16,7 +16,7 @@ export async function GET(
         p.id, p.name, p.slug, p.description, p.short_description, p.images, p.price, p.discount_price,
         p.stock, p.low_stock_threshold, p.sku, p.featured, p.active, p.rating, p.reviews_count,
         p.delivery_info, p.offers, p.includes, p.badge, p.created_at, p.updated_at,
-        p.type, p.status, p.tags, p.seo_title, p.seo_description, p.attributes,
+        p.type, p.status, p.tags, p.seo_title, p.seo_description, p.attributes, p.addon_category,
         p.category_id, p.flower_type_id, p.occasion_id,
         c.name as category_name, c.slug as category_slug,
         ft.name as flower_type_name, ft.slug as flower_type_slug,
@@ -40,7 +40,7 @@ export async function GET(
           p.id, p.name, p.slug, p.description, p.short_description, p.images, p.price, p.discount_price,
           p.stock, p.low_stock_threshold, p.sku, p.featured, p.active, p.rating, p.reviews_count,
           p.delivery_info, p.offers, p.includes, p.badge, p.created_at, p.updated_at,
-          p.type, p.status, p.tags, p.seo_title, p.seo_description, p.attributes,
+          p.type, p.status, p.tags, p.seo_title, p.seo_description, p.attributes, p.addon_category,
           p.category_id, p.flower_type_id, p.occasion_id,
           c.name as category_name, c.slug as category_slug,
           ft.name as flower_type_name, ft.slug as flower_type_slug,
@@ -169,6 +169,7 @@ export async function GET(
           product.category_id === "cat-addons" ? "Add-ons" :
           "Flowers"
         ),
+        addonCategory: product.addon_category || null,
         type: product.type || "general",
         status: product.status || "published",
         flowerType: product.flower_type_slug,
@@ -302,6 +303,10 @@ export async function PUT(
     }
     if (body.categoryId !== undefined) {
       updates.push(`category_id = ${addParam(body.categoryId)}`);
+    }
+    if (body.addonCategory !== undefined || body.addon_category !== undefined) {
+      const catVal = body.addonCategory ?? body.addon_category;
+      updates.push(`addon_category = ${addParam(catVal || null)}`);
     }
     if (body.flowerTypeId !== undefined) {
       updates.push(`flower_type_id = ${addParam(body.flowerTypeId)}`);
