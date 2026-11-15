@@ -3,6 +3,12 @@ import { sql } from "@/lib/db/neon";
 
 export const dynamic = "force-dynamic";
 
+const NO_CACHE_HEADERS = {
+  "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+  Pragma: "no-cache",
+  Expires: "0",
+};
+
 // GET /api/highlights - Public endpoint to retrieve active highlights and their galleries
 export async function GET(request: NextRequest) {
   try {
@@ -24,7 +30,7 @@ export async function GET(request: NextRequest) {
       if (!rows || rows.length === 0) {
         return NextResponse.json(
           { success: false, error: "Highlight not found" },
-          { status: 404 }
+          { status: 404, headers: NO_CACHE_HEADERS }
         );
       }
 
@@ -42,15 +48,25 @@ export async function GET(request: NextRequest) {
         parsedFeatures = [];
       }
 
-      return NextResponse.json({
-        success: true,
-        highlight: {
-          ...h,
-          starting_price: Number(h.starting_price) || 0,
-          features: parsedFeatures,
-          gallery: gallery || [],
+      const formattedGallery = (gallery || []).map((g: any) => ({
+        ...g,
+        price: Number(g.price) || 0,
+        display_order: Number(g.display_order) || 1,
+      }));
+
+      return NextResponse.json(
+        {
+          success: true,
+          highlight: {
+            ...h,
+            starting_price: Number(h.starting_price) || 0,
+            features: parsedFeatures,
+            gallery_count: formattedGallery.length,
+            gallery: formattedGallery,
+          },
         },
-      });
+        { headers: NO_CACHE_HEADERS }
+      );
     }
 
     // List all active highlights
@@ -73,6 +89,7 @@ export async function GET(request: NextRequest) {
       galleryMap[img.highlight_id].push({
         ...img,
         price: Number(img.price) || 0,
+        display_order: Number(img.display_order) || 1,
       });
     }
 
@@ -84,23 +101,29 @@ export async function GET(request: NextRequest) {
         parsedFeatures = [];
       }
 
+      const hGallery = galleryMap[h.id] || [];
+
       return {
         ...h,
         starting_price: Number(h.starting_price) || 0,
         features: parsedFeatures,
-        gallery: galleryMap[h.id] || [],
+        gallery_count: hGallery.length,
+        gallery: hGallery,
       };
     });
 
-    return NextResponse.json({
-      success: true,
-      highlights: formatted,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        highlights: formatted,
+      },
+      { headers: NO_CACHE_HEADERS }
+    );
   } catch (error: any) {
     console.error("GET /api/highlights error:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Failed to fetch highlights" },
-      { status: 500 }
+      { status: 500, headers: NO_CACHE_HEADERS }
     );
   }
 }

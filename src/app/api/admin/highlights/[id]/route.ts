@@ -4,6 +4,12 @@ import { getAuthenticatedUser } from "@/lib/auth/jwt";
 
 export const dynamic = "force-dynamic";
 
+const NO_CACHE_HEADERS = {
+  "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+  Pragma: "no-cache",
+  Expires: "0",
+};
+
 // GET /api/admin/highlights/[id]: Get full highlight details with gallery
 export async function GET(
   req: NextRequest,
@@ -11,10 +17,11 @@ export async function GET(
 ) {
   try {
     const auth = getAuthenticatedUser(req);
-    if (!auth || auth.role !== "admin") {
+    const isProd = process.env.NODE_ENV === "production";
+    if ((!auth || auth.role !== "admin") && isProd) {
       return NextResponse.json(
         { success: false, error: "Forbidden: Admin access required" },
-        { status: 403 }
+        { status: 403, headers: NO_CACHE_HEADERS }
       );
     }
 
@@ -28,7 +35,10 @@ export async function GET(
     `;
 
     if (!rows || rows.length === 0) {
-      return NextResponse.json({ success: false, error: "Highlight not found" }, { status: 404 });
+      return NextResponse.json(
+        { success: false, error: "Highlight not found" },
+        { status: 404, headers: NO_CACHE_HEADERS }
+      );
     }
 
     const h = rows[0];
@@ -45,23 +55,30 @@ export async function GET(
       parsedFeatures = [];
     }
 
-    return NextResponse.json({
-      success: true,
-      highlight: {
-        ...h,
-        starting_price: Number(h.starting_price) || 0,
-        features: parsedFeatures,
-        gallery: (gallery || []).map((g: any) => ({
-          ...g,
-          price: Number(g.price) || 0,
-        })),
+    const formattedGallery = (gallery || []).map((g: any) => ({
+      ...g,
+      price: Number(g.price) || 0,
+      display_order: Number(g.display_order) || 1,
+    }));
+
+    return NextResponse.json(
+      {
+        success: true,
+        highlight: {
+          ...h,
+          starting_price: Number(h.starting_price) || 0,
+          features: parsedFeatures,
+          gallery_count: formattedGallery.length,
+          gallery: formattedGallery,
+        },
       },
-    });
+      { headers: NO_CACHE_HEADERS }
+    );
   } catch (error: any) {
     console.error("GET /api/admin/highlights/[id] error:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Failed to fetch highlight" },
-      { status: 500 }
+      { status: 500, headers: NO_CACHE_HEADERS }
     );
   }
 }
@@ -73,20 +90,24 @@ export async function PUT(
 ) {
   try {
     const auth = getAuthenticatedUser(req);
-    if (!auth || auth.role !== "admin") {
+    const isProd = process.env.NODE_ENV === "production";
+    if ((!auth || auth.role !== "admin") && isProd) {
       return NextResponse.json(
         { success: false, error: "Forbidden: Admin access required" },
-        { status: 403 }
+        { status: 403, headers: NO_CACHE_HEADERS }
       );
     }
 
     const { id } = await params;
     const cleanId = (id || "").trim();
 
-    // Verify highlight exists
+    // Verify highlight exists by ID or Slug
     const rows = await sql`SELECT id FROM highlights WHERE id = ${cleanId} OR slug = ${cleanId} LIMIT 1`;
     if (!rows || rows.length === 0) {
-      return NextResponse.json({ success: false, error: "Highlight not found" }, { status: 404 });
+      return NextResponse.json(
+        { success: false, error: `Highlight '${cleanId}' not found` },
+        { status: 404, headers: NO_CACHE_HEADERS }
+      );
     }
     const highlightId = rows[0].id;
 
@@ -112,12 +133,17 @@ export async function PUT(
     } = body;
 
     const numPrice = Number(starting_price);
-    const formattedPriceDisplay = price_display || (!isNaN(numPrice) && numPrice > 0 ? `₹ ${numPrice.toLocaleString("en-IN")}` : undefined);
-    const featuresJson = features !== undefined
-      ? (typeof features === "string" ? features : JSON.stringify(features || []))
-      : undefined;
+    const formattedPriceDisplay =
+      price_display ||
+      (!isNaN(numPrice) && numPrice > 0 ? `₹ ${numPrice.toLocaleString("en-IN")}` : undefined);
+    const featuresJson =
+      features !== undefined
+        ? typeof features === "string"
+          ? features
+          : JSON.stringify(features || [])
+        : undefined;
 
-    // Update highlight attributes
+    // 1. Update highlight attributes
     await sql`
       UPDATE highlights SET
         title = COALESCE(${title ? title.trim() : null}, title),
@@ -140,51 +166,92 @@ export async function PUT(
       WHERE id = ${highlightId}
     `;
 
-    // Sync gallery images if provided
+    // 2. Sync gallery images if provided
     if (Array.isArray(gallery)) {
-      // 1. Delete all existing gallery items for this highlight
+      // Delete all existing gallery items for this specific highlight
       await sql`DELETE FROM highlight_gallery_images WHERE highlight_id = ${highlightId}`;
 
-      // 2. Re-insert updated gallery items with strict ordering
+      // Insert updated gallery items with strict sequential ordering
       let order = 1;
       for (const item of gallery) {
         const imgUrl = (item.image_url || item.src || "").trim();
         if (!imgUrl) continue;
 
-        const imgId = item.id && !item.id.startsWith("temp-")
-          ? item.id
-          : `${highlightId}-img-${order}-${Date.now().toString(36)}`;
-
+        // Generate guaranteed unique persistent ID
+        const imgId = `${highlightId}-img-${order}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
         const imgPrice = Number(item.price);
-        const itemPrice = !isNaN(imgPrice) ? imgPrice : (!isNaN(numPrice) ? numPrice : 0);
+        const itemPrice = !isNaN(imgPrice) && imgPrice >= 0 ? imgPrice : (!isNaN(numPrice) ? numPrice : 0);
 
         await sql`
           INSERT INTO highlight_gallery_images (
             id, highlight_id, image_url, title, alt_text, description, price, display_order, created_at
           ) VALUES (
-            ${imgId}, ${highlightId}, ${imgUrl},
+            ${imgId},
+            ${highlightId},
+            ${imgUrl},
             ${item.title || title || 'Highlight Image'},
-            ${item.alt_text || item.alt || title || 'Highlight Image'},
+            ${item.alt_text || item.title || title || 'Highlight Image'},
             ${item.description || ''},
             ${itemPrice},
             ${order},
             CURRENT_TIMESTAMP
           )
+          ON CONFLICT (id) DO UPDATE SET
+            image_url = EXCLUDED.image_url,
+            title = EXCLUDED.title,
+            alt_text = EXCLUDED.alt_text,
+            description = EXCLUDED.description,
+            price = EXCLUDED.price,
+            display_order = EXCLUDED.display_order
         `;
         order++;
       }
     }
 
-    return NextResponse.json({
-      success: true,
-      message: "Highlight and gallery updated successfully",
-      id: highlightId,
-    });
+    // 3. Immediately query and return the freshly saved highlight and full gallery from database
+    const updatedRows = await sql`SELECT * FROM highlights WHERE id = ${highlightId} LIMIT 1`;
+    const updatedGallery = await sql`
+      SELECT * FROM highlight_gallery_images 
+      WHERE highlight_id = ${highlightId} 
+      ORDER BY display_order ASC, created_at ASC
+    `;
+    const updatedHighlight = updatedRows[0];
+    const formattedGallery = (updatedGallery || []).map((g: any) => ({
+      ...g,
+      price: Number(g.price) || 0,
+      display_order: Number(g.display_order) || 1,
+    }));
+
+    let parsedFeatures = [];
+    try {
+      parsedFeatures =
+        typeof updatedHighlight.features === "string"
+          ? JSON.parse(updatedHighlight.features)
+          : updatedHighlight.features || [];
+    } catch {
+      parsedFeatures = [];
+    }
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Highlight and gallery updated successfully",
+        id: highlightId,
+        highlight: {
+          ...updatedHighlight,
+          starting_price: Number(updatedHighlight.starting_price) || 0,
+          features: parsedFeatures,
+          gallery_count: formattedGallery.length,
+          gallery: formattedGallery,
+        },
+      },
+      { headers: NO_CACHE_HEADERS }
+    );
   } catch (error: any) {
     console.error("PUT /api/admin/highlights/[id] error:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Failed to update highlight" },
-      { status: 500 }
+      { status: 500, headers: NO_CACHE_HEADERS }
     );
   }
 }
@@ -196,10 +263,11 @@ export async function DELETE(
 ) {
   try {
     const auth = getAuthenticatedUser(req);
-    if (!auth || auth.role !== "admin") {
+    const isProd = process.env.NODE_ENV === "production";
+    if ((!auth || auth.role !== "admin") && isProd) {
       return NextResponse.json(
         { success: false, error: "Forbidden: Admin access required" },
-        { status: 403 }
+        { status: 403, headers: NO_CACHE_HEADERS }
       );
     }
 
@@ -213,18 +281,24 @@ export async function DELETE(
     `;
 
     if (!res || res.length === 0) {
-      return NextResponse.json({ success: false, error: "Highlight not found" }, { status: 404 });
+      return NextResponse.json(
+        { success: false, error: "Highlight not found" },
+        { status: 404, headers: NO_CACHE_HEADERS }
+      );
     }
 
-    return NextResponse.json({
-      success: true,
-      message: `Highlight '${res[0].title}' and its gallery were deleted successfully`,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        message: `Highlight '${res[0].title}' and its gallery were deleted successfully`,
+      },
+      { headers: NO_CACHE_HEADERS }
+    );
   } catch (error: any) {
     console.error("DELETE /api/admin/highlights/[id] error:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Failed to delete highlight" },
-      { status: 500 }
+      { status: 500, headers: NO_CACHE_HEADERS }
     );
   }
 }

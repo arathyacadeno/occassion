@@ -146,14 +146,18 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
   const replaceIdxRef = useRef<number | null>(null);
   const replaceInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Fetch highlights and store settings
+  // Fetch highlights and store settings with zero caching
   const fetchHighlights = useCallback(async () => {
     setLoading(true);
     setErrorMsg(null);
     try {
       const [hlRes, stRes] = await Promise.allSettled([
-        fetch("/api/admin/highlights", { credentials: "include" }),
-        fetch("/api/settings"),
+        fetch(`/api/admin/highlights?_t=${Date.now()}`, {
+          credentials: "include",
+          cache: "no-store",
+          headers: { "Cache-Control": "no-cache" },
+        }),
+        fetch(`/api/settings?_t=${Date.now()}`, { cache: "no-store" }),
       ]);
 
       if (hlRes.status === "fulfilled" && hlRes.value.ok) {
@@ -231,28 +235,34 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
     setFormGuaranteeText(item.guarantee_text || "100% Freshness Guarantee");
     setFormSlug(item.slug || item.id);
 
-    // Load full gallery
-    if (Array.isArray(item.gallery) && item.gallery.length > 0) {
-      setFormGallery([...item.gallery]);
-    } else {
-      try {
-        const res = await fetch(`/api/admin/highlights/${item.id}`, { credentials: "include" });
-        const d = await res.json();
-        if (d.success && d.highlight) {
-          setFormGallery(d.highlight.gallery || []);
-        } else {
-          setFormGallery([]);
-        }
-      } catch {
-        setFormGallery([]);
-      }
-    }
+    // Initial gallery from item for responsive feel
+    setFormGallery(Array.isArray(item.gallery) ? [...item.gallery] : []);
     setPendingUploads([]);
     setIsUploadModalOpen(false);
 
     setActiveTab("basic");
     setModalError(null);
     setIsModalOpen(true);
+
+    // Always fetch fresh backend truth for highlight and full gallery
+    try {
+      const res = await fetch(`/api/admin/highlights/${encodeURIComponent(item.id)}?_t=${Date.now()}`, {
+        credentials: "include",
+        cache: "no-store",
+        headers: { "Cache-Control": "no-cache" },
+      });
+      const d = await res.json();
+      if (d.success && d.highlight) {
+        setFormGallery(d.highlight.gallery || []);
+        setEditingHighlight(d.highlight);
+        if (d.highlight.title) setFormTitle(d.highlight.title);
+        if (d.highlight.cover_image) setFormCoverImage(d.highlight.cover_image);
+        if (d.highlight.starting_price !== undefined) setFormStartingPrice(Number(d.highlight.starting_price) || 0);
+        if (d.highlight.description !== undefined) setFormDescription(d.highlight.description || "");
+      }
+    } catch (err) {
+      console.error("Failed to load fresh highlight gallery:", err);
+    }
   };
 
   // Upload Cover Image
@@ -371,7 +381,7 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
 
         if (data.success && data.url) {
           uploadedItems.push({
-            id: `temp-${Date.now()}-${i}`,
+            id: `temp-${Date.now()}-${i}-${Math.random().toString(36).slice(2, 6)}`,
             image_url: data.url,
             title: formTitle.trim() || "Gallery Image",
             alt_text: formTitle.trim() || "Gallery Image",
@@ -379,6 +389,8 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
             price: Number(p.price) || 0,
             display_order: 1, // Will be renumbered
           });
+        } else {
+          throw new Error(data.error || `Upload failed for photo #${i + 1}`);
         }
         URL.revokeObjectURL(p.previewUrl);
       }
@@ -394,11 +406,11 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
         });
         setPendingUploads([]);
         setIsUploadModalOpen(false);
-        setSuccessMsg(`${uploadedItems.length} new photo(s) placed at Position #1! Click "Save Changes" to publish.`);
-        setTimeout(() => setSuccessMsg(null), 4000);
+        setSuccessMsg(`${uploadedItems.length} new photo(s) placed at Position #1! Click "Save Changes" below to permanently update database.`);
+        setTimeout(() => setSuccessMsg(null), 5000);
       }
-    } catch {
-      setModalError("Error uploading gallery images. Please try again.");
+    } catch (err: any) {
+      setModalError(err.message || "Error uploading gallery images. Please try again.");
     } finally {
       setUploadingGallery(false);
       setUploadProgressText(null);
@@ -537,7 +549,7 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
           const data = await res.json();
           if (data.success && data.url) {
             newlyUploaded.push({
-              id: `temp-${Date.now()}-${i}`,
+              id: `temp-${Date.now()}-${i}-${Math.random().toString(36).slice(2, 6)}`,
               image_url: data.url,
               title: formTitle.trim() || "Gallery Image",
               alt_text: formTitle.trim() || "Gallery Image",
@@ -545,6 +557,8 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
               price: Number(p.price) || 0,
               display_order: 1,
             });
+          } else {
+            throw new Error(data.error || `Upload failed for photo #${i + 1}`);
           }
           URL.revokeObjectURL(p.previewUrl);
         }
@@ -554,8 +568,8 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
         }
         setPendingUploads([]);
         setIsUploadModalOpen(false);
-      } catch {
-        setModalError("Error uploading pending gallery photos.");
+      } catch (err: any) {
+        setModalError(err.message || "Error uploading pending gallery photos.");
         setSaving(false);
         setUploadProgressText(null);
         return;
@@ -579,31 +593,53 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
       active: formActive ? 1 : 0,
       display_order: Number(formDisplayOrder) || 1,
       gallery: finalGallery.map((img, index) => ({
-        ...img,
-        title: img.title || formTitle.trim(),
+        id: img.id,
+        image_url: img.image_url,
+        title: img.title || formTitle.trim() || "Gallery Image",
+        alt_text: img.alt_text || img.title || formTitle.trim(),
+        description: img.description || "",
+        price: typeof img.price === "number" ? img.price : (Number(img.price) || 0),
         display_order: index + 1,
       })),
     };
 
     try {
       const isEdit = !!editingHighlight;
-      const url = isEdit ? `/api/admin/highlights/${editingHighlight.id}` : "/api/admin/highlights";
+      const targetId = editingHighlight?.id || formSlug.trim();
+      const url = isEdit ? `/api/admin/highlights/${encodeURIComponent(targetId)}` : "/api/admin/highlights";
       const method = isEdit ? "PUT" : "POST";
 
       const res = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache",
+        },
         body: JSON.stringify(payload),
         credentials: "include",
+        cache: "no-store",
       });
 
       const data = await res.json();
       if (data.success) {
         setSuccessMsg(isEdit ? `Saved changes to "${formTitle}"!` : `Created "${formTitle}" successfully!`);
         setTimeout(() => setSuccessMsg(null), 4000);
+
+        // Immediately sync local state with backend truth
+        if (data.highlight) {
+          setHighlights((prev) =>
+            prev.map((h) => (h.id === data.highlight.id ? data.highlight : h))
+          );
+          setFormGallery(data.highlight.gallery || []);
+        }
+
         setIsModalOpen(false);
         await fetchHighlights();
         if (onRefresh) await onRefresh();
+
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("occasions:highlights-changed"));
+        }
       } else {
         setModalError(data.error || "Failed to save. Please try again.");
       }
@@ -1526,6 +1562,26 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                     )}
                   </div>
 
+                  {successMsg && (
+                    <div
+                      style={{
+                        padding: "10px 16px",
+                        borderRadius: 10,
+                        background: "#f0fdf4",
+                        border: "1px solid #bbf7d0",
+                        color: "#166534",
+                        fontSize: "0.85rem",
+                        fontWeight: 600,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                      }}
+                    >
+                      <Check size={16} color="#16a34a" />
+                      <span>{successMsg}</span>
+                    </div>
+                  )}
+
                   {/* Existing Photos Grid */}
                   <div>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
@@ -1858,18 +1914,45 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
               <div
                 style={{
                   display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  paddingTop: 20,
-                  marginTop: 24,
+                  flexDirection: "column",
+                  paddingTop: 16,
+                  marginTop: 20,
                   borderTop: "1px solid #f1f5f9",
+                  gap: 10,
                 }}
               >
-                <div style={{ fontSize: "0.82rem", color: "#64748b" }}>
-                  {formGallery.length} photos ready in gallery
-                </div>
+                {modalError && (
+                  <div
+                    style={{
+                      background: "#fef2f2",
+                      border: "1px solid #fecaca",
+                      color: "#dc2626",
+                      padding: "8px 14px",
+                      borderRadius: 8,
+                      fontSize: "0.85rem",
+                      fontWeight: 600,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                    }}
+                  >
+                    <AlertTriangle size={16} />
+                    <span>{modalError}</span>
+                  </div>
+                )}
 
-                <div style={{ display: "flex", gap: 12 }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <div style={{ fontSize: "0.82rem", color: "#64748b" }}>
+                    {formGallery.length} photo(s) ready in gallery
+                  </div>
+
+                  <div style={{ display: "flex", gap: 12 }}>
                   <button
                     type="button"
                     disabled={saving}
@@ -1911,7 +1994,8 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                   </button>
                 </div>
               </div>
-            </form>
+            </div>
+          </form>
           </div>
         </div>
       )}

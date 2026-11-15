@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { ArrowUpRight } from "lucide-react";
 import BloomingFlowerAnimation from "./BloomingFlowerAnimation";
 import HighlightGalleryModal from "./HighlightGalleryModal";
@@ -114,28 +114,37 @@ export default function HighlightSection() {
   const sectionRef = useRef<HTMLElement>(null);
 
   // Fetch highlights dynamically from Neon PostgreSQL
-  useEffect(() => {
-    let isMounted = true;
-    fetch("/api/highlights", { cache: "no-store" })
+  const loadHighlights = useCallback(() => {
+    fetch(`/api/highlights?_t=${Date.now()}`, { cache: "no-store" })
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        if (isMounted && data?.success && Array.isArray(data.highlights) && data.highlights.length > 0) {
+        if (data?.success && Array.isArray(data.highlights) && data.highlights.length > 0) {
           setHighlights(data.highlights);
         }
       })
       .catch((err) => {
         console.error("Failed to load highlights from DB:", err);
       });
-
-    return () => {
-      isMounted = false;
-    };
   }, []);
+
+  useEffect(() => {
+    loadHighlights();
+
+    if (typeof window !== "undefined") {
+      const handleHighlightsChanged = () => {
+        loadHighlights();
+      };
+      window.addEventListener("occasions:highlights-changed", handleHighlightsChanged);
+      return () => {
+        window.removeEventListener("occasions:highlights-changed", handleHighlightsChanged);
+      };
+    }
+  }, [loadHighlights]);
 
   const handleCardClick = (item: Highlight) => {
     // If the highlight object doesn't have its full gallery loaded, fetch it
     if (!item.gallery || item.gallery.length === 0) {
-      fetch(`/api/highlights?id=${encodeURIComponent(item.id)}`)
+      fetch(`/api/highlights?id=${encodeURIComponent(item.id)}&_t=${Date.now()}`, { cache: "no-store" })
         .then((r) => (r.ok ? r.json() : null))
         .then((d) => {
           if (d?.success && d.highlight) {
