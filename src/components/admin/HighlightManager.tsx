@@ -1399,6 +1399,10 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                       borderRadius: 16,
                       padding: "24px 20px",
                       textAlign: "center",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
                     }}
                   >
                     <div
@@ -1418,11 +1422,20 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                       <Upload size={20} />
                     </div>
 
-                    <h4 style={{ margin: "0 0 4px", color: "#831843", fontSize: "1rem", fontWeight: 700 }}>
+                    <h4 style={{ margin: "0 0 4px", color: "#831843", fontSize: "1rem", fontWeight: 700, textAlign: "center" }}>
                       Add Photos to This Gallery
                     </h4>
-                    <p style={{ margin: "0 0 16px", color: "#64748b", fontSize: "0.84rem" }}>
-                      You can select multiple photos from your computer or phone at once.
+                    <p
+                      style={{
+                        margin: "0 auto 16px",
+                        color: "#64748b",
+                        fontSize: "0.84rem",
+                        maxWidth: 500,
+                        textAlign: "center",
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      You can select multiple photos from your computer or phone at once. Each photo can have its own title, price, and description for the customer showcase popup.
                     </p>
 
                     <label
@@ -1489,8 +1502,8 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                       <div
                         style={{
                           display: "grid",
-                          gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-                          gap: 14,
+                          gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+                          gap: 16,
                         }}
                       >
                         {formGallery.map((img, idx) => (
@@ -1507,7 +1520,7 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                             }}
                           >
                             {/* Photo Thumbnail */}
-                            <div style={{ position: "relative", width: "100%", height: 130, background: "#f8fafc" }}>
+                            <div style={{ position: "relative", width: "100%", height: 140, background: "#f8fafc" }}>
                               <img
                                 src={img.image_url}
                                 alt={img.title || "Gallery item"}
@@ -1517,13 +1530,13 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                               <span
                                 style={{
                                   position: "absolute",
-                                  top: 6,
-                                  left: 6,
-                                  padding: "2px 7px",
-                                  borderRadius: 4,
+                                  top: 8,
+                                  left: 8,
+                                  padding: "3px 8px",
+                                  borderRadius: 6,
                                   background: "rgba(15, 23, 42, 0.75)",
                                   color: "#fff",
-                                  fontSize: "0.7rem",
+                                  fontSize: "0.72rem",
                                   fontWeight: 700,
                                 }}
                               >
@@ -1536,10 +1549,10 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                                 onClick={() => removeGalleryItem(idx)}
                                 style={{
                                   position: "absolute",
-                                  top: 6,
-                                  right: 6,
-                                  width: 26,
-                                  height: 26,
+                                  top: 8,
+                                  right: 8,
+                                  width: 28,
+                                  height: 28,
                                   borderRadius: "50%",
                                   background: "rgba(220, 38, 38, 0.9)",
                                   color: "#fff",
@@ -1548,46 +1561,81 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                                   alignItems: "center",
                                   justifyContent: "center",
                                   cursor: "pointer",
+                                  transition: "transform 0.15s ease",
                                 }}
                                 title="Remove photo"
                               >
-                                <Trash2 size={13} />
+                                <Trash2 size={14} />
                               </button>
                             </div>
 
-                            {/* Caption & Price */}
-                            <div style={{ padding: "10px 12px", display: "flex", flexDirection: "column", gap: 6, flex: 1 }}>
-                              <input
-                                type="text"
-                                placeholder="Photo title / design name"
-                                value={img.title || ""}
-                                onChange={(e) => updateGalleryItemField(idx, "title", e.target.value)}
-                                style={{
-                                  width: "100%",
-                                  padding: "5px 8px",
-                                  borderRadius: 6,
-                                  border: "1px solid #cbd5e1",
-                                  fontSize: "0.82rem",
-                                  fontWeight: 600,
-                                }}
-                              />
-
-                              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                <span style={{ fontSize: "0.78rem", color: "#64748b", fontWeight: 700 }}>₹</span>
+                            {/* Caption, Price & Description */}
+                            <div style={{ padding: "12px 14px", display: "flex", flexDirection: "column", gap: 10, flex: 1 }}>
+                              <div>
+                                <label style={{ display: "block", fontSize: "0.74rem", fontWeight: 700, color: "#64748b", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.03em" }}>
+                                  Photo Title / Name
+                                </label>
                                 <input
-                                  type="number"
-                                  min="0"
-                                  placeholder="Price"
-                                  value={img.price || ""}
-                                  onChange={(e) => updateGalleryItemField(idx, "price", Number(e.target.value))}
+                                  type="text"
+                                  placeholder="e.g. Royal Victorian Chaise"
+                                  value={img.title || ""}
+                                  onChange={(e) => updateGalleryItemField(idx, "title", e.target.value)}
                                   style={{
-                                    flex: 1,
-                                    padding: "4px 8px",
+                                    width: "100%",
+                                    padding: "6px 9px",
                                     borderRadius: 6,
                                     border: "1px solid #cbd5e1",
                                     fontSize: "0.82rem",
-                                    fontWeight: 700,
-                                    color: "#0f766e",
+                                    fontWeight: 600,
+                                    color: "#1e293b",
+                                  }}
+                                />
+                              </div>
+
+                              <div>
+                                <label style={{ display: "block", fontSize: "0.74rem", fontWeight: 700, color: "#64748b", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.03em" }}>
+                                  Price (₹)
+                                </label>
+                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                  <span style={{ fontSize: "0.85rem", color: "#64748b", fontWeight: 700 }}>₹</span>
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    placeholder="e.g. 45000"
+                                    value={img.price !== undefined && img.price !== null ? img.price : ""}
+                                    onChange={(e) => updateGalleryItemField(idx, "price", Number(e.target.value))}
+                                    style={{
+                                      flex: 1,
+                                      padding: "5px 9px",
+                                      borderRadius: 6,
+                                      border: "1px solid #cbd5e1",
+                                      fontSize: "0.84rem",
+                                      fontWeight: 700,
+                                      color: "#0f766e",
+                                    }}
+                                  />
+                                </div>
+                              </div>
+
+                              <div>
+                                <label style={{ display: "block", fontSize: "0.74rem", fontWeight: 700, color: "#64748b", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.03em" }}>
+                                  Description (Shown in Customer Popup)
+                                </label>
+                                <textarea
+                                  rows={3}
+                                  placeholder="Describe floral arrangement, roses, backdrop, styling details..."
+                                  value={img.description || ""}
+                                  onChange={(e) => updateGalleryItemField(idx, "description", e.target.value)}
+                                  style={{
+                                    width: "100%",
+                                    padding: "7px 9px",
+                                    borderRadius: 6,
+                                    border: "1px solid #cbd5e1",
+                                    fontSize: "0.79rem",
+                                    lineHeight: 1.45,
+                                    color: "#334155",
+                                    resize: "vertical",
+                                    fontFamily: "inherit",
                                   }}
                                 />
                               </div>
@@ -1598,7 +1646,7 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                                   display: "flex",
                                   alignItems: "center",
                                   justifyContent: "space-between",
-                                  paddingTop: 8,
+                                  paddingTop: 10,
                                   borderTop: "1px solid #f1f5f9",
                                   marginTop: "auto",
                                 }}
@@ -1609,12 +1657,15 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                                     disabled={idx === 0}
                                     onClick={() => moveGalleryItem(idx, "prev")}
                                     style={{
-                                      padding: "3px 7px",
-                                      borderRadius: 4,
+                                      padding: "4px 8px",
+                                      borderRadius: 5,
                                       border: "1px solid #cbd5e1",
                                       background: idx === 0 ? "#f8fafc" : "#fff",
                                       color: idx === 0 ? "#cbd5e1" : "#334155",
                                       cursor: idx === 0 ? "not-allowed" : "pointer",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "center",
                                     }}
                                     title="Move left"
                                   >
@@ -1625,12 +1676,15 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                                     disabled={idx === formGallery.length - 1}
                                     onClick={() => moveGalleryItem(idx, "next")}
                                     style={{
-                                      padding: "3px 7px",
-                                      borderRadius: 4,
+                                      padding: "4px 8px",
+                                      borderRadius: 5,
                                       border: "1px solid #cbd5e1",
                                       background: idx === formGallery.length - 1 ? "#f8fafc" : "#fff",
                                       color: idx === formGallery.length - 1 ? "#cbd5e1" : "#334155",
                                       cursor: idx === formGallery.length - 1 ? "not-allowed" : "pointer",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "center",
                                     }}
                                     title="Move right"
                                   >
@@ -1645,13 +1699,13 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                                     border: "none",
                                     background: "transparent",
                                     color: "#db2777",
-                                    fontSize: "0.76rem",
+                                    fontSize: "0.78rem",
                                     fontWeight: 600,
                                     cursor: "pointer",
                                     textDecoration: "underline",
                                   }}
                                 >
-                                  Replace
+                                  Replace Photo
                                 </button>
                               </div>
                             </div>
