@@ -832,15 +832,16 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
             return (
               <div
                 key={item.id}
-                onClick={() => handleSelectCard(item)}
+                onClick={() => handleOpenEdit(item)}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
-                    handleSelectCard(item);
+                    handleOpenEdit(item);
                   }
                 }}
+                title={`Click to edit ${item.title}`}
                 style={{
                   background: "#fff",
                   borderRadius: 20,
@@ -875,40 +876,6 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                     alt={item.title}
                     style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                   />
-
-                  {/* Hover Overlay: Click to See Highlight */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      background: "rgba(15, 23, 42, 0.25)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      opacity: 0,
-                      transition: "opacity 0.2s ease",
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-                    onMouseLeave={(e) => (e.currentTarget.style.opacity = "0")}
-                  >
-                    <span
-                      style={{
-                        background: "rgba(255, 255, 255, 0.95)",
-                        color: "#be185d",
-                        padding: "7px 14px",
-                        borderRadius: 20,
-                        fontWeight: 700,
-                        fontSize: "0.82rem",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 6,
-                        boxShadow: "0 4px 14px rgba(0, 0, 0, 0.15)",
-                      }}
-                    >
-                      <Eye size={15} />
-                      <span>Click to See Highlight</span>
-                    </span>
-                  </div>
 
                   {/* Active / Inactive Status Pill */}
                   <button
@@ -1038,15 +1005,14 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                     }}
                     onClick={(e) => e.stopPropagation()}
                   >
-                    {/* Primary Button: See Highlight */}
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleSelectCard(item);
+                        handleOpenEdit(item);
                       }}
                       style={{
-                        flex: 1.2,
+                        flex: 1,
                         padding: "10px 14px",
                         borderRadius: 10,
                         border: "1px solid #fce7f3",
@@ -1059,60 +1025,40 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                         alignItems: "center",
                         justifyContent: "center",
                         gap: 6,
-                        transition: "all 0.15s ease",
+                        transition: "background 0.15s ease",
                       }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = "#fce7f3";
-                        e.currentTarget.style.borderColor = "#f472b6";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = "#fdf2f8";
-                        e.currentTarget.style.borderColor = "#fce7f3";
-                      }}
-                      title="See full highlight gallery, prices, and inquiry preview"
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "#fce7f3")}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = "#fdf2f8")}
                     >
-                      <Eye size={15} />
-                      <span>See Highlight</span>
+                      <Edit size={15} />
+                      <span>Edit Highlight</span>
                     </button>
 
-                    {/* Edit Highlight Button */}
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleOpenEdit(item);
+                        setPreviewHighlight(item);
+                        setPreviewIndex(0);
                       }}
                       style={{
-                        flex: 0.9,
-                        padding: "10px 12px",
+                        width: 38,
+                        height: 38,
                         borderRadius: 10,
                         border: "1px solid #e2e8f0",
                         background: "#fff",
-                        color: "#334155",
-                        fontWeight: 600,
-                        fontSize: "0.84rem",
+                        color: "#475569",
                         cursor: "pointer",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        gap: 5,
-                        transition: "all 0.15s ease",
+                        flexShrink: 0,
                       }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = "#f8fafc";
-                        e.currentTarget.style.borderColor = "#cbd5e1";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = "#fff";
-                        e.currentTarget.style.borderColor = "#e2e8f0";
-                      }}
-                      title="Edit basic info, photo gallery, and contacts"
+                      title="Preview how customers see this modal"
                     >
-                      <Edit size={14} />
-                      <span>Edit</span>
+                      <Eye size={16} />
                     </button>
 
-                    {/* Delete Highlight Button */}
                     <button
                       type="button"
                       onClick={(e) => {
@@ -1132,10 +1078,7 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                         alignItems: "center",
                         justifyContent: "center",
                         flexShrink: 0,
-                        transition: "background 0.15s ease",
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = "#fee2e2")}
-                      onMouseLeave={(e) => (e.currentTarget.style.background = "#fff5f5")}
                       title="Delete Highlight"
                     >
                       <Trash2 size={16} />
@@ -1313,72 +1256,27 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
               {/* ───────────────────────────────────────────────────── */}
               {activeTab === "basic" && (
                 <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-                  <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 18 }}>
-                    <div>
-                      <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 700, color: "#1e293b", marginBottom: 6 }}>
-                        Highlight Name *
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="e.g. Car Decor, Stage Decor, Church Decor"
-                        value={formTitle}
-                        onChange={(e) => setFormTitle(e.target.value)}
-                        style={{
-                          width: "100%",
-                          padding: "11px 14px",
-                          borderRadius: 10,
-                          border: "1px solid #cbd5e1",
-                          fontSize: "0.92rem",
-                        }}
-                      />
-                      <span style={{ fontSize: "0.76rem", color: "#64748b", marginTop: 4, display: "block" }}>
-                        Displayed as the main title on the homepage card and popup gallery.
-                      </span>
-                    </div>
-
-                    <div>
-                      <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 700, color: "#1e293b", marginBottom: 6 }}>
-                        Displayed Price
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="e.g. ₹ 1,800 or Starting from ₹1,800"
-                        value={formPriceDisplay}
-                        onChange={(e) => setFormPriceDisplay(e.target.value)}
-                        style={{
-                          width: "100%",
-                          padding: "11px 14px",
-                          borderRadius: 10,
-                          border: "1px solid #cbd5e1",
-                          fontSize: "0.92rem",
-                        }}
-                      />
-                      <span style={{ fontSize: "0.76rem", color: "#64748b", marginTop: 4, display: "block" }}>
-                        Shown to customers as the starting inquiry price.
-                      </span>
-                    </div>
-                  </div>
-
                   <div>
                     <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 700, color: "#1e293b", marginBottom: 6 }}>
-                      Short Description *
+                      Highlight Name *
                     </label>
-                    <textarea
-                      rows={3}
+                    <input
+                      type="text"
                       required
-                      placeholder="Explain this decoration or floral service in 2-3 sentences..."
-                      value={formDescription}
-                      onChange={(e) => setFormDescription(e.target.value)}
+                      placeholder="e.g. Car Decor, Stage Decor, Church Decor"
+                      value={formTitle}
+                      onChange={(e) => setFormTitle(e.target.value)}
                       style={{
                         width: "100%",
                         padding: "11px 14px",
                         borderRadius: 10,
                         border: "1px solid #cbd5e1",
-                        fontSize: "0.9rem",
-                        lineHeight: 1.5,
+                        fontSize: "0.92rem",
                       }}
                     />
+                    <span style={{ fontSize: "0.76rem", color: "#64748b", marginTop: 4, display: "block" }}>
+                      Displayed as the main title on the homepage card and popup gallery.
+                    </span>
                   </div>
 
                   {/* Cover Photo Upload */}
@@ -1543,7 +1441,7 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                       }}
                     >
                       <Plus size={17} />
-                      <span>{uploadingGallery ? "Uploading Images..." : "+ Choose Images to Upload"}</span>
+                      <span>{uploadingGallery ? "Uploading Images..." : "Choose Images to Upload"}</span>
                       <input
                         type="file"
                         multiple
@@ -1971,21 +1869,62 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                     </div>
                   </div>
 
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 700, color: "#1e293b", marginBottom: 6 }}>
+                        Displayed Price (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. ₹ 18,000 or Starting from ₹1,800"
+                        value={formPriceDisplay}
+                        onChange={(e) => setFormPriceDisplay(e.target.value)}
+                        style={{
+                          width: "100%",
+                          padding: "10px 12px",
+                          borderRadius: 8,
+                          border: "1px solid #cbd5e1",
+                          fontSize: "0.9rem",
+                        }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 700, color: "#1e293b", marginBottom: 6 }}>
+                        Freshness Guarantee / Trust Badge
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="100% Freshness Guarantee"
+                        value={formGuaranteeText}
+                        onChange={(e) => setFormGuaranteeText(e.target.value)}
+                        style={{
+                          width: "100%",
+                          padding: "10px 12px",
+                          borderRadius: 8,
+                          border: "1px solid #cbd5e1",
+                          fontSize: "0.9rem",
+                        }}
+                      />
+                    </div>
+                  </div>
+
                   <div>
                     <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 700, color: "#1e293b", marginBottom: 6 }}>
-                      Freshness Guarantee / Trust Badge
+                      Short Description (Optional)
                     </label>
-                    <input
-                      type="text"
-                      placeholder="100% Freshness Guarantee"
-                      value={formGuaranteeText}
-                      onChange={(e) => setFormGuaranteeText(e.target.value)}
+                    <textarea
+                      rows={2}
+                      placeholder="Explain this decoration or floral service in 2-3 sentences..."
+                      value={formDescription}
+                      onChange={(e) => setFormDescription(e.target.value)}
                       style={{
                         width: "100%",
                         padding: "10px 12px",
                         borderRadius: 8,
                         border: "1px solid #cbd5e1",
                         fontSize: "0.9rem",
+                        lineHeight: 1.5,
                       }}
                     />
                   </div>
