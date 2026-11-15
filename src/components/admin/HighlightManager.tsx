@@ -102,6 +102,7 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
   // Form Fields - Tab 2: Gallery Images
   const [formGallery, setFormGallery] = useState<HighlightGalleryItem[]>([]);
   const [pendingUploads, setPendingUploads] = useState<PendingGalleryUpload[]>([]);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [uploadProgressText, setUploadProgressText] = useState<string | null>(null);
 
   // Form Fields - Tab 3: Contact Information
@@ -183,7 +184,7 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
   }, [fetchHighlights]);
 
   // Lock background body scroll cleanly (fixed background, no layout jumps or movement)
-  useScrollLock(isModalOpen || deleteModalOpen || Boolean(previewHighlight));
+  useScrollLock(isModalOpen || deleteModalOpen || Boolean(previewHighlight) || isUploadModalOpen);
 
   // Open modal to add a brand new highlight
   const handleOpenAdd = () => {
@@ -195,6 +196,7 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
     setFormCoverImage("");
     setFormGallery([]);
     setPendingUploads([]);
+    setIsUploadModalOpen(false);
     setFormWhatsAppText("Hello Occasions Florist Calicut, I would like to inquire about this service.");
     setFormWhatsAppNumber(storeDefaults.whatsapp);
     setFormCallText("Call Atelier Directly");
@@ -246,6 +248,7 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
       }
     }
     setPendingUploads([]);
+    setIsUploadModalOpen(false);
 
     setActiveTab("basic");
     setModalError(null);
@@ -307,6 +310,7 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
     }));
 
     setPendingUploads((prev) => [...prev, ...newPending]);
+    setIsUploadModalOpen(true);
     e.target.value = "";
   };
 
@@ -332,7 +336,11 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
       if (item?.previewUrl) {
         URL.revokeObjectURL(item.previewUrl);
       }
-      return prev.filter((_, i) => i !== index);
+      const next = prev.filter((_, i) => i !== index);
+      if (next.length === 0) {
+        setIsUploadModalOpen(false);
+      }
+      return next;
     });
   };
 
@@ -385,6 +393,7 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
           }));
         });
         setPendingUploads([]);
+        setIsUploadModalOpen(false);
         setSuccessMsg(`${uploadedItems.length} new photo(s) placed at Position #1! Click "Save Changes" to publish.`);
         setTimeout(() => setSuccessMsg(null), 4000);
       }
@@ -544,6 +553,7 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
           setFormGallery(finalGallery.map((item, index) => ({ ...item, display_order: index + 1 })));
         }
         setPendingUploads([]);
+        setIsUploadModalOpen(false);
       } catch {
         setModalError("Error uploading pending gallery photos.");
         setSaving(false);
@@ -1495,235 +1505,26 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                       />
                     </label>
 
-                    {uploadProgressText && (
-                      <div style={{ marginTop: 12, fontSize: "0.82rem", color: "#be185d", fontWeight: 600 }}>
-                        {uploadProgressText}
-                      </div>
+                    {pendingUploads.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setIsUploadModalOpen(true)}
+                        style={{
+                          marginTop: 12,
+                          padding: "6px 14px",
+                          borderRadius: 8,
+                          border: "1px solid #f472b6",
+                          background: "#fff",
+                          color: "#be185d",
+                          fontSize: "0.82rem",
+                          fontWeight: 700,
+                          cursor: "pointer",
+                        }}
+                      >
+                        Click to Edit Price & Description for {pendingUploads.length} Selected Photo(s) &rarr;
+                      </button>
                     )}
                   </div>
-
-                  {/* Selected Photos Staging Area (Preview + Custom Price & Description) */}
-                  {pendingUploads.length > 0 && (
-                    <div
-                      style={{
-                        background: "#fff",
-                        border: "2px solid #f472b6",
-                        borderRadius: 16,
-                        padding: "20px",
-                        boxShadow: "0 4px 16px rgba(219, 39, 119, 0.1)",
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          marginBottom: 16,
-                          paddingBottom: 14,
-                          borderBottom: "1px solid #fce7f3",
-                          flexWrap: "wrap",
-                          gap: 12,
-                        }}
-                      >
-                        <div>
-                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                            <span
-                              style={{
-                                background: "#db2777",
-                                color: "#fff",
-                                fontSize: "0.72rem",
-                                fontWeight: 800,
-                                padding: "3px 8px",
-                                borderRadius: 6,
-                                letterSpacing: "0.03em",
-                              }}
-                            >
-                              NEW ({pendingUploads.length})
-                            </span>
-                            <h4 style={{ margin: 0, color: "#831843", fontSize: "1rem", fontWeight: 700 }}>
-                              Configure Price & Description for Selected Photos
-                            </h4>
-                          </div>
-                          <p style={{ margin: "4px 0 0", color: "#64748b", fontSize: "0.82rem" }}>
-                            These photos will automatically be placed at <strong>Position #1</strong> in the gallery.
-                          </p>
-                        </div>
-
-                        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              pendingUploads.forEach((p) => URL.revokeObjectURL(p.previewUrl));
-                              setPendingUploads([]);
-                            }}
-                            disabled={uploadingGallery}
-                            style={{
-                              padding: "9px 16px",
-                              borderRadius: 8,
-                              border: "1px solid #cbd5e1",
-                              background: "#fff",
-                              color: "#64748b",
-                              fontSize: "0.84rem",
-                              fontWeight: 600,
-                              cursor: "pointer",
-                            }}
-                          >
-                            Cancel
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={handleConfirmUpload}
-                            disabled={uploadingGallery}
-                            style={{
-                              display: "inline-flex",
-                              alignItems: "center",
-                              gap: 8,
-                              padding: "9px 20px",
-                              borderRadius: 8,
-                              background: "linear-gradient(135deg, #db2777 0%, #be185d 100%)",
-                              color: "#fff",
-                              fontWeight: 700,
-                              fontSize: "0.86rem",
-                              cursor: uploadingGallery ? "not-allowed" : "pointer",
-                              border: "none",
-                              boxShadow: "0 4px 12px rgba(219, 39, 119, 0.25)",
-                            }}
-                          >
-                            <Upload size={15} />
-                            <span>{uploadingGallery ? "Uploading..." : `Upload & Place at Position #1 (${pendingUploads.length})`}</span>
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Staging Grid of Previews */}
-                      <div
-                        style={{
-                          display: "grid",
-                          gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-                          gap: 16,
-                        }}
-                      >
-                        {pendingUploads.map((item, pIdx) => (
-                          <div
-                            key={item.id}
-                            style={{
-                              background: "#fdf2f8",
-                              border: "1px solid #fbcfe8",
-                              borderRadius: 14,
-                              overflow: "hidden",
-                              boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-                              display: "flex",
-                              flexDirection: "column",
-                            }}
-                          >
-                            {/* Preview Thumbnail */}
-                            <div style={{ position: "relative", width: "100%", height: 140, background: "#f8fafc" }}>
-                              <img
-                                src={item.previewUrl}
-                                alt={`Selected #${pIdx + 1}`}
-                                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                              />
-
-                              <span
-                                style={{
-                                  position: "absolute",
-                                  top: 8,
-                                  left: 8,
-                                  padding: "3px 8px",
-                                  borderRadius: 6,
-                                  background: "#db2777",
-                                  color: "#fff",
-                                  fontSize: "0.72rem",
-                                  fontWeight: 800,
-                                }}
-                              >
-                                Will be #{pIdx + 1}
-                              </span>
-
-                              {/* Discard button */}
-                              <button
-                                type="button"
-                                onClick={() => removePendingUpload(pIdx)}
-                                style={{
-                                  position: "absolute",
-                                  top: 8,
-                                  right: 8,
-                                  width: 28,
-                                  height: 28,
-                                  borderRadius: "50%",
-                                  background: "rgba(220, 38, 38, 0.9)",
-                                  color: "#fff",
-                                  border: "none",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  cursor: "pointer",
-                                  transition: "transform 0.15s ease",
-                                }}
-                                title="Remove this photo from upload"
-                              >
-                                <X size={14} />
-                              </button>
-                            </div>
-
-                            {/* Inputs: Price & Description */}
-                            <div style={{ padding: "12px 14px", display: "flex", flexDirection: "column", gap: 10, flex: 1 }}>
-                              <div>
-                                <label style={{ display: "block", fontSize: "0.74rem", fontWeight: 700, color: "#64748b", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.03em" }}>
-                                  Price (₹)
-                                </label>
-                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                  <span style={{ fontSize: "0.85rem", color: "#64748b", fontWeight: 700 }}>₹</span>
-                                  <input
-                                    type="number"
-                                    min="0"
-                                    placeholder="e.g. 45000"
-                                    value={item.price}
-                                    onChange={(e) => updatePendingField(pIdx, "price", e.target.value ? Number(e.target.value) : "")}
-                                    style={{
-                                      flex: 1,
-                                      padding: "6px 9px",
-                                      borderRadius: 6,
-                                      border: "1px solid #cbd5e1",
-                                      fontSize: "0.84rem",
-                                      fontWeight: 700,
-                                      color: "#0f766e",
-                                      background: "#fff",
-                                    }}
-                                  />
-                                </div>
-                              </div>
-
-                              <div>
-                                <label style={{ display: "block", fontSize: "0.74rem", fontWeight: 700, color: "#64748b", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.03em" }}>
-                                  Description (Shown in Customer Popup)
-                                </label>
-                                <textarea
-                                  rows={3}
-                                  placeholder="Describe this stage decor (e.g. Floral stage decoration with a premium backdrop)..."
-                                  value={item.description}
-                                  onChange={(e) => updatePendingField(pIdx, "description", e.target.value)}
-                                  style={{
-                                    width: "100%",
-                                    padding: "7px 9px",
-                                    borderRadius: 6,
-                                    border: "1px solid #cbd5e1",
-                                    fontSize: "0.79rem",
-                                    lineHeight: 1.45,
-                                    color: "#334155",
-                                    resize: "vertical",
-                                    fontFamily: "inherit",
-                                    background: "#fff",
-                                  }}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
 
                   {/* Existing Photos Grid */}
                   <div>
@@ -2111,6 +1912,348 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                 </div>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* 3B. SEPARATE POPUP: ADD DESCRIPTION & PRICE FOR NEW PHOTOS    */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      {isUploadModalOpen && pendingUploads.length > 0 && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(15, 23, 42, 0.72)",
+            backdropFilter: "blur(6px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 10002,
+            padding: 20,
+            overscrollBehavior: "contain",
+          }}
+          onClick={() => {
+            if (!uploadingGallery) {
+              pendingUploads.forEach((p) => URL.revokeObjectURL(p.previewUrl));
+              setPendingUploads([]);
+              setIsUploadModalOpen(false);
+            }
+          }}
+          onWheel={(e) => {
+            if (e.target === e.currentTarget) e.stopPropagation();
+          }}
+        >
+          <div
+            style={{
+              background: "#fff",
+              borderRadius: 22,
+              width: "100%",
+              maxWidth: 780,
+              maxHeight: "90vh",
+              display: "flex",
+              flexDirection: "column",
+              boxShadow: "0 25px 60px -15px rgba(0, 0, 0, 0.35)",
+              overflow: "hidden",
+              border: "1px solid #fce7f3",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div
+              style={{
+                padding: "18px 24px",
+                borderBottom: "1px solid #fce7f3",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                background: "#fdf2f8",
+              }}
+            >
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span
+                    style={{
+                      background: "#db2777",
+                      color: "#fff",
+                      fontSize: "0.72rem",
+                      fontWeight: 800,
+                      padding: "3px 8px",
+                      borderRadius: 6,
+                      letterSpacing: "0.03em",
+                    }}
+                  >
+                    NEW ({pendingUploads.length})
+                  </span>
+                  <h3
+                    style={{
+                      fontFamily: "var(--font-serif)",
+                      color: "#831843",
+                      fontSize: "1.25rem",
+                      fontWeight: 700,
+                      margin: 0,
+                    }}
+                  >
+                    Add Description & Price
+                  </h3>
+                </div>
+                <p style={{ margin: "4px 0 0", color: "#64748b", fontSize: "0.82rem" }}>
+                  Set the price and styling details for each photo. Newly uploaded photos will be placed at <strong>Position #1</strong>.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (!uploadingGallery) {
+                    pendingUploads.forEach((p) => URL.revokeObjectURL(p.previewUrl));
+                    setPendingUploads([]);
+                    setIsUploadModalOpen(false);
+                  }
+                }}
+                disabled={uploadingGallery}
+                style={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: "50%",
+                  border: "1px solid #fce7f3",
+                  background: "#fff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#64748b",
+                  cursor: uploadingGallery ? "not-allowed" : "pointer",
+                }}
+              >
+                <X size={17} />
+              </button>
+            </div>
+
+            {/* Scrollable Body: Cards for each selected photo */}
+            <div
+              style={{
+                padding: "20px 24px",
+                overflowY: "auto",
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                gap: 16,
+              }}
+            >
+              {pendingUploads.map((item, pIdx) => (
+                <div
+                  key={item.id}
+                  style={{
+                    background: "#fdf2f8",
+                    border: "1px solid #fbcfe8",
+                    borderRadius: 16,
+                    padding: 16,
+                    display: "grid",
+                    gridTemplateColumns: "180px 1fr",
+                    gap: 16,
+                    boxShadow: "0 2px 8px rgba(219, 39, 119, 0.04)",
+                    alignItems: "start",
+                  }}
+                >
+                  {/* Left: Thumbnail & Discard */}
+                  <div style={{ position: "relative", width: "100%", height: 140, borderRadius: 10, overflow: "hidden", background: "#f8fafc" }}>
+                    <img
+                      src={item.previewUrl}
+                      alt={`Selected #${pIdx + 1}`}
+                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                    />
+
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: 6,
+                        left: 6,
+                        padding: "3px 8px",
+                        borderRadius: 6,
+                        background: "#db2777",
+                        color: "#fff",
+                        fontSize: "0.72rem",
+                        fontWeight: 800,
+                      }}
+                    >
+                      Will be #{pIdx + 1}
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={() => removePendingUpload(pIdx)}
+                      style={{
+                        position: "absolute",
+                        top: 6,
+                        right: 6,
+                        width: 26,
+                        height: 26,
+                        borderRadius: "50%",
+                        background: "rgba(220, 38, 38, 0.9)",
+                        color: "#fff",
+                        border: "none",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                      }}
+                      title="Remove this photo"
+                    >
+                      <X size={13} />
+                    </button>
+                  </div>
+
+                  {/* Right: Price & Description */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.74rem", fontWeight: 700, color: "#64748b", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.03em" }}>
+                        Price (₹)
+                      </label>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <span style={{ fontSize: "0.85rem", color: "#64748b", fontWeight: 700 }}>₹</span>
+                        <input
+                          type="number"
+                          min="0"
+                          placeholder="e.g. 45000"
+                          value={item.price}
+                          onChange={(e) => updatePendingField(pIdx, "price", e.target.value ? Number(e.target.value) : "")}
+                          style={{
+                            flex: 1,
+                            padding: "7px 10px",
+                            borderRadius: 8,
+                            border: "1px solid #cbd5e1",
+                            fontSize: "0.86rem",
+                            fontWeight: 700,
+                            color: "#0f766e",
+                            background: "#fff",
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style={{ display: "block", fontSize: "0.74rem", fontWeight: 700, color: "#64748b", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.03em" }}>
+                        Description (Shown in Customer Popup)
+                      </label>
+                      <textarea
+                        rows={3}
+                        placeholder="Describe floral arrangement, setup, materials or styling details..."
+                        value={item.description}
+                        onChange={(e) => updatePendingField(pIdx, "description", e.target.value)}
+                        style={{
+                          width: "100%",
+                          padding: "8px 10px",
+                          borderRadius: 8,
+                          border: "1px solid #cbd5e1",
+                          fontSize: "0.82rem",
+                          lineHeight: 1.45,
+                          color: "#334155",
+                          resize: "vertical",
+                          fontFamily: "inherit",
+                          background: "#fff",
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Footer with Actions */}
+            <div
+              style={{
+                padding: "16px 24px",
+                borderTop: "1px solid #fce7f3",
+                background: "#fafafa",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                flexWrap: "wrap",
+                gap: 12,
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <label
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    padding: "8px 14px",
+                    borderRadius: 8,
+                    border: "1px solid #fce7f3",
+                    background: "#fff",
+                    color: "#db2777",
+                    fontSize: "0.82rem",
+                    fontWeight: 600,
+                    cursor: uploadingGallery ? "not-allowed" : "pointer",
+                  }}
+                >
+                  <Plus size={15} />
+                  <span>Add More Photos</span>
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    disabled={uploadingGallery}
+                    onChange={handleSelectFiles}
+                    style={{ display: "none" }}
+                  />
+                </label>
+
+                {uploadProgressText && (
+                  <span style={{ fontSize: "0.82rem", color: "#be185d", fontWeight: 700 }}>
+                    {uploadProgressText}
+                  </span>
+                )}
+              </div>
+
+              <div style={{ display: "flex", gap: 10 }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    pendingUploads.forEach((p) => URL.revokeObjectURL(p.previewUrl));
+                    setPendingUploads([]);
+                    setIsUploadModalOpen(false);
+                  }}
+                  disabled={uploadingGallery}
+                  style={{
+                    padding: "10px 18px",
+                    borderRadius: 10,
+                    border: "1px solid #cbd5e1",
+                    background: "#fff",
+                    color: "#64748b",
+                    fontSize: "0.86rem",
+                    fontWeight: 600,
+                    cursor: uploadingGallery ? "not-allowed" : "pointer",
+                  }}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleConfirmUpload}
+                  disabled={uploadingGallery}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 8,
+                    padding: "10px 22px",
+                    borderRadius: 10,
+                    background: "linear-gradient(135deg, #db2777 0%, #be185d 100%)",
+                    color: "#fff",
+                    fontWeight: 700,
+                    fontSize: "0.88rem",
+                    cursor: uploadingGallery ? "not-allowed" : "pointer",
+                    border: "none",
+                    boxShadow: "0 4px 12px rgba(219, 39, 119, 0.25)",
+                  }}
+                >
+                  <Upload size={16} />
+                  <span>{uploadingGallery ? "Uploading..." : `Upload`}</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
