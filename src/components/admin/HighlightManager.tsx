@@ -26,7 +26,6 @@ import {
   Info,
   HelpCircle,
   Layers,
-  Settings as SettingsIcon,
 } from "lucide-react";
 import { useScrollLock } from "@/lib/scrollLock";
 
@@ -83,7 +82,7 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingHighlight, setEditingHighlight] = useState<Highlight | null>(null);
-  const [activeTab, setActiveTab] = useState<"basic" | "gallery" | "contact" | "settings">("basic");
+  const [activeTab, setActiveTab] = useState<"basic" | "gallery" | "contact">("basic");
 
   // Form Fields - Tab 1: Basic Information
   const [formTitle, setFormTitle] = useState("");
@@ -1152,7 +1151,7 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                   {editingHighlight ? `Edit "${editingHighlight.title}"` : "Add New Highlight"}
                 </h2>
                 <p style={{ margin: "2px 0 0", color: "#64748b", fontSize: "0.84rem" }}>
-                  Use the 4 tabs below to configure the basic info, photo gallery, and contact buttons.
+                  Use the 3 tabs below to configure the basic info, photo gallery, and contact buttons.
                 </p>
               </div>
 
@@ -1176,11 +1175,11 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
               </button>
             </div>
 
-            {/* 4 Clean Tabs */}
+            {/* 3 Clean Tabs */}
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(4, 1fr)",
+                gridTemplateColumns: "repeat(3, 1fr)",
                 borderBottom: "1px solid #e2e8f0",
                 background: "#fff",
               }}
@@ -1189,7 +1188,6 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                 { id: "basic", label: "1. Basic Info", icon: Sparkles },
                 { id: "gallery", label: `2. Gallery (${formGallery.length})`, icon: ImageIcon },
                 { id: "contact", label: "3. Contact & WhatsApp", icon: MessageCircle },
-                { id: "settings", label: "4. Settings", icon: SettingsIcon },
               ].map((tab) => {
                 const IconComp = tab.icon;
                 const isSelected = activeTab === tab.id;
@@ -1817,170 +1815,6 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                         }}
                       />
                     </div>
-                  </div>
-                </div>
-              )}
-
-              {/* ───────────────────────────────────────────────────── */}
-              {/* TAB 4: SETTINGS & VISIBILITY                          */}
-              {/* ───────────────────────────────────────────────────── */}
-              {activeTab === "settings" && (
-                <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-                  {/* Active Toggle Card */}
-                  <div
-                    style={{
-                      background: formActive ? "#f0fdf4" : "#f8fafc",
-                      border: formActive ? "1px solid #bbf7d0" : "1px solid #e2e8f0",
-                      borderRadius: 14,
-                      padding: "18px 20px",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <div>
-                      <div style={{ fontWeight: 700, color: "#1e293b", fontSize: "0.94rem", marginBottom: 2 }}>
-                        Show on Public Homepage
-                      </div>
-                      <p style={{ margin: 0, color: "#64748b", fontSize: "0.82rem" }}>
-                        When switched on, customers will see this card in the &quot;Our Highlights&quot; section.
-                      </p>
-                    </div>
-
-                    <label style={{ position: "relative", display: "inline-block", width: 50, height: 26, cursor: "pointer" }}>
-                      <input
-                        type="checkbox"
-                        checked={formActive}
-                        onChange={(e) => setFormActive(e.target.checked)}
-                        style={{ opacity: 0, width: 0, height: 0 }}
-                      />
-                      <span
-                        style={{
-                          position: "absolute",
-                          inset: 0,
-                          borderRadius: 26,
-                          background: formActive ? "#22c55e" : "#cbd5e1",
-                          transition: "0.2s ease",
-                        }}
-                      >
-                        <span
-                          style={{
-                            position: "absolute",
-                            height: 20,
-                            width: 20,
-                            left: formActive ? 26 : 3,
-                            bottom: 3,
-                            background: "#fff",
-                            borderRadius: "50%",
-                            transition: "0.2s ease",
-                            boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
-                          }}
-                        />
-                      </span>
-                    </label>
-                  </div>
-
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
-                    <div>
-                      <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 700, color: "#1e293b", marginBottom: 6 }}>
-                        Display Sequence / Order
-                      </label>
-                      <input
-                        type="number"
-                        min="1"
-                        value={formDisplayOrder}
-                        onChange={(e) => setFormDisplayOrder(Number(e.target.value))}
-                        style={{
-                          width: "100%",
-                          padding: "10px 12px",
-                          borderRadius: 8,
-                          border: "1px solid #cbd5e1",
-                          fontSize: "0.9rem",
-                        }}
-                      />
-                      <span style={{ fontSize: "0.76rem", color: "#64748b", marginTop: 4, display: "block" }}>
-                        Cards are displayed from lowest to highest (1 = first card).
-                      </span>
-                    </div>
-
-                    <div>
-                      <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 700, color: "#1e293b", marginBottom: 6 }}>
-                        Tag Badge
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="e.g. VIP Floristry, Celebration, Tradition"
-                        value={formTag}
-                        onChange={(e) => setFormTag(e.target.value)}
-                        style={{
-                          width: "100%",
-                          padding: "10px 12px",
-                          borderRadius: 8,
-                          border: "1px solid #cbd5e1",
-                          fontSize: "0.9rem",
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
-                    <div>
-                      <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 700, color: "#1e293b", marginBottom: 6 }}>
-                        Displayed Price (Optional)
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="e.g. ₹ 18,000 or Starting from ₹1,800"
-                        value={formPriceDisplay}
-                        onChange={(e) => setFormPriceDisplay(e.target.value)}
-                        style={{
-                          width: "100%",
-                          padding: "10px 12px",
-                          borderRadius: 8,
-                          border: "1px solid #cbd5e1",
-                          fontSize: "0.9rem",
-                        }}
-                      />
-                    </div>
-
-                    <div>
-                      <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 700, color: "#1e293b", marginBottom: 6 }}>
-                        Freshness Guarantee / Trust Badge
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="100% Freshness Guarantee"
-                        value={formGuaranteeText}
-                        onChange={(e) => setFormGuaranteeText(e.target.value)}
-                        style={{
-                          width: "100%",
-                          padding: "10px 12px",
-                          borderRadius: 8,
-                          border: "1px solid #cbd5e1",
-                          fontSize: "0.9rem",
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 700, color: "#1e293b", marginBottom: 6 }}>
-                      Short Description (Optional)
-                    </label>
-                    <textarea
-                      rows={2}
-                      placeholder="Explain this decoration or floral service in 2-3 sentences..."
-                      value={formDescription}
-                      onChange={(e) => setFormDescription(e.target.value)}
-                      style={{
-                        width: "100%",
-                        padding: "10px 12px",
-                        borderRadius: 8,
-                        border: "1px solid #cbd5e1",
-                        fontSize: "0.9rem",
-                        lineHeight: 1.5,
-                      }}
-                    />
                   </div>
                 </div>
               )}
