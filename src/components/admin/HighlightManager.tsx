@@ -1431,12 +1431,12 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                         margin: "0 auto 16px",
                         color: "#64748b",
                         fontSize: "0.84rem",
-                        maxWidth: 500,
+                        maxWidth: 480,
                         textAlign: "center",
                         lineHeight: 1.5,
                       }}
                     >
-                      You can select multiple photos from your computer or phone at once. Each photo can have its own title, price, and description for the customer showcase popup.
+                      You can select multiple photos from your computer or phone at once. Each photo can have its own price and detailed styling description.
                     </p>
 
                     <label
