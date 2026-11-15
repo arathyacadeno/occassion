@@ -461,7 +461,10 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
       guarantee_text: formGuaranteeText.trim() || "100% Freshness Guarantee",
       active: formActive ? 1 : 0,
       display_order: Number(formDisplayOrder) || 1,
-      gallery: formGallery,
+      gallery: formGallery.map((img) => ({
+        ...img,
+        title: img.title || formTitle.trim(),
+      })),
     };
 
     try {
@@ -1567,29 +1570,8 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                               </button>
                             </div>
 
-                            {/* Caption, Price & Description */}
+                            {/* Price & Description */}
                             <div style={{ padding: "12px 14px", display: "flex", flexDirection: "column", gap: 10, flex: 1 }}>
-                              <div>
-                                <label style={{ display: "block", fontSize: "0.74rem", fontWeight: 700, color: "#64748b", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.03em" }}>
-                                  Photo Title / Name
-                                </label>
-                                <input
-                                  type="text"
-                                  placeholder="e.g. Royal Victorian Chaise"
-                                  value={img.title || ""}
-                                  onChange={(e) => updateGalleryItemField(idx, "title", e.target.value)}
-                                  style={{
-                                    width: "100%",
-                                    padding: "6px 9px",
-                                    borderRadius: 6,
-                                    border: "1px solid #cbd5e1",
-                                    fontSize: "0.82rem",
-                                    fontWeight: 600,
-                                    color: "#1e293b",
-                                  }}
-                                />
-                              </div>
-
                               <div>
                                 <label style={{ display: "block", fontSize: "0.74rem", fontWeight: 700, color: "#64748b", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.03em" }}>
                                   Price (₹)
