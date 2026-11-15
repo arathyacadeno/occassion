@@ -1972,19 +1972,6 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
             >
               <div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span
-                    style={{
-                      background: "#db2777",
-                      color: "#fff",
-                      fontSize: "0.72rem",
-                      fontWeight: 800,
-                      padding: "3px 8px",
-                      borderRadius: 6,
-                      letterSpacing: "0.03em",
-                    }}
-                  >
-                    NEW ({pendingUploads.length})
-                  </span>
                   <h3
                     style={{
                       fontFamily: "var(--font-serif)",
@@ -2062,22 +2049,6 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                       alt={`Selected #${pIdx + 1}`}
                       style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                     />
-
-                    <span
-                      style={{
-                        position: "absolute",
-                        top: 6,
-                        left: 6,
-                        padding: "3px 8px",
-                        borderRadius: 6,
-                        background: "#db2777",
-                        color: "#fff",
-                        fontSize: "0.72rem",
-                        fontWeight: 800,
-                      }}
-                    >
-                      Will be #{pIdx + 1}
-                    </span>
 
                     <button
                       type="button"
@@ -2166,46 +2137,17 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                 borderTop: "1px solid #fce7f3",
                 background: "#fafafa",
                 display: "flex",
-                justifyContent: "space-between",
+                justifyContent: uploadProgressText ? "space-between" : "flex-end",
                 alignItems: "center",
                 flexWrap: "wrap",
                 gap: 12,
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <label
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 6,
-                    padding: "8px 14px",
-                    borderRadius: 8,
-                    border: "1px solid #fce7f3",
-                    background: "#fff",
-                    color: "#db2777",
-                    fontSize: "0.82rem",
-                    fontWeight: 600,
-                    cursor: uploadingGallery ? "not-allowed" : "pointer",
-                  }}
-                >
-                  <Plus size={15} />
-                  <span>Add More Photos</span>
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    disabled={uploadingGallery}
-                    onChange={handleSelectFiles}
-                    style={{ display: "none" }}
-                  />
-                </label>
-
-                {uploadProgressText && (
-                  <span style={{ fontSize: "0.82rem", color: "#be185d", fontWeight: 700 }}>
-                    {uploadProgressText}
-                  </span>
-                )}
-              </div>
+              {uploadProgressText && (
+                <span style={{ fontSize: "0.82rem", color: "#be185d", fontWeight: 700 }}>
+                  {uploadProgressText}
+                </span>
+              )}
 
               <div style={{ display: "flex", gap: 10 }}>
                 <button
