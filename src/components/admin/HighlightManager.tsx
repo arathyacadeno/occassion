@@ -39,6 +39,14 @@ export interface HighlightGalleryItem {
   display_order?: number;
 }
 
+export interface PendingGalleryUpload {
+  id: string;
+  file: File;
+  previewUrl: string;
+  price: number | "";
+  description: string;
+}
+
 export interface Highlight {
   id: string;
   slug: string;
@@ -93,6 +101,7 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
 
   // Form Fields - Tab 2: Gallery Images
   const [formGallery, setFormGallery] = useState<HighlightGalleryItem[]>([]);
+  const [pendingUploads, setPendingUploads] = useState<PendingGalleryUpload[]>([]);
   const [uploadProgressText, setUploadProgressText] = useState<string | null>(null);
 
   // Form Fields - Tab 3: Contact Information
@@ -185,6 +194,7 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
     setFormStartingPrice(2000);
     setFormCoverImage("");
     setFormGallery([]);
+    setPendingUploads([]);
     setFormWhatsAppText("Hello Occasions Florist Calicut, I would like to inquire about this service.");
     setFormWhatsAppNumber(storeDefaults.whatsapp);
     setFormCallText("Call Atelier Directly");
@@ -235,6 +245,7 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
         setFormGallery([]);
       }
     }
+    setPendingUploads([]);
 
     setActiveTab("basic");
     setModalError(null);
@@ -277,24 +288,70 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
     }
   };
 
-  // Multi-image upload for Gallery
-  const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
+  // 1. Select files for gallery upload staging
+  const handleSelectFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fileList = e.target.files;
+    if (!fileList || fileList.length === 0) return;
+    const files = Array.from(fileList).filter((f) => f.type.startsWith("image/"));
+    if (files.length === 0) {
+      setModalError("Please select valid image files (JPG, PNG, WebP).");
+      return;
+    }
+
+    const newPending: PendingGalleryUpload[] = files.map((file, idx) => ({
+      id: `pending-${Date.now()}-${idx}-${Math.random().toString(36).substring(2, 7)}`,
+      file,
+      previewUrl: URL.createObjectURL(file),
+      price: "",
+      description: "",
+    }));
+
+    setPendingUploads((prev) => [...prev, ...newPending]);
+    e.target.value = "";
+  };
+
+  // 2. Update price or description on pending upload card
+  const updatePendingField = (
+    index: number,
+    field: "price" | "description",
+    value: any
+  ) => {
+    setPendingUploads((prev) => {
+      const copy = [...prev];
+      if (copy[index]) {
+        copy[index] = { ...copy[index], [field]: value };
+      }
+      return copy;
+    });
+  };
+
+  // 3. Discard an individual pending image
+  const removePendingUpload = (index: number) => {
+    setPendingUploads((prev) => {
+      const item = prev[index];
+      if (item?.previewUrl) {
+        URL.revokeObjectURL(item.previewUrl);
+      }
+      return prev.filter((_, i) => i !== index);
+    });
+  };
+
+  // 4. Upload pending images to Cloudinary and prepend them to the FRONT (Position #1)
+  const handleConfirmUpload = async () => {
+    if (pendingUploads.length === 0) return;
 
     setUploadingGallery(true);
     setModalError(null);
-    const totalFiles = files.length;
-    const newItems: HighlightGalleryItem[] = [];
+    const total = pendingUploads.length;
+    const uploadedItems: HighlightGalleryItem[] = [];
 
     try {
-      for (let i = 0; i < totalFiles; i++) {
-        setUploadProgressText(`Uploading image ${i + 1} of ${totalFiles} to Cloudinary...`);
-        const file = files[i];
-        if (!file.type.startsWith("image/")) continue;
+      for (let i = 0; i < total; i++) {
+        const p = pendingUploads[i];
+        setUploadProgressText(`Uploading image ${i + 1} of ${total} to Cloudinary...`);
 
         const formData = new FormData();
-        formData.append("file", file);
+        formData.append("file", p.file);
         formData.append("folder", "highlights");
 
         const res = await fetch("/api/admin/upload", {
@@ -303,33 +360,39 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
           credentials: "include",
         });
         const data = await res.json();
-        if (data.success && data.url) {
-          const prettyName = file.name
-            .replace(/\.[^/.]+$/, "")
-            .replace(/[-_]+/g, " ")
-            .replace(/\b\w/g, (c) => c.toUpperCase());
 
-          newItems.push({
+        if (data.success && data.url) {
+          uploadedItems.push({
             id: `temp-${Date.now()}-${i}`,
             image_url: data.url,
-            title: prettyName,
-            alt_text: prettyName,
-            description: formDescription || "Handcrafted floral styling designed for celebrations.",
-            price: formStartingPrice || 0,
-            display_order: formGallery.length + newItems.length + 1,
+            title: formTitle.trim() || "Gallery Image",
+            alt_text: formTitle.trim() || "Gallery Image",
+            description: p.description.trim() || formDescription || "Handcrafted floral styling designed for celebrations.",
+            price: Number(p.price) || 0,
+            display_order: 1, // Will be renumbered
           });
         }
+        URL.revokeObjectURL(p.previewUrl);
       }
 
-      if (newItems.length > 0) {
-        setFormGallery((prev) => [...prev, ...newItems]);
+      if (uploadedItems.length > 0) {
+        // Prepend new items to the very FRONT (Position #1)
+        setFormGallery((prev) => {
+          const combined = [...uploadedItems, ...prev];
+          return combined.map((item, index) => ({
+            ...item,
+            display_order: index + 1,
+          }));
+        });
+        setPendingUploads([]);
+        setSuccessMsg(`${uploadedItems.length} new photo(s) placed at Position #1! Click "Save Changes" to publish.`);
+        setTimeout(() => setSuccessMsg(null), 4000);
       }
     } catch {
       setModalError("Error uploading gallery images. Please try again.");
     } finally {
       setUploadingGallery(false);
       setUploadProgressText(null);
-      e.target.value = "";
     }
   };
 
@@ -445,6 +508,50 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
     setSaving(true);
     setModalError(null);
 
+    // If there are pending staging photos, upload them now and place them at Position #1
+    let finalGallery = [...formGallery];
+    if (pendingUploads.length > 0) {
+      setUploadProgressText(`Uploading ${pendingUploads.length} new photo(s) to Cloudinary...`);
+      const newlyUploaded: HighlightGalleryItem[] = [];
+      try {
+        for (let i = 0; i < pendingUploads.length; i++) {
+          const p = pendingUploads[i];
+          const formData = new FormData();
+          formData.append("file", p.file);
+          formData.append("folder", "highlights");
+
+          const res = await fetch("/api/admin/upload", {
+            method: "POST",
+            body: formData,
+            credentials: "include",
+          });
+          const data = await res.json();
+          if (data.success && data.url) {
+            newlyUploaded.push({
+              id: `temp-${Date.now()}-${i}`,
+              image_url: data.url,
+              title: formTitle.trim() || "Gallery Image",
+              alt_text: formTitle.trim() || "Gallery Image",
+              description: p.description.trim() || formDescription || "Handcrafted floral styling designed for celebrations.",
+              price: Number(p.price) || 0,
+              display_order: 1,
+            });
+          }
+          URL.revokeObjectURL(p.previewUrl);
+        }
+        if (newlyUploaded.length > 0) {
+          finalGallery = [...newlyUploaded, ...finalGallery];
+          setFormGallery(finalGallery.map((item, index) => ({ ...item, display_order: index + 1 })));
+        }
+        setPendingUploads([]);
+      } catch {
+        setModalError("Error uploading pending gallery photos.");
+        setSaving(false);
+        setUploadProgressText(null);
+        return;
+      }
+    }
+
     const payload = {
       title: formTitle.trim(),
       slug: formSlug.trim() || undefined,
@@ -461,9 +568,10 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
       guarantee_text: formGuaranteeText.trim() || "100% Freshness Guarantee",
       active: formActive ? 1 : 0,
       display_order: Number(formDisplayOrder) || 1,
-      gallery: formGallery.map((img) => ({
+      gallery: finalGallery.map((img, index) => ({
         ...img,
         title: img.title || formTitle.trim(),
+        display_order: index + 1,
       })),
     };
 
@@ -879,44 +987,6 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                     style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                   />
 
-                  {/* Active / Inactive Status Pill */}
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleToggleActive(item, e);
-                    }}
-                    style={{
-                      position: "absolute",
-                      top: 12,
-                      left: 12,
-                      padding: "4px 10px",
-                      borderRadius: 20,
-                      border: "none",
-                      background: isItemActive ? "rgba(22, 101, 52, 0.9)" : "rgba(71, 85, 105, 0.85)",
-                      backdropFilter: "blur(4px)",
-                      color: "#fff",
-                      fontSize: "0.74rem",
-                      fontWeight: 700,
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 5,
-                      zIndex: 2,
-                    }}
-                    title="Click to toggle Show/Hide"
-                  >
-                    <span
-                      style={{
-                        width: 7,
-                        height: 7,
-                        borderRadius: "50%",
-                        background: isItemActive ? "#4ade80" : "#cbd5e1",
-                      }}
-                    />
-                    <span>{isItemActive ? "Active" : "Hidden"}</span>
-                  </button>
-
                   {/* Image Count Pill */}
                   <div
                     style={{
@@ -939,62 +1009,21 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                     <ImageIcon size={13} />
                     <span>{galleryCount} photos</span>
                   </div>
-
-                  {/* Tag Pill */}
-                  {item.tag && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: 12,
-                        right: 12,
-                        padding: "4px 9px",
-                        borderRadius: 6,
-                        background: "rgba(255, 255, 255, 0.92)",
-                        color: "#be185d",
-                        fontSize: "0.72rem",
-                        fontWeight: 700,
-                        zIndex: 2,
-                      }}
-                    >
-                      {item.tag}
-                    </div>
-                  )}
                 </div>
 
                 {/* Card Body */}
-                <div style={{ padding: "18px 20px", display: "flex", flexDirection: "column", flex: 1 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
-                    <h3
-                      style={{
-                        margin: 0,
-                        fontSize: "1.15rem",
-                        fontWeight: 700,
-                        color: "#1e293b",
-                        fontFamily: "var(--font-serif)",
-                      }}
-                    >
-                      {item.title}
-                    </h3>
-                    <span style={{ fontWeight: 700, color: "#be185d", fontSize: "0.95rem" }}>
-                      {item.price_display || (item.starting_price > 0 ? `₹ ${item.starting_price.toLocaleString("en-IN")}` : "Inquire")}
-                    </span>
-                  </div>
-
-                  <p
+                <div style={{ padding: "18px 20px", display: "flex", flexDirection: "column", flex: 1, justifyContent: "space-between", gap: 14 }}>
+                  <h3
                     style={{
-                      margin: "0 0 16px",
-                      color: "#64748b",
-                      fontSize: "0.84rem",
-                      lineHeight: 1.5,
-                      display: "-webkit-box",
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: "vertical",
-                      overflow: "hidden",
-                      flex: 1,
+                      margin: 0,
+                      fontSize: "1.18rem",
+                      fontWeight: 700,
+                      color: "#1e293b",
+                      fontFamily: "var(--font-serif)",
                     }}
                   >
-                    {item.description}
-                  </p>
+                    {item.title}
+                  </h3>
 
                   {/* Card Action Buttons */}
                   <div
@@ -1455,13 +1484,13 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                       }}
                     >
                       <Plus size={17} />
-                      <span>{uploadingGallery ? "Uploading Images..." : "Choose Images to Upload"}</span>
+                      <span>{uploadingGallery ? "Uploading Images..." : pendingUploads.length > 0 ? "Choose More Images" : "Choose Images to Upload"}</span>
                       <input
                         type="file"
                         multiple
                         accept="image/*"
                         disabled={uploadingGallery}
-                        onChange={handleGalleryUpload}
+                        onChange={handleSelectFiles}
                         style={{ display: "none" }}
                       />
                     </label>
@@ -1472,6 +1501,229 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
                       </div>
                     )}
                   </div>
+
+                  {/* Selected Photos Staging Area (Preview + Custom Price & Description) */}
+                  {pendingUploads.length > 0 && (
+                    <div
+                      style={{
+                        background: "#fff",
+                        border: "2px solid #f472b6",
+                        borderRadius: 16,
+                        padding: "20px",
+                        boxShadow: "0 4px 16px rgba(219, 39, 119, 0.1)",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          marginBottom: 16,
+                          paddingBottom: 14,
+                          borderBottom: "1px solid #fce7f3",
+                          flexWrap: "wrap",
+                          gap: 12,
+                        }}
+                      >
+                        <div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <span
+                              style={{
+                                background: "#db2777",
+                                color: "#fff",
+                                fontSize: "0.72rem",
+                                fontWeight: 800,
+                                padding: "3px 8px",
+                                borderRadius: 6,
+                                letterSpacing: "0.03em",
+                              }}
+                            >
+                              NEW ({pendingUploads.length})
+                            </span>
+                            <h4 style={{ margin: 0, color: "#831843", fontSize: "1rem", fontWeight: 700 }}>
+                              Configure Price & Description for Selected Photos
+                            </h4>
+                          </div>
+                          <p style={{ margin: "4px 0 0", color: "#64748b", fontSize: "0.82rem" }}>
+                            These photos will automatically be placed at <strong>Position #1</strong> in the gallery.
+                          </p>
+                        </div>
+
+                        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              pendingUploads.forEach((p) => URL.revokeObjectURL(p.previewUrl));
+                              setPendingUploads([]);
+                            }}
+                            disabled={uploadingGallery}
+                            style={{
+                              padding: "9px 16px",
+                              borderRadius: 8,
+                              border: "1px solid #cbd5e1",
+                              background: "#fff",
+                              color: "#64748b",
+                              fontSize: "0.84rem",
+                              fontWeight: 600,
+                              cursor: "pointer",
+                            }}
+                          >
+                            Cancel
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={handleConfirmUpload}
+                            disabled={uploadingGallery}
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 8,
+                              padding: "9px 20px",
+                              borderRadius: 8,
+                              background: "linear-gradient(135deg, #db2777 0%, #be185d 100%)",
+                              color: "#fff",
+                              fontWeight: 700,
+                              fontSize: "0.86rem",
+                              cursor: uploadingGallery ? "not-allowed" : "pointer",
+                              border: "none",
+                              boxShadow: "0 4px 12px rgba(219, 39, 119, 0.25)",
+                            }}
+                          >
+                            <Upload size={15} />
+                            <span>{uploadingGallery ? "Uploading..." : `Upload & Place at Position #1 (${pendingUploads.length})`}</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Staging Grid of Previews */}
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+                          gap: 16,
+                        }}
+                      >
+                        {pendingUploads.map((item, pIdx) => (
+                          <div
+                            key={item.id}
+                            style={{
+                              background: "#fdf2f8",
+                              border: "1px solid #fbcfe8",
+                              borderRadius: 14,
+                              overflow: "hidden",
+                              boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+                              display: "flex",
+                              flexDirection: "column",
+                            }}
+                          >
+                            {/* Preview Thumbnail */}
+                            <div style={{ position: "relative", width: "100%", height: 140, background: "#f8fafc" }}>
+                              <img
+                                src={item.previewUrl}
+                                alt={`Selected #${pIdx + 1}`}
+                                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                              />
+
+                              <span
+                                style={{
+                                  position: "absolute",
+                                  top: 8,
+                                  left: 8,
+                                  padding: "3px 8px",
+                                  borderRadius: 6,
+                                  background: "#db2777",
+                                  color: "#fff",
+                                  fontSize: "0.72rem",
+                                  fontWeight: 800,
+                                }}
+                              >
+                                Will be #{pIdx + 1}
+                              </span>
+
+                              {/* Discard button */}
+                              <button
+                                type="button"
+                                onClick={() => removePendingUpload(pIdx)}
+                                style={{
+                                  position: "absolute",
+                                  top: 8,
+                                  right: 8,
+                                  width: 28,
+                                  height: 28,
+                                  borderRadius: "50%",
+                                  background: "rgba(220, 38, 38, 0.9)",
+                                  color: "#fff",
+                                  border: "none",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  cursor: "pointer",
+                                  transition: "transform 0.15s ease",
+                                }}
+                                title="Remove this photo from upload"
+                              >
+                                <X size={14} />
+                              </button>
+                            </div>
+
+                            {/* Inputs: Price & Description */}
+                            <div style={{ padding: "12px 14px", display: "flex", flexDirection: "column", gap: 10, flex: 1 }}>
+                              <div>
+                                <label style={{ display: "block", fontSize: "0.74rem", fontWeight: 700, color: "#64748b", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.03em" }}>
+                                  Price (₹)
+                                </label>
+                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                  <span style={{ fontSize: "0.85rem", color: "#64748b", fontWeight: 700 }}>₹</span>
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    placeholder="e.g. 45000"
+                                    value={item.price}
+                                    onChange={(e) => updatePendingField(pIdx, "price", e.target.value ? Number(e.target.value) : "")}
+                                    style={{
+                                      flex: 1,
+                                      padding: "6px 9px",
+                                      borderRadius: 6,
+                                      border: "1px solid #cbd5e1",
+                                      fontSize: "0.84rem",
+                                      fontWeight: 700,
+                                      color: "#0f766e",
+                                      background: "#fff",
+                                    }}
+                                  />
+                                </div>
+                              </div>
+
+                              <div>
+                                <label style={{ display: "block", fontSize: "0.74rem", fontWeight: 700, color: "#64748b", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.03em" }}>
+                                  Description (Shown in Customer Popup)
+                                </label>
+                                <textarea
+                                  rows={3}
+                                  placeholder="Describe this stage decor (e.g. Floral stage decoration with a premium backdrop)..."
+                                  value={item.description}
+                                  onChange={(e) => updatePendingField(pIdx, "description", e.target.value)}
+                                  style={{
+                                    width: "100%",
+                                    padding: "7px 9px",
+                                    borderRadius: 6,
+                                    border: "1px solid #cbd5e1",
+                                    fontSize: "0.79rem",
+                                    lineHeight: 1.45,
+                                    color: "#334155",
+                                    resize: "vertical",
+                                    fontFamily: "inherit",
+                                    background: "#fff",
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Existing Photos Grid */}
                   <div>
