@@ -148,6 +148,15 @@ async function ensureOccasionsSchema() {
           VALUES (${o.id}, ${o.name}, ${o.slug}, ${o.image}, ${o.href}, ${o.whatsapp_message}, ${o.active}, ${o.display_order});
         `;
       }
+    } else {
+      // Migrate any legacy local paths to Cloudinary URLs
+      for (const def of ALL_OCCASIONS) {
+        await sql`
+          UPDATE occasions
+          SET image = ${def.image}
+          WHERE slug = ${def.slug} AND (image LIKE '/images/occasion-%' OR image IS NULL OR image = '');
+        `;
+      }
     }
     schemaEnsured = true;
   } catch (err) {
@@ -159,9 +168,20 @@ export async function GET() {
   try {
     await ensureOccasionsSchema();
     const rows = await sql`SELECT * FROM occasions ORDER BY display_order ASC, name ASC`;
+    const mappedRows = (rows || []).map((r: any) => {
+      let img = r.image;
+      if (!img || img.startsWith("/images/occasion-")) {
+        const fallback = ALL_OCCASIONS.find((a) => a.slug === r.slug || a.id === r.id);
+        if (fallback?.image) img = fallback.image;
+      }
+      return {
+        ...r,
+        image: img,
+      };
+    });
     return NextResponse.json({
       success: true,
-      occasions: rows || [],
+      occasions: mappedRows,
     });
   } catch (error: any) {
     console.error("Occasions fetch error:", error);

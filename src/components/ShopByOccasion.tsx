@@ -109,15 +109,25 @@ export default function ShopByOccasion({ targetOccasion }: ShopByOccasionProps =
         if (isMounted && data.success && Array.isArray(data.occasions) && data.occasions.length > 0) {
           const activeList = data.occasions
             .filter((o: any) => o.active !== 0 && o.active !== false)
-            .map((o: any) => ({
-              id: o.slug || o.id,
-              name: o.name,
-              image: o.image || "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647420/occasions/branding/occasion-birthday.png",
-              href: o.href || `/flower-bouquets?occasion=${o.slug}`,
-              whatsappMessage:
-                o.whatsapp_message ||
-                `Hello Occassions Florist Calicut, I would like to order fresh flowers for ${o.name}.`,
-            }));
+            .map((o: any) => {
+              const fallbackItem = OCCASIONS_ITEMS.find(
+                (item) => item.id.toLowerCase() === (o.slug || o.id || "").toLowerCase()
+              );
+              let img = o.image;
+              if (!img || img.startsWith("/images/occasion-")) {
+                img = fallbackItem?.image || "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647420/occasions/branding/occasion-birthday.png";
+              }
+              return {
+                id: o.slug || o.id,
+                name: o.name,
+                image: img,
+                href: o.href || `/flower-bouquets?occasion=${o.slug}`,
+                whatsappMessage:
+                  o.whatsapp_message ||
+                  fallbackItem?.whatsappMessage ||
+                  `Hello Occassions Florist Calicut, I would like to order fresh flowers for ${o.name}.`,
+              };
+            });
           if (activeList.length > 0) {
             setOccasions(activeList);
             setIndex(activeList.length);
