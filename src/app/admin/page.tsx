@@ -42,7 +42,8 @@ import StoreBrandingManager from "@/components/admin/StoreBrandingManager";
 import HomepageManager from "@/components/admin/HomepageManager";
 import DeliveryManager from "@/components/admin/DeliveryManager";
 import HighlightManager from "@/components/admin/HighlightManager";
-import { Layers, Palette, LayoutTemplate, Image as ImageIcon } from "lucide-react";
+import FlowerTypeManager from "@/components/admin/FlowerTypeManager";
+import { Layers, Palette, LayoutTemplate, Image as ImageIcon, Flower2 } from "lucide-react";
 import styles from "./admin.module.css";
 
 const DEFAULT_CATEGORIES_LIST = [
@@ -64,7 +65,7 @@ export default function AdminPage() {
   const [loggingIn, setLoggingIn] = useState(false);
 
   // Tab
-  const [activeTab, setActiveTab] = useState<"orders" | "stock" | "categories" | "media" | "branding" | "homepage" | "highlights" | "customization" | "coupons" | "delivery" | "users">("orders");
+  const [activeTab, setActiveTab] = useState<"orders" | "stock" | "categories" | "flower-types" | "media" | "branding" | "homepage" | "highlights" | "customization" | "coupons" | "delivery" | "users">("orders");
 
   // Admin stats & data
   const [stats, setStats] = useState<{
@@ -87,6 +88,7 @@ export default function AdminPage() {
 
   // Product Management CRUD & Filters state
   const [categoriesList, setCategoriesList] = useState<any[]>([]);
+  const [flowerTypesList, setFlowerTypesList] = useState<any[]>([]);
   const [productSearch, setProductSearch] = useState("");
   const [productCategoryFilter, setProductCategoryFilter] = useState("all");
   const [productStatusFilter, setProductStatusFilter] = useState("all");
@@ -207,6 +209,11 @@ export default function AdminPage() {
           fetch("/api/categories", { credentials: "include" })
             .then((r) => (r.ok ? r.json() : null))
             .then((d) => d?.success && Array.isArray(d.categories) && setCategoriesList(d.categories)),
+
+          // Flower Types
+          fetch("/api/flowers?all=true", { credentials: "include" })
+            .then((r) => (r.ok ? r.json() : null))
+            .then((d) => d?.success && Array.isArray(d.flowers) && setFlowerTypesList(d.flowers)),
 
           // Customization Settings
           fetch("/api/admin/customization", { credentials: "include" })
@@ -816,6 +823,20 @@ export default function AdminPage() {
                 </div>
                 <span className={`${styles.sidebarBadge} ${activeTab === "categories" ? styles.sidebarBadgeActive : ""}`}>
                   {categoriesList.length}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                className={`${styles.sidebarBtn} ${activeTab === "flower-types" ? styles.sidebarBtnActive : ""}`}
+                onClick={() => setActiveTab("flower-types")}
+              >
+                <div className={styles.sidebarBtnLeft}>
+                  <Flower2 size={17} />
+                  <span>Manage Flower Types</span>
+                </div>
+                <span className={`${styles.sidebarBadge} ${activeTab === "flower-types" ? styles.sidebarBadgeActive : ""}`}>
+                  {flowerTypesList.length}
                 </span>
               </button>
 
@@ -1809,6 +1830,11 @@ export default function AdminPage() {
           <CategoryManager categories={categoriesList} onRefresh={fetchAdminData} />
         )}
 
+        {/* TAB: Manage Flower Types */}
+        {activeTab === "flower-types" && (
+          <FlowerTypeManager onRefresh={fetchAdminData} />
+        )}
+
         {/* TAB 7: Media Library */}
         {activeTab === "media" && (
           <MediaLibrary />
@@ -1923,6 +1949,7 @@ export default function AdminPage() {
             { id: "cat-wreath", name: "Wreath", slug: "wreath" },
             { id: "cat-addons", name: "Add-ons", slug: "addons" },
           ]}
+          flowerTypes={flowerTypesList}
           onSave={handleCreateOrUpdateProduct}
         />
 

@@ -14,32 +14,26 @@ interface FlowerCategory {
   coverFull?: boolean;
   zoomOut?: boolean;
   objectPosition?: string;
+  uniqueKey?: string;
 }
 
-const FLOWER_CATEGORIES: FlowerCategory[] = [
-  { id: "roses", title: "Roses", description: "Romantic & timeless", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647423/occasions/products/general/rose.jpg", href: "/flowers/roses", coverFull: true },
-  { id: "orchids", title: "Orchids", description: "Exotic & graceful", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647421/occasions/products/general/orchid.jpg", href: "/flowers/orchids", coverFull: true },
-  { id: "chrysanthemums", title: "Chrysanthemums", description: "Vibrant & cheerful", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647362/occasions/products/general/chrysanthemum.png", href: "/flowers/chrysanthemums", coverFull: true },
+const DEFAULT_FLOWER_CATEGORIES: FlowerCategory[] = [
   { id: "gerberas", title: "Gerberas", description: "Playful & vivid", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647416/occasions/products/general/gerbera.jpg", href: "/flowers/gerberas", coverFull: true },
   { id: "sunflowers", title: "Sunflowers", description: "Bright & joyful", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647425/occasions/products/general/sunflower.jpg", href: "/flowers/sunflowers", coverFull: true },
   { id: "carnations", title: "Carnations", description: "Charming & delicate", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/products/general/carnations.jpg", href: "/flowers/carnations", coverFull: true, objectPosition: "center 82%" },
   { id: "lilies", title: "Lilies", description: "Elegant & graceful", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647419/occasions/products/general/lilies.jpg", href: "/flowers/lilies", coverFull: true },
   { id: "gladiolus", title: "Gladiolus", description: "Majestic & stately", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647417/occasions/products/general/gladiolus.jpg", href: "/flowers/gladiolus", coverFull: true },
+  { id: "roses", title: "Roses", description: "Romantic & timeless", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647423/occasions/products/general/rose.jpg", href: "/flowers/roses", coverFull: true },
+  { id: "orchids", title: "Orchids", description: "Exotic & graceful", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647421/occasions/products/general/orchid.jpg", href: "/flowers/orchids", coverFull: true },
+  { id: "chrysanthemums", title: "Chrysanthemums", description: "Vibrant & cheerful", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647362/occasions/products/general/chrysanthemum.png", href: "/flowers/chrysanthemums", coverFull: true },
   { id: "rajnigandha", title: "Rajnigandha", description: "Aromatic & traditional", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647422/occasions/products/general/rajnigandha.jpg", href: "/flowers/rajnigandha", coverFull: true },
   { id: "heliconia", title: "Heliconia", description: "Tropical & exotic", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647418/occasions/branding/heliconia.png", href: "/flowers/heliconia", coverFull: true },
 ];
 
-const ORIGINAL_COUNT = FLOWER_CATEGORIES.length;
-const SPEED_PX_PER_SEC = 45; // increase for faster scrolling
-
-// 3 sets so the loop is seamless in both directions
-const EXTENDED_ITEMS = [
-  ...FLOWER_CATEGORIES.map((item, idx) => ({ ...item, uniqueKey: `pre-${idx}` })),
-  ...FLOWER_CATEGORIES.map((item, idx) => ({ ...item, uniqueKey: `orig-${idx}` })),
-  ...FLOWER_CATEGORIES.map((item, idx) => ({ ...item, uniqueKey: `post-${idx}` })),
-];
+const SPEED_PX_PER_SEC = 45; // scroll animation speed
 
 export default function ShopByFlowers() {
+  const [categories, setCategories] = useState<FlowerCategory[]>(DEFAULT_FLOWER_CATEGORIES);
   const [visibleCount, setVisibleCount] = useState(4);
 
   const trackRef = useRef<HTMLDivElement | null>(null);
@@ -49,6 +43,49 @@ export default function ShopByFlowers() {
   const reducedMotionRef = useRef(false);
   const pointerStartX = useRef<number | null>(null);
   const isPointerDown = useRef(false);
+
+  // Dynamically fetch active flower types from backend
+  useEffect(() => {
+    let isMounted = true;
+    const fetchFlowers = async () => {
+      try {
+        const res = await fetch(`/api/flowers?_t=${Date.now()}`);
+        const data = await res.json();
+        if (isMounted && data.success && Array.isArray(data.flowers) && data.flowers.length > 0) {
+          const dynamicItems: FlowerCategory[] = data.flowers.map((f: any) => ({
+            id: f.slug || f.id,
+            title: f.name,
+            description: f.description || "",
+            image: f.image || "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647416/occasions/products/general/gerbera.jpg",
+            href: `/flowers/${f.slug}`,
+            coverFull: true,
+            objectPosition: f.slug === "carnations" ? "center 82%" : undefined,
+          }));
+          setCategories(dynamicItems);
+        }
+      } catch (err) {
+        console.error("Error fetching dynamic flower types:", err);
+      }
+    };
+
+    fetchFlowers();
+
+    const handleFlowersChanged = () => fetchFlowers();
+    window.addEventListener("occasions:flower-types-changed", handleFlowersChanged);
+    return () => {
+      isMounted = false;
+      window.removeEventListener("occasions:flower-types-changed", handleFlowersChanged);
+    };
+  }, []);
+
+  const originalCount = categories.length;
+
+  // 3 duplicate sets so the loop is seamless in both directions
+  const extendedItems = [
+    ...categories.map((item, idx) => ({ ...item, uniqueKey: `pre-${item.id}-${idx}` })),
+    ...categories.map((item, idx) => ({ ...item, uniqueKey: `orig-${item.id}-${idx}` })),
+    ...categories.map((item, idx) => ({ ...item, uniqueKey: `post-${item.id}-${idx}` })),
+  ];
 
   // Responsive visible count
   useEffect(() => {
@@ -89,8 +126,8 @@ export default function ShopByFlowers() {
       const track = trackRef.current;
       const step = getStep();
 
-      if (track && step > 0) {
-        const setLen = step * ORIGINAL_COUNT;
+      if (track && step > 0 && originalCount > 0) {
+        const setLen = step * originalCount;
 
         if (offsetRef.current === 0) offsetRef.current = setLen;
 
@@ -118,7 +155,7 @@ export default function ShopByFlowers() {
 
     rafId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafId);
-  }, [getStep]);
+  }, [getStep, originalCount]);
 
   const handleNext = () => {
     pendingRef.current += getStep();
@@ -200,7 +237,7 @@ export default function ShopByFlowers() {
                 } as React.CSSProperties
               }
             >
-              {EXTENDED_ITEMS.map((cat, idx) => (
+              {extendedItems.map((cat, idx) => (
                 <div key={`${cat.uniqueKey}-${idx}`} className={styles.flowerItem}>
                   <Link
                     href={cat.href}

@@ -91,6 +91,24 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Strict maximum limit: 4 Highlights total across all categories
+    const countRows = await sql`SELECT COUNT(*)::int as count FROM highlights`;
+    const currentTotal = countRows?.[0]?.count ?? 0;
+    const MAX_HIGHLIGHTS = 4;
+
+    if (currentTotal >= MAX_HIGHLIGHTS) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "You have reached the maximum limit of 4 Highlights. Delete an existing Highlight to add a new one.",
+          code: "MAX_LIMIT_REACHED",
+          currentCount: currentTotal,
+          maxAllowed: MAX_HIGHLIGHTS,
+        },
+        { status: 400, headers: NO_CACHE_HEADERS }
+      );
+    }
+
     const body = await req.json();
     const {
       title,

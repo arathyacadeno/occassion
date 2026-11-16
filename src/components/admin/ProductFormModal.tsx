@@ -764,6 +764,35 @@ export default function ProductFormModal({
                   </select>
                 </div>
               )}
+
+              {/* Flower Type Association */}
+              <div>
+                <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, color: "#475569", marginBottom: 6 }}>
+                  Flower Type (Shop By Flowers)
+                </label>
+                <select
+                  value={flowerTypeId}
+                  onChange={(e) => setFlowerTypeId(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "10px 14px",
+                    borderRadius: 10,
+                    border: "1.5px solid #cbd5e1",
+                    fontSize: "0.92rem",
+                    background: "#fff",
+                  }}
+                >
+                  <option value="">-- None / Mixed --</option>
+                  {flowerTypes.map((ft: any) => (
+                    <option key={ft.id} value={ft.id}>
+                      {ft.name}
+                    </option>
+                  ))}
+                </select>
+                <p style={{ margin: "4px 0 0", fontSize: "0.75rem", color: "#64748b" }}>
+                  Links product to the homepage flower carousel.
+                </p>
+              </div>
             </div>
           </div>
 

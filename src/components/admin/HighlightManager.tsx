@@ -190,8 +190,15 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
   // Lock background body scroll cleanly (fixed background, no layout jumps or movement)
   useScrollLock(isModalOpen || deleteModalOpen || Boolean(previewHighlight) || isUploadModalOpen);
 
+  const MAX_HIGHLIGHTS = 4;
+  const isMaxReached = highlights.length >= MAX_HIGHLIGHTS;
+
   // Open modal to add a brand new highlight
   const handleOpenAdd = () => {
+    if (highlights.length >= MAX_HIGHLIGHTS) {
+      setErrorMsg("You have reached the maximum limit of 4 Highlights. Delete an existing Highlight to add a new one.");
+      return;
+    }
     setEditingHighlight(null);
     setFormTitle("");
     setFormDescription("");
@@ -515,6 +522,11 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
   // Save Highlight
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!editingHighlight && highlights.length >= MAX_HIGHLIGHTS) {
+      setActiveTab("basic");
+      setModalError("You have reached the maximum limit of 4 Highlights. Delete an existing Highlight to add a new one.");
+      return;
+    }
     if (!formTitle.trim()) {
       setActiveTab("basic");
       setModalError("Please enter a Highlight Name.");
@@ -743,6 +755,23 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
             >
               Highlights &amp; Galleries
             </h1>
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 5,
+                padding: "3px 10px",
+                borderRadius: 20,
+                fontSize: "0.8rem",
+                fontWeight: 700,
+                background: isMaxReached ? "#fdf2f8" : "#f1f5f9",
+                color: isMaxReached ? "#be185d" : "#475569",
+                border: isMaxReached ? "1px solid #fbcfe8" : "1px solid #e2e8f0",
+              }}
+            >
+              <Layers size={13} color={isMaxReached ? "#db2777" : "#64748b"} />
+              <span>{highlights.length} / {MAX_HIGHLIGHTS} Highlights</span>
+            </span>
           </div>
           <p style={{ color: "#64748b", fontSize: "0.88rem", margin: 0 }}>
             Manage the 4 main showcase cards on your homepage and their customer photo galleries.
@@ -774,30 +803,101 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
 
           <button
             type="button"
-            onClick={handleOpenAdd}
+            disabled={isMaxReached}
+            onClick={isMaxReached ? undefined : handleOpenAdd}
+            title={
+              isMaxReached
+                ? "You have reached the maximum limit of 4 Highlights. Delete an existing Highlight to add a new one."
+                : "Add New Highlight"
+            }
             style={{
               display: "flex",
               alignItems: "center",
               gap: 8,
               padding: "11px 22px",
               borderRadius: 12,
-              border: "none",
-              background: "linear-gradient(135deg, #db2777 0%, #be185d 100%)",
-              color: "#fff",
+              border: isMaxReached ? "1px solid #e2e8f0" : "none",
+              background: isMaxReached
+                ? "#f1f5f9"
+                : "linear-gradient(135deg, #db2777 0%, #be185d 100%)",
+              color: isMaxReached ? "#94a3b8" : "#fff",
               fontSize: "0.92rem",
               fontWeight: 600,
-              cursor: "pointer",
-              boxShadow: "0 4px 14px rgba(219, 39, 119, 0.28)",
+              cursor: isMaxReached ? "not-allowed" : "pointer",
+              boxShadow: isMaxReached ? "none" : "0 4px 14px rgba(219, 39, 119, 0.28)",
               transition: "transform 0.15s ease",
+              opacity: isMaxReached ? 0.7 : 1,
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-1px)")}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
+            onMouseEnter={(e) => {
+              if (!isMaxReached) e.currentTarget.style.transform = "translateY(-1px)";
+            }}
+            onMouseLeave={(e) => {
+              if (!isMaxReached) e.currentTarget.style.transform = "translateY(0)";
+            }}
           >
             <Plus size={18} strokeWidth={2.4} />
             <span>Add New Highlight</span>
           </button>
         </div>
       </div>
+
+      {/* Maximum Limit Reached Notice Banner */}
+      {isMaxReached && (
+        <div
+          style={{
+            background: "linear-gradient(135deg, #fff1f2 0%, #fdf2f8 100%)",
+            border: "1px solid #fbcfe8",
+            color: "#9f1239",
+            padding: "13px 18px",
+            borderRadius: 14,
+            fontSize: "0.88rem",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: 12,
+            boxShadow: "0 2px 8px rgba(219, 39, 119, 0.05)",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div
+              style={{
+                width: 28,
+                height: 28,
+                borderRadius: 8,
+                background: "#ffe4e6",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              <Info size={16} color="#be185d" strokeWidth={2.4} />
+            </div>
+            <div>
+              <span style={{ fontWeight: 600, color: "#831843" }}>
+                You have reached the maximum limit of 4 Highlights.
+              </span>
+              <span style={{ color: "#9f1239", marginLeft: 6 }}>
+                Delete an existing Highlight to add a new one.
+              </span>
+            </div>
+          </div>
+          <span
+            style={{
+              padding: "3px 10px",
+              borderRadius: 20,
+              background: "#fce7f3",
+              border: "1px solid #f472b6",
+              color: "#9d174d",
+              fontSize: "0.78rem",
+              fontWeight: 700,
+            }}
+          >
+            {highlights.length} / {MAX_HIGHLIGHTS} Slots Occupied
+          </span>
+        </div>
+      )}
 
       {/* Notifications */}
       {successMsg && (
@@ -955,22 +1055,28 @@ export default function HighlightManager({ onRefresh }: HighlightManagerProps) {
           <p style={{ margin: "0 0 20px", color: "#64748b", fontSize: "0.88rem" }}>
             {searchQuery ? "No highlights match your search." : "Click below to create your first highlight category."}
           </p>
-          <button
-            type="button"
-            onClick={handleOpenAdd}
-            style={{
-              padding: "10px 22px",
-              borderRadius: 10,
-              background: "#db2777",
-              color: "#fff",
-              border: "none",
-              fontWeight: 600,
-              fontSize: "0.9rem",
-              cursor: "pointer",
-            }}
-          >
-            + Add New Highlight
-          </button>
+          {!isMaxReached ? (
+            <button
+              type="button"
+              onClick={handleOpenAdd}
+              style={{
+                padding: "10px 22px",
+                borderRadius: 10,
+                background: "#db2777",
+                color: "#fff",
+                border: "none",
+                fontWeight: 600,
+                fontSize: "0.9rem",
+                cursor: "pointer",
+              }}
+            >
+              + Add New Highlight
+            </button>
+          ) : (
+            <p style={{ color: "#be185d", fontSize: "0.86rem", fontWeight: 600 }}>
+              Maximum limit of 4 Highlights reached. Delete an existing Highlight to add a new one.
+            </p>
+          )}
         </div>
       ) : (
         <div
