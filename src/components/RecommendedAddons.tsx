@@ -46,7 +46,7 @@ export const getAddonProducts = (
     }
     return false;
   };
-
+  
   const filterCurrent = (items: AddonProduct[]) => items.filter((p) => !isCurrentProduct(p));
 
   const cakes = filterCurrent(sourceList.filter((p) => p.category === "Cakes"));
