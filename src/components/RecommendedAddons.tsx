@@ -46,7 +46,7 @@ export const getAddonProducts = (
     }
     return false;
   };
-  
+
   const filterCurrent = (items: AddonProduct[]) => items.filter((p) => !isCurrentProduct(p));
 
   const cakes = filterCurrent(sourceList.filter((p) => p.category === "Cakes"));
@@ -181,9 +181,8 @@ export default function RecommendedAddons({
             return (
               <div
                 key={product.id}
-                className={`${styles.addonCard} ${
-                  qty > 0 ? styles.addonCardSelected : ""
-                }`}
+                className={`${styles.addonCard} ${qty > 0 ? styles.addonCardSelected : ""
+                  }`}
               >
                 {/* Clean Image Container */}
                 <div className={styles.imageContainer}>
