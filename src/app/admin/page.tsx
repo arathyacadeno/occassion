@@ -179,8 +179,9 @@ export default function AdminPage() {
             statsLoadedRef.current = true;
           }
         }
-      } catch (e) {
-        console.error("Stats fetch error:", e);
+      } catch (e: any) {
+        // Use console.warn for background fetch/network reconnect interruptions to prevent intrusive Next.js dev overlays
+        console.warn("Stats background fetch notice:", e?.message || e);
       } finally {
         setStatsLoading(false);
       }
@@ -193,35 +194,41 @@ export default function AdminPage() {
           // Orders
           fetch("/api/orders", { credentials: "include" })
             .then((r) => (r.ok ? r.json() : null))
-            .then((d) => d?.success && Array.isArray(d.orders) && setOrders(d.orders)),
+            .then((d) => d?.success && Array.isArray(d.orders) && setOrders(d.orders))
+            .catch(() => null),
 
           // Products
           fetch("/api/products?limit=500", { credentials: "include" })
             .then((r) => (r.ok ? r.json() : null))
-            .then((d) => d?.success && Array.isArray(d.products) && setProducts(d.products)),
+            .then((d) => d?.success && Array.isArray(d.products) && setProducts(d.products))
+            .catch(() => null),
 
           // Coupons
           fetch("/api/coupons", { credentials: "include" })
             .then((r) => (r.ok ? r.json() : null))
-            .then((d) => d?.success && Array.isArray(d.coupons) && setCoupons(d.coupons)),
+            .then((d) => d?.success && Array.isArray(d.coupons) && setCoupons(d.coupons))
+            .catch(() => null),
 
           // Categories
           fetch("/api/categories", { credentials: "include" })
             .then((r) => (r.ok ? r.json() : null))
-            .then((d) => d?.success && Array.isArray(d.categories) && setCategoriesList(d.categories)),
+            .then((d) => d?.success && Array.isArray(d.categories) && setCategoriesList(d.categories))
+            .catch(() => null),
 
           // Flower Types
           fetch("/api/flowers?all=true", { credentials: "include" })
             .then((r) => (r.ok ? r.json() : null))
-            .then((d) => d?.success && Array.isArray(d.flowers) && setFlowerTypesList(d.flowers)),
+            .then((d) => d?.success && Array.isArray(d.flowers) && setFlowerTypesList(d.flowers))
+            .catch(() => null),
 
           // Customization Settings
           fetch("/api/admin/customization", { credentials: "include" })
             .then((r) => (r.ok ? r.json() : null))
-            .then((d) => d?.success && d.config && setCustomConfig(d.config)),
+            .then((d) => d?.success && d.config && setCustomConfig(d.config))
+            .catch(() => null),
         ]);
-      } catch (e) {
-        console.error("Admin data fetch error:", e);
+      } catch (e: any) {
+        console.warn("Admin data background fetch notice:", e?.message || e);
       } finally {
         setLoading(false);
       }
@@ -241,6 +248,7 @@ export default function AdminPage() {
     if (!isAdmin) return;
     let lastRefresh = Date.now();
     const handleVisibilityChange = () => {
+      if (typeof navigator !== "undefined" && !navigator.onLine) return;
       if (!document.hidden && Date.now() - lastRefresh > 10000) {
         lastRefresh = Date.now();
         fetchAdminData();
