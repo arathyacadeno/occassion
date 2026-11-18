@@ -91,6 +91,7 @@ export default function AdminPage() {
   const [flowerTypesList, setFlowerTypesList] = useState<any[]>([]);
   const [productSearch, setProductSearch] = useState("");
   const [productCategoryFilter, setProductCategoryFilter] = useState("all");
+  const [productFlowerTypeFilter, setProductFlowerTypeFilter] = useState("all");
   const [productStatusFilter, setProductStatusFilter] = useState("all");
   const [productStockFilter, setProductStockFilter] = useState("all");
   const [productSort, setProductSort] = useState("newest");
@@ -578,6 +579,28 @@ export default function AdminPage() {
           if (!matches) return false;
         }
 
+        if (productFlowerTypeFilter !== "all") {
+          const ftVal = productFlowerTypeFilter.toLowerCase();
+          const pFtId = (p.flowerTypeId || p.flower_type_id || "").toLowerCase();
+          const pFtSlug = (p.flowerType || p.flower_type_slug || "").toLowerCase();
+          const pFtName = (p.flowerTypeLabel || p.flowerTypeName || "").toLowerCase();
+
+          const normFtVal = ftVal.replace(/^ft-/, "").replace(/s$/, "");
+          const normFtId = pFtId.replace(/^ft-/, "").replace(/s$/, "");
+          const normFtSlug = pFtSlug.replace(/^ft-/, "").replace(/s$/, "");
+          const normFtName = pFtName.replace(/s$/, "");
+
+          const matchesFt =
+            pFtId === ftVal ||
+            pFtSlug === ftVal ||
+            normFtId === normFtVal ||
+            normFtSlug === normFtVal ||
+            normFtName === normFtVal ||
+            (normFtName !== "" && normFtName.includes(normFtVal));
+
+          if (!matchesFt) return false;
+        }
+
         if (productStatusFilter !== "all") {
           const st = p.status || (p.active ? "published" : "draft");
           if (st !== productStatusFilter) return false;
@@ -596,7 +619,7 @@ export default function AdminPage() {
         if (productSort === "stock_asc") return (a.stock || 0) - (b.stock || 0);
         return new Date(b.created_at || b.createdAt || 0).getTime() - new Date(a.created_at || a.createdAt || 0).getTime();
       });
-  }, [products, productSearch, productCategoryFilter, productStatusFilter, productStockFilter, productSort]);
+  }, [products, productSearch, productCategoryFilter, productFlowerTypeFilter, productStatusFilter, productStockFilter, productSort]);
 
   const totalProductPages = Math.max(1, Math.ceil(filteredProducts.length / productPageSize));
   const paginatedProducts = filteredProducts.slice(
@@ -1133,6 +1156,22 @@ export default function AdminPage() {
 
                 <select
                   className={styles.filterSelect}
+                  value={productFlowerTypeFilter}
+                  onChange={(e) => {
+                    setProductFlowerTypeFilter(e.target.value);
+                    setProductPage(1);
+                  }}
+                >
+                  <option value="all">All Flower Types</option>
+                  {flowerTypesList.map((ft: any) => (
+                    <option key={ft.id} value={ft.id}>
+                      {ft.name}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  className={styles.filterSelect}
                   value={productStatusFilter}
                   onChange={(e) => {
                     setProductStatusFilter(e.target.value);
@@ -1259,6 +1298,11 @@ export default function AdminPage() {
                             <span style={{ display: "inline-block", padding: "4px 8px", borderRadius: 6, background: "#f1f5f9", fontSize: "0.8rem", color: "#334155", fontWeight: 600 }}>
                               {p.categoryLabel || p.category || "Bouquet"}
                             </span>
+                            {p.flowerTypeLabel && p.flowerTypeLabel !== "Mixed Flowers" && (
+                              <div style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 500, marginTop: 4 }}>
+                                🌸 {p.flowerTypeLabel}
+                              </div>
+                            )}
                           </td>
 
                           <td>
