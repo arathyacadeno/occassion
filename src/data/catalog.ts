@@ -3913,40 +3913,127 @@ export function getFlowerBouquets(): Product[] {
 }
 
 export function getProductsForFlower(flower: string): Product[] {
-  const norm = flower.toLowerCase().trim().replace(/s$/, ""); // e.g. "sunflower", "rose", "lili", "tulip", "carnation", "peoni", "orchid"
+  const raw = flower.toLowerCase().trim();
+  const flowerMap: Record<string, string> = {
+    lilies: "lily",
+    lily: "lily",
+    lillies: "lily",
+    lilly: "lily",
+    roses: "rose",
+    rose: "rose",
+    orchids: "orchid",
+    orchid: "orchid",
+    sunflowers: "sunflower",
+    sunflower: "sunflower",
+    jasmine: "jasmine",
+    jasmines: "jasmine",
+    carnations: "carnation",
+    carnation: "carnation",
+    gerberas: "gerbera",
+    gerbera: "gerbera",
+    gladiolus: "gladiolus",
+    gladioli: "gladiolus",
+    rajnigandha: "rajnigandha",
+    tuberose: "rajnigandha",
+    heliconia: "heliconia",
+    heliconias: "heliconia",
+    chrysanthemums: "chrysanthemum",
+    chrysanthemum: "chrysanthemum",
+    tulips: "tulip",
+    tulip: "tulip",
+  };
+  const norm = flowerMap[raw] || raw.replace(/s$/, "");
+
   const matched = CATALOG_PRODUCTS.filter((p) => {
+    // Only flower category items
     if (p.category !== "flower") return false;
-    const text = `${p.name} ${p.description ?? ""} ${p.slug ?? ""} ${p.badge ?? ""} ${p.includes?.join(" ") ?? ""}`.toLowerCase();
-    if (norm === "sunflower") return text.includes("sunflower");
+
+    const name = (p.name || "").toLowerCase();
+    const slug = (p.slug || "").toLowerCase();
+    const id = (p.id || "").toLowerCase();
+    const includes = (p.includes || []).join(" ").toLowerCase();
+
+    // Reject non-bouquet/basket items, cakes, add-ons, church arches, table runners, and wreaths
+    if (name.includes("cake") || id.includes("cake") || id.startsWith("addon-") || id === "flower-11" || id === "flower-12") return false;
+    if (name.includes("altar") || name.includes("arch") || name.includes("aisle") || name.includes("pew")) return false;
+    if (name.includes("wreath") || name.includes("cross") || name.includes("runner") || name.includes("centerpiece")) return false;
+
+    if (norm === "sunflower") {
+      return (
+        name.includes("sunflower") ||
+        slug.includes("sunflower") ||
+        id === "bouquet-sunshine-pink-charm" ||
+        id === "bouquet-golden-bloom-luxury" ||
+        id === "bouquet-sunflower-serenade" ||
+        id === "bouquet-sunshine-orchids" ||
+        id === "bouquet-5"
+      );
+    }
+
     if (norm === "rose") {
+      // Exclude tuberose/rajnigandha, lilies, pure orchid bouquets
       if (
-        p.id === "bouquet-orchid-symphony" ||
-        p.id === "bouquet-golden-blush" ||
-        p.id === "bouquet-pink-roses-purple-orchids" ||
-        p.id === "bouquet-orchid-fantasy" ||
-        p.slug === "orchid-fantasy" ||
-        p.id === "flower-rajnigandha-fragrant-bunch" ||
-        p.slug === "fragrant-rajnigandha-tuberose-bunch" ||
-        p.name.toLowerCase().includes("rajnigandha") ||
-        p.name.toLowerCase().includes("tuberose") ||
-        p.slug.includes("rajnigandha") ||
-        p.slug.includes("tuberose")
+        name.includes("rajnigandha") ||
+        name.includes("tuberose") ||
+        slug.includes("rajnigandha") ||
+        slug.includes("tuberose") ||
+        id === "bouquet-orchid-symphony" ||
+        id === "bouquet-golden-blush" ||
+        id === "bouquet-pink-roses-purple-orchids" ||
+        id === "bouquet-orchid-fantasy" ||
+        slug === "orchid-fantasy" ||
+        id === "flower-rajnigandha-fragrant-bunch" ||
+        id === "flower-lily-celestial-daisy" ||
+        id === "flower-oriental-sunset-lily-bouquet" ||
+        id === "bouquet-7" ||
+        id === "bouquet-purple-lily-lavender"
       ) {
         return false;
       }
-      return /\brose(s)?\b/i.test(text);
+      return /\brose(s)?\b/i.test(name) || /\brose(s)?\b/i.test(slug);
     }
-    if (norm === "lili" || norm === "lily" || norm === "lilie") return text.includes("lil");
-    if (norm === "orchid") return text.includes("orchid");
-    if (norm === "tulip") return text.includes("tulip");
-    if (norm === "carnation") return text.includes("carnation");
-    if (norm === "peoni" || norm === "peony") return text.includes("peon");
-    if (norm === "chrysanthemum") return text.includes("chrysanthemum");
-    if (norm === "gerbera") return text.includes("gerbera");
-    if (norm.startsWith("gladiol")) return text.includes("gladiol");
-    if (norm.startsWith("rajnigandha") || norm.startsWith("tuberose")) return text.includes("rajnigandha") || text.includes("tuberose");
-    if (norm.startsWith("heliconia")) return text.includes("heliconia");
-    return text.includes(norm);
+
+    if (norm === "lily") {
+      return (
+        /\b(lily|lilies|lilly|oriental lily|casablanca|stargazer)\b/i.test(name) ||
+        /\b(lily|lilies|lilly|oriental-lily|casablanca|stargazer)\b/i.test(slug) ||
+        id === "flower-oriental-sunset-lily-bouquet" ||
+        id === "flower-lily-celestial-daisy" ||
+        id === "bouquet-7" ||
+        id === "bouquet-purple-lily-lavender"
+      );
+    }
+
+    if (norm === "orchid") {
+      return (
+        name.includes("orchid") ||
+        slug.includes("orchid") ||
+        id.includes("orchid") ||
+        id === "flower-13" ||
+        id === "bouquet-golden-blush"
+      );
+    }
+
+    if (norm === "jasmine") {
+      return (
+        name.includes("jasmine") ||
+        slug.includes("jasmine") ||
+        includes.includes("jasmine") ||
+        id === "bouquet-2" ||
+        id === "hl-1" ||
+        id === "hl-3"
+      );
+    }
+
+    if (norm === "tulip") return name.includes("tulip") || slug.includes("tulip");
+    if (norm === "carnation") return name.includes("carnation") || slug.includes("carnation");
+    if (norm === "chrysanthemum") return name.includes("chrysanthemum") || slug.includes("chrysanthemum");
+    if (norm === "gerbera") return name.includes("gerbera") || slug.includes("gerbera");
+    if (norm.startsWith("gladiol")) return name.includes("gladiol") || slug.includes("gladiol");
+    if (norm === "rajnigandha") return name.includes("rajnigandha") || name.includes("tuberose") || slug.includes("rajnigandha") || slug.includes("tuberose");
+    if (norm === "heliconia") return name.includes("heliconia") || slug.includes("heliconia");
+
+    return name.includes(norm) || slug.includes(norm);
   });
 
   if (norm === "rose") {

@@ -27,6 +27,7 @@ const DEFAULT_FLOWER_CATEGORIES: FlowerCategory[] = [
   { id: "orchids", title: "Orchids", description: "Exotic & graceful", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647421/occasions/products/general/orchid.jpg", href: "/flowers/orchids", coverFull: true },
   { id: "chrysanthemums", title: "Chrysanthemums", description: "Vibrant & cheerful", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647362/occasions/products/general/chrysanthemum.png", href: "/flowers/chrysanthemums", coverFull: true },
   { id: "rajnigandha", title: "Rajnigandha", description: "Aromatic & traditional", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647422/occasions/products/general/rajnigandha.jpg", href: "/flowers/rajnigandha", coverFull: true },
+  { id: "jasmine", title: "Jasmine", description: "Fragrant & traditional", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg", href: "/flowers/jasmine", coverFull: true },
   { id: "heliconia", title: "Heliconia", description: "Tropical & exotic", image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647418/occasions/branding/heliconia.png", href: "/flowers/heliconia", coverFull: true },
 ];
 

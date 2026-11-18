@@ -110,6 +110,87 @@ export const CATEGORIES_DATA: Record<string, CategoryInfo> = {
     description: "Architectural, lush tropical heliconia stems making bold and modern floral statements for celebrations and upscale arrangements.",
     heroImage: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647418/occasions/branding/heliconia.png",
   },
+  jasmine: {
+    slug: "jasmine",
+    name: "Jasmine",
+    type: "type",
+    title: "Fragrant Jasmine Collection",
+    headline: "Traditional, sweetly scented Madurai jasmine blooms and celebratory floral creations.",
+    description: "Cherished for weddings, festive moments, and sacred celebrations across Kerala, our fragrant jasmine creations bring timeless elegance and enchanting aroma.",
+    heroImage: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg",
+  },
+  jasmines: {
+    slug: "jasmine",
+    name: "Jasmine",
+    type: "type",
+    title: "Fragrant Jasmine Collection",
+    headline: "Traditional, sweetly scented Madurai jasmine blooms and celebratory floral creations.",
+    description: "Cherished for weddings, festive moments, and sacred celebrations across Kerala, our fragrant jasmine creations bring timeless elegance and enchanting aroma.",
+    heroImage: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg",
+  },
+  lily: {
+    slug: "lilies",
+    name: "Lilies",
+    type: "type",
+    title: "Fragrant Oriental Lilies",
+    headline: "Majestic Casablanca and Asiatic lilies celebrated for pure fragrance and sculptured blooms.",
+    description: "Unmatched in aromatic luxury, our oriental lilies create a lavish statement in any room with dramatic star-shaped blooms and lush verdant foliage.",
+    heroImage: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647384/occasions/products/flower-bouquet/flower-bouquet-white-casablanca-lilies.jpg",
+  },
+  rose: {
+    slug: "roses",
+    name: "Roses",
+    type: "type",
+    title: "Artisanal Rose Collection",
+    headline: "Exquisite hand-tied rose bouquets sourced from premier Dutch and highland gardens.",
+    description: "Discover velvety long-stem red roses, soft blush garden roses, and pristine white blossoms arranged with fragrant eucalyptus and bespoke ribbons. Handcrafted daily for delivery across Calicut.",
+    heroImage: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647380/occasions/products/flower-bouquet/flower-bouquet-scarlet-bloom-elegance.jpg",
+  },
+  orchid: {
+    slug: "orchids",
+    name: "Orchids",
+    type: "type",
+    title: "Exotic Orchid Collection",
+    headline: "Stunning exotic purple and white orchids symbolizing beauty, luxury, and strength.",
+    description: "Admire long-lasting premium orchid stems and bouquets, thoughtfully arranged for elegant home décor and memorable gifts across Calicut.",
+    heroImage: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647421/occasions/products/general/orchid.jpg",
+  },
+  sunflower: {
+    slug: "sunflowers",
+    name: "Sunflowers",
+    type: "type",
+    title: "Golden Sunshine Sunflowers",
+    headline: "Radiant, uplifting sunflowers that bring warmth, happiness, and bright energy.",
+    description: "Bold golden petals paired with delicate chamomile and fresh greenery. Hand-picked sunflowers known for their long-lasting vitality and cheerful presence.",
+    heroImage: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647413/occasions/products/flower-bouquet/flower-bouquet-sunshine-orchids.png",
+  },
+  carnation: {
+    slug: "carnations",
+    name: "Carnations",
+    type: "type",
+    title: "Classic Carnation Collection",
+    headline: "Ruffled, delicately scented carnations symbolizing fascination, love, and distinction.",
+    description: "Delight in rich crimson, blush pink, and pure white carnations combined with gypsophila and lush greenery for long-lasting freshness.",
+    heroImage: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/products/general/carnations.jpg",
+  },
+  gerbera: {
+    slug: "gerberas",
+    name: "Gerberas",
+    type: "type",
+    title: "Vivid Gerbera Daisy Collection",
+    headline: "Vibrant, cheerful gerberas radiating pure joy and celebration.",
+    description: "Celebrate happy moments with colorful gerbera daisy bouquets and arrangements, handcrafted with fresh foliage and signature styling.",
+    heroImage: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647416/occasions/products/general/gerbera.jpg",
+  },
+  chrysanthemum: {
+    slug: "chrysanthemums",
+    name: "Chrysanthemums",
+    type: "type",
+    title: "Vibrant Chrysanthemum Collection",
+    headline: "Cheerful, long-lasting chrysanthemum blooms full of warmth and vitality.",
+    description: "Brighten any celebration with fresh pink, white, and golden chrysanthemums artfully arranged in hand-tied bouquets and artisanal baskets.",
+    heroImage: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg",
+  },
 
   // BY OCCASION
   anniversary: {
@@ -1148,6 +1229,22 @@ export const FLOWER_PRODUCTS: FlowerProduct[] = [
 // Helper functions for dynamic fetching and filtering
 export function getCategoryInfo(slug: string): CategoryInfo {
   const normalized = slug.toLowerCase().trim();
+  const singularToPluralMap: Record<string, string> = {
+    lily: "lilies",
+    rose: "roses",
+    orchid: "orchids",
+    sunflower: "sunflowers",
+    carnation: "carnations",
+    gerbera: "gerberas",
+    chrysanthemum: "chrysanthemums",
+    tulip: "tulips",
+    jasmines: "jasmine",
+    peony: "peonies",
+  };
+  const targetKey = singularToPluralMap[normalized] || normalized;
+  if (CATEGORIES_DATA[targetKey]) {
+    return CATEGORIES_DATA[targetKey];
+  }
   if (CATEGORIES_DATA[normalized]) {
     return CATEGORIES_DATA[normalized];
   }

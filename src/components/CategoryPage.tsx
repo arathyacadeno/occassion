@@ -189,19 +189,26 @@ export default function CategoryPage({
           p.id === "bouquet-golden-blush" ||
           p.id === "bouquet-pink-roses-purple-orchids" ||
           p.id === "bouquet-orchid-fantasy" ||
-          p.slug === "orchid-fantasy"
+          p.slug === "orchid-fantasy" ||
+          text.includes("rajnigandha") ||
+          text.includes("tuberose")
         ) {
           return false;
         }
-        return text.includes("rose");
+        return /\brose(s)?\b/i.test(text);
       }
       if (f === "orchids" || f === "orchid") return text.includes("orchid");
-      if (f === "lilies" || f === "lily") return text.includes("lil");
+      if (f === "lilies" || f === "lily") return /\b(lily|lilies|lilly|lilium|casablanca|stargazer)\b/i.test(text);
       if (f === "carnations" || f === "carnation") return text.includes("carnation");
       if (f === "tulips" || f === "tulip" || f === "pastel-tulips") return text.includes("tulip");
       if (f === "sunflowers" || f === "sunflower") return text.includes("sunflower");
+      if (f === "jasmine" || f === "jasmines") return text.includes("jasmine");
       if (f === "gerberas" || f === "gerbera") return text.includes("gerbera");
       if (f === "peonies" || f === "peony") return text.includes("peon");
+      if (f === "rajnigandha" || f === "tuberose") return text.includes("rajnigandha") || text.includes("tuberose");
+      if (f === "heliconia" || f === "heliconias") return text.includes("heliconia");
+      if (f === "gladiolus" || f === "gladioli") return text.includes("gladiol");
+      if (f === "chrysanthemums" || f === "chrysanthemum") return text.includes("chrysanthemum");
       if (f === "bouquets" || f === "bouquet" || f === "flower-bouquets" || f === "flower bouquets") {
         return (
           !text.includes("basket") &&
