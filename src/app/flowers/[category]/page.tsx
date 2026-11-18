@@ -73,14 +73,19 @@ export default async function FlowerTypeCategoryPage({ params }: PageProps) {
   }
 
   const normalizedCategory = category.toLowerCase().trim();
-  const isKnownCategory = Boolean(CATEGORIES_DATA[normalizedCategory]);
+  const normSingular = normalizedCategory.replace(/s$/, "");
+  const isKnownCategory = Boolean(CATEGORIES_DATA[normalizedCategory] || CATEGORIES_DATA[normSingular]);
 
   // 1. Check DB for flower type
   let dbFlower: any = null;
   try {
     const fRows = await sql`
       SELECT * FROM flower_types 
-      WHERE slug = ${normalizedCategory} OR id = ${normalizedCategory} OR id = ${"ft-" + normalizedCategory}
+      WHERE slug = ${normalizedCategory}
+         OR slug = ${normSingular}
+         OR id = ${normalizedCategory}
+         OR id = ${"ft-" + normalizedCategory}
+         OR id = ${"ft-" + normSingular}
       LIMIT 1
     `;
     if (fRows && fRows.length > 0) {
@@ -97,12 +102,22 @@ export default async function FlowerTypeCategoryPage({ params }: PageProps) {
     products = getAllProducts().filter(
       (p) =>
         p.category === "flower" &&
-        (p.name.toLowerCase().includes(category.toLowerCase()) ||
-          p.description?.toLowerCase().includes(category.toLowerCase()))
+        (p.name.toLowerCase().includes(normSingular) ||
+          p.slug.toLowerCase().includes(normSingular))
     );
   }
 
-  // 2. Query Neon PostgreSQL for products associated with this flower type
+  const filteredCatalogProducts = (products || []).filter((p) => {
+    const cat = (p.category || "").toLowerCase();
+    const name = (p.name || "").toLowerCase();
+    const id = (p.id || "").toLowerCase();
+    if (cat === "cakes" || name.includes("cake") || id.includes("cake")) return false;
+    if (cat === "addons" || id.startsWith("addon-")) return false;
+    if (id === "flower-11" || id === "flower-12") return false;
+    return true;
+  });
+
+  // 2. Query Neon PostgreSQL for flower products associated with this flower type
   let dbProducts: any[] = [];
   try {
     const rawRows = await sql`
@@ -111,12 +126,25 @@ export default async function FlowerTypeCategoryPage({ params }: PageProps) {
       LEFT JOIN categories c ON p.category_id = c.id
       LEFT JOIN flower_types ft ON p.flower_type_id = ft.id
       WHERE p.active = 1
+        AND (p.status = 'published' OR p.status IS NULL OR p.status = '')
+        AND (
+          p.category_id IN ('cat-flower-bouquet', 'cat-flower-basket', 'flower-bouquet', 'flower-basket')
+          OR p.type = 'flower'
+          OR c.slug IN ('flower-bouquet', 'flower-basket')
+        )
+        AND (p.category_id NOT IN ('cat-cakes', 'cat-addons', 'cat-table-decor', 'cat-wreath'))
+        AND (p.type != 'cake')
+        AND (p.name NOT ILIKE '%cake%')
+        AND (p.id NOT LIKE 'addon-%')
+        AND (p.id NOT IN ('flower-11', 'flower-12'))
         AND (
           ft.slug = ${normalizedCategory}
+          OR ft.slug = ${normSingular}
           OR p.flower_type_id = ${normalizedCategory}
           OR p.flower_type_id = ${"ft-" + normalizedCategory}
-          OR LOWER(p.name) LIKE ${"%" + normalizedCategory + "%"}
-          OR LOWER(p.description) LIKE ${"%" + normalizedCategory + "%"}
+          OR p.flower_type_id = ${"ft-" + normSingular}
+          OR LOWER(p.name) LIKE ${"%" + normSingular + "%"}
+          OR LOWER(COALESCE(p.includes, '')) LIKE ${"%" + normSingular + "%"}
         )
       ORDER BY p.featured DESC, p.created_at DESC
     `;
@@ -125,10 +153,21 @@ export default async function FlowerTypeCategoryPage({ params }: PageProps) {
     console.error("DB products for flower search error:", e);
   }
 
-  // Merge products without duplicates
+  // Merge products without duplicates, strictly excluding non-flower items
   const seen = new Set<string>();
   const allProducts: any[] = [];
-  for (const p of [...products, ...dbProducts]) {
+  for (const p of [...filteredCatalogProducts, ...dbProducts]) {
+    const cat = ((p as any).category_id || p.category || "").toLowerCase();
+    const type = ((p as any).type || "").toLowerCase();
+    const name = (p.name || "").toLowerCase();
+    const id = (p.id || "").toLowerCase();
+
+    // Strictly reject any cakes, add-ons, table decor, wreaths, or dummy mock items
+    if (cat.includes("cake") || type === "cake" || name.includes("cake") || id.includes("cake")) continue;
+    if (cat === "cat-addons" || cat === "addons" || id.startsWith("addon-")) continue;
+    if (cat.includes("table-decor") || cat.includes("wreath")) continue;
+    if (id === "flower-11" || id === "flower-12") continue;
+
     if (!seen.has(p.id) && !seen.has(p.slug)) {
       seen.add(p.id);
       seen.add(p.slug);
