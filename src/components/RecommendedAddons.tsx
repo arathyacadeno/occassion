@@ -49,14 +49,20 @@ export const getAddonProducts = (
 
   const filterCurrent = (items: AddonProduct[]) => items.filter((p) => !isCurrentProduct(p));
 
-  const cakes = filterCurrent(sourceList.filter((p) => p.category === "Cakes"));
-  const bouquets = filterCurrent(sourceList.filter((p) => p.category === "Flower Bouquets"));
-  const baskets = filterCurrent(sourceList.filter((p) => p.category === "Flower Baskets"));
-  const chocolates = filterCurrent(sourceList.filter((p) => p.category === "Chocolates"));
-  const softToys = filterCurrent(sourceList.filter((p) => p.category === "Soft Toys"));
+  const isCakeProduct = (p: AddonProduct) => {
+    const name = (p.name || "").toLowerCase();
+    const id = (p.id || "").toLowerCase();
+    return p.category === "Cakes" || name.includes("cake") || name.includes("pastry") || id.includes("cake");
+  };
+
+  const cakes = filterCurrent(sourceList.filter((p) => isCakeProduct(p)));
+  const bouquets = filterCurrent(sourceList.filter((p) => !isCakeProduct(p) && p.category === "Flower Bouquets"));
+  const baskets = filterCurrent(sourceList.filter((p) => !isCakeProduct(p) && p.category === "Flower Baskets"));
+  const chocolates = filterCurrent(sourceList.filter((p) => !isCakeProduct(p) && p.category === "Chocolates"));
+  const softToys = filterCurrent(sourceList.filter((p) => !isCakeProduct(p) && p.category === "Soft Toys"));
   const others = filterCurrent(
     sourceList.filter(
-      (p) => !["Cakes", "Flower Bouquets", "Flower Baskets", "Chocolates", "Soft Toys"].includes(p.category)
+      (p) => !isCakeProduct(p) && !["Flower Bouquets", "Flower Baskets", "Chocolates", "Soft Toys"].includes(p.category)
     )
   );
 

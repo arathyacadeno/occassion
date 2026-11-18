@@ -111,7 +111,15 @@ export default function ProductFormModal({
         if (matched) initialCat = matched.id;
       }
       setCategoryId(initialCat || (categories[0]?.id || "cat-flower-bouquet"));
-      setAddonCategory(product.addonCategory || product.addon_category || "Chocolates");
+      const defaultAddonCat =
+        product.type === "cake" || (product.name && /cake|pastry/i.test(product.name))
+          ? "Cakes"
+          : product.type === "basket" || (product.name && /basket/i.test(product.name))
+          ? "Flower Baskets"
+          : product.type === "flower" || (product.name && /bouquet|roses|lily|carnation/i.test(product.name))
+          ? "Flower Bouquets"
+          : "Chocolates";
+      setAddonCategory(product.addonCategory || product.addon_category || defaultAddonCat);
       setFlowerTypeId(product.flowerTypeId || product.flower_type_id || "");
       setOccasionId(product.occasionId || product.occasion_id || "");
       setPrice(product.price ?? "");

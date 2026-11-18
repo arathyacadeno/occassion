@@ -82,7 +82,11 @@ export default function AddonModal({
       });
     }
     filteredAddons.forEach((p) => {
-      if (p.category) setOfCats.add(p.category);
+      const name = (p.name || "").toLowerCase();
+      const id = (p.id || "").toLowerCase();
+      const isCake = p.category === "Cakes" || name.includes("cake") || name.includes("pastry") || id.includes("cake");
+      const effectiveCategory = isCake ? "Cakes" : p.category;
+      if (effectiveCategory) setOfCats.add(effectiveCategory);
     });
 
     const cats = Array.from(setOfCats);
@@ -114,7 +118,11 @@ export default function AddonModal({
         const item = getAddonById(id) || ADDON_PRODUCTS.find((p) => p.id === id);
         counts.All = (counts.All || 0) + qty;
         if (item) {
-          counts[item.category] = (counts[item.category] || 0) + qty;
+          const name = (item.name || "").toLowerCase();
+          const idLower = (item.id || "").toLowerCase();
+          const isCake = item.category === "Cakes" || name.includes("cake") || name.includes("pastry") || idLower.includes("cake");
+          const effectiveCategory = isCake ? "Cakes" : item.category;
+          counts[effectiveCategory] = (counts[effectiveCategory] || 0) + qty;
         }
       }
     });
@@ -124,7 +132,21 @@ export default function AddonModal({
   // Filtered addons to display
   const displayedAddons = useMemo(() => {
     if (activeCategory === "All") return filteredAddons;
-    return filteredAddons.filter((p) => p.category === activeCategory);
+    return filteredAddons.filter((p) => {
+      const name = (p.name || "").toLowerCase();
+      const id = (p.id || "").toLowerCase();
+      const isCake = p.category === "Cakes" || name.includes("cake") || name.includes("pastry") || id.includes("cake");
+
+      if (activeCategory === "Chocolates") {
+        // Under Chocolates tab: strictly show chocolates only, NEVER any cake
+        return p.category === "Chocolates" && !isCake;
+      }
+      if (activeCategory === "Cakes") {
+        // Under Cakes tab: show all cakes
+        return isCake;
+      }
+      return p.category === activeCategory;
+    });
   }, [filteredAddons, activeCategory]);
 
   if (!isOpen) return null;

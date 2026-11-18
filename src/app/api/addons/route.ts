@@ -20,7 +20,12 @@ function fallbackDetermineCategory(row: any): "Cakes" | "Flower Bouquets" | "Flo
   const typeLower = (row.type || "").toLowerCase();
   const idLower = (row.id || "").toLowerCase();
 
-  // Soft Toys
+  // 1. Cakes (MUST be checked before chocolates, because chocolate cakes are cakes!)
+  if (typeLower === "cake" || nameLower.includes("cake") || nameLower.includes("pastry") || idLower.includes("cake")) {
+    return "Cakes";
+  }
+
+  // 2. Soft Toys
   if (
     nameLower.includes("teddy") ||
     nameLower.includes("bear") ||
@@ -30,7 +35,7 @@ function fallbackDetermineCategory(row: any): "Cakes" | "Flower Bouquets" | "Flo
     return "Soft Toys";
   }
 
-  // Chocolates & Treats (Snickers, Dairy Milk, 5 Star, Kitkat, Ferrero, etc.)
+  // 3. Chocolates & Treats (Snickers, Dairy Milk, 5 Star, Kitkat, Ferrero, etc.)
   if (
     nameLower.includes("chocolate") ||
     nameLower.includes("snickers") ||
@@ -55,11 +60,6 @@ function fallbackDetermineCategory(row: any): "Cakes" | "Flower Bouquets" | "Flo
     nameLower.includes("galaxy")
   ) {
     return "Chocolates";
-  }
-
-  // Cakes
-  if (typeLower === "cake" || nameLower.includes("cake") || nameLower.includes("pastry")) {
-    return "Cakes";
   }
 
   // Flower Bouquets
@@ -130,11 +130,19 @@ export async function GET() {
           }
         }
 
-        // Use database addon_category directly; fallback only if empty
-        const category =
+        // Determine category (fallback if empty)
+        let category =
           row.addon_category && typeof row.addon_category === "string" && row.addon_category.trim()
             ? (row.addon_category.trim() as any)
             : fallbackDetermineCategory(row);
+
+        // Strict enforcement: Cakes must NEVER be categorized as Chocolates
+        const rowName = (row.name || "").toLowerCase();
+        const rowType = (row.type || "").toLowerCase();
+        const rowId = (row.id || "").toLowerCase();
+        if (rowType === "cake" || rowName.includes("cake") || rowName.includes("pastry") || rowId.includes("cake")) {
+          category = "Cakes";
+        }
 
         const cleanSlug = (row.slug || row.id || "").replace(/^\//, "");
 
