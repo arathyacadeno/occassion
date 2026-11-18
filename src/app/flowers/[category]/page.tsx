@@ -277,6 +277,9 @@ export default async function FlowerTypeCategoryPage({ params, searchParams }: P
         AND (p.type IS NULL OR p.type NOT IN ('cake', 'addon', 'table-decor', 'wreath'))
         AND p.name NOT ILIKE '%cake%'
         AND p.id NOT LIKE 'addon-%'
+        AND p.id NOT LIKE 'occ-%'
+        AND p.id NOT LIKE 'table-%'
+        AND p.id NOT LIKE 'wreath-%'
         AND p.id NOT IN ('flower-11', 'flower-12')
         AND p.name NOT ILIKE '%altar%'
         AND p.name NOT ILIKE '%church%'
@@ -328,8 +331,13 @@ export default async function FlowerTypeCategoryPage({ params, searchParams }: P
     if (cat.includes("cake") || type === "cake" || name.includes("cake") || id.includes("cake")) continue;
     if (cat === "cat-addons" || cat === "addons" || id.startsWith("addon-")) continue;
     if (cat.includes("table-decor") || cat.includes("wreath") || type === "table-decor" || type === "wreath") continue;
+    if (id.startsWith("occ-") || id.startsWith("table-") || id.startsWith("wreath-")) continue;
     if (id === "flower-11" || id === "flower-12") continue;
     if (name.includes("altar") || name.includes("arch") || name.includes("aisle") || name.includes("pew") || name.includes("runner")) continue;
+
+    // Reject products carrying occasion-marketing or category branding images
+    const imgUrl = ((p as any).image || (p as any).images?.[0] || "").toLowerCase();
+    if (imgUrl.includes("/branding/occasion-")) continue;
 
     // Check flower-specific exclusion pattern (e.g. for roses, exclude tuberose/rajnigandha)
     if (flowerConfig.excludePattern && (flowerConfig.excludePattern.test(name) || flowerConfig.excludePattern.test(slug))) {
