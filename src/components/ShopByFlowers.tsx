@@ -52,15 +52,17 @@ export default function ShopByFlowers() {
         const res = await fetch(`/api/flowers?_t=${Date.now()}`);
         const data = await res.json();
         if (isMounted && data.success && Array.isArray(data.flowers) && data.flowers.length > 0) {
-          const dynamicItems: FlowerCategory[] = data.flowers.map((f: any) => ({
-            id: f.slug || f.id,
-            title: f.name,
-            description: f.description || "",
-            image: f.image || "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647416/occasions/products/general/gerbera.jpg",
-            href: `/flowers/${f.slug}`,
-            coverFull: true,
-            objectPosition: f.slug === "carnations" ? "center 82%" : undefined,
-          }));
+          const dynamicItems: FlowerCategory[] = data.flowers
+            .filter((f: any) => f.slug !== "mixed-flowers" && f.id !== "ft-mixed-flowers")
+            .map((f: any) => ({
+              id: f.slug || f.id,
+              title: f.name,
+              description: f.description || "",
+              image: f.image || "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647416/occasions/products/general/gerbera.jpg",
+              href: `/flowers/${f.slug}`,
+              coverFull: true,
+              objectPosition: f.slug === "carnations" ? "center 82%" : undefined,
+            }));
           setCategories(dynamicItems);
         }
       } catch (err) {
