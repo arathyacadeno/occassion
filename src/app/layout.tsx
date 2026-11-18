@@ -3,7 +3,7 @@ import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://occassionscalicut.com"),
+  metadataBase: new URL("https://occasionswithflowers.com"),
   title: "Occassions - Do it with flowers | Premier Florist & Event Decor, Calicut",
   description:
     "Occassions Florist Calicut by Sreejesh K.V. Handcrafted floral bouquets, artisanal flower baskets, stage decoration, floral wreaths, and fresh flower & cake delivery across Calicut (Kozhikode).",

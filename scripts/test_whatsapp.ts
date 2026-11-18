@@ -12,7 +12,7 @@ async function runTests() {
 
   // Test 1: GET webhook verification - Valid Token
   console.log("TEST 1: GET webhook verification (Valid Token)");
-  const validUrl = "https://occassion.vercel.app/api/webhooks/whatsapp?hub.mode=subscribe&hub.verify_token=test_token_12345&hub.challenge=CHALLENGE_987654";
+  const validUrl = "https://occasionswithflowers.com/api/webhooks/whatsapp?hub.mode=subscribe&hub.verify_token=test_token_12345&hub.challenge=CHALLENGE_987654";
   const req1 = new Request(validUrl, { method: "GET" });
   const res1 = await GET(req1);
   const text1 = await res1.text();
@@ -27,7 +27,7 @@ async function runTests() {
 
   // Test 2: GET webhook verification - Invalid Token
   console.log("TEST 2: GET webhook verification (Invalid Token)");
-  const invalidUrl = "https://occassion.vercel.app/api/webhooks/whatsapp?hub.mode=subscribe&hub.verify_token=WRONG_TOKEN&hub.challenge=CHALLENGE_987654";
+  const invalidUrl = "https://occasionswithflowers.com/api/webhooks/whatsapp?hub.mode=subscribe&hub.verify_token=WRONG_TOKEN&hub.challenge=CHALLENGE_987654";
   const req2 = new Request(invalidUrl, { method: "GET" });
   const res2 = await GET(req2);
   console.log(`Status: ${res2.status} (Expected: 403)`);
@@ -72,7 +72,7 @@ async function runTests() {
     .update(samplePayload, "utf8")
     .digest("hex");
 
-  const req3 = new Request("https://occassion.vercel.app/api/webhooks/whatsapp", {
+  const req3 = new Request("https://occasionswithflowers.com/api/webhooks/whatsapp", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -93,7 +93,7 @@ async function runTests() {
 
   // Test 4: POST webhook event - Invalid HMAC Signature
   console.log("TEST 4: POST webhook event (Tampered / Invalid Signature)");
-  const req4 = new Request("https://occassion.vercel.app/api/webhooks/whatsapp", {
+  const req4 = new Request("https://occasionswithflowers.com/api/webhooks/whatsapp", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -156,7 +156,7 @@ async function runTests() {
     .update(statusPayload, "utf8")
     .digest("hex");
 
-  const req5 = new Request("https://occassion.vercel.app/api/webhooks/whatsapp", {
+  const req5 = new Request("https://occasionswithflowers.com/api/webhooks/whatsapp", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
