@@ -125,7 +125,7 @@ export function buildOrderWhatsAppMessage(data: OrderNotificationPayload): strin
     ? `• *Delivery Date:* ${data.deliveryDate}${slotInfo}\n`
     : "";
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://occasions.com";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://occasionswithflowers.com";
 
   return `🌸 *NEW ORDER CONFIRMATION — OCCASIONS* 🌸
 ━━━━━━━━━━━━━━━━━━━━━━
@@ -311,7 +311,7 @@ export function buildCustomerOrderWhatsAppMessage(data: CustomerOrderNotificatio
           .join("\n")
       : "1. Fresh Floral Bouquet";
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://occassion.vercel.app";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://occasionswithflowers.com";
   const deliveryInfo = data.deliveryDate
     ? `📅 *Delivery Date:* ${data.deliveryDate}${data.deliveryTime ? ` (${data.deliveryTime})` : ""}\n`
     : "";
