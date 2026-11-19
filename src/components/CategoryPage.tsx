@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState, useEffect } from "react";
+import Link from "next/link";
 import styles from "./CategoryPage.module.css";
 import ProductCard from "@/components/ProductCard";
 import Navbar from "@/components/Navbar";
@@ -23,6 +24,7 @@ interface CategoryPageProps {
   initialFilterId?: string;
   initialSearch?: string;
   flowerCategory?: string;
+  isError?: boolean;
 }
 
 export default function CategoryPage({
@@ -33,6 +35,7 @@ export default function CategoryPage({
   initialFilterId,
   initialSearch,
   flowerCategory,
+  isError = false,
 }: CategoryPageProps) {
   const tabs = filterTabs && filterTabs.length > 0 ? filterTabs : DEFAULT_FILTER_TABS;
   const [activeFilterId, setActiveFilterId] = useState<string>(
@@ -362,34 +365,72 @@ export default function CategoryPage({
 
         {/* ================= PINK PANEL ================= */}
         <section className={styles.categoryPanel}>
-          <div
-            className={styles.filterTabsRow}
-            role="tablist"
-            aria-label="Filter products"
-          >
-            {tabs.map((tab) => {
-              const isActive = tab.id === activeFilterId;
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={isActive}
-                  className={`${styles.filterPill} ${
-                    isActive ? styles.filterPillActive : ""
-                  }`}
-                  onClick={() => handleTabClick(tab.id)}
-                >
-                  {tab.label}
-                </button>
-              );
-            })}
-          </div>
+          {!(flowerCategory && products.length === 0) && (
+            <div
+              className={styles.filterTabsRow}
+              role="tablist"
+              aria-label="Filter products"
+            >
+              {tabs.map((tab) => {
+                const isActive = tab.id === activeFilterId;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={isActive}
+                    className={`${styles.filterPill} ${
+                      isActive ? styles.filterPillActive : ""
+                    }`}
+                    onClick={() => handleTabClick(tab.id)}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           <div className={styles.gridContainer}>
-            <div className={styles.productGrid}>
-              {visibleProducts.length > 0 ? (
-                visibleProducts.map((product) => {
+            {isError ? (
+              <div className={styles.flowerEmptyState} role="alert">
+                <div className={styles.flowerErrorIconWrapper}>
+                  <svg
+                    width="38"
+                    height="38"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#e11d48"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
+                </div>
+                <h3 className={styles.flowerEmptyTitle}>Unable to Load Arrangements</h3>
+                <p className={styles.flowerEmptyText}>
+                  We encountered a temporary issue loading this collection. Please try refreshing or explore our other flower collections.
+                </p>
+                <div className={styles.emptyActionsRow}>
+                  <button
+                    type="button"
+                    className={styles.exploreFlowersBtn}
+                    onClick={() => window.location.reload()}
+                  >
+                    Retry
+                  </button>
+                  <Link href="/#shop-by-flowers" className={styles.secondaryExploreBtn}>
+                    Explore Other Flowers
+                  </Link>
+                </div>
+              </div>
+            ) : visibleProducts.length > 0 ? (
+              <div className={styles.productGrid}>
+                {visibleProducts.map((product) => {
                   const isCustomizeTab = activeFilterId.toLowerCase() === "customize";
                   const catSlug = flowerCategory || (product.category === "flower" ? "chrysanthemums" : product.category);
                   const customizeLink = `/flowers/${catSlug}/customize/${product.id}`;
@@ -402,13 +443,64 @@ export default function CategoryPage({
                       imageFit={title?.toLowerCase().includes("basket") ? "contain" : undefined}
                     />
                   );
-                })
-              ) : (
-                <p className={styles.emptyState}>
-                  No products in this category yet.
+                })}
+              </div>
+            ) : flowerCategory ? (
+              <div className={styles.flowerEmptyState} role="status">
+                <div className={styles.flowerEmptyIconWrapper}>
+                  <svg
+                    width="42"
+                    height="42"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#db2777"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M12 7.5a4.5 4.5 0 1 1 4.5 4.5M12 7.5A4.5 4.5 0 1 0 7.5 12M12 7.5V12m0 0a4.5 4.5 0 1 0 4.5 4.5M12 12a4.5 4.5 0 1 1-4.5 4.5m4.5-4.5h.01" />
+                    <circle cx="12" cy="12" r="1.5" fill="#db2777" />
+                    <path d="M12 16.5V22" stroke="#db2777" strokeWidth="1.8" />
+                    <path d="M12 19c-1.5 0-3-.5-4-2" stroke="#db2777" strokeWidth="1.5" />
+                    <path d="M12 20c1.5 0 3-.5 4-2" stroke="#db2777" strokeWidth="1.5" />
+                  </svg>
+                </div>
+                <h3 className={styles.flowerEmptyTitle}>
+                  {products.length === 0 ? "No Products Available" : "No Arrangements in this Style"}
+                </h3>
+                <p className={styles.flowerEmptyText}>
+                  {products.length === 0
+                    ? "We're currently preparing beautiful arrangements for this flower collection. Please explore our other collections."
+                    : "We're currently preparing arrangements for this specific style. Please explore our other arrangements or browse all blooms."}
                 </p>
-              )}
-            </div>
+                <div className={styles.emptyActionsRow}>
+                  {products.length > 0 && activeFilterId !== "all" && (
+                    <button
+                      type="button"
+                      className={styles.exploreFlowersBtn}
+                      onClick={() => handleTabClick("all")}
+                    >
+                      View All Arrangements
+                    </button>
+                  )}
+                  <Link
+                    href="/#shop-by-flowers"
+                    className={
+                      products.length > 0 && activeFilterId !== "all"
+                        ? styles.secondaryExploreBtn
+                        : styles.exploreFlowersBtn
+                    }
+                  >
+                    Explore Other Flowers
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <p className={styles.emptyState}>
+                No products in this category yet.
+              </p>
+            )}
           </div>
         </section>
       </main>

@@ -127,6 +127,148 @@
   color: #7B5A65;
 }
 
+/* ================= FLOWER EMPTY & ERROR STATES ================= */
+.flowerEmptyState {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: 540px;
+  margin: 28px auto;
+  padding: 44px 28px;
+  background: #ffffff;
+  border-radius: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(219, 39, 119, 0.08);
+  border: 1px solid rgba(251, 207, 232, 0.7);
+  box-sizing: border-box;
+}
+
+.flowerEmptyIconWrapper {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+  border: 1.5px solid #fbcfe8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 14px rgba(219, 39, 119, 0.12);
+}
+
+.flowerErrorIconWrapper {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #fff1f2;
+  border: 1.5px solid #fecdd3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 14px rgba(225, 29, 72, 0.12);
+}
+
+.flowerEmptyTitle {
+  font-family: var(--font-playfair), 'Playfair Display', Georgia, serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 10px 0;
+  letter-spacing: -0.01em;
+}
+
+.flowerEmptyText {
+  font-family: 'Plus Jakarta Sans', var(--font-sans), -apple-system, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #6b7280;
+  max-width: 440px;
+  margin: 0 0 24px 0;
+}
+
+.emptyActionsRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.exploreFlowersBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #db2777;
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  padding: 12px 28px;
+  font-family: 'Plus Jakarta Sans', var(--font-sans), -apple-system, sans-serif;
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.22s ease;
+  box-shadow: 0 4px 14px rgba(219, 39, 119, 0.28);
+}
+
+.exploreFlowersBtn:hover {
+  background-color: #be185d;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(219, 39, 119, 0.38);
+}
+
+.secondaryExploreBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fce7f3;
+  color: #db2777;
+  border: 1px solid #fbcfe8;
+  border-radius: 9999px;
+  padding: 12px 24px;
+  font-family: 'Plus Jakarta Sans', var(--font-sans), -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.secondaryExploreBtn:hover {
+  background-color: #fbcfe8;
+  color: #9d174d;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 480px) {
+  .flowerEmptyState {
+    padding: 32px 18px;
+    border-radius: 22px;
+    margin: 20px auto;
+  }
+
+  .flowerEmptyTitle {
+    font-size: 21px;
+  }
+
+  .flowerEmptyText {
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  .exploreFlowersBtn,
+  .secondaryExploreBtn {
+    width: 100%;
+    padding: 11px 20px;
+    font-size: 14px;
+  }
+}
+
 /* ================= BUTTONS ================= */
 .addToCartBtn {
   width: 100%;

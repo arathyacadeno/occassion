@@ -26,6 +26,12 @@ export default function ProductCard({
   const activeOriginalPrice = product.originalPrice;
   const activeImage = product.image;
 
+  const [imgFailed, setImgFailed] = useState<boolean>(!activeImage || activeImage.trim() === "");
+
+  React.useEffect(() => {
+    setImgFailed(!activeImage || activeImage.trim() === "");
+  }, [activeImage]);
+
   const toggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -48,14 +54,39 @@ export default function ProductCard({
           className={styles.imageLink}
           aria-label={product.name}
         >
-          <img
-            src={activeImage}
-            alt={product.name}
-            className={`${styles.productImage} ${
-              compact ? "similar-product-image" : ""
-            }`}
-            loading="lazy"
-          />
+          {imgFailed || !activeImage ? (
+            <div className={styles.placeholderContainer} aria-label={`${product.name} (Image Coming Soon)`}>
+              <div className={styles.placeholderIconWrapper}>
+                <svg
+                  width="38"
+                  height="38"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#db2777"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M12 7.5a4.5 4.5 0 1 1 4.5 4.5M12 7.5A4.5 4.5 0 1 0 7.5 12M12 7.5V12m0 0a4.5 4.5 0 1 0 4.5 4.5M12 12a4.5 4.5 0 1 1-4.5 4.5m4.5-4.5h.01" />
+                  <circle cx="12" cy="12" r="1.5" fill="#db2777" />
+                  <path d="M12 16.5V22" stroke="#db2777" strokeWidth="1.8" />
+                </svg>
+              </div>
+              <span className={styles.placeholderBrand}>Occasions</span>
+              <span className={styles.placeholderText}>Image Coming Soon</span>
+            </div>
+          ) : (
+            <img
+              src={activeImage}
+              alt={product.name}
+              className={`${styles.productImage} ${
+                compact ? "similar-product-image" : ""
+              }`}
+              loading="lazy"
+              onError={() => setImgFailed(true)}
+            />
+          )}
         </Link>
 
         {/* Floating Wishlist Button */}
