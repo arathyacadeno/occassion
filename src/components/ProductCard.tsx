@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { Heart, Star, Truck, Trash2 } from "lucide-react";
+import { Heart, Star, Trash2 } from "lucide-react";
 import { Product } from "@/data/catalog";
 import { useWishlist } from "@/context/WishlistContext";
 import { AddToCartButton } from "@/components/Buttons";
@@ -58,21 +58,7 @@ export default function ProductCard({
     }
   };
 
-  const discountPercent =
-    product.originalPrice && product.originalPrice > product.price
-      ? Math.round(
-          ((product.originalPrice - product.price) / product.originalPrice) * 100
-        )
-      : null;
-
   const cardDescription = product.shortDescription;
-  const deliveryText =
-    product.deliveryText ||
-    (!discountPercent &&
-    (product.badge?.toLowerCase().includes("free delivery") ||
-      product.offers?.some((o) => o.toLowerCase().includes("free delivery")))
-      ? "Free Delivery"
-      : null);
 
   return (
     <article
@@ -179,20 +165,11 @@ export default function ProductCard({
           </p>
         )}
 
-        {/* Price & Delivery Row */}
+        {/* Price Row */}
         <div className={styles.priceRow}>
           <span className={styles.currentPrice}>
             ₹{product.price}
           </span>
-
-          {deliveryText && (
-            <span className={styles.deliveryBadge}>
-              {deliveryText}
-              {deliveryText.toLowerCase().includes("free") && (
-                <Truck size={12} className={styles.truckIcon} />
-              )}
-            </span>
-          )}
         </div>
 
         {/* Optional Add To Cart or Customize Button */}

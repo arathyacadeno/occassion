@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Star, Heart, Truck } from "lucide-react";
+import { Star, Heart } from "lucide-react";
 import { FlowerProduct } from "@/types";
 import { AddToCartButton } from "@/components/Buttons";
 import styles from "./ProductCard.module.css";
@@ -60,19 +60,7 @@ export default function ProductCard({
     setIsWishlisted(!isWishlisted);
   };
 
-  const discountPercent =
-    activeOriginalPrice && activeOriginalPrice > activePrice
-      ? Math.round(
-          ((activeOriginalPrice - activePrice) / activeOriginalPrice) * 100
-        )
-      : null;
-
   const cardDescription = (product as any).shortDescription;
-  const deliveryText =
-    (product as any).deliveryText ||
-    (!discountPercent && (product.badge?.toLowerCase().includes("free delivery") || false)
-      ? "Free Delivery"
-      : null);
 
   return (
     <article
@@ -238,20 +226,11 @@ export default function ProductCard({
           </p>
         )}
 
-        {/* Price & Delivery Row */}
+        {/* Price Row */}
         <div className={styles.priceRow}>
           <span className={styles.currentPrice}>
             ₹{activePrice.toLocaleString("en-IN")}
           </span>
-
-          {deliveryText && (
-            <span className={styles.deliveryBadge}>
-              {deliveryText}
-              {deliveryText.toLowerCase().includes("free") && (
-                <Truck size={12} className={styles.truckIcon} />
-              )}
-            </span>
-          )}
         </div>
 
         {/* Add To Cart Button */}
