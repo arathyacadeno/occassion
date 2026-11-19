@@ -288,7 +288,7 @@ export default function StoreBrandingManager() {
             1. Brand Identity &amp; Meta
           </h3>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 18 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
             <div>
               <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#334155", marginBottom: 6 }}>
                 Shop Name *
@@ -314,27 +314,6 @@ export default function StoreBrandingManager() {
             </div>
 
             <div>
-              <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#334155", marginBottom: 6 }}>
-                Brand Tagline
-              </label>
-              <input
-                type="text"
-                name="store_tagline"
-                value={form.store_tagline}
-                onChange={handleInputChange}
-                placeholder="e.g. Luxury Florist & Celebration Atelier"
-                style={{
-                  width: "100%",
-                  padding: "10px 14px",
-                  border: "1px solid #cbd5e1",
-                  borderRadius: 8,
-                  fontSize: "0.9rem",
-                  boxSizing: "border-box",
-                }}
-              />
-            </div>
-
-            <div style={{ gridColumn: "1 / -1" }}>
               <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#334155", marginBottom: 6 }}>
                 Brand Story / Meta Description
               </label>
