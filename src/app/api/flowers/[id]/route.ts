@@ -184,6 +184,8 @@ export async function DELETE(
     }
 
     const current = existingRows[0];
+    const { searchParams } = new URL(req.url);
+    const force = searchParams.get("force") === "true";
 
     // Product Relationship Validation:
     // Check if any products are assigned to this flower type
@@ -194,7 +196,7 @@ export async function DELETE(
     `;
 
     const linkedCount = productCheck.length;
-    if (linkedCount > 0) {
+    if (linkedCount > 0 && !force) {
       const sampleNames = productCheck.slice(0, 3).map((p: any) => `"${p.name}"`).join(", ");
       const extraText = linkedCount > 3 ? ` and ${linkedCount - 3} more` : "";
       return NextResponse.json(
@@ -206,6 +208,15 @@ export async function DELETE(
         },
         { status: 400, headers: NO_CACHE_HEADERS }
       );
+    }
+
+    // If forced deletion, unlink products first
+    if (linkedCount > 0 && force) {
+      await sql`
+        UPDATE products 
+        SET flower_type_id = NULL 
+        WHERE flower_type_id = ${current.id} OR flower_type_id = ${current.slug}
+      `;
     }
 
     await sql`DELETE FROM flower_types WHERE id = ${current.id}`;

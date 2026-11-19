@@ -257,13 +257,14 @@ export default function FlowerTypeManager({ onRefresh }: FlowerTypeManagerProps)
   };
 
   // Confirm Delete
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = async (force: boolean = false) => {
     if (!flowerToDelete) return;
     setDeleting(true);
     setDeleteError(null);
 
     try {
-      const res = await fetch(`/api/flowers/${flowerToDelete.id}`, {
+      const url = `/api/flowers/${flowerToDelete.id}${force ? "?force=true" : ""}`;
+      const res = await fetch(url, {
         method: "DELETE",
         credentials: "include",
       });
@@ -1246,7 +1247,7 @@ export default function FlowerTypeManager({ onRefresh }: FlowerTypeManagerProps)
                 disabled={deleting}
                 onClick={() => setDeleteModalOpen(false)}
                 style={{
-                  padding: "10px 20px",
+                  padding: "10px 16px",
                   borderRadius: 10,
                   border: "1px solid #cbd5e1",
                   background: "#fff",
@@ -1259,24 +1260,45 @@ export default function FlowerTypeManager({ onRefresh }: FlowerTypeManagerProps)
               >
                 Cancel
               </button>
-              <button
-                type="button"
-                disabled={deleting}
-                onClick={handleConfirmDelete}
-                style={{
-                  padding: "10px 20px",
-                  borderRadius: 10,
-                  border: "none",
-                  background: "#e11d48",
-                  color: "#fff",
-                  fontWeight: 600,
-                  fontSize: "0.88rem",
-                  cursor: deleting ? "not-allowed" : "pointer",
-                  flex: 1,
-                }}
-              >
-                {deleting ? "Deleting..." : "Confirm Delete"}
-              </button>
+              {deleteError ? (
+                <button
+                  type="button"
+                  disabled={deleting}
+                  onClick={() => handleConfirmDelete(true)}
+                  style={{
+                    padding: "10px 16px",
+                    borderRadius: 10,
+                    border: "none",
+                    background: "#dc2626",
+                    color: "#fff",
+                    fontWeight: 600,
+                    fontSize: "0.85rem",
+                    cursor: deleting ? "not-allowed" : "pointer",
+                    flex: 1.3,
+                  }}
+                >
+                  {deleting ? "Unlinking & Deleting..." : "Unlink Products & Delete"}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  disabled={deleting}
+                  onClick={() => handleConfirmDelete(false)}
+                  style={{
+                    padding: "10px 16px",
+                    borderRadius: 10,
+                    border: "none",
+                    background: "#e11d48",
+                    color: "#fff",
+                    fontWeight: 600,
+                    fontSize: "0.88rem",
+                    cursor: deleting ? "not-allowed" : "pointer",
+                    flex: 1,
+                  }}
+                >
+                  {deleting ? "Deleting..." : "Confirm Delete"}
+                </button>
+              )}
             </div>
           </div>
         </div>
