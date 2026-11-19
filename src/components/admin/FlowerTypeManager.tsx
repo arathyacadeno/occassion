@@ -1364,6 +1364,58 @@ export default function FlowerTypeManager({ onRefresh }: FlowerTypeManagerProps)
           </div>
         </div>
       )}
+
+      {/* Floating Toast Notification */}
+      {toast && (
+        <aside
+          role="status"
+          aria-live="polite"
+          style={{
+            position: "fixed",
+            bottom: 28,
+            right: 28,
+            zIndex: 99999,
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            padding: "14px 20px",
+            borderRadius: 14,
+            background: toast.type === "error" ? "#fef2f2" : "#f0fdf4",
+            border: toast.type === "error" ? "1px solid #fecaca" : "1px solid #bbf7d0",
+            boxShadow: "0 10px 30px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06)",
+            color: toast.type === "error" ? "#991b1b" : "#166534",
+            fontSize: "0.92rem",
+            fontWeight: 600,
+            maxWidth: 440,
+            transition: "all 0.2s ease-in-out",
+          }}
+        >
+          {toast.type === "error" ? (
+            <AlertTriangle size={20} color="#dc2626" />
+          ) : (
+            <CheckCircle size={20} color="#16a34a" />
+          )}
+          <span style={{ flex: 1, lineHeight: 1.4 }}>{toast.message}</span>
+          <button
+            type="button"
+            onClick={() => setToast(null)}
+            style={{
+              border: "none",
+              background: "transparent",
+              cursor: "pointer",
+              padding: 4,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: toast.type === "error" ? "#991b1b" : "#166534",
+              opacity: 0.7,
+            }}
+            aria-label="Close notification"
+          >
+            <X size={16} />
+          </button>
+        </aside>
+      )}
     </div>
   );
 }
