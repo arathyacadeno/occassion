@@ -280,6 +280,7 @@ export default async function FlowerTypeCategoryPage({ params, searchParams }: P
 
   // 2. Query Neon PostgreSQL for flower bouquets and baskets
   let dbProducts: any[] = [];
+  let isFetchError = false;
   try {
     const rawRows = await sql`
       SELECT p.*, c.name as category_name, c.slug as category_slug, ft.slug as flower_slug, ft.name as flower_name
@@ -316,6 +317,7 @@ export default async function FlowerTypeCategoryPage({ params, searchParams }: P
     dbProducts = matchingRows.map(mapDbToProduct);
   } catch (e) {
     console.error("DB products for flower search error:", e);
+    isFetchError = true;
   }
 
   // 3. Strictly use genuine database products — NEVER inject fake/stale mock catalog items
@@ -376,6 +378,7 @@ export default async function FlowerTypeCategoryPage({ params, searchParams }: P
       filterTabs={tabs}
       initialFilterId={activeTab}
       flowerCategory={category}
+      isError={isFetchError}
     />
   );
 }
