@@ -37,6 +37,15 @@ export async function GET(
       );
     }
 
+    const auth = getAuthenticatedUser(req);
+    const isAdmin = auth && auth.role === "admin";
+    if ((Number(rows[0].is_active) === 0 || rows[0].is_active === false) && !isAdmin) {
+      return NextResponse.json(
+        { success: false, error: "Flower collection is currently hidden" },
+        { status: 404, headers: NO_CACHE_HEADERS }
+      );
+    }
+
     return NextResponse.json({ success: true, flowerType: rows[0] }, { headers: NO_CACHE_HEADERS });
   } catch (error: any) {
     console.error("GET /api/flowers/[id] error:", error);
@@ -111,7 +120,9 @@ export async function PUT(
 
     const newImage = image !== undefined ? image : current.image;
     const newDescription = description !== undefined ? description : current.description;
-    const newActive = is_active !== undefined ? (is_active ? 1 : 0) : current.is_active;
+    const newActive = is_active !== undefined
+      ? (Number(is_active) === 1 || is_active === true || is_active === "1" ? 1 : 0)
+      : current.is_active;
     const newOrder = display_order !== undefined ? Number(display_order) : current.display_order;
 
     await sql`

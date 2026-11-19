@@ -186,13 +186,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   let dbDesc = "";
   try {
     const rows = await sql`
-      SELECT name, description, image FROM flower_types 
+      SELECT name, description, image, is_active FROM flower_types 
       WHERE slug = ${flowerConfig.slug} 
          OR slug = ${category.toLowerCase().trim()} 
          OR id = ${flowerConfig.id}
       LIMIT 1
     `;
     if (rows && rows.length > 0) {
+      if (Number(rows[0].is_active) === 0 || rows[0].is_active === false) {
+        return {
+          title: "Collection Not Found | Occasions Flower Shop",
+        };
+      }
       dbName = rows[0].name;
       dbDesc = rows[0].description;
     }
@@ -271,6 +276,9 @@ export default async function FlowerTypeCategoryPage({ params, searchParams }: P
     `;
     if (fRows && fRows.length > 0) {
       dbFlower = fRows[0];
+      if (Number(dbFlower.is_active) === 0 || dbFlower.is_active === false) {
+        notFound();
+      }
     }
   } catch (e) {
     console.error("DB flower lookup error:", e);

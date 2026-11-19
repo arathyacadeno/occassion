@@ -52,7 +52,7 @@ export default function ShopByFlowers() {
       try {
         const res = await fetch(`/api/flowers?_t=${Date.now()}`);
         const data = await res.json();
-        if (isMounted && data.success && Array.isArray(data.flowers) && data.flowers.length > 0) {
+        if (isMounted && data.success && Array.isArray(data.flowers)) {
           const dynamicItems: FlowerCategory[] = data.flowers
             .filter((f: any) => f.slug !== "mixed-flowers" && f.id !== "ft-mixed-flowers")
             .map((f: any) => ({

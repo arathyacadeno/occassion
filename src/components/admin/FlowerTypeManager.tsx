@@ -48,6 +48,17 @@ export default function FlowerTypeManager({ onRefresh }: FlowerTypeManagerProps)
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all");
+  const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ type: "success" | "error" | "info"; message: string } | null>(null);
+  const toastTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const showToast = useCallback((message: string, type: "success" | "error" | "info" = "success") => {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    setToast({ type, message });
+    toastTimerRef.current = setTimeout(() => {
+      setToast(null);
+    }, 3800);
+  }, []);
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -200,7 +211,9 @@ export default function FlowerTypeManager({ onRefresh }: FlowerTypeManagerProps)
 
       const data = await res.json();
       if (data.success) {
-        setSuccessMsg(isEdit ? `Updated "${formName}" successfully!` : `Created "${formName}" successfully!`);
+        const msg = isEdit ? `Updated "${formName}" successfully!` : `Created "${formName}" successfully!`;
+        setSuccessMsg(msg);
+        showToast(msg, "success");
         setTimeout(() => setSuccessMsg(null), 3500);
 
         setIsModalOpen(false);
@@ -222,11 +235,18 @@ export default function FlowerTypeManager({ onRefresh }: FlowerTypeManagerProps)
 
   // Quick toggle active / inactive directly from the list
   const handleToggleActive = async (item: FlowerType) => {
-    const newActiveState = item.is_active === 1 ? 0 : 1;
+    if (togglingId) return;
+    const currentActive = Number(item.is_active) === 1;
+    const newActiveState = currentActive ? 0 : 1;
+    setTogglingId(item.id);
+
     try {
       const res = await fetch(`/api/flowers/${item.id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache",
+        },
         body: JSON.stringify({ is_active: newActiveState }),
         credentials: "include",
       });
@@ -235,17 +255,34 @@ export default function FlowerTypeManager({ onRefresh }: FlowerTypeManagerProps)
         setFlowerTypes((prev) =>
           prev.map((f) => (f.id === item.id ? { ...f, is_active: newActiveState } : f))
         );
-        setSuccessMsg(`"${item.name}" is now ${newActiveState === 1 ? "Active" : "Hidden"}.`);
-        setTimeout(() => setSuccessMsg(null), 3000);
+        const actionLabel = newActiveState === 1 ? "now visible on" : "now hidden from";
+        const message = `"${item.name}" is ${actionLabel} the customer-facing storefront.`;
+        setSuccessMsg(message);
+        showToast(message, "success");
+        setTimeout(() => setSuccessMsg(null), 3500);
+
+        if (onRefresh) {
+          try {
+            await onRefresh();
+          } catch (e) {
+            console.error("onRefresh error:", e);
+          }
+        }
 
         if (typeof window !== "undefined") {
           window.dispatchEvent(new CustomEvent("occasions:flower-types-changed"));
         }
       } else {
-        setErrorMsg(data.error || "Failed to update status.");
+        const err = data.error || "Failed to update visibility status.";
+        setErrorMsg(err);
+        showToast(err, "error");
       }
     } catch {
-      setErrorMsg("Failed to update status.");
+      const err = "Failed to update visibility status. Please check your connection.";
+      setErrorMsg(err);
+      showToast(err, "error");
+    } finally {
+      setTogglingId(null);
     }
   };
 
@@ -271,7 +308,9 @@ export default function FlowerTypeManager({ onRefresh }: FlowerTypeManagerProps)
       const data = await res.json();
 
       if (data.success) {
-        setSuccessMsg(`Deleted "${flowerToDelete.name}" successfully.`);
+        const msg = `Deleted "${flowerToDelete.name}" successfully.`;
+        setSuccessMsg(msg);
+        showToast(msg, "success");
         setTimeout(() => setSuccessMsg(null), 3500);
         setDeleteModalOpen(false);
         setFlowerToDelete(null);
@@ -584,21 +623,23 @@ export default function FlowerTypeManager({ onRefresh }: FlowerTypeManagerProps)
           }}
         >
           {filteredTypes.map((item) => {
-            const isActive = item.is_active === 1;
+            const isActive = Number(item.is_active) === 1;
+            const isToggling = togglingId === item.id;
             const pCount = item.product_count || 0;
 
             return (
               <div
                 key={item.id}
                 style={{
-                  background: "#fff",
+                  background: isActive ? "#fff" : "#fafafa",
                   borderRadius: 18,
-                  border: "1px solid #f1f5f9",
+                  border: isActive ? "1px solid #f1f5f9" : "1.5px dashed #cbd5e1",
                   overflow: "hidden",
-                  boxShadow: "0 2px 10px rgba(0,0,0,0.03)",
+                  boxShadow: isActive ? "0 2px 10px rgba(0,0,0,0.03)" : "none",
+                  opacity: isActive ? 1 : 0.88,
                   display: "flex",
                   flexDirection: "column",
-                  transition: "transform 0.15s ease, box-shadow 0.15s ease",
+                  transition: "all 0.2s ease",
                 }}
               >
                 {/* Image & Badges Container */}
@@ -607,7 +648,12 @@ export default function FlowerTypeManager({ onRefresh }: FlowerTypeManagerProps)
                     <img
                       src={item.image}
                       alt={item.name}
-                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        filter: isActive ? "none" : "grayscale(30%)",
+                      }}
                     />
                   ) : (
                     <div
@@ -648,7 +694,7 @@ export default function FlowerTypeManager({ onRefresh }: FlowerTypeManagerProps)
                       position: "absolute",
                       top: 12,
                       right: 12,
-                      background: isActive ? "#16a34a" : "#64748b",
+                      background: isActive ? "#16a34a" : "#475569",
                       color: "#fff",
                       fontSize: "0.72rem",
                       fontWeight: 700,
@@ -657,6 +703,7 @@ export default function FlowerTypeManager({ onRefresh }: FlowerTypeManagerProps)
                       display: "flex",
                       alignItems: "center",
                       gap: 4,
+                      boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
                     }}
                   >
                     {isActive ? <Check size={11} strokeWidth={3} /> : <EyeOff size={11} strokeWidth={2.5} />}
@@ -667,7 +714,7 @@ export default function FlowerTypeManager({ onRefresh }: FlowerTypeManagerProps)
                 {/* Details Body */}
                 <div style={{ padding: "16px 18px", flex: 1, display: "flex", flexDirection: "column" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
-                    <h3 style={{ margin: 0, fontSize: "1.08rem", fontWeight: 700, color: "#1e293b" }}>
+                    <h3 style={{ margin: 0, fontSize: "1.08rem", fontWeight: 700, color: isActive ? "#1e293b" : "#64748b" }}>
                       {item.name}
                     </h3>
                     <span
@@ -714,7 +761,7 @@ export default function FlowerTypeManager({ onRefresh }: FlowerTypeManagerProps)
                     <span
                       style={{
                         fontSize: "0.78rem",
-                        color: pCount > 0 ? "#be185d" : "#94a3b8",
+                        color: pCount > 0 ? (isActive ? "#be185d" : "#64748b") : "#94a3b8",
                         fontWeight: 600,
                         display: "flex",
                         alignItems: "center",
@@ -730,21 +777,35 @@ export default function FlowerTypeManager({ onRefresh }: FlowerTypeManagerProps)
                       <button
                         type="button"
                         onClick={() => handleToggleActive(item)}
-                        title={isActive ? "Hide from homepage" : "Show on homepage"}
+                        disabled={isToggling}
+                        title={
+                          isActive
+                            ? "Collection is visible on storefront. Click to hide."
+                            : "Collection is hidden from storefront. Click to make visible."
+                        }
+                        aria-label={isActive ? `Hide ${item.name} from storefront` : `Make ${item.name} visible on storefront`}
                         style={{
                           width: 32,
                           height: 32,
                           borderRadius: 8,
-                          border: "1px solid #e2e8f0",
-                          background: "#fff",
-                          color: isActive ? "#64748b" : "#16a34a",
+                          border: isActive ? "1px solid #bbf7d0" : "1px solid #cbd5e1",
+                          background: isActive ? "#f0fdf4" : "#f1f5f9",
+                          color: isActive ? "#16a34a" : "#64748b",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
-                          cursor: "pointer",
+                          cursor: isToggling ? "wait" : "pointer",
+                          opacity: isToggling ? 0.6 : 1,
+                          transition: "all 0.15s ease",
                         }}
                       >
-                        {isActive ? <EyeOff size={15} /> : <Eye size={15} />}
+                        {isToggling ? (
+                          <RefreshCw size={14} className="animate-spin" />
+                        ) : isActive ? (
+                          <Eye size={15} />
+                        ) : (
+                          <EyeOff size={15} />
+                        )}
                       </button>
 
                       <button
