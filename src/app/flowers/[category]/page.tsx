@@ -3,7 +3,6 @@ import { Metadata } from "next";
 import { redirect, notFound } from "next/navigation";
 import CategoryPage from "@/components/CategoryPage";
 import { getCategoryInfo, CATEGORIES_DATA } from "@/data/flowerProducts";
-import { getProductsForFlower, getAllProducts } from "@/data/catalog";
 import { sql } from "@/lib/db/neon";
 import { mapDbToProduct } from "@/lib/getProduct";
 
@@ -216,6 +215,29 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
+function matchesFlower(p: any, config: FlowerConfig): boolean {
+  // 1. Direct flower assignment match
+  if (p.flower_type_id === config.id || p.flower_type_id === config.slug) return true;
+  if (p.flower_slug === config.slug || p.flower_slug === config.singular) return true;
+
+  // 2. Check flower-specific exclusion pattern (e.g. for roses, exclude tuberose/rajnigandha if not also containing roses)
+  if (config.excludePattern) {
+    if (config.excludePattern.test(p.name) || config.excludePattern.test(p.slug)) return false;
+  }
+
+  // 3. Name or slug regex match
+  if (config.namePattern.test(p.name) || config.namePattern.test(p.slug)) return true;
+
+  // 4. Aliases in name/slug/description (for multi-flower bouquets and baskets)
+  const textToSearch = `${p.name} ${p.slug} ${p.description || ""}`.toLowerCase();
+  for (const alias of config.aliases) {
+    const wordPattern = new RegExp(`\\b${alias}\\b`, "i");
+    if (wordPattern.test(textToSearch)) return true;
+  }
+
+  return false;
+}
+
 export default async function FlowerTypeCategoryPage({ params, searchParams }: PageProps) {
   const { category } = await params;
   const sp = searchParams ? await searchParams : {};
@@ -256,11 +278,11 @@ export default async function FlowerTypeCategoryPage({ params, searchParams }: P
 
   const info = getCategoryInfo(category);
 
-  // 2. Query Neon PostgreSQL for flower products associated strictly with this flower type
+  // 2. Query Neon PostgreSQL for flower bouquets and baskets
   let dbProducts: any[] = [];
   try {
     const rawRows = await sql`
-      SELECT p.*, c.name as category_name, c.slug as category_slug
+      SELECT p.*, c.name as category_name, c.slug as category_slug, ft.slug as flower_slug, ft.name as flower_name
       FROM products p
       LEFT JOIN categories c ON p.category_id = c.id
       LEFT JOIN flower_types ft ON p.flower_type_id = ft.id
@@ -272,7 +294,7 @@ export default async function FlowerTypeCategoryPage({ params, searchParams }: P
           OR (p.type IS NOT NULL AND p.type IN ('flower', 'bouquet', 'basket'))
           OR c.slug IN ('flower-bouquet', 'flower-basket')
         )
-        -- Strictly exclude non-flower items, cakes, add-ons, table runners, and wreaths
+        -- Strictly exclude non-flower items, cakes, add-ons, table decor, and wreaths
         AND (p.category_id IS NULL OR p.category_id NOT IN ('cat-cakes', 'cat-addons', 'cat-table-decor', 'cat-wreath'))
         AND (p.type IS NULL OR p.type NOT IN ('cake', 'addon', 'table-decor', 'wreath'))
         AND p.name NOT ILIKE '%cake%'
@@ -286,48 +308,28 @@ export default async function FlowerTypeCategoryPage({ params, searchParams }: P
         AND p.name NOT ILIKE '%aisle%'
         AND p.name NOT ILIKE '%pew%'
         AND p.name NOT ILIKE '%runner%'
-        AND (
-          -- Primary match: explicitly assigned to this flower type
-          p.flower_type_id = ${flowerConfig.id}
-          OR p.flower_type_id = ${flowerConfig.slug}
-          OR ft.slug = ${flowerConfig.slug}
-          OR ft.id = ${flowerConfig.id}
-          -- Secondary match: for mixed or unassigned products, check clear title keywords
-          OR (
-            (p.flower_type_id IS NULL OR p.flower_type_id = 'ft-mixed-flowers' OR p.flower_type_id = 'NONE')
-            AND (
-              LOWER(p.name) LIKE ${"%" + flowerConfig.singular + "%"}
-              OR LOWER(p.slug) LIKE ${"%" + flowerConfig.singular + "%"}
-              OR LOWER(p.name) LIKE ${"%" + flowerConfig.plural + "%"}
-              OR LOWER(p.slug) LIKE ${"%" + flowerConfig.plural + "%"}
-            )
-          )
-        )
       ORDER BY p.featured DESC, p.created_at DESC
     `;
-    dbProducts = (rawRows || []).map(mapDbToProduct);
+
+    // Filter products strictly matching this flower type (including multi-flower arrangements)
+    const matchingRows = (rawRows || []).filter((row: any) => matchesFlower(row, flowerConfig));
+    dbProducts = matchingRows.map(mapDbToProduct);
   } catch (e) {
     console.error("DB products for flower search error:", e);
   }
 
-  // 3. Fallback to catalog data if DB yields few or no products
-  let catalogProducts = getProductsForFlower(flowerConfig.slug);
-  if (!catalogProducts || catalogProducts.length === 0) {
-    catalogProducts = getProductsForFlower(flowerConfig.singular);
-  }
-
-  // 4. Merge products without duplicates and apply defensive quality filtering
+  // 3. Strictly use genuine database products — NEVER inject fake/stale mock catalog items
   const seen = new Set<string>();
   const allProducts: any[] = [];
 
-  for (const p of [...dbProducts, ...(catalogProducts || [])]) {
+  for (const p of dbProducts) {
     const cat = ((p as any).category_id || p.category || "").toLowerCase();
     const type = ((p as any).type || "").toLowerCase();
     const name = (p.name || "").toLowerCase();
     const id = (p.id || "").toLowerCase();
     const slug = (p.slug || "").toLowerCase();
 
-    // Strictly reject any cakes, add-ons, table decor, wreaths, or dummy mock items
+    // Strictly reject any cakes, add-ons, table decor, wreaths
     if (cat.includes("cake") || type === "cake" || name.includes("cake") || id.includes("cake")) continue;
     if (cat === "cat-addons" || cat === "addons" || id.startsWith("addon-")) continue;
     if (cat.includes("table-decor") || cat.includes("wreath") || type === "table-decor" || type === "wreath") continue;

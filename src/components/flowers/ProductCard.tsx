@@ -22,37 +22,9 @@ export default function ProductCard({
   const [isWishlisted, setIsWishlisted] = useState(false);
   const productUrl = `/flowers/${product.category}/${product.slug}`;
 
-  const isLily =
-    product.category === "lilies" ||
-    product.name.toLowerCase().includes("lily") ||
-    product.name.toLowerCase().includes("lilies");
-
-  const [selectedStem, setSelectedStem] = useState<"6" | "12" | "custom">("6");
-  const [customStems, setCustomStems] = useState<number>(8);
-
-  const activePrice = isLily
-    ? selectedStem === "6"
-      ? 695
-      : selectedStem === "12"
-      ? 1195
-      : customStems * 100
-    : product.price;
-
-  const activeOriginalPrice = isLily
-    ? selectedStem === "6"
-      ? 795
-      : selectedStem === "12"
-      ? 1395
-      : Math.round(customStems * 100 * 1.15)
-    : product.originalPrice;
-
-  const activeImage = isLily
-    ? selectedStem === "6"
-      ? "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647384/occasions/products/flower-bouquet/flower-bouquet-white-casablanca-lilies.jpg"
-      : selectedStem === "12"
-      ? "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647384/occasions/products/flower-bouquet/flower-bouquet-white-casablanca-lilies.jpg"
-      : "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647384/occasions/products/flower-bouquet/flower-bouquet-white-casablanca-lilies.jpg"
-    : product.image;
+  const activePrice = product.price;
+  const activeOriginalPrice = product.originalPrice;
+  const activeImage = product.image;
 
   const toggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -138,89 +110,8 @@ export default function ProductCard({
           <span>{Number(product.rating || 4.5).toFixed(1)}</span>
         </div>
 
-        {/* Lily Stem Pricing Selector */}
-        {isLily && (
-          <div className={styles.stemSelectorWrapper}>
-            <div className={styles.stemPills}>
-              <button
-                type="button"
-                className={`${styles.stemPill} ${
-                  selectedStem === "6" ? styles.stemPillActive : ""
-                }`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setSelectedStem("6");
-                }}
-              >
-                6 Stems
-              </button>
-              <button
-                type="button"
-                className={`${styles.stemPill} ${
-                  selectedStem === "12" ? styles.stemPillActive : ""
-                }`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setSelectedStem("12");
-                }}
-              >
-                12 Stems
-              </button>
-              <button
-                type="button"
-                className={`${styles.stemPill} ${
-                  selectedStem === "custom" ? styles.stemPillActive : ""
-                }`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setSelectedStem("custom");
-                }}
-              >
-                Custom
-              </button>
-            </div>
-
-            {selectedStem === "custom" && (
-              <div className={styles.customStemControls}>
-                <span className={styles.customStemLabel}>Stems:</span>
-                <div className={styles.customStepper}>
-                  <button
-                    type="button"
-                    className={styles.customStepBtn}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setCustomStems((prev) => Math.max(3, prev - 1));
-                    }}
-                    aria-label="Decrease stem count"
-                  >
-                    -
-                  </button>
-                  <span className={styles.customStepVal}>{customStems}</span>
-                  <button
-                    type="button"
-                    className={styles.customStepBtn}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setCustomStems((prev) => prev + 1);
-                    }}
-                    aria-label="Increase stem count"
-                  >
-                    +
-                  </button>
-                </div>
-                <span className={styles.customRateHint}>₹100/stem</span>
-              </div>
-            )}
-          </div>
-        )}
-
         {/* Optional Description (max 2 lines) */}
-        {!isLily && cardDescription && (
+        {cardDescription && (
           <p className={styles.productDescription} title={cardDescription}>
             {cardDescription}
           </p>
@@ -242,20 +133,6 @@ export default function ProductCard({
                 price: activePrice,
                 originalPrice: activeOriginalPrice,
                 image: activeImage,
-                subtitle: isLily
-                  ? `${
-                      selectedStem === "custom"
-                        ? `${customStems} Stems (Custom)`
-                        : `${selectedStem} Stems`
-                    } Arrangement`
-                  : (product as any).subtitle,
-                flowerCount: isLily
-                  ? `${
-                      selectedStem === "custom"
-                        ? customStems
-                        : selectedStem
-                    } Stems`
-                  : (product as any).flowerCount,
               }}
               variant="pill"
             />
