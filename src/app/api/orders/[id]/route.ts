@@ -144,16 +144,51 @@ export async function PATCH(
       });
     }
 
+    // Customer / Gateway payment failure reporting
+    if (action === "fail" || action === "payment_failed") {
+      if (auth && auth.role !== "admin" && order.user_id && order.user_id !== auth.userId) {
+        return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
+      }
+
+      // If already paid, do not overwrite with failed
+      if (order.payment_status === "paid") {
+        return NextResponse.json({ success: false, error: "Order is already paid" }, { status: 400 });
+      }
+
+      const failNotes = body.notes || "Payment failed during transaction";
+      await sql`
+        UPDATE orders
+        SET payment_status = 'failed',
+            notes = CASE
+              WHEN notes IS NULL OR notes = '' THEN ${failNotes}
+              ELSE notes || E'\n' || ${failNotes}
+            END,
+            updated_at = ${now}
+        WHERE id = ${id}
+      `;
+
+      return NextResponse.json({
+        success: true,
+        message: "Order payment status marked as failed",
+        paymentStatus: "failed",
+      });
+    }
+
     // Admin status update
     if (!auth || auth.role !== "admin") {
       return NextResponse.json({ success: false, error: "Forbidden: Admin access required" }, { status: 403 });
     }
 
     const validStatuses = ["pending", "confirmed", "preparing", "out_for_delivery", "delivered", "cancelled"];
-    const newStatus = status && validStatuses.includes(status) ? status : order.order_status;
-    const newPaymentStatus = paymentStatus || order.payment_status;
+    const validPaymentStatuses = ["paid", "unpaid", "pending", "failed", "refunded"];
 
-    // Update tracking timeline to mark steps up to newStatus as completed
+    const newStatus = status && validStatuses.includes(status) ? status : order.order_status;
+    const newPaymentStatus =
+      paymentStatus && validPaymentStatuses.includes(paymentStatus)
+        ? paymentStatus
+        : order.payment_status;
+
+    // Update tracking timeline to mark steps up to newStatus as completed only if status was provided
     let timeline: any[] = [];
     try {
       timeline = JSON.parse(order.tracking_timeline || "[]");
@@ -161,21 +196,23 @@ export async function PATCH(
       timeline = [];
     }
 
-    const statusOrder = ["pending", "confirmed", "preparing", "out_for_delivery", "delivered"];
-    const targetIdx = statusOrder.indexOf(newStatus);
+    if (status && validStatuses.includes(status)) {
+      const statusOrder = ["pending", "confirmed", "preparing", "out_for_delivery", "delivered"];
+      const targetIdx = statusOrder.indexOf(newStatus);
 
-    if (targetIdx !== -1) {
-      timeline = timeline.map((step: any) => {
-        const stepIdx = statusOrder.indexOf(step.status);
-        if (stepIdx !== -1) {
-          return {
-            ...step,
-            completed: stepIdx <= targetIdx,
-            current: stepIdx === targetIdx,
-          };
-        }
-        return step;
-      });
+      if (targetIdx !== -1) {
+        timeline = timeline.map((step: any) => {
+          const stepIdx = statusOrder.indexOf(step.status);
+          if (stepIdx !== -1) {
+            return {
+              ...step,
+              completed: stepIdx <= targetIdx,
+              current: stepIdx === targetIdx,
+            };
+          }
+          return step;
+        });
+      }
     }
 
     await sql`
@@ -189,7 +226,7 @@ export async function PATCH(
 
     return NextResponse.json({
       success: true,
-      message: `Order status updated to ${newStatus}`,
+      message: `Order status updated`,
       orderStatus: newStatus,
       paymentStatus: newPaymentStatus,
     });

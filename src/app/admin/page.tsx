@@ -1067,12 +1067,16 @@ export default function AdminPage() {
                                   ? "#dcfce7"
                                   : o.payment_status === "failed"
                                   ? "#fee2e2"
+                                  : o.payment_status === "unpaid"
+                                  ? "#f1f5f9"
                                   : "#fef3c7",
                               color:
                                 o.payment_status === "paid"
                                   ? "#166534"
                                   : o.payment_status === "failed"
                                   ? "#991b1b"
+                                  : o.payment_status === "unpaid"
+                                  ? "#475569"
                                   : "#92400e",
                               fontWeight: 700,
                               textTransform: "capitalize",
@@ -1087,6 +1091,7 @@ export default function AdminPage() {
                           >
                             <option value="pending">Pending</option>
                             <option value="paid">Paid</option>
+                            <option value="unpaid">Unpaid</option>
                             <option value="failed">Failed</option>
                             <option value="refunded">Refunded</option>
                           </select>
@@ -1097,6 +1102,7 @@ export default function AdminPage() {
                             value={o.order_status}
                             onChange={(e) => handleUpdateOrderStatus(o.id, e.target.value)}
                           >
+                            <option value="pending">Pending</option>
                             <option value="confirmed">Confirmed</option>
                             <option value="preparing">Floral Crafting (Preparing)</option>
                             <option value="out_for_delivery">Out for Delivery</option>

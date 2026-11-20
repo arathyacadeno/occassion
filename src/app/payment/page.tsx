@@ -842,6 +842,17 @@ export default function SinglePageCheckoutPayment() {
       const rzp = new (window as any).Razorpay(rzpOptions);
       rzp.on("payment.failed", function (response: any) {
         console.error("Payment failed:", response.error);
+        if (data.orderId) {
+          fetch(`/api/orders/${data.orderId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "fail",
+              paymentStatus: "failed",
+              notes: `Payment failed: ${response.error?.description || "Transaction declined"} (Code: ${response.error?.code || "unknown"})`,
+            }),
+          }).catch((err) => console.error("Failed to report payment failure:", err));
+        }
         alert(`Payment failed: ${response.error?.description || "Transaction declined"}`);
         setIsSubmitting(false);
       });
