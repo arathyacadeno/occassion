@@ -1319,6 +1319,49 @@
   box-shadow: 0 0 0 3px rgba(219, 39, 119, 0.12);
 }
 
+.passwordWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.passwordInput {
+  padding-right: 38px !important;
+}
+
+.passwordToggleBtn {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  border-radius: 8px;
+  transition: all 0.18s ease;
+  line-height: 1;
+}
+
+.passwordToggleBtn:hover {
+  color: #be185d;
+  background-color: #fdf2f8;
+}
+
+.passwordToggleBtn:active {
+  transform: translateY(-50%) scale(0.94);
+}
+
+.passwordToggleBtn:focus-visible {
+  outline: 2px solid #db2777;
+  outline-offset: 1px;
+}
+
 .primaryBtn {
   width: 100%;
   padding: 10px 16px;

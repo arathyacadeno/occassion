@@ -19,6 +19,8 @@ import {
   ShieldCheck,
   ChevronDown,
   CheckCircle,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { getSearchRoute } from "@/lib/searchRoutes";
 import { useCart } from "@/context/CartContext";
@@ -129,6 +131,8 @@ export default function Header({
     password: "",
     confirmPassword: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [authSuccess, setAuthSuccess] = useState<string | null>(null);
@@ -1779,7 +1783,7 @@ export default function Header({
               </h3>
               <button
                 className={styles.modalCloseBtn}
-                onClick={() => { setActiveModal(null); resetPhoneFlow(); }}
+                onClick={() => { setActiveModal(null); resetPhoneFlow(); setShowPassword(false); setShowConfirmPassword(false); }}
                 aria-label="Close dialog"
               >
                 <X size={20} />
@@ -1797,6 +1801,8 @@ export default function Header({
                   setAuthTab("signin");
                   setAuthError(null);
                   setAuthSuccess(null);
+                  setShowPassword(false);
+                  setShowConfirmPassword(false);
                 }}
               >
                 Sign In
@@ -1810,6 +1816,8 @@ export default function Header({
                   setAuthTab("signup");
                   setAuthError(null);
                   setAuthSuccess(null);
+                  setShowPassword(false);
+                  setShowConfirmPassword(false);
                 }}
               >
                 Register
@@ -1871,26 +1879,50 @@ export default function Header({
                   <div className={styles.formRow2}>
                     <div className={styles.formGroup}>
                       <label className={styles.formLabel}>Password</label>
-                      <input
-                        type="password"
-                        className={styles.inputField}
-                        placeholder="At least 6 characters"
-                        required
-                        value={authForm.password}
-                        onChange={(e) => setAuthForm({ ...authForm, password: e.target.value })}
-                      />
+                      <div className={styles.passwordWrapper}>
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          className={`${styles.inputField} ${styles.passwordInput}`}
+                          placeholder="At least 6 characters"
+                          required
+                          value={authForm.password}
+                          onChange={(e) => setAuthForm({ ...authForm, password: e.target.value })}
+                        />
+                        <button
+                          type="button"
+                          className={styles.passwordToggleBtn}
+                          onClick={() => setShowPassword(!showPassword)}
+                          aria-label={showPassword ? "Hide password" : "Show password"}
+                          title={showPassword ? "Hide password" : "Show password"}
+                          tabIndex={-1}
+                        >
+                          {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                      </div>
                     </div>
 
                     <div className={styles.formGroup}>
                       <label className={styles.formLabel}>Confirm Password</label>
-                      <input
-                        type="password"
-                        className={styles.inputField}
-                        placeholder="Re-enter password"
-                        required
-                        value={authForm.confirmPassword}
-                        onChange={(e) => setAuthForm({ ...authForm, confirmPassword: e.target.value })}
-                      />
+                      <div className={styles.passwordWrapper}>
+                        <input
+                          type={showConfirmPassword ? "text" : "password"}
+                          className={`${styles.inputField} ${styles.passwordInput}`}
+                          placeholder="Re-enter password"
+                          required
+                          value={authForm.confirmPassword}
+                          onChange={(e) => setAuthForm({ ...authForm, confirmPassword: e.target.value })}
+                        />
+                        <button
+                          type="button"
+                          className={styles.passwordToggleBtn}
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                          title={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                          tabIndex={-1}
+                        >
+                          {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </>
@@ -1914,14 +1946,26 @@ export default function Header({
 
                   <div className={styles.formGroup}>
                     <label className={styles.formLabel}>Password</label>
-                    <input
-                      type="password"
-                      className={styles.inputField}
-                      placeholder="Enter your password"
-                      required
-                      value={authForm.password}
-                      onChange={(e) => setAuthForm({ ...authForm, password: e.target.value })}
-                    />
+                    <div className={styles.passwordWrapper}>
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        className={`${styles.inputField} ${styles.passwordInput}`}
+                        placeholder="Enter your password"
+                        required
+                        value={authForm.password}
+                        onChange={(e) => setAuthForm({ ...authForm, password: e.target.value })}
+                      />
+                      <button
+                        type="button"
+                        className={styles.passwordToggleBtn}
+                        onClick={() => setShowPassword(!showPassword)}
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                        title={showPassword ? "Hide password" : "Show password"}
+                        tabIndex={-1}
+                      >
+                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    </div>
                   </div>
                 </>
               )}
@@ -1972,6 +2016,8 @@ export default function Header({
                     onClick={() => {
                       setAuthTab("signup");
                       setAuthError(null);
+                      setShowPassword(false);
+                      setShowConfirmPassword(false);
                     }}
                     style={{
                       background: "none",
@@ -1996,6 +2042,8 @@ export default function Header({
                     onClick={() => {
                       setAuthTab("signin");
                       setAuthError(null);
+                      setShowPassword(false);
+                      setShowConfirmPassword(false);
                     }}
                     style={{
                       background: "none",
