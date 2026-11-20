@@ -162,7 +162,7 @@ export default function ProductFormModal({
       setDescription("");
       setCategoryId(categories[0]?.id || "cat-flower-bouquet");
       setAddonCategory("Chocolates");
-      setFlowerTypeId(flowerTypes[0]?.id || "ft-mixed-flowers");
+      setFlowerTypeId("");
       setOccasionId(occasions[0]?.id || "occ-birthday");
       setPrice("");
       setOriginalPrice("");
@@ -211,6 +211,16 @@ export default function ProductFormModal({
     categoryId === "addons" ||
     categoryId.toLowerCase().includes("addon") ||
     categoryId.toLowerCase().includes("add-on");
+
+  const isFlowerProduct =
+    !isAddonCategory &&
+    type !== "cake" &&
+    type !== "wreath" &&
+    type !== "decor" &&
+    type !== "general" &&
+    !categoryId.toLowerCase().includes("cake") &&
+    !categoryId.toLowerCase().includes("wreath") &&
+    !categoryId.toLowerCase().includes("decor");
 
   // Upload to local server storage and database via backend endpoint
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -315,7 +325,7 @@ export default function ProductFormModal({
         shortDescription: shortDescription.trim(),
         description: description.trim(),
         categoryId: showNewCatInput && newCatName.trim() ? `cat-${newCatName.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-")}` : categoryId,
-        flowerTypeId: flowerTypeId || undefined,
+        flowerTypeId: isFlowerProduct && flowerTypeId ? flowerTypeId : undefined,
         occasionId: occasionId || undefined,
         price: numPrice,
         originalPrice: originalPrice ? Number(originalPrice) : null,
@@ -648,14 +658,18 @@ export default function ProductFormModal({
                         const lower = val.toLowerCase();
                         if (lower.includes("addon") || lower.includes("add-on")) {
                           setType("general");
+                          setFlowerTypeId("");
                         } else if (lower.includes("cake")) {
                           setType("cake");
+                          setFlowerTypeId("");
                         } else if (lower.includes("basket")) {
                           setType("basket");
                         } else if (lower.includes("wreath")) {
                           setType("wreath");
+                          setFlowerTypeId("");
                         } else if (lower.includes("decor")) {
                           setType("decor");
+                          setFlowerTypeId("");
                         } else if (lower.includes("bouquet") || lower.includes("flower")) {
                           setType("flower");
                         }
@@ -753,7 +767,13 @@ export default function ProductFormModal({
                   </label>
                   <select
                     value={type}
-                    onChange={(e) => setType(e.target.value as any)}
+                    onChange={(e) => {
+                      const nextType = e.target.value as any;
+                      setType(nextType);
+                      if (nextType === "cake" || nextType === "wreath" || nextType === "decor" || nextType === "general") {
+                        setFlowerTypeId("");
+                      }
+                    }}
                     style={{
                       width: "100%",
                       padding: "10px 14px",
@@ -773,34 +793,36 @@ export default function ProductFormModal({
                 </div>
               )}
 
-              {/* Flower Type Association */}
-              <div>
-                <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, color: "#475569", marginBottom: 6 }}>
-                  Flower Type (Shop By Flowers)
-                </label>
-                <select
-                  value={flowerTypeId}
-                  onChange={(e) => setFlowerTypeId(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "10px 14px",
-                    borderRadius: 10,
-                    border: "1.5px solid #cbd5e1",
-                    fontSize: "0.92rem",
-                    background: "#fff",
-                  }}
-                >
-                  <option value="">-- None / Mixed --</option>
-                  {flowerTypes.map((ft: any) => (
-                    <option key={ft.id} value={ft.id}>
-                      {ft.name}
-                    </option>
-                  ))}
-                </select>
-                <p style={{ margin: "4px 0 0", fontSize: "0.75rem", color: "#64748b" }}>
-                  Links product to the homepage flower carousel.
-                </p>
-              </div>
+              {/* Flower Type Association - Only for Flower Bouquets and Flower Baskets */}
+              {isFlowerProduct && (
+                <div>
+                  <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, color: "#475569", marginBottom: 6 }}>
+                    Flower Type (Shop By Flowers)
+                  </label>
+                  <select
+                    value={flowerTypeId}
+                    onChange={(e) => setFlowerTypeId(e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: "10px 14px",
+                      borderRadius: 10,
+                      border: "1.5px solid #cbd5e1",
+                      fontSize: "0.92rem",
+                      background: "#fff",
+                    }}
+                  >
+                    <option value="">-- None / Mixed --</option>
+                    {flowerTypes.map((ft: any) => (
+                      <option key={ft.id} value={ft.id}>
+                        {ft.name}
+                      </option>
+                    ))}
+                  </select>
+                  <p style={{ margin: "4px 0 0", fontSize: "0.75rem", color: "#64748b" }}>
+                    Links bouquet or basket to the Shop By Flowers collection.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 
