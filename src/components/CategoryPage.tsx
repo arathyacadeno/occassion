@@ -447,25 +447,7 @@ export default function CategoryPage({
               </div>
             ) : flowerCategory ? (
               <div className={styles.flowerEmptyState} role="status">
-                <div className={styles.flowerEmptyIconWrapper}>
-                  <svg
-                    width="42"
-                    height="42"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#db2777"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d="M12 7.5a4.5 4.5 0 1 1 4.5 4.5M12 7.5A4.5 4.5 0 1 0 7.5 12M12 7.5V12m0 0a4.5 4.5 0 1 0 4.5 4.5M12 12a4.5 4.5 0 1 1-4.5 4.5m4.5-4.5h.01" />
-                    <circle cx="12" cy="12" r="1.5" fill="#db2777" />
-                    <path d="M12 16.5V22" stroke="#db2777" strokeWidth="1.8" />
-                    <path d="M12 19c-1.5 0-3-.5-4-2" stroke="#db2777" strokeWidth="1.5" />
-                    <path d="M12 20c1.5 0 3-.5 4-2" stroke="#db2777" strokeWidth="1.5" />
-                  </svg>
-                </div>
+                
                 <h3 className={styles.flowerEmptyTitle}>
                   {products.length === 0 ? "No Products Available" : "No Arrangements in this Style"}
                 </h3>
