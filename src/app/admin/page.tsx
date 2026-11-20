@@ -19,6 +19,7 @@ import {
   Clock,
   RefreshCw,
   LogOut,
+  Lock,
 } from "lucide-react";
 import {
   Plus,
@@ -296,20 +297,25 @@ export default function AdminPage() {
 
   const handleUpdateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
-      const res = await fetch(`/api/orders/${orderId}`, {
+      const cleanId = String(orderId).replace(/^#+/, "");
+      const res = await fetch(`/api/orders/${cleanId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
         credentials: "include",
       });
-      if (res.ok) {
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.success) {
         setOrders((prev) =>
-          prev.map((o) => (o.id === orderId ? { ...o, order_status: newStatus } : o))
+          prev.map((o) => (o.id === orderId || o.id === cleanId ? { ...o, order_status: newStatus } : o))
         );
         fetchAdminData();
+      } else {
+        alert(data.error || "Cannot update fulfillment status: Order payment is still pending in Razorpay.");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to update status", err);
+      alert(err.message || "Failed to update fulfillment status");
     }
   };
 
@@ -1112,18 +1118,82 @@ export default function AdminPage() {
                           })()}
                         </td>
                         <td>
-                          <select
-                            className={styles.statusSelect}
-                            value={o.order_status}
-                            onChange={(e) => handleUpdateOrderStatus(o.id, e.target.value)}
-                          >
-                            <option value="pending">Pending</option>
-                            <option value="confirmed">Confirmed</option>
-                            <option value="preparing">Floral Crafting (Preparing)</option>
-                            <option value="out_for_delivery">Out for Delivery</option>
-                            <option value="delivered">Delivered</option>
-                            <option value="cancelled">Cancelled</option>
-                          </select>
+                          {(() => {
+                            const paymentNorm = (o.payment_status || "pending").toLowerCase().trim();
+                            const isPaymentPending = paymentNorm === "pending";
+                            const isPaymentFailed = paymentNorm === "failed";
+
+                            if (isPaymentPending) {
+                              return (
+                                <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                                  <span
+                                    style={{
+                                      display: "inline-flex",
+                                      alignItems: "center",
+                                      gap: 6,
+                                      padding: "4px 8px",
+                                      borderRadius: 6,
+                                      fontSize: "0.78rem",
+                                      fontWeight: 600,
+                                      background: "#f8fafc",
+                                      color: "#64748b",
+                                      border: "1px solid #e2e8f0",
+                                      cursor: "not-allowed",
+                                      width: "fit-content",
+                                    }}
+                                    title="Fulfillment locked: Payment is pending in Razorpay. Cannot fulfill unpaid order."
+                                  >
+                                    <Lock size={12} style={{ color: "#94a3b8" }} />
+                                    Pending Payment
+                                  </span>
+                                  <span style={{ fontSize: "0.70rem", color: "#b45309", fontWeight: 500 }}>
+                                    Locked to Razorpay
+                                  </span>
+                                </div>
+                              );
+                            }
+
+                            if (isPaymentFailed) {
+                              return (
+                                <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                                  <span
+                                    style={{
+                                      display: "inline-flex",
+                                      alignItems: "center",
+                                      gap: 6,
+                                      padding: "4px 8px",
+                                      borderRadius: 6,
+                                      fontSize: "0.78rem",
+                                      fontWeight: 600,
+                                      background: "#fef2f2",
+                                      color: "#991b1b",
+                                      border: "1px solid #fecaca",
+                                      cursor: "not-allowed",
+                                      width: "fit-content",
+                                    }}
+                                    title="Payment failed in Razorpay. Fulfillment is blocked."
+                                  >
+                                    <Lock size={12} style={{ color: "#ef4444" }} />
+                                    Payment Failed
+                                  </span>
+                                </div>
+                              );
+                            }
+
+                            return (
+                              <select
+                                className={styles.statusSelect}
+                                value={o.order_status}
+                                onChange={(e) => handleUpdateOrderStatus(o.id, e.target.value)}
+                              >
+                                <option value="confirmed">Confirmed</option>
+                                <option value="preparing">Floral Crafting (Preparing)</option>
+                                <option value="out_for_delivery">Out for Delivery</option>
+                                <option value="delivered">Delivered</option>
+                                <option value="cancelled">Cancelled</option>
+                              </select>
+                            );
+                          })()}
                         </td>
                         <td>
                           <a

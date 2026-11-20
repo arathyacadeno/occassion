@@ -77,10 +77,15 @@ export async function PATCH(
   try {
     const { id } = await params;
     const auth = getAuthenticatedUser(request);
-    const body = await request.json();
-    const { action, status, paymentStatus } = body;
+    const body = await request.json().catch(() => ({}));
+    const { action, status } = body;
 
-    const neonOrders = await sql`SELECT * FROM orders WHERE id = ${id} LIMIT 1`;
+    const cleanId = String(id).trim().replace(/^#+/, "");
+    const neonOrders = await sql`
+      SELECT * FROM orders 
+      WHERE id = ${cleanId} OR id = ${"#" + cleanId} OR id = ${id}
+      LIMIT 1
+    `;
     if (!neonOrders || neonOrders.length === 0) {
       return NextResponse.json({ success: false, error: "Order not found" }, { status: 404 });
     }
@@ -179,6 +184,18 @@ export async function PATCH(
       return NextResponse.json({ success: false, error: "Forbidden: Admin access required" }, { status: 403 });
     }
 
+    // Protection: If order payment is not verified in Razorpay (pending/failed), fulfillment cannot be confirmed or prepared
+    const paymentNorm = (order.payment_status || "pending").toLowerCase().trim();
+    if ((paymentNorm === "pending" || paymentNorm === "failed") && status !== "cancelled" && status !== "pending") {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Cannot update fulfillment status to '${status}'. Order payment is currently '${order.payment_status}' in Razorpay. Fulfillment is locked until payment is completed.`,
+        },
+        { status: 400 }
+      );
+    }
+
     const validStatuses = ["pending", "confirmed", "preparing", "out_for_delivery", "delivered", "cancelled"];
     const newStatus = status && validStatuses.includes(status) ? status : order.order_status;
 
@@ -214,7 +231,7 @@ export async function PATCH(
       SET order_status = ${newStatus},
           tracking_timeline = ${JSON.stringify(timeline)},
           updated_at = ${now}
-      WHERE id = ${id}
+      WHERE id = ${order.id}
     `;
 
     return NextResponse.json({
