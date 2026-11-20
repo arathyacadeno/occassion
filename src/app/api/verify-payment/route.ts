@@ -68,6 +68,7 @@ export async function POST(request: Request) {
       await sql`
         UPDATE orders
         SET payment_status = 'paid',
+            order_status = 'confirmed',
             notes = CASE 
               WHEN notes IS NULL OR notes = '' THEN ${'Razorpay: ' + payment_id}
               WHEN notes LIKE ${'%' + payment_id + '%'} THEN notes

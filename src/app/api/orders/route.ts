@@ -370,15 +370,21 @@ export async function POST(request: Request) {
       });
     }
 
+    const isCOD = paymentMethod?.type === "COD" || paymentMethod?.type === "cod";
+    const initialPaymentStatus = "pending";
+    const initialOrderStatus = isCOD ? "confirmed" : "pending";
+
     const trackingTimeline = [
       {
-        status: "confirmed",
-        title: "Order Confirmed",
+        status: isCOD ? "confirmed" : "pending",
+        title: isCOD ? "Order Confirmed (Cash on Delivery)" : "Order Placed (Payment Pending)",
         time: new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }),
         date: "Today",
         completed: true,
         current: true,
-        desc: "Order placed and payment recorded. Our floral designers are preparing your fresh arrangement.",
+        desc: isCOD
+          ? "Order placed with Cash on Delivery. Our floral designers are preparing your fresh arrangement."
+          : "Order placed. Awaiting online payment confirmation.",
       },
       {
         status: "preparing",
@@ -427,8 +433,8 @@ export async function POST(request: Request) {
           ${appliedCouponCode},
           ${JSON.stringify(delivery || {})},
           ${JSON.stringify(paymentMethod || { type: "COD", label: "Cash on Delivery" })},
-          ${paymentMethod?.type === "COD" ? "pending" : "paid"},
-          'confirmed',
+          ${initialPaymentStatus},
+          ${initialOrderStatus},
           ${JSON.stringify(trackingTimeline)},
           ${notes || ""},
           ${now},

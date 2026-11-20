@@ -309,6 +309,25 @@ export default function AdminPage() {
     }
   };
 
+  const handleUpdatePaymentStatus = async (orderId: string, newPaymentStatus: string) => {
+    try {
+      const res = await fetch(`/api/orders/${orderId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paymentStatus: newPaymentStatus }),
+        credentials: "include",
+      });
+      if (res.ok) {
+        setOrders((prev) =>
+          prev.map((o) => (o.id === orderId ? { ...o, payment_status: newPaymentStatus } : o))
+        );
+        fetchAdminData();
+      }
+    } catch (err) {
+      console.error("Failed to update payment status", err);
+    }
+  };
+
   const handleSaveStock = async (productSlug: string, newStock: number) => {
     try {
       const res = await fetch(`/api/products/${productSlug}`, {
@@ -1040,15 +1059,37 @@ export default function AdminPage() {
                         </td>
                         <td style={{ fontWeight: 700 }}>₹{o.final_amount}</td>
                         <td>
-                          <span
-                            className={styles.statusBadge}
+                          <select
+                            className={styles.statusSelect}
                             style={{
-                              background: o.payment_status === "paid" ? "#dcfce7" : "#fef3c7",
-                              color: o.payment_status === "paid" ? "#166534" : "#92400e",
+                              background:
+                                o.payment_status === "paid"
+                                  ? "#dcfce7"
+                                  : o.payment_status === "failed"
+                                  ? "#fee2e2"
+                                  : "#fef3c7",
+                              color:
+                                o.payment_status === "paid"
+                                  ? "#166534"
+                                  : o.payment_status === "failed"
+                                  ? "#991b1b"
+                                  : "#92400e",
+                              fontWeight: 700,
+                              textTransform: "capitalize",
+                              padding: "4px 8px",
+                              borderRadius: 8,
+                              border: "1px solid rgba(0,0,0,0.08)",
+                              cursor: "pointer",
+                              fontSize: "0.82rem",
                             }}
+                            value={o.payment_status || "pending"}
+                            onChange={(e) => handleUpdatePaymentStatus(o.id, e.target.value)}
                           >
-                            {o.payment_status}
-                          </span>
+                            <option value="pending">Pending</option>
+                            <option value="paid">Paid</option>
+                            <option value="failed">Failed</option>
+                            <option value="refunded">Refunded</option>
+                          </select>
                         </td>
                         <td>
                           <select
