@@ -87,6 +87,14 @@ export async function POST(request: Request) {
             AND payment_status != 'paid'
         `;
         console.log(`[Razorpay Webhook] Order #${cleanId} marked as 'failed' via webhook.`);
+      } else if (event === "refund.processed" || event === "refund.created" || event === "payment.refunded") {
+        await sql`
+          UPDATE orders
+          SET payment_status = 'refunded',
+              updated_at = NOW()
+          WHERE id = ${cleanId} OR id = ${"#" + cleanId}
+        `;
+        console.log(`[Razorpay Webhook] Order #${cleanId} marked as 'refunded' via webhook.`);
       }
     }
 

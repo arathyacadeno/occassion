@@ -174,19 +174,13 @@ export async function PATCH(
       });
     }
 
-    // Admin status update
+    // Admin status update (fulfillment status only; payment status is automatic and determined strictly by verified transactions)
     if (!auth || auth.role !== "admin") {
       return NextResponse.json({ success: false, error: "Forbidden: Admin access required" }, { status: 403 });
     }
 
     const validStatuses = ["pending", "confirmed", "preparing", "out_for_delivery", "delivered", "cancelled"];
-    const validPaymentStatuses = ["paid", "unpaid", "pending", "failed", "refunded"];
-
     const newStatus = status && validStatuses.includes(status) ? status : order.order_status;
-    const newPaymentStatus =
-      paymentStatus && validPaymentStatuses.includes(paymentStatus)
-        ? paymentStatus
-        : order.payment_status;
 
     // Update tracking timeline to mark steps up to newStatus as completed only if status was provided
     let timeline: any[] = [];
@@ -218,7 +212,6 @@ export async function PATCH(
     await sql`
       UPDATE orders
       SET order_status = ${newStatus},
-          payment_status = ${newPaymentStatus},
           tracking_timeline = ${JSON.stringify(timeline)},
           updated_at = ${now}
       WHERE id = ${id}
@@ -226,9 +219,9 @@ export async function PATCH(
 
     return NextResponse.json({
       success: true,
-      message: `Order status updated`,
+      message: `Order fulfillment status updated to ${newStatus}`,
       orderStatus: newStatus,
-      paymentStatus: newPaymentStatus,
+      paymentStatus: order.payment_status,
     });
   } catch (error: any) {
     console.error("Order PATCH error:", error);

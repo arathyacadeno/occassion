@@ -92,7 +92,7 @@ async function runOrderPaymentTests() {
     const neonOrder = (await queryNeon(() => sql`SELECT * FROM orders WHERE id = ${createdOrderId}`))[0];
     assert(Boolean(neonOrder), "4.2 Order record exists in Neon orders table");
     assert(neonOrder.user_id === customerA.userId, "4.2 Order user_id strictly matches authenticated Customer A ID");
-    assert(neonOrder.order_status === "confirmed", "4.2 Initial order status is 'confirmed'");
+    assert(neonOrder.order_status === "pending" && neonOrder.payment_status === "pending", "4.2 Initial online order status and payment status are 'pending' (before payment)");
     assert(neonOrder.coupon_code === "OCCASIONS10", "4.2 Applied coupon is recorded in Neon order");
 
     // 4.3 Verify Order Items in Neon

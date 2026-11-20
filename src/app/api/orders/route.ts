@@ -107,7 +107,16 @@ export async function GET(request: Request) {
       });
     }
 
-    return NextResponse.json({ success: true, orders: ordersWithItems, count: ordersWithItems.length });
+    return NextResponse.json(
+      { success: true, orders: ordersWithItems, count: ordersWithItems.length },
+      {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+          Pragma: "no-cache",
+          Expires: "0",
+        },
+      }
+    );
   } catch (error: any) {
     console.error("Orders GET error:", error);
     return NextResponse.json({ success: false, error: "Failed to fetch orders" }, { status: 500 });

@@ -192,8 +192,12 @@ export default function AdminPage() {
     const othersPromise = (async () => {
       try {
         await Promise.allSettled([
-          // Orders
-          fetch("/api/orders", { credentials: "include" })
+          // Orders (Live uncached Neon DB query)
+          fetch("/api/orders", {
+            credentials: "include",
+            cache: "no-store",
+            headers: { "Cache-Control": "no-cache" },
+          })
             .then((r) => (r.ok ? r.json() : null))
             .then((d) => d?.success && Array.isArray(d.orders) && setOrders(d.orders))
             .catch(() => null),
@@ -306,25 +310,6 @@ export default function AdminPage() {
       }
     } catch (err) {
       console.error("Failed to update status", err);
-    }
-  };
-
-  const handleUpdatePaymentStatus = async (orderId: string, newPaymentStatus: string) => {
-    try {
-      const res = await fetch(`/api/orders/${orderId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ paymentStatus: newPaymentStatus }),
-        credentials: "include",
-      });
-      if (res.ok) {
-        setOrders((prev) =>
-          prev.map((o) => (o.id === orderId ? { ...o, payment_status: newPaymentStatus } : o))
-        );
-        fetchAdminData();
-      }
-    } catch (err) {
-      console.error("Failed to update payment status", err);
     }
   };
 
@@ -1059,42 +1044,72 @@ export default function AdminPage() {
                         </td>
                         <td style={{ fontWeight: 700 }}>₹{o.final_amount}</td>
                         <td>
-                          <select
-                            className={styles.statusSelect}
-                            style={{
-                              background:
-                                o.payment_status === "paid"
-                                  ? "#dcfce7"
-                                  : o.payment_status === "failed"
-                                  ? "#fee2e2"
-                                  : o.payment_status === "unpaid"
-                                  ? "#f1f5f9"
-                                  : "#fef3c7",
-                              color:
-                                o.payment_status === "paid"
-                                  ? "#166534"
-                                  : o.payment_status === "failed"
-                                  ? "#991b1b"
-                                  : o.payment_status === "unpaid"
-                                  ? "#475569"
-                                  : "#92400e",
-                              fontWeight: 700,
-                              textTransform: "capitalize",
-                              padding: "4px 8px",
-                              borderRadius: 8,
-                              border: "1px solid rgba(0,0,0,0.08)",
-                              cursor: "pointer",
-                              fontSize: "0.82rem",
-                            }}
-                            value={o.payment_status || "pending"}
-                            onChange={(e) => handleUpdatePaymentStatus(o.id, e.target.value)}
-                          >
-                            <option value="pending">Pending</option>
-                            <option value="paid">Paid</option>
-                            <option value="unpaid">Unpaid</option>
-                            <option value="failed">Failed</option>
-                            <option value="refunded">Refunded</option>
-                          </select>
+                          {(() => {
+                            const rawStatus = (o.payment_status || "pending").toLowerCase().trim();
+                            let bg = "#fef3c7";
+                            let color = "#b45309";
+                            let border = "1px solid #fde68a";
+                            let dot = "#f59e0b";
+                            let label = "Pending";
+
+                            if (rawStatus === "paid" || rawStatus === "success") {
+                              bg = "#dcfce7";
+                              color = "#15803d";
+                              border = "1px solid #bbf7d0";
+                              dot = "#22c55e";
+                              label = "Paid";
+                            } else if (rawStatus === "failed" || rawStatus === "error") {
+                              bg = "#fee2e2";
+                              color = "#b91c1c";
+                              border = "1px solid #fecaca";
+                              dot = "#ef4444";
+                              label = "Failed";
+                            } else if (rawStatus === "unpaid") {
+                              bg = "#f1f5f9";
+                              color = "#475569";
+                              border = "1px solid #cbd5e1";
+                              dot = "#64748b";
+                              label = "Unpaid";
+                            } else if (rawStatus === "refunded") {
+                              bg = "#f3e8ff";
+                              color = "#7e22ce";
+                              border = "1px solid #e9d5ff";
+                              dot = "#a855f7";
+                              label = "Refunded";
+                            }
+
+                            return (
+                              <span
+                                style={{
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: 6,
+                                  padding: "4px 10px",
+                                  borderRadius: 20,
+                                  fontSize: "0.78rem",
+                                  fontWeight: 700,
+                                  letterSpacing: "0.02em",
+                                  background: bg,
+                                  color: color,
+                                  border: border,
+                                  userSelect: "none",
+                                  cursor: "default",
+                                }}
+                                title={`Transaction verified payment status: ${label}`}
+                              >
+                                <span
+                                  style={{
+                                    width: 6,
+                                    height: 6,
+                                    borderRadius: "50%",
+                                    backgroundColor: dot,
+                                    display: "inline-block",
+                                  }}
+                                />
+                                {label}
+                              </span>
+                            );
+                          })()}
                         </td>
                         <td>
                           <select
