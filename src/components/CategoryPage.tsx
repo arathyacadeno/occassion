@@ -486,7 +486,7 @@ export default function CategoryPage({
           </div>
         </section>
       </main>
-      <Footer />
+      <Footer/>
     </div>
   );
 }

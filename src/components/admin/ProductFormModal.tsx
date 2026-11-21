@@ -15,6 +15,7 @@ import {
   Layers,
   DollarSign,
   Package,
+  RefreshCw,
 } from "lucide-react";
 
 const EMPTY_ARRAY: any[] = [];
@@ -80,10 +81,14 @@ export default function ProductFormModal({
   const [maxStems, setMaxStems] = useState<number | string>(42);
 
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isMediaPickerOpen, setIsMediaPickerOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Lock background body scroll cleanly (fixed background, no layout jumps or movement)
   useScrollLock(isOpen);
@@ -93,6 +98,9 @@ export default function ProductFormModal({
     if (!isOpen) {
       setSku("");
       setError(null);
+      setUploadError(null);
+      setUploadProgress(null);
+      setIsDragging(false);
       setIsSlugManuallyEdited(false);
       return;
     }
@@ -182,6 +190,8 @@ export default function ProductFormModal({
       setMaxStems(42);
     }
     setError(null);
+    setUploadError(null);
+    setUploadProgress(null);
     setShowNewCatInput(false);
     setNewCatName("");
   }, [isOpen, product]);
