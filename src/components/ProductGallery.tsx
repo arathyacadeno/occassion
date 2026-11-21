@@ -26,7 +26,10 @@ export default function ProductGallery({
   // Always show exactly 4 thumbnails (repeat images if fewer are supplied)
   const thumbnails = useMemo(() => {
     let list = images && images.length > 0 ? [...images] : [FALLBACK_IMAGE];
-    if (list.length > 4) {
+    // If 5 images are supplied (1 main display + 4 side angle views), the 4 gallery thumbnails are the 4 side views
+    if (list.length === 5) {
+      list = list.slice(1);
+    } else if (list.length > 4) {
       // If list has back view, ensure back view is included in the 4 thumbnails
       const backIdx = list.findIndex((img) => img.toLowerCase().includes("back"));
       if (backIdx >= 4) {

@@ -46,6 +46,12 @@ export function mapDbToProduct(dbProduct: any): Product {
   else if (catSlug.includes("wreath")) category = "wreaths";
   else if (catSlug.includes("special") || catSlug.includes("occ")) category = "special-occasions";
 
+  // When a product has 5 images (1 main display + 4 side angle views):
+  // images[0] is the primary storefront card image.
+  // images.slice(1) are the 4 side-angle views for the product gallery.
+  const mainImage = images[0] || "";
+  const galleryImages = images.length === 5 ? images.slice(1) : images;
+
   return {
     id: dbProduct.id,
     slug: dbProduct.slug || dbProduct.id,
@@ -54,8 +60,8 @@ export function mapDbToProduct(dbProduct: any): Product {
     originalPrice: dbProduct.discount_price ? Number(dbProduct.discount_price) : undefined,
     category,
     categoryLabel: dbProduct.category_name || "Flower Bouquet",
-    image: images[0],
-    images,
+    image: mainImage,
+    images: galleryImages,
     rating: Number(dbProduct.rating) || 4.9,
     reviewsCount: Number(dbProduct.reviews_count) || 18,
     description: dbProduct.description || "Freshly handpicked flowers arranged with care by Occasions artisans.",

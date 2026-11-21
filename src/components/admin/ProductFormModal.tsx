@@ -976,10 +976,10 @@ export default function ProductFormModal({
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, flexWrap: "wrap", gap: 8 }}>
               <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#831843", margin: 0, display: "flex", alignItems: "center", gap: 8 }}>
                 <ImageIcon size={18} color="#db2777" />
-                <span>Product Images &amp; Side Thumbnail</span>
+                <span>Product Images (1 Main Display + Side Views)</span>
               </h3>
               <span style={{ fontSize: "0.74rem", background: "#fce7f3", color: "#9d174d", padding: "3px 10px", borderRadius: 20, fontWeight: 700 }}>
-                1st Image = Admin &amp; Storefront Thumbnail
+                1st Image = Storefront &amp; Catalog Card
               </span>
             </div>
 
@@ -998,7 +998,7 @@ export default function ProductFormModal({
             }}>
               <span style={{ fontSize: "1rem", lineHeight: 1 }}>🖼️</span>
               <div>
-                <strong style={{ color: "#9d174d" }}>Side Thumbnail Setup:</strong> The <strong>1st image (MAIN)</strong> automatically sets up the square thumbnail icon shown beside this product in the Admin Table list, order summaries, and category catalog. Any additional images will appear in the product detail photo slider.
+                <strong style={{ color: "#9d174d" }}>Display &amp; Side View Architecture:</strong> The <strong>1st image (MAIN)</strong> is the primary storefront photo shown on catalog cards, admin tables, and order summaries. The remaining 4 images represent the <strong>4 side-angle views</strong> (front, side-angles, back) displayed in the product gallery slider.
               </div>
             </div>
 
@@ -1219,7 +1219,7 @@ export default function ProductFormModal({
                         e.currentTarget.src = "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg";
                       }}
                     />
-                    {idx === 0 && (
+                    {idx === 0 ? (
                       <span
                         style={{
                           position: "absolute",
@@ -1235,7 +1235,24 @@ export default function ProductFormModal({
                           letterSpacing: "0.5px",
                         }}
                       >
-                        ★ SIDE THUMBNAIL
+                        ★ MAIN DISPLAY
+                      </span>
+                    ) : (
+                      <span
+                        style={{
+                          position: "absolute",
+                          top: 4,
+                          left: 4,
+                          background: "rgba(15, 23, 42, 0.75)",
+                          color: "#fff",
+                          fontSize: "0.62rem",
+                          fontWeight: 700,
+                          padding: "2px 6px",
+                          borderRadius: 4,
+                          letterSpacing: "0.3px",
+                        }}
+                      >
+                        Side {idx}
                       </span>
                     )}
                     <button
