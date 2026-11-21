@@ -170,13 +170,8 @@ export async function getStorefrontCategoryProducts(categoryType: string): Promi
   const seenIds = new Set(updatedBaseProducts.map((p) => p.id));
   const seenSlugs = new Set(updatedBaseProducts.map((p) => p.slug.toLowerCase()));
   const seenNames = new Set(updatedBaseProducts.map((p) => p.name.trim().toLowerCase()));
-  const seenImages = new Set(
-    updatedBaseProducts
-      .map((p) => (p.image || "").trim().toLowerCase())
-      .filter(Boolean)
-  );
 
-  // 4. Filter ONLY newly created admin products (created via Admin Dashboard with 'prod-' or 'prod_' prefix)
+  // 4. Merge live database products matching the category
   const newlyCreatedAdminProducts: Product[] = [];
 
   for (const row of dbRows) {
@@ -185,10 +180,8 @@ export async function getStorefrontCategoryProducts(categoryType: string): Promi
       continue;
     }
 
-    // Must be a genuinely new product added via Admin (starts with 'prod-' or 'prod_')
-    const isNewAdminProduct = row.id.startsWith("prod-") || row.id.startsWith("prod_");
-
-    if (!isNewAdminProduct) {
+    // Skip special occasion items from general bouquets page
+    if (row.id.startsWith("occ-") && categoryType !== "special-occasions") {
       continue;
     }
 
@@ -209,7 +202,10 @@ export async function getStorefrontCategoryProducts(categoryType: string): Promi
         !name.includes("centerpiece") &&
         !name.includes("box") &&
         !name.includes("bear") &&
-        !name.includes("chocolate");
+        !name.includes("chocolate") &&
+        row.type !== "cake" &&
+        row.type !== "wreath" &&
+        row.type !== "decor";
     } else if (categoryType === "flower-baskets" || categoryType === "baskets") {
       matchesCategory = cat === "flower-basket" || cat === "basket" || name.includes("basket");
     } else if (categoryType === "cakes") {
@@ -229,13 +225,11 @@ export async function getStorefrontCategoryProducts(categoryType: string): Promi
     const mapped = mapDbToProduct(row);
     const normName = row.name.trim().toLowerCase();
     const normSlug = (row.slug || "").trim().toLowerCase();
-    const primaryImg = (mapped.image || "").trim().toLowerCase();
 
     if (
       seenIds.has(row.id) ||
       seenSlugs.has(normSlug) ||
-      seenNames.has(normName) ||
-      (primaryImg && seenImages.has(primaryImg))
+      seenNames.has(normName)
     ) {
       continue;
     }
@@ -243,7 +237,6 @@ export async function getStorefrontCategoryProducts(categoryType: string): Promi
     seenIds.add(row.id);
     seenSlugs.add(normSlug);
     seenNames.add(normName);
-    if (primaryImg) seenImages.add(primaryImg);
     newlyCreatedAdminProducts.push(mapped);
   }
 
@@ -252,26 +245,20 @@ export async function getStorefrontCategoryProducts(categoryType: string): Promi
   const finalIds = new Set<string>();
   const finalSlugs = new Set<string>();
   const finalNames = new Set<string>();
-  const finalImages = new Set<string>();
   const dedupedProducts: Product[] = [];
 
   for (const p of combined) {
     const idKey = (p.id || "").toLowerCase();
     const slugKey = (p.slug || "").trim().toLowerCase();
     const nameKey = (p.name || "").trim().toLowerCase();
-    const imgKey = (p.image || "").trim().toLowerCase();
 
     if (finalIds.has(idKey) || finalSlugs.has(slugKey) || finalNames.has(nameKey)) {
-      continue;
-    }
-    if (imgKey && finalImages.has(imgKey)) {
       continue;
     }
 
     finalIds.add(idKey);
     finalSlugs.add(slugKey);
     finalNames.add(nameKey);
-    if (imgKey) finalImages.add(imgKey);
     dedupedProducts.push(p);
   }
 
