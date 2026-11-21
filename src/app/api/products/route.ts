@@ -60,9 +60,12 @@ export async function GET(request: Request) {
 
     // Category filter
     if (category && category !== "all") {
-      const pCat1 = addParam(category);
-      const pCat2 = addParam(category);
-      whereClauses.push(`(c.slug = ${pCat1} OR p.category_id = ${pCat2})`);
+      const cleanCat = category.replace(/^cat-/, "");
+      const catWithPrefix = `cat-${cleanCat}`;
+      const p1 = addParam(category);
+      const p2 = addParam(cleanCat);
+      const p3 = addParam(catWithPrefix);
+      whereClauses.push(`(c.slug = ${p1} OR c.slug = ${p2} OR p.category_id = ${p1} OR p.category_id = ${p2} OR p.category_id = ${p3})`);
     }
 
     // Product Type filter

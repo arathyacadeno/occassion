@@ -585,7 +585,7 @@ export default function AdminPage() {
             pCatSlug === filterVal ||
             normCatId === filterNorm ||
             normCatSlug === filterNorm ||
-            (normCatName !== "" && (normCatName === filterNorm || normCatName.includes(filterNorm)));
+            (normCatName !== "" && normCatName === filterNorm);
 
           if (!matches) return false;
         }

@@ -194,84 +194,36 @@ export default function CategoryOrderManager({
     }
   }, [products]);
 
-  // Filter products by selected category
+  // Filter products by selected category using strict database relationships
   const filterProductsForCategory = (allProds: ProductItem[], catKey: string) => {
-    const normKey = catKey.toLowerCase().replace(/^cat-/, "");
+    const targetCatId =
+      catKey === "flower-bouquet" || catKey === "cat-flower-bouquet" ? "cat-flower-bouquet" :
+      catKey === "flower-basket" || catKey === "cat-flower-basket" ? "cat-flower-basket" :
+      catKey === "cake" || catKey === "cakes" || catKey === "cat-cakes" ? "cat-cakes" :
+      catKey === "wreath" || catKey === "cat-wreath" ? "cat-wreath" :
+      catKey === "table-decor" || catKey === "cat-table-decor" ? "cat-table-decor" :
+      catKey;
+
+    const targetSlug = targetCatId.replace(/^cat-/, "");
 
     return allProds.filter((p) => {
-      const pCatId = (p.categoryId || p.category_id || "").toLowerCase();
-      const pCatSlug = (p.categorySlug || p.category_slug || p.category || "").toLowerCase();
-      const pCatName = (p.categoryLabel || p.categoryName || "").toLowerCase();
-      const pName = (p.name || "").toLowerCase();
-      const pSlug = (p.slug || "").toLowerCase();
-      const pType = (p.type || "").toLowerCase();
+      const pCatId = (p.categoryId || p.category_id || "").toLowerCase().trim();
+      const pCatSlug = (p.categorySlug || p.category_slug || p.category || "").toLowerCase().trim();
 
-      if (normKey === "flower-bouquet" || normKey === "bouquet") {
-        return (
-          (pCatId === "cat-flower-bouquet" ||
-            pCatSlug === "flower-bouquet" ||
-            pCatSlug === "bouquet" ||
-            pCatName.includes("bouquet") ||
-            (pType === "flower" && !pName.includes("basket"))) &&
-          !pName.includes("basket") &&
-          !pName.includes("cake") &&
-          !pName.includes("wreath") &&
-          !pName.includes("table") &&
-          !pCatId.includes("addon")
-        );
+      // Strictly exclude add-ons from storefront catalog categories
+      if (pCatId === "cat-addons" || pCatSlug === "addons" || (p.id || "").startsWith("addon-")) {
+        return false;
       }
 
-      if (normKey === "flower-basket" || normKey === "basket") {
-        return (
-          pCatId === "cat-flower-basket" ||
-          pCatSlug === "flower-basket" ||
-          pCatSlug === "basket" ||
-          pCatName.includes("basket") ||
-          pType === "basket" ||
-          pName.includes("basket") ||
-          pSlug.includes("basket")
-        );
-      }
-
-      if (normKey === "cake" || normKey === "cakes") {
-        return (
-          (pCatId === "cat-cakes" ||
-            pCatSlug === "cakes" ||
-            pCatSlug === "cake" ||
-            pCatName.includes("cake") ||
-            pType === "cake" ||
-            pName.includes("cake") ||
-            pSlug.includes("cake")) &&
-          !pName.includes("basket")
-        );
-      }
-
-      if (normKey === "wreath" || normKey === "wreaths") {
-        return (
-          pCatId === "cat-wreath" ||
-          pCatSlug === "wreath" ||
-          pCatSlug === "wreaths" ||
-          pCatName.includes("wreath") ||
-          pType === "wreath" ||
-          pName.includes("wreath") ||
-          pSlug.includes("wreath")
-        );
-      }
-
-      if (normKey === "table-decor" || normKey === "table") {
-        return (
-          pCatId === "cat-table-decor" ||
-          pCatSlug === "table-decor" ||
-          pCatSlug === "table" ||
-          pCatName.includes("table") ||
-          pType === "decor" ||
-          pName.includes("table") ||
-          pName.includes("centerpiece") ||
-          pName.includes("runner")
-        );
-      }
-
-      return false;
+      // Match strictly against actual database category relationship
+      return (
+        pCatId === targetCatId ||
+        pCatSlug === targetSlug ||
+        pCatId === targetSlug ||
+        (targetCatId === "cat-cakes" && (pCatId === "cakes" || pCatSlug === "cake" || pCatSlug === "cakes")) ||
+        (targetCatId === "cat-wreath" && (pCatId === "wreaths" || pCatSlug === "wreaths" || pCatSlug === "wreath")) ||
+        (targetCatId === "cat-table-decor" && (pCatId === "table-decor" || pCatSlug === "table-decor"))
+      );
     });
   };
 

@@ -198,29 +198,15 @@ export async function getStorefrontCategoryProducts(categoryType: string): Promi
 
     let matchesCategory = false;
     if (categoryType === "flower-bouquets" || categoryType === "bouquets") {
-      matchesCategory =
-        (cat === "flower-bouquet" || cat === "bouquet" || (!cat.includes("cake") && !cat.includes("table") && !cat.includes("wreath") && !cat.includes("basket") && !cat.includes("addon"))) &&
-        !name.includes("basket") &&
-        !desc.includes("in a basket") &&
-        !name.includes("cake") &&
-        !name.includes("table") &&
-        !name.includes("wreath") &&
-        !name.includes("runner") &&
-        !name.includes("centerpiece") &&
-        !name.includes("box") &&
-        !name.includes("bear") &&
-        !name.includes("chocolate") &&
-        row.type !== "cake" &&
-        row.type !== "wreath" &&
-        row.type !== "decor";
+      matchesCategory = cat === "flower-bouquet" || cat === "bouquet";
     } else if (categoryType === "flower-baskets" || categoryType === "baskets") {
-      matchesCategory = cat === "flower-basket" || cat === "basket" || name.includes("basket");
+      matchesCategory = cat === "flower-basket" || cat === "basket";
     } else if (categoryType === "cakes") {
-      matchesCategory = (cat === "cakes" || cat === "cake" || name.includes("cake")) && !name.includes("basket");
+      matchesCategory = cat === "cakes" || cat === "cake";
     } else if (categoryType === "table-decor") {
-      matchesCategory = cat === "table-decor" || name.includes("table") || name.includes("centerpiece") || name.includes("runner");
+      matchesCategory = cat === "table-decor" || cat === "decor";
     } else if (categoryType === "wreaths") {
-      matchesCategory = cat === "wreath" || cat === "wreaths" || name.includes("wreath") || name.includes("cross") || name.includes("ring");
+      matchesCategory = cat === "wreath" || cat === "wreaths";
     } else if (categoryType === "special-occasions") {
       matchesCategory = cat.includes("occ") || cat === "special-occasions";
     }
