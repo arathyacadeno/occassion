@@ -115,8 +115,19 @@ export function StoreSettingsProvider({ children }: { children: React.ReactNode 
           console.warn("Could not update dynamic favicon:", e);
         }
       }
+      // Dynamic meta description
+      if (settings.brand_description) {
+        try {
+          const metaDesc = document.querySelector("meta[name='description']");
+          if (metaDesc) {
+            metaDesc.setAttribute("content", settings.brand_description);
+          }
+        } catch (e) {
+          console.warn("Could not update meta description:", e);
+        }
+      }
     }
-  }, [settings.primary_color, settings.secondary_color, settings.store_favicon]);
+  }, [settings.primary_color, settings.secondary_color, settings.store_favicon, settings.brand_description]);
 
   const updateLocalSettings = useCallback((newSettings: Partial<StoreSettings>) => {
     setSettings((prev) => ({
