@@ -2,28 +2,7 @@ import { NextResponse } from "next/server";
 import path from "path";
 import { getAuthenticatedUser } from "@/lib/auth/jwt";
 import { sql } from "@/lib/db/neon";
-import { v2 as cloudinary } from "cloudinary";
-
-// Configure Cloudinary with primary or fallback credentials
-const cloudName = process.env.CLOUDINARY_CLOUD_NAME || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "hm2hbrdd";
-const apiKey = process.env.CLOUDINARY_API_KEY || "987437152799173";
-const apiSecret = process.env.CLOUDINARY_API_SECRET || "3Ruw3T5z_KsdPgb3pTMMOEtM_k4";
-
-cloudinary.config({
-  cloud_name: cloudName,
-  api_key: apiKey,
-  api_secret: apiSecret,
-});
-
-function uploadBufferToCloudinary(buffer: Buffer, options: any): Promise<any> {
-  return new Promise((resolve, reject) => {
-    const uploadStream = cloudinary.uploader.upload_stream(options, (err, res) => {
-      if (err) return reject(err);
-      resolve(res);
-    });
-    uploadStream.end(buffer);
-  });
-}
+import { uploadBufferToCloudinary, getSanitizedCloudinaryConfig } from "@/lib/cloudinary";
 
 const ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".svg", ".gif", ".avif"];
 const ALLOWED_MIME_TYPES = [
@@ -87,7 +66,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: "Forbidden: Admin access required" }, { status: 403 });
     }
 
-    if (!cloudName || !apiKey || !apiSecret) {
+    const config = getSanitizedCloudinaryConfig();
+    if (!config.cloud_name || !config.api_key || !config.api_secret) {
       console.error("Cloudinary credentials missing in environment variables");
       return NextResponse.json(
         { success: false, error: "Cloudinary image service is not configured" },

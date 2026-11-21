@@ -3,27 +3,7 @@ import fs from "fs";
 import path from "path";
 import { sql } from "@/lib/db/neon";
 import { getAuthenticatedUser } from "@/lib/auth/jwt";
-import { v2 as cloudinary } from "cloudinary";
-
-const cloudName = process.env.CLOUDINARY_CLOUD_NAME || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "hm2hbrdd";
-const apiKey = process.env.CLOUDINARY_API_KEY || "987437152799173";
-const apiSecret = process.env.CLOUDINARY_API_SECRET || "3Ruw3T5z_KsdPgb3pTMMOEtM_k4";
-
-cloudinary.config({
-  cloud_name: cloudName,
-  api_key: apiKey,
-  api_secret: apiSecret,
-});
-
-function uploadBufferToCloudinary(buffer: Buffer, options: any): Promise<any> {
-  return new Promise((resolve, reject) => {
-    const uploadStream = cloudinary.uploader.upload_stream(options, (err, res) => {
-      if (err) return reject(err);
-      resolve(res);
-    });
-    uploadStream.end(buffer);
-  });
-}
+import { uploadBufferToCloudinary, getCloudinaryClient } from "@/lib/cloudinary";
 
 function resolveCategoryStorage(folderOrCat: string | null): { subDir: string; folderName: string; cloudinaryFolder: string } {
   const norm = (folderOrCat || "").toLowerCase().replace(/^cat-/, "").trim();
@@ -374,7 +354,8 @@ export async function DELETE(request: Request) {
     // Optional Cloudinary cleanup
     if (mediaItem.public_id && mediaItem.public_id.startsWith("occasions/")) {
       try {
-        await cloudinary.uploader.destroy(mediaItem.public_id);
+        const client = getCloudinaryClient();
+        await client.uploader.destroy(mediaItem.public_id);
       } catch (cldErr: any) {
         console.warn("Cloudinary destroy warning:", cldErr.message);
       }
