@@ -32,9 +32,10 @@ interface Category {
 interface CategoryManagerProps {
   categories: Category[];
   onRefresh: () => Promise<void>;
+  onManageOrder?: () => void;
 }
 
-export default function CategoryManager({ categories, onRefresh }: CategoryManagerProps) {
+export default function CategoryManager({ categories, onRefresh, onManageOrder }: CategoryManagerProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 
@@ -239,27 +240,52 @@ export default function CategoryManager({ categories, onRefresh }: CategoryManag
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={handleOpenAdd}
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 8,
-            padding: "9px 18px",
-            borderRadius: 10,
-            border: "none",
-            background: "#db2777",
-            color: "#ffffff",
-            fontSize: "0.88rem",
-            fontWeight: 700,
-            cursor: "pointer",
-            boxShadow: "0 2px 8px rgba(219, 39, 119, 0.25)",
-          }}
-        >
-          <Plus size={18} />
-          <span>Add New Category</span>
-        </button>
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+          {onManageOrder && (
+            <button
+              type="button"
+              onClick={onManageOrder}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "9px 16px",
+                borderRadius: 10,
+                border: "1.5px solid #cbd5e1",
+                background: "#ffffff",
+                color: "#334155",
+                fontSize: "0.88rem",
+                fontWeight: 700,
+                cursor: "pointer",
+              }}
+            >
+              <ArrowUpDown size={16} color="#db2777" />
+              <span>Category Display Order</span>
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={handleOpenAdd}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              padding: "9px 18px",
+              borderRadius: 10,
+              border: "none",
+              background: "#db2777",
+              color: "#ffffff",
+              fontSize: "0.88rem",
+              fontWeight: 700,
+              cursor: "pointer",
+              boxShadow: "0 2px 8px rgba(219, 39, 119, 0.25)",
+            }}
+          >
+            <Plus size={18} />
+            <span>Add New Category</span>
+          </button>
+        </div>
       </div>
 
       {successMsg && (

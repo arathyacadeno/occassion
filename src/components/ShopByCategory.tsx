@@ -92,26 +92,21 @@ export default function ShopByCategory() {
       .then((data) => {
         if (!isMounted || !data.success || !Array.isArray(data.categories) || data.categories.length === 0) return;
 
-        // User fixed ordering: 1. Flower Bouquet, 2. Flower Basket, 3. Cakes, 4. Table Decor, 5. Wreath
-        const FIXED_ORDER = ["flower-bouquet", "flower-basket", "cakes", "table-decor", "wreath"];
-        const getSortRank = (cat: any) => {
-          const s = (cat.slug || cat.id || "").toLowerCase().replace(/^cat-/, "");
-          for (let i = 0; i < FIXED_ORDER.length; i++) {
-            if (s.includes(FIXED_ORDER[i]) || FIXED_ORDER[i].includes(s)) {
-              return i;
-            }
-          }
-          return 100 + (cat.display_order || 0);
-        };
-
-        // Storefront MUST ONLY show these 5 categories, never Add-ons
+        // Storefront shows the 5 primary categories in the dynamic display order saved from Admin Panel
+        const PRIMARY_KEYS = ["flower-bouquet", "flower-basket", "cake", "table-decor", "wreath"];
         const storefrontCategories = data.categories.filter((c: any) => {
           const s = (c.slug || c.id || "").toLowerCase().replace(/^cat-/, "");
           if (s.includes("addon")) return false;
-          return FIXED_ORDER.some((orderKey) => s.includes(orderKey) || orderKey.includes(s));
+          return PRIMARY_KEYS.some((key) => s.includes(key) || key.includes(s));
         });
 
-        const sorted = [...storefrontCategories].sort((a: any, b: any) => getSortRank(a) - getSortRank(b));
+        // Dynamic category ordering: strictly respects display_order saved from the Admin Panel
+        const sorted = [...storefrontCategories].sort((a: any, b: any) => {
+          const orderA = a.display_order != null ? Number(a.display_order) : 999;
+          const orderB = b.display_order != null ? Number(b.display_order) : 999;
+          if (orderA !== orderB) return orderA - orderB;
+          return (a.name || "").localeCompare(b.name || "");
+        });
         const mapped: CategoryCardItem[] = sorted.map((c: any, index: number) => {
           let fallbackImg = "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg";
           const s = (c.slug || c.id || "").toLowerCase();

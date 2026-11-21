@@ -38,13 +38,14 @@ import ProductFormModal from "@/components/admin/ProductFormModal";
 import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
 import ProductQuickViewModal from "@/components/admin/ProductQuickViewModal";
 import CategoryManager from "@/components/admin/CategoryManager";
+import CategoryOrderManager from "@/components/admin/CategoryOrderManager";
 import MediaLibrary from "@/components/admin/MediaLibrary";
 import StoreBrandingManager from "@/components/admin/StoreBrandingManager";
 import HomepageManager from "@/components/admin/HomepageManager";
 import DeliveryManager from "@/components/admin/DeliveryManager";
 import HighlightManager from "@/components/admin/HighlightManager";
 import FlowerTypeManager from "@/components/admin/FlowerTypeManager";
-import { Layers, Palette, LayoutTemplate, Image as ImageIcon, Flower2 } from "lucide-react";
+import { Layers, Palette, LayoutTemplate, Image as ImageIcon, Flower2, ArrowUpDown } from "lucide-react";
 import styles from "./admin.module.css";
 
 const DEFAULT_CATEGORIES_LIST = [
@@ -66,7 +67,7 @@ export default function AdminPage() {
   const [loggingIn, setLoggingIn] = useState(false);
 
   // Tab
-  const [activeTab, setActiveTab] = useState<"orders" | "stock" | "categories" | "flower-types" | "media" | "branding" | "homepage" | "highlights" | "customization" | "coupons" | "delivery" | "users">("orders");
+  const [activeTab, setActiveTab] = useState<"orders" | "stock" | "categories" | "category-order" | "flower-types" | "media" | "branding" | "homepage" | "highlights" | "customization" | "coupons" | "delivery" | "users">("orders");
 
   // Admin stats & data
   const [stats, setStats] = useState<{
@@ -865,6 +866,17 @@ export default function AdminPage() {
                 <span className={`${styles.sidebarBadge} ${activeTab === "categories" ? styles.sidebarBadgeActive : ""}`}>
                   {categoriesList.length}
                 </span>
+              </button>
+
+              <button
+                type="button"
+                className={`${styles.sidebarBtn} ${activeTab === "category-order" ? styles.sidebarBtnActive : ""}`}
+                onClick={() => setActiveTab("category-order")}
+              >
+                <div className={styles.sidebarBtnLeft}>
+                  <ArrowUpDown size={17} />
+                  <span>Category Display Order</span>
+                </div>
               </button>
 
               <button
@@ -2011,7 +2023,16 @@ export default function AdminPage() {
 
         {/* TAB 6: Categories */}
         {activeTab === "categories" && (
-          <CategoryManager categories={categoriesList} onRefresh={fetchAdminData} />
+          <CategoryManager
+            categories={categoriesList}
+            onRefresh={fetchAdminData}
+            onManageOrder={() => setActiveTab("category-order")}
+          />
+        )}
+
+        {/* TAB: Category Display Order */}
+        {activeTab === "category-order" && (
+          <CategoryOrderManager categories={categoriesList} onRefresh={fetchAdminData} />
         )}
 
         {/* TAB: Manage Flower Types */}

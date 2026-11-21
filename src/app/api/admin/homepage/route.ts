@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
     `;
 
     const categories = await sql`
-      SELECT id, name, slug, image FROM categories ORDER BY name ASC
+      SELECT id, name, slug, image FROM categories ORDER BY display_order ASC, name ASC
     `;
 
     const products = await sql`
