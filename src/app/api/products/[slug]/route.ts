@@ -18,6 +18,7 @@ export async function GET(
         p.delivery_info, p.offers, p.includes, p.badge, p.created_at, p.updated_at,
         p.type, p.status, p.tags, p.seo_title, p.seo_description, p.attributes, p.addon_category,
         p.category_id, p.flower_type_id, p.occasion_id,
+        p.display_order,
         c.name as category_name, c.slug as category_slug,
         ft.name as flower_type_name, ft.slug as flower_type_slug,
         o.name as occasion_name, o.slug as occasion_slug
@@ -190,6 +191,8 @@ export async function GET(
         seoTitle: product.seo_title || "",
         seoDescription: product.seo_description || "",
         badge: product.badge,
+        display_order: product.display_order != null ? Number(product.display_order) : 0,
+        displayOrder: product.display_order != null ? Number(product.display_order) : 0,
         createdAt: product.created_at,
         updatedAt: product.updated_at,
       },
@@ -307,6 +310,10 @@ export async function PUT(
     if (body.addonCategory !== undefined || body.addon_category !== undefined) {
       const catVal = body.addonCategory ?? body.addon_category;
       updates.push(`addon_category = ${addParam(catVal || null)}`);
+    }
+    if (body.display_order !== undefined || body.displayOrder !== undefined) {
+      const ord = body.display_order !== undefined ? body.display_order : body.displayOrder;
+      updates.push(`display_order = ${addParam(ord !== null ? Number(ord) : 0)}`);
     }
     if (body.flowerTypeId !== undefined) {
       updates.push(`flower_type_id = ${addParam(body.flowerTypeId)}`);

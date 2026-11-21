@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { sql } from "@/lib/db/neon";
 import { getAuthenticatedUser } from "@/lib/auth/jwt";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -109,8 +111,10 @@ export async function GET(request: Request) {
     const whereSql = whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
 
     // Sorting
-    let orderSql = "ORDER BY p.featured DESC, p.id ASC";
-    if (sort === "price-asc" || sort === "low-to-high") {
+    let orderSql = "ORDER BY (CASE WHEN p.display_order > 0 THEN p.display_order ELSE 999999 END) ASC, p.featured DESC, p.created_at DESC, p.id ASC";
+    if (sort === "display-order" || sort === "display_order") {
+      orderSql = "ORDER BY (CASE WHEN p.display_order > 0 THEN p.display_order ELSE 999999 END) ASC, p.id ASC";
+    } else if (sort === "price-asc" || sort === "low-to-high") {
       orderSql = "ORDER BY p.price ASC";
     } else if (sort === "price-desc" || sort === "high-to-low") {
       orderSql = "ORDER BY p.price DESC";
@@ -148,6 +152,7 @@ export async function GET(request: Request) {
         p.type, p.status, p.short_description, p.tags, p.low_stock_threshold,
         p.seo_title, p.seo_description, p.attributes, p.addon_category,
         p.category_id, p.flower_type_id, p.occasion_id,
+        p.display_order,
         c.name as category_name, c.slug as category_slug,
         ft.name as flower_type_name, ft.slug as flower_type_slug,
         o.name as occasion_name, o.slug as occasion_slug
@@ -244,6 +249,8 @@ export async function GET(request: Request) {
         seoTitle: r.seo_title || "",
         seoDescription: r.seo_description || "",
         badge: r.badge,
+        display_order: r.display_order != null ? Number(r.display_order) : 0,
+        displayOrder: r.display_order != null ? Number(r.display_order) : 0,
         createdAt: r.created_at,
         updatedAt: r.updated_at,
       };
@@ -410,3 +417,43 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, error: error.message || "Failed to create product" }, { status: 500 });
   }
 }
+
+export async function PUT(request: Request) {
+  try {
+    const auth = getAuthenticatedUser(request);
+    if (!auth || auth.role !== "admin") {
+      return NextResponse.json({ success: false, error: "Forbidden: Admin access required" }, { status: 403 });
+    }
+
+    const body = await request.json();
+    const orders = body.orders || body.products || body.productOrders;
+
+    if (!Array.isArray(orders) || orders.length === 0) {
+      return NextResponse.json({ success: false, error: "Missing or invalid orders array" }, { status: 400 });
+    }
+
+    const now = new Date().toISOString();
+
+    for (const item of orders) {
+      if (!item) continue;
+      const targetId = item.id || item.productId || item.slug;
+      const orderNum = item.display_order ?? item.displayOrder ?? item.order;
+      if (targetId && orderNum !== undefined && !isNaN(Number(orderNum))) {
+        await sql`
+          UPDATE products
+          SET display_order = ${Number(orderNum)}, updated_at = ${now}
+          WHERE id = ${String(targetId)} OR slug = ${String(targetId)}
+        `;
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: `Updated display order for ${orders.length} products successfully`,
+    });
+  } catch (error: any) {
+    console.error("Product batch reorder error:", error);
+    return NextResponse.json({ success: false, error: error.message || "Failed to update product order" }, { status: 500 });
+  }
+}
+

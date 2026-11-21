@@ -27,6 +27,7 @@ export interface Product {
   ratingsCount?: number;
   basketType?: "cane" | "bamboo" | "container";
   customizable?: boolean;
+  display_order?: number;
 }
 
 export const CATALOG_PRODUCTS: Product[] = [

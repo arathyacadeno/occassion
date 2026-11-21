@@ -2030,9 +2030,9 @@ export default function AdminPage() {
           />
         )}
 
-        {/* TAB: Category Display Order */}
+        {/* TAB: Category & Product Display Order */}
         {activeTab === "category-order" && (
-          <CategoryOrderManager categories={categoriesList} onRefresh={fetchAdminData} />
+          <CategoryOrderManager categories={categoriesList} products={products} onRefresh={fetchAdminData} />
         )}
 
         {/* TAB: Manage Flower Types */}

@@ -70,6 +70,7 @@ export function mapDbToProduct(dbProduct: any): Product {
     includes,
     badge: dbProduct.badge || undefined,
     shortDescription: dbProduct.short_description || undefined,
+    display_order: dbProduct.display_order != null ? Number(dbProduct.display_order) : undefined,
   };
 }
 
@@ -267,6 +268,14 @@ export async function getStorefrontCategoryProducts(categoryType: string): Promi
     finalNames.add(nameKey);
     dedupedProducts.push(p);
   }
+
+  // Sort storefront products by custom display_order (if set), preserving natural ordering otherwise
+  dedupedProducts.sort((a, b) => {
+    const orderA = a.display_order != null && a.display_order > 0 ? a.display_order : 999999;
+    const orderB = b.display_order != null && b.display_order > 0 ? b.display_order : 999999;
+    if (orderA !== orderB) return orderA - orderB;
+    return 0;
+  });
 
   return dedupedProducts;
 }
