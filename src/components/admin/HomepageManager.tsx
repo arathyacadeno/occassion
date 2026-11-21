@@ -167,6 +167,7 @@ export default function HomepageManager() {
       const res = await fetch("/api/admin/upload", {
         method: "POST",
         body: formData,
+        credentials: "include",
       });
       const data = await res.json();
       if (!res.ok || !data.success) {
@@ -317,6 +318,7 @@ export default function HomepageManager() {
       const res = await fetch("/api/admin/upload", {
         method: "POST",
         body: formData,
+        credentials: "include",
       });
 
       const data = await res.json();

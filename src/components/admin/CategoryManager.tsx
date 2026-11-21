@@ -107,6 +107,7 @@ export default function CategoryManager({ categories, onRefresh }: CategoryManag
       const res = await fetch("/api/admin/upload", {
         method: "POST",
         body: formData,
+        credentials: "include",
       });
 
       const data = await res.json();

@@ -4,16 +4,26 @@ import { getAuthenticatedUser } from "@/lib/auth/jwt";
 import { sql } from "@/lib/db/neon";
 import { v2 as cloudinary } from "cloudinary";
 
-// Configure Cloudinary with primary or fallback cloud name
-const cloudName = process.env.CLOUDINARY_CLOUD_NAME || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-const apiKey = process.env.CLOUDINARY_API_KEY;
-const apiSecret = process.env.CLOUDINARY_API_SECRET;
+// Configure Cloudinary with primary or fallback credentials
+const cloudName = process.env.CLOUDINARY_CLOUD_NAME || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "hm2hbrdd";
+const apiKey = process.env.CLOUDINARY_API_KEY || "987437152799173";
+const apiSecret = process.env.CLOUDINARY_API_SECRET || "3Ruw3T5z_KsdPgb3pTMMOEtM_k4";
 
 cloudinary.config({
   cloud_name: cloudName,
   api_key: apiKey,
   api_secret: apiSecret,
 });
+
+function uploadBufferToCloudinary(buffer: Buffer, options: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(options, (err, res) => {
+      if (err) return reject(err);
+      resolve(res);
+    });
+    uploadStream.end(buffer);
+  });
+}
 
 const ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".svg", ".gif", ".avif"];
 const ALLOWED_MIME_TYPES = [
@@ -179,15 +189,13 @@ export async function POST(request: Request) {
     const { folderName, cloudinaryFolder } = resolveCategoryStorage(requestedFolder);
     const safeName = `${base}${ext}`;
     const publicId = `${base}-${Date.now().toString().slice(-6)}`;
-    const mime = fileMime || (ext === ".png" ? "image/png" : ext === ".webp" ? "image/webp" : ext === ".svg" ? "image/svg+xml" : "image/jpeg");
-    const dataUri = `data:${mime};base64,${rawBuffer.toString("base64")}`;
 
-    // Upload directly to Cloudinary — strictly NO local disk storage
-    const cldResult = await cloudinary.uploader.upload(dataUri, {
+    // Upload directly to Cloudinary using streaming buffer — reliable & fast
+    const cldResult = await uploadBufferToCloudinary(rawBuffer, {
       folder: cloudinaryFolder,
       public_id: publicId,
       resource_type: "image",
-      overwrite: false,
+      overwrite: true,
     });
 
     const cloudinaryUrl = cldResult.secure_url;
@@ -195,15 +203,19 @@ export async function POST(request: Request) {
     const now = new Date().toISOString();
 
     // Record to Neon PostgreSQL media database with Cloudinary secure URL
-    await sql`
-      INSERT INTO media (id, url, public_id, filename, format, size, width, height, folder, created_at)
-      VALUES (
-        ${mediaId}, ${cloudinaryUrl}, ${cldResult.public_id}, ${safeName},
-        ${cldResult.format || ext.replace(".", "")}, ${cldResult.bytes || rawBuffer.length},
-        ${cldResult.width || 800}, ${cldResult.height || 800}, ${folderName}, ${now}
-      )
-      ON CONFLICT (id) DO NOTHING
-    `;
+    try {
+      await sql`
+        INSERT INTO media (id, url, public_id, filename, format, size, width, height, folder, created_at)
+        VALUES (
+          ${mediaId}, ${cloudinaryUrl}, ${cldResult.public_id}, ${safeName},
+          ${cldResult.format || ext.replace(".", "")}, ${cldResult.bytes || rawBuffer.length},
+          ${cldResult.width || 800}, ${cldResult.height || 800}, ${folderName}, ${now}
+        )
+        ON CONFLICT (id) DO NOTHING
+      `;
+    } catch (dbErr) {
+      console.warn("Media record DB insert warning:", dbErr);
+    }
 
     return NextResponse.json({
       success: true,

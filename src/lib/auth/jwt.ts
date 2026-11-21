@@ -47,7 +47,7 @@ export function getAuthenticatedUser(request: Request): (TokenPayload & { id: st
   if (!token) {
     const cookieHeader = request.headers.get("cookie");
     if (cookieHeader) {
-      const match = cookieHeader.match(/(?:^|;\s*)occasions_token=([^;]+)/);
+      const match = cookieHeader.match(/(?:^|;\s*)(?:occasions_token|token|occasions_auth_token)=([^;]+)/);
       if (match) {
         token = decodeURIComponent(match[1]);
       }
