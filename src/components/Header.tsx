@@ -1636,12 +1636,12 @@ export default function Header({
                 <div style={{ marginTop: 16, fontSize: "0.78rem", color: "#64748b" }}>
                   Or order directly via WhatsApp:{" "}
                   <a
-                    href="https://wa.me/918606464700"
+                    href={`https://wa.me/${settings.store_whatsapp || "918606464700"}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{ color: "#105b63", fontWeight: 700 }}
                   >
-                    +91 8606 464 700
+                    {settings.store_phone || "+91 8606 464 700"}
                   </a>
                 </div>
               </div>
@@ -2313,12 +2313,12 @@ export default function Header({
               <strong>Mobile &amp; WhatsApp:</strong>
               <br />
               <a
-                href="https://wa.me/918606464700"
+                href={`https://wa.me/${settings.store_whatsapp || "918606464700"}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: "#105b63", fontWeight: 700 }}
               >
-                💬 +91 8606 464 700 (WhatsApp)
+                💬 {settings.store_phone || "+91 8606 464 700"} (WhatsApp)
               </a>
               <br />
               📞 +91 9447 446 008
@@ -2331,13 +2331,13 @@ export default function Header({
             <p style={{ marginTop: 10 }}>
               <strong>Email:</strong>
               <br />
-              ✉️ occassions.flowers@gmail.com
+              ✉️ {settings.store_email || "occassions.flowers@gmail.com"}
             </p>
           </div>
 
           <div className={styles.drawerSocials}>
             <a
-              href="https://wa.me/918606464700"
+              href={`https://wa.me/${settings.store_whatsapp || "918606464700"}`}
               target="_blank"
               rel="noopener noreferrer"
               className={styles.drawerSocialIcon}
@@ -2347,7 +2347,7 @@ export default function Header({
               💬
             </a>
             <a
-              href="tel:+918606464700"
+              href={`tel:${settings.store_phone?.replace(/\s+/g, '') || "+918606464700"}`}
               className={styles.drawerSocialIcon}
               aria-label="Phone"
             >

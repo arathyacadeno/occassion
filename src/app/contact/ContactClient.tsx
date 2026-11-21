@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import styles from "./contact.module.css";
 import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { useStoreSettings } from "@/context/StoreSettingsContext";
 
 // Configurable contact details
 export const CONTACT_CONFIG = {
@@ -36,6 +37,7 @@ export const CONTACT_CONFIG = {
 };
 
 export default function ContactClient() {
+  const { settings } = useStoreSettings();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -321,7 +323,7 @@ export default function ContactClient() {
 
                   {/* WhatsApp */}
                   <a
-                    href={CONTACT_CONFIG.socials.whatsapp}
+                    href={`https://wa.me/${settings.store_whatsapp || "918606464700"}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={styles.socialBtn}
@@ -366,7 +368,7 @@ export default function ContactClient() {
                   </svg>
                 </div>
                 <div className={styles.locationContent}>
-                  <p className={styles.locationText}>{CONTACT_CONFIG.address}</p>
+                  <p className={styles.locationText}>{settings.store_address || CONTACT_CONFIG.address}</p>
                   <a
                     href={CONTACT_CONFIG.mapUrl}
                     target="_blank"
@@ -384,11 +386,11 @@ export default function ContactClient() {
                 <div className={styles.connectList}>
                   {/* WhatsApp Line */}
                   <a
-                    href={CONTACT_CONFIG.phone1.whatsappUrl}
+                    href={`https://wa.me/${settings.store_whatsapp || "918606464700"}?text=Hello%20Occasions%20Florist,%20I%20would%20like%20to%20inquire%20about%20flowers.`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={styles.connectItem}
-                    aria-label={`Chat with ${CONTACT_CONFIG.phone1.display} on WhatsApp`}
+                    aria-label={`Chat with ${settings.store_phone || CONTACT_CONFIG.phone1.display} on WhatsApp`}
                   >
                     <span className={styles.connectIcon} aria-hidden="true">
                       <svg
@@ -406,14 +408,14 @@ export default function ContactClient() {
                         />
                       </svg>
                     </span>
-                    <span>{CONTACT_CONFIG.phone1.display}</span>
+                    <span>{settings.store_phone || CONTACT_CONFIG.phone1.display}</span>
                   </a>
 
                   {/* Alternate Phone */}
                   <a
-                    href={`tel:${CONTACT_CONFIG.phone2.raw}`}
+                    href={`tel:${settings.store_phone?.replace(/\s+/g, '') || CONTACT_CONFIG.phone2.raw}`}
                     className={styles.connectItem}
-                    aria-label={`Call ${CONTACT_CONFIG.phone2.display}`}
+                    aria-label={`Call ${settings.store_phone || CONTACT_CONFIG.phone2.display}`}
                   >
                     <span className={styles.connectIcon} aria-hidden="true">
                       <svg
@@ -429,14 +431,14 @@ export default function ContactClient() {
                         />
                       </svg>
                     </span>
-                    <span>{CONTACT_CONFIG.phone2.display}</span>
+                    <span>{settings.store_phone || CONTACT_CONFIG.phone2.display}</span>
                   </a>
 
                   {/* Email */}
                   <a
-                    href={CONTACT_CONFIG.email.mailto}
+                    href={`mailto:${settings.store_email || CONTACT_CONFIG.email.display}`}
                     className={styles.connectItem}
-                    aria-label={`Email ${CONTACT_CONFIG.email.display}`}
+                    aria-label={`Email ${settings.store_email || CONTACT_CONFIG.email.display}`}
                   >
                     <span className={styles.connectIcon} aria-hidden="true">
                       <svg
@@ -453,7 +455,7 @@ export default function ContactClient() {
                       </svg>
                     </span>
                     <span className={styles.emailText}>
-                      {CONTACT_CONFIG.email.referenceDisplay}
+                      {settings.store_email || CONTACT_CONFIG.email.referenceDisplay}
                     </span>
                   </a>
                 </div>
@@ -463,12 +465,19 @@ export default function ContactClient() {
               <div className={styles.hoursGroup}>
                 <h3 className={styles.cardSectionHeading}>Working Hours</h3>
                 <div className={styles.hoursList}>
-                  {CONTACT_CONFIG.workingHours.map((item, index) => (
-                    <div key={index} className={styles.hoursRow}>
-                      <span className={styles.hoursDay}>{item.day}</span>
-                      <span className={styles.hoursTime}>{item.hours}</span>
+                  {settings.opening_hours ? (
+                    <div className={styles.hoursRow}>
+                      <span className={styles.hoursDay}>Everyday</span>
+                      <span className={styles.hoursTime}>{settings.opening_hours}</span>
                     </div>
-                  ))}
+                  ) : (
+                    CONTACT_CONFIG.workingHours.map((item, index) => (
+                      <div key={index} className={styles.hoursRow}>
+                        <span className={styles.hoursDay}>{item.day}</span>
+                        <span className={styles.hoursTime}>{item.hours}</span>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             </aside>

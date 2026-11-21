@@ -126,11 +126,23 @@ export default function Footer() {
                 {settings.store_address || "Near CH Flyover, Kannur Road, Calicut, Kerala 673001"}
               </p>
               <p className={styles.helpText}>
-                Help support:
+                Help support:{" "}
                 <a href={`tel:${settings.store_phone?.replace(/\s+/g, '') || "+918606464700"}`} className={styles.phoneLink}>
                   {settings.store_phone || "+91 8606 464 700"}
                 </a>
               </p>
+              {settings.opening_hours && (
+                <p className={styles.helpText} style={{ marginTop: 4, opacity: 0.9 }}>
+                  Hours: {settings.opening_hours}
+                </p>
+              )}
+              {settings.store_email && (
+                <p className={styles.helpText} style={{ marginTop: 4 }}>
+                  <a href={`mailto:${settings.store_email}`} className={styles.phoneLink}>
+                    {settings.store_email}
+                  </a>
+                </p>
+              )}
             </div>
           </div>
 
@@ -197,7 +209,7 @@ export default function Footer() {
 
               {/* WhatsApp */}
               <a
-                href="https://wa.me/918606464700"
+                href={`https://wa.me/${settings.store_whatsapp || "918606464700"}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="WhatsApp"
