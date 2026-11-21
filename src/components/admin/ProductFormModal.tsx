@@ -232,18 +232,37 @@ export default function ProductFormModal({
     !categoryId.toLowerCase().includes("wreath") &&
     !categoryId.toLowerCase().includes("decor");
 
-  // Upload to local server storage and database via backend endpoint
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
+  // Process and upload image files to Cloudinary via backend endpoint
+  const processFiles = async (fileList: FileList | File[]) => {
+    if (!fileList || fileList.length === 0) return;
 
     setUploading(true);
+    setUploadError(null);
     setError(null);
 
+    const files = Array.from(fileList);
+    const uploadLimit = isAddonCategory ? 1 : files.length;
+
     try {
-      const uploadLimit = isAddonCategory ? 1 : files.length;
       for (let i = 0; i < uploadLimit; i++) {
         const file = files[i];
+
+        // Format check
+        if (!file.type.startsWith("image/")) {
+          throw new Error(`File "${file.name}" is not a supported image file (JPG, PNG, WEBP, GIF, SVG, AVIF).`);
+        }
+
+        // Size check (10MB max)
+        if (file.size > 10 * 1024 * 1024) {
+          throw new Error(`File "${file.name}" exceeds 10MB limit. Please choose a smaller photo.`);
+        }
+
+        setUploadProgress(
+          uploadLimit > 1
+            ? `Uploading photo ${i + 1} of ${uploadLimit} to Cloudinary...`
+            : "Uploading photo to Cloudinary..."
+        );
+
         const formData = new FormData();
         formData.append("file", file);
         formData.append("categoryId", categoryId);
@@ -252,6 +271,7 @@ export default function ProductFormModal({
         const res = await fetch("/api/admin/upload", {
           method: "POST",
           body: formData,
+          credentials: "include",
         });
 
         const data = await res.json();
@@ -261,21 +281,34 @@ export default function ProductFormModal({
             break;
           } else {
             setImages((prev) => {
-              const filtered = prev.filter((img) => img !== "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647384/occasions/products/flower-bouquet/flower-bouquet-white-casablanca-lilies.jpg" && img !== "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg");
+              const filtered = prev.filter(
+                (img) =>
+                  img !== "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647384/occasions/products/flower-bouquet/flower-bouquet-white-casablanca-lilies.jpg" &&
+                  img !== "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg"
+              );
               if (filtered.includes(data.url)) return filtered;
               return [data.url, ...filtered];
             });
           }
         } else {
-          throw new Error(data.error || "Failed to upload to server storage");
+          throw new Error(data.error || "Failed to upload image to Cloudinary storage");
         }
       }
     } catch (err: any) {
       console.error("Server upload failed:", err);
-      setError(err.message || "Upload failed");
+      setUploadError(err.message || "Upload failed. Please check your image format and connection.");
     } finally {
       setUploading(false);
-      e.target.value = "";
+      setUploadProgress(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      processFiles(e.target.files);
     }
   };
 
@@ -969,40 +1002,55 @@ export default function ProductFormModal({
               </div>
             </div>
 
+            {/* Hidden File Input reliably triggered via ref */}
+            <input
+              ref={fileInputRef}
+              id="product-computer-file-input"
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif,image/avif"
+              multiple={!isAddonCategory}
+              disabled={uploading}
+              onChange={handleFileUpload}
+              style={{ display: "none" }}
+            />
+
             {/* Upload Toolbar */}
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center", marginBottom: 16 }}>
-              {/* Direct Server Image Upload */}
-              <label
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center", marginBottom: 14 }}>
+              {/* Direct Server Image Upload Button */}
+              <button
+                type="button"
+                id="btn-upload-from-computer"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
                   gap: 8,
                   padding: "10px 18px",
                   borderRadius: 10,
-                  background: "#be185d",
+                  background: uploading ? "#f472b6" : "#be185d",
                   color: "#fff",
                   fontSize: "0.88rem",
                   fontWeight: 600,
+                  border: "none",
                   cursor: uploading ? "not-allowed" : "pointer",
                   boxShadow: "0 2px 8px rgba(190, 24, 93, 0.25)",
                   userSelect: "none",
+                  transition: "background 0.2s ease",
                 }}
               >
-                <Upload size={16} style={{ cursor: uploading ? "not-allowed" : "pointer" }} />
-                <span style={{ cursor: uploading ? "not-allowed" : "pointer" }}>{uploading ? "Uploading to Cloudinary..." : "Upload from Computer"}</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  disabled={uploading}
-                  onChange={handleFileUpload}
-                  style={{ display: "none" }}
-                />
-              </label>
+                {uploading ? (
+                  <RefreshCw size={16} className="animate-spin" />
+                ) : (
+                  <Upload size={16} />
+                )}
+                <span>{uploading ? uploadProgress || "Uploading to Cloudinary..." : "Upload from Computer"}</span>
+              </button>
 
               <button
                 type="button"
                 onClick={() => setIsMediaPickerOpen(true)}
+                disabled={uploading}
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -1014,40 +1062,140 @@ export default function ProductFormModal({
                   border: "1.5px solid #cbd5e1",
                   fontSize: "0.88rem",
                   fontWeight: 600,
-                  cursor: "pointer",
+                  cursor: uploading ? "not-allowed" : "pointer",
                   userSelect: "none",
                 }}
               >
-                <ImageIcon size={16} color="#be185d" style={{ cursor: "pointer" }} />
-                <span style={{ cursor: "pointer" }}>Browse Existing Category Images</span>
+                <ImageIcon size={16} color="#be185d" />
+                <span>Browse Existing Category Images</span>
               </button>
             </div>
 
-            {/* Gallery Thumbnails List */}
+            {/* In-place Upload Error Banner */}
+            {uploadError && (
+              <div
+                style={{
+                  marginBottom: 14,
+                  padding: "10px 14px",
+                  borderRadius: 8,
+                  background: "#fef2f2",
+                  border: "1px solid #fecaca",
+                  color: "#991b1b",
+                  fontSize: "0.85rem",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                }}
+              >
+                <AlertCircle size={16} style={{ flexShrink: 0 }} />
+                <span style={{ flex: 1 }}>{uploadError}</span>
+                <button
+                  type="button"
+                  onClick={() => setUploadError(null)}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: "#991b1b",
+                    cursor: "pointer",
+                    fontWeight: 700,
+                    padding: 4,
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+
+            {/* In-place Uploading Status */}
+            {uploading && (
+              <div
+                style={{
+                  marginBottom: 14,
+                  padding: "10px 14px",
+                  borderRadius: 8,
+                  background: "#fdf2f8",
+                  border: "1px solid #fbcfe8",
+                  color: "#be185d",
+                  fontSize: "0.85rem",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                }}
+              >
+                <RefreshCw size={16} className="animate-spin" style={{ flexShrink: 0 }} />
+                <span style={{ fontWeight: 600 }}>{uploadProgress || "Uploading photography to Cloudinary..."}</span>
+              </div>
+            )}
+
+            {/* Gallery Thumbnails List & Dropzone */}
             {images.length === 0 ? (
               <div
-                onClick={() => setIsMediaPickerOpen(true)}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsDragging(true);
+                }}
+                onDragLeave={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsDragging(false);
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsDragging(false);
+                  if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    processFiles(e.dataTransfer.files);
+                  }
+                }}
+                onClick={() => fileInputRef.current?.click()}
                 style={{
-                  padding: "20px",
-                  background: "#fff",
-                  borderRadius: 10,
-                  border: "1.5px dashed #fbcfe8",
+                  padding: "30px 20px",
+                  background: isDragging ? "#fdf2f8" : "#fff",
+                  borderRadius: 12,
+                  border: isDragging ? "2px dashed #be185d" : "1.5px dashed #fbcfe8",
                   textAlign: "center",
                   color: "#9d174d",
                   fontSize: "0.85rem",
                   display: "flex",
+                  flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
-                  gap: 8,
+                  gap: 10,
                   cursor: "pointer",
                   userSelect: "none",
+                  transition: "all 0.2s ease",
                 }}
               >
-                <ImageIcon size={18} color="#db2777" style={{ cursor: "pointer" }} />
-                <span style={{ cursor: "pointer" }}>No images selected yet. Click <strong>Browse Existing Category Images</strong> or <strong>Upload from Computer</strong> above to choose photography.</span>
+                <div
+                  style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: "50%",
+                    background: "#fdf2f8",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#db2777",
+                  }}
+                >
+                  {uploading ? (
+                    <RefreshCw size={22} className="animate-spin" />
+                  ) : (
+                    <Upload size={22} color="#db2777" />
+                  )}
+                </div>
+                <div>
+                  <div style={{ fontWeight: 700, color: "#1e293b", fontSize: "0.92rem", marginBottom: 3 }}>
+                    {isDragging ? "Drop your image files here" : "No images selected yet"}
+                  </div>
+                  <span style={{ color: "#64748b", fontSize: "0.82rem" }}>
+                    Click anywhere here or <strong>Upload from Computer</strong> above to choose photography (JPG, PNG, WEBP).
+                  </span>
+                </div>
               </div>
             ) : (
-              <div style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 8 }}>
+              <div style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 8, alignItems: "center" }}>
                 {images.map((img, idx) => (
                   <div
                     key={idx}
@@ -1071,72 +1219,102 @@ export default function ProductFormModal({
                         e.currentTarget.src = "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647361/occasions/categories/categories-flower-bouquet.jpg";
                       }}
                     />
-                  {idx === 0 && (
-                    <span
-                      style={{
-                        position: "absolute",
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        background: "linear-gradient(90deg, #db2777, #be185d)",
-                        color: "#fff",
-                        fontSize: "0.62rem",
-                        textAlign: "center",
-                        fontWeight: 800,
-                        padding: "3px 0",
-                        letterSpacing: "0.5px",
-                      }}
-                    >
-                      ★ SIDE THUMBNAIL
-                    </span>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveImage(idx)}
-                    title="Remove Image"
-                    style={{
-                      position: "absolute",
-                      top: 4,
-                      right: 4,
-                      background: "rgba(0,0,0,0.6)",
-                      border: "none",
-                      borderRadius: "50%",
-                      width: 22,
-                      height: 22,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "#fff",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <Trash2 size={12} />
-                  </button>
-                  {idx > 0 && (
+                    {idx === 0 && (
+                      <span
+                        style={{
+                          position: "absolute",
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          background: "linear-gradient(90deg, #db2777, #be185d)",
+                          color: "#fff",
+                          fontSize: "0.62rem",
+                          textAlign: "center",
+                          fontWeight: 800,
+                          padding: "3px 0",
+                          letterSpacing: "0.5px",
+                        }}
+                      >
+                        ★ SIDE THUMBNAIL
+                      </span>
+                    )}
                     <button
                       type="button"
-                      onClick={() => handleSetMainImage(idx)}
-                      title="Set as Main"
+                      onClick={() => handleRemoveImage(idx)}
+                      title="Remove Image"
                       style={{
                         position: "absolute",
-                        bottom: 4,
-                        left: 4,
-                        background: "rgba(255,255,255,0.85)",
+                        top: 4,
+                        right: 4,
+                        background: "rgba(0,0,0,0.6)",
                         border: "none",
-                        borderRadius: 4,
-                        padding: "2px 5px",
-                        fontSize: "0.65rem",
-                        fontWeight: 700,
+                        borderRadius: "50%",
+                        width: 22,
+                        height: 22,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "#fff",
                         cursor: "pointer",
                       }}
                     >
-                      Make Main
+                      <Trash2 size={12} />
                     </button>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
+                    {idx > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => handleSetMainImage(idx)}
+                        title="Set as Main"
+                        style={{
+                          position: "absolute",
+                          bottom: 4,
+                          left: 4,
+                          background: "rgba(255,255,255,0.85)",
+                          border: "none",
+                          borderRadius: 4,
+                          padding: "2px 5px",
+                          fontSize: "0.65rem",
+                          fontWeight: 700,
+                          cursor: "pointer",
+                        }}
+                      >
+                        Make Main
+                      </button>
+                    )}
+                  </div>
+                ))}
+
+                {/* Additional + Add More photo button */}
+                {!isAddonCategory && (
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    title="Upload more photos"
+                    style={{
+                      width: 100,
+                      height: 100,
+                      borderRadius: 10,
+                      border: "1.5px dashed #cbd5e1",
+                      background: "#f8fafc",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 4,
+                      color: "#64748b",
+                      fontSize: "0.75rem",
+                      fontWeight: 600,
+                      cursor: uploading ? "not-allowed" : "pointer",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {uploading ? <RefreshCw size={18} className="animate-spin" /> : <Plus size={18} />}
+                    <span>{uploading ? "Uploading..." : "Add More"}</span>
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Section 5: Category-Specific Attributes */}

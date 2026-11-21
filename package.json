@@ -39,5 +39,8 @@
     "eslint-config-next": "16.3.6",
     "prisma": "^8.0.0-rc.22",
     "typescript": "^5"
+  },
+  "overrides": {
+    "websocket-driver": "^0.8.0"
   }
 }

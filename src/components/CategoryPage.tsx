@@ -144,181 +144,181 @@ export default function CategoryPage({
         return list.filter((p) => p.customizable !== false);
       }
       return products.filter((p) => {
-      const text = `${p.name} ${p.description ?? ""} ${p.slug ?? ""} ${p.badge ?? ""}`.toLowerCase();
-      if (f === "birthday")
-        return (
-          p.id !== "bouquet-sunshine-orchids" &&
-          !text.includes("sunshine & orchids") &&
-          (text.includes("birthday") ||
-            (p.badge && p.badge.toLowerCase().includes("birthday")))
-        );
-      if (f === "anniversary") {
-        if (
-          p.id === "cake-chocolate-amma" ||
-          p.id === "cake-lavender-amma" ||
-          p.id.includes("amma") ||
-          p.name.toLowerCase().includes("birthday") ||
-          (p.category === "cakes" && text.includes("birthday"))
-        ) {
-          return false;
+        const text = `${p.name} ${p.description ?? ""} ${p.slug ?? ""} ${p.badge ?? ""}`.toLowerCase();
+        if (f === "birthday")
+          return (
+            p.id !== "bouquet-sunshine-orchids" &&
+            !text.includes("sunshine & orchids") &&
+            (text.includes("birthday") ||
+              (p.badge && p.badge.toLowerCase().includes("birthday")))
+          );
+        if (f === "anniversary") {
+          if (
+            p.id === "cake-chocolate-amma" ||
+            p.id === "cake-lavender-amma" ||
+            p.id.includes("amma") ||
+            p.name.toLowerCase().includes("birthday") ||
+            (p.category === "cakes" && text.includes("birthday"))
+          ) {
+            return false;
+          }
+          return (
+            text.includes("anniversary") ||
+            text.includes("wedding") ||
+            text.includes("engaged") ||
+            text.includes("romance") ||
+            (text.includes("heart") && !text.includes("heartwarming") && !text.includes("heartfelt"))
+          );
         }
-        return (
-          text.includes("anniversary") ||
-          text.includes("wedding") ||
-          text.includes("engaged") ||
-          text.includes("romance") ||
-          (text.includes("heart") && !text.includes("heartwarming") && !text.includes("heartfelt"))
-        );
-      }
-      if (f === "chocolate")
-        return (
-          text.includes("chocolate") ||
-          text.includes("truffle") ||
-          text.includes("fudge") ||
-          text.includes("cocoa")
-        );
-      if (f === "fruit")
-        return (
-          text.includes("fruit") ||
-          text.includes("berry") ||
-          text.includes("berries") ||
-          text.includes("strawberr") ||
-          text.includes("blueberr") ||
-          text.includes("vanilla")
-        );
-      if (f === "roses" || f === "rose") {
-        if (
-          p.id === "bouquet-orchid-symphony" ||
-          p.id === "bouquet-golden-blush" ||
-          p.id === "bouquet-pink-roses-purple-orchids" ||
-          p.id === "bouquet-orchid-fantasy" ||
-          p.slug === "orchid-fantasy" ||
-          text.includes("rajnigandha") ||
-          text.includes("tuberose")
-        ) {
-          return false;
+        if (f === "chocolate")
+          return (
+            text.includes("chocolate") ||
+            text.includes("truffle") ||
+            text.includes("fudge") ||
+            text.includes("cocoa")
+          );
+        if (f === "fruit")
+          return (
+            text.includes("fruit") ||
+            text.includes("berry") ||
+            text.includes("berries") ||
+            text.includes("strawberr") ||
+            text.includes("blueberr") ||
+            text.includes("vanilla")
+          );
+        if (f === "roses" || f === "rose") {
+          if (
+            p.id === "bouquet-orchid-symphony" ||
+            p.id === "bouquet-golden-blush" ||
+            p.id === "bouquet-pink-roses-purple-orchids" ||
+            p.id === "bouquet-orchid-fantasy" ||
+            p.slug === "orchid-fantasy" ||
+            text.includes("rajnigandha") ||
+            text.includes("tuberose")
+          ) {
+            return false;
+          }
+          return /\brose(s)?\b/i.test(text);
         }
-        return /\brose(s)?\b/i.test(text);
-      }
-      if (f === "orchids" || f === "orchid") return text.includes("orchid");
-      if (f === "lilies" || f === "lily") return /\b(lily|lilies|lilly|lilium|casablanca|stargazer)\b/i.test(text);
-      if (f === "carnations" || f === "carnation") return text.includes("carnation");
-      if (f === "tulips" || f === "tulip" || f === "pastel-tulips") return text.includes("tulip");
-      if (f === "sunflowers" || f === "sunflower") return text.includes("sunflower");
-      if (f === "jasmine" || f === "jasmines") return text.includes("jasmine");
-      if (f === "gerberas" || f === "gerbera") return text.includes("gerbera");
-      if (f === "peonies" || f === "peony") return text.includes("peon");
-      if (f === "rajnigandha" || f === "tuberose") return text.includes("rajnigandha") || text.includes("tuberose");
-      if (f === "heliconia" || f === "heliconias") return text.includes("heliconia");
-      if (f === "gladiolus" || f === "gladioli") return text.includes("gladiol");
-      if (f === "chrysanthemums" || f === "chrysanthemum") return text.includes("chrysanthemum");
-      if (f === "bouquets" || f === "bouquet" || f === "flower-bouquets" || f === "flower bouquets") {
-        return (
-          !text.includes("basket") &&
-          !text.includes("box") &&
-          (text.includes("bouquet") ||
-            text.includes("wrap") ||
-            text.includes("bunch") ||
-            text.includes("hand-tied") ||
-            p.id.startsWith("bouquet-"))
-        );
-      }
-      if (
-        f === "baskets" ||
-        f === "basket" ||
-        f === "flower-baskets" ||
-        f === "flower baskets" ||
-        f === "handcrafted-baskets" ||
-        f === "handcrafted baskets"
-      ) {
-        return (
-          text.includes("basket") ||
-          text.includes("box") ||
-          text.includes("crate") ||
-          p.id.startsWith("flower-basket-")
-        );
-      }
-      if (f === "flowers-in-boxes" || f === "flowers in boxes")
-        return (
-          text.includes("basket") ||
-          text.includes("box") ||
-          text.includes("crate")
-        );
-      if (
-        f === "cane" ||
-        f === "cane-basket" ||
-        f === "flowers in cane basket" ||
-        f.includes("cane")
-      ) {
-        if (p.basketType) return p.basketType === "cane";
-        return (text.includes("cane") || text.includes("wicker")) && !text.includes("container") && p.id !== "flower-basket-9";
-      }
-      if (
-        f === "bamboo" ||
-        f === "bamboo-basket" ||
-        f === "flowers in bamboo basket" ||
-        f.includes("bamboo")
-      ) {
-        if (p.basketType) return p.basketType === "bamboo";
-        return text.includes("bamboo") && !text.includes("cane") && !text.includes("wicker");
-      }
-      if (
-        f === "container" ||
-        f === "conatiner" ||
-        f === "flowers in container" ||
-        f === "flowers in conatiner" ||
-        f.includes("container") ||
-        f.includes("conatiner")
-      ) {
-        if (p.basketType) return p.basketType === "container";
-        return text.includes("container") || text.includes("conatiner") || p.id === "flower-basket-9";
-      }
-      if (f === "centerpiece")
-        return text.includes("centerpiece") || text.includes("candelabra");
-      if (f === "runner")
-        return text.includes("runner") || text.includes("banquet");
-      if (f === "wedding")
-        return text.includes("wedding") || text.includes("ceremony") || text.includes("arch");
-      if (f === "rustic")
-        return text.includes("rustic") || text.includes("burlap") || text.includes("woven");
-      if (f === "heart")
-        return /\bheart\b/i.test(`${p.name} ${p.badge ?? ""} ${p.id} ${p.description ?? ""}`);
-      if (f === "cross") {
-        const crossCheck = `${p.name} ${p.badge ?? ""} ${p.id}`.toLowerCase();
-        return /\bcross\b/i.test(crossCheck);
-      }
-      if (f === "circular") {
-        const crossCheck = `${p.name} ${p.badge ?? ""} ${p.id}`.toLowerCase();
-        if (/\bcross\b/i.test(crossCheck)) return false;
-        const name = p.name.toLowerCase();
-        const badge = (p.badge ?? "").toLowerCase();
-        if (name.includes("dome") || name.includes("bouquet") || badge.includes("dome")) return false;
-        return (
-          name.includes("wreath") ||
-          /\bring\b/i.test(name) ||
-          /\bring\b/i.test(badge) ||
-          badge.includes("circular") ||
-          badge.includes("tribute")
-        );
-      }
-      if (f === "easel") {
-        const crossCheck = `${p.name} ${p.badge ?? ""} ${p.id}`.toLowerCase();
-        if (/\bcross\b/i.test(crossCheck)) return false;
-        const name = p.name.toLowerCase();
-        const badge = (p.badge ?? "").toLowerCase();
-        const desc = (p.description ?? "").toLowerCase();
-        if (name.includes("wreath") && (badge.includes("ring") || badge.includes("circular"))) return false;
-        return (
-          name.includes("easel") ||
-          name.includes("dome") ||
-          name.includes("bouquet") ||
-          badge.includes("dome") ||
-          desc.includes("dome") ||
-          desc.includes("standing easel") ||
-          desc.includes("spherical dome")
-        );
-      }
-      return text.includes(f);
+        if (f === "orchids" || f === "orchid") return text.includes("orchid");
+        if (f === "lilies" || f === "lily") return /\b(lily|lilies|lilly|lilium|casablanca|stargazer)\b/i.test(text);
+        if (f === "carnations" || f === "carnation") return text.includes("carnation");
+        if (f === "tulips" || f === "tulip" || f === "pastel-tulips") return text.includes("tulip");
+        if (f === "sunflowers" || f === "sunflower") return text.includes("sunflower");
+        if (f === "jasmine" || f === "jasmines") return text.includes("jasmine");
+        if (f === "gerberas" || f === "gerbera") return text.includes("gerbera");
+        if (f === "peonies" || f === "peony") return text.includes("peon");
+        if (f === "rajnigandha" || f === "tuberose") return text.includes("rajnigandha") || text.includes("tuberose");
+        if (f === "heliconia" || f === "heliconias") return text.includes("heliconia");
+        if (f === "gladiolus" || f === "gladioli") return text.includes("gladiol");
+        if (f === "chrysanthemums" || f === "chrysanthemum") return text.includes("chrysanthemum");
+        if (f === "bouquets" || f === "bouquet" || f === "flower-bouquets" || f === "flower bouquets") {
+          return (
+            !text.includes("basket") &&
+            !text.includes("box") &&
+            (text.includes("bouquet") ||
+              text.includes("wrap") ||
+              text.includes("bunch") ||
+              text.includes("hand-tied") ||
+              p.id.startsWith("bouquet-"))
+          );
+        }
+        if (
+          f === "baskets" ||
+          f === "basket" ||
+          f === "flower-baskets" ||
+          f === "flower baskets" ||
+          f === "handcrafted-baskets" ||
+          f === "handcrafted baskets"
+        ) {
+          return (
+            text.includes("basket") ||
+            text.includes("box") ||
+            text.includes("crate") ||
+            p.id.startsWith("flower-basket-")
+          );
+        }
+        if (f === "flowers-in-boxes" || f === "flowers in boxes")
+          return (
+            text.includes("basket") ||
+            text.includes("box") ||
+            text.includes("crate")
+          );
+        if (
+          f === "cane" ||
+          f === "cane-basket" ||
+          f === "flowers in cane basket" ||
+          f.includes("cane")
+        ) {
+          if (p.basketType) return p.basketType === "cane";
+          return (text.includes("cane") || text.includes("wicker")) && !text.includes("container") && p.id !== "flower-basket-9";
+        }
+        if (
+          f === "bamboo" ||
+          f === "bamboo-basket" ||
+          f === "flowers in bamboo basket" ||
+          f.includes("bamboo")
+        ) {
+          if (p.basketType) return p.basketType === "bamboo";
+          return text.includes("bamboo") && !text.includes("cane") && !text.includes("wicker");
+        }
+        if (
+          f === "container" ||
+          f === "conatiner" ||
+          f === "flowers in container" ||
+          f === "flowers in conatiner" ||
+          f.includes("container") ||
+          f.includes("conatiner")
+        ) {
+          if (p.basketType) return p.basketType === "container";
+          return text.includes("container") || text.includes("conatiner") || p.id === "flower-basket-9";
+        }
+        if (f === "centerpiece")
+          return text.includes("centerpiece") || text.includes("candelabra");
+        if (f === "runner")
+          return text.includes("runner") || text.includes("banquet");
+        if (f === "wedding")
+          return text.includes("wedding") || text.includes("ceremony") || text.includes("arch");
+        if (f === "rustic")
+          return text.includes("rustic") || text.includes("burlap") || text.includes("woven");
+        if (f === "heart")
+          return /\bheart\b/i.test(`${p.name} ${p.badge ?? ""} ${p.id} ${p.description ?? ""}`);
+        if (f === "cross") {
+          const crossCheck = `${p.name} ${p.badge ?? ""} ${p.id}`.toLowerCase();
+          return /\bcross\b/i.test(crossCheck);
+        }
+        if (f === "circular") {
+          const crossCheck = `${p.name} ${p.badge ?? ""} ${p.id}`.toLowerCase();
+          if (/\bcross\b/i.test(crossCheck)) return false;
+          const name = p.name.toLowerCase();
+          const badge = (p.badge ?? "").toLowerCase();
+          if (name.includes("dome") || name.includes("bouquet") || badge.includes("dome")) return false;
+          return (
+            name.includes("wreath") ||
+            /\bring\b/i.test(name) ||
+            /\bring\b/i.test(badge) ||
+            badge.includes("circular") ||
+            badge.includes("tribute")
+          );
+        }
+        if (f === "easel") {
+          const crossCheck = `${p.name} ${p.badge ?? ""} ${p.id}`.toLowerCase();
+          if (/\bcross\b/i.test(crossCheck)) return false;
+          const name = p.name.toLowerCase();
+          const badge = (p.badge ?? "").toLowerCase();
+          const desc = (p.description ?? "").toLowerCase();
+          if (name.includes("wreath") && (badge.includes("ring") || badge.includes("circular"))) return false;
+          return (
+            name.includes("easel") ||
+            name.includes("dome") ||
+            name.includes("bouquet") ||
+            badge.includes("dome") ||
+            desc.includes("dome") ||
+            desc.includes("standing easel") ||
+            desc.includes("spherical dome")
+          );
+        }
+        return text.includes(f);
       });
     })();
 
@@ -379,9 +379,8 @@ export default function CategoryPage({
                     type="button"
                     role="tab"
                     aria-selected={isActive}
-                    className={`${styles.filterPill} ${
-                      isActive ? styles.filterPillActive : ""
-                    }`}
+                    className={`${styles.filterPill} ${isActive ? styles.filterPillActive : ""
+                      }`}
                     onClick={() => handleTabClick(tab.id)}
                   >
                     {tab.label}
@@ -447,7 +446,7 @@ export default function CategoryPage({
               </div>
             ) : flowerCategory ? (
               <div className={styles.flowerEmptyState} role="status">
-                
+
                 <h3 className={styles.flowerEmptyTitle}>
                   {products.length === 0 ? "No Products Available" : "No Arrangements in this Style"}
                 </h3>
@@ -486,7 +485,7 @@ export default function CategoryPage({
           </div>
         </section>
       </main>
-      <Footer/>
+      <Footer />
     </div>
   );
 }
