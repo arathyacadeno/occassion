@@ -147,8 +147,10 @@ export default function ProductGallery({
       (product.image && product.image.includes("/flower-basket/")) ||
       (product.category === "flower" && (product.id === "flower-9" || product.id === "flower-10"))
     )
-  );
-
+  );
+
+
+
   const isBouquet = Boolean(
     !isFlowerBasket && (
       (product && isFlowerBouquet(product)) ||
