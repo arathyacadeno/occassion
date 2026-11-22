@@ -57,10 +57,6 @@ export default function Footer() {
             {/* IFA Membership Highlight Badge */}
             {settings.show_ifa_membership !== "false" && (
               <div className={styles.ifaBadgeWrapper}>
-                <div className={styles.ifaBadgeHeader}>
-                  <span className={styles.ifaDot} />
-                  <span className={styles.ifaBadgeTag}>Official Member</span>
-                </div>
                 <a
                   href="https://ifaflorist.com"
                   target="_blank"
@@ -74,9 +70,6 @@ export default function Footer() {
                     className={styles.ifaLogoImg}
                   />
                 </a>
-                <p className={styles.ifaSubtitle}>
-                  Proud Member of India Florist Association
-                </p>
               </div>
             )}
           </div>
