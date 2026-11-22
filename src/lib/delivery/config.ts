@@ -69,10 +69,23 @@ export const DELIVERY_ZONES: DeliveryZoneConfig[] = [
   },
 ];
 
+export interface DeliveryTierEval {
+  id?: string;
+  min_km: number;
+  max_km: number;
+  charge: number;
+  label?: string;
+  active?: number;
+}
+
 /**
  * Pure calculation helper to evaluate distance against delivery tiers.
+ * Supports dynamic database tiers configured from the Admin Panel.
  */
-export function calculateDeliveryChargeFromDistance(distanceKm: number): {
+export function calculateDeliveryChargeFromDistance(
+  distanceKm: number,
+  customTiers?: DeliveryTierEval[]
+): {
   charge: number | null;
   tier_label: string;
   serviceable: boolean;
@@ -87,7 +100,55 @@ export function calculateDeliveryChargeFromDistance(distanceKm: number): {
     };
   }
 
-  // Evaluate delivery distance against standard tiers
+  // 1. Evaluate against database-configured tiers if available
+  if (customTiers && customTiers.length > 0) {
+    const activeTiers = customTiers
+      .filter((t) => t.active === undefined || t.active === 1)
+      .sort((a, b) => a.min_km - b.min_km);
+
+    const match =
+      activeTiers.find((t) => {
+        if (t.min_km === 0) {
+          return distanceKm >= 0 && distanceKm <= t.max_km;
+        }
+        return distanceKm > t.min_km && distanceKm <= t.max_km;
+      }) || activeTiers.find((t) => distanceKm >= t.min_km && distanceKm <= t.max_km);
+
+    if (match) {
+      const charge = Number(match.charge);
+      let label = match.label?.trim() || "";
+      if (charge > 0 && /free/i.test(label)) {
+        label = label
+          .replace(/\(?Free\s*Express\)?/gi, "(Express Delivery)")
+          .replace(/Free\s*delivery/gi, `₹${charge} delivery`)
+          .trim();
+      }
+      if (!label) {
+        label = charge === 0 ? "Free delivery" : `₹${charge} delivery charge`;
+      }
+      const message =
+        charge === 0
+          ? `Delivery available (Free delivery within ${match.max_km} km)`
+          : `Delivery available (₹${charge} delivery charge)`;
+
+      return {
+        charge,
+        tier_label: label,
+        serviceable: true,
+        message,
+      };
+    }
+
+    const maxKm = Math.max(...activeTiers.map((t) => t.max_km), 50);
+    return {
+      charge: null,
+      tier_label: `Delivery not available beyond ${maxKm} km`,
+      serviceable: false,
+      message: `Sorry, delivery is not available beyond ${maxKm} km. Please enter another delivery location.`,
+    };
+  }
+
+  // 2. Default fallback tiers
   if (distanceKm <= 5.0) {
     return {
       charge: 0,

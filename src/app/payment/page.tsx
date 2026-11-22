@@ -1334,7 +1334,7 @@ export default function SinglePageCheckoutPayment() {
                     <CheckCircle2 size={14} color="#059669" />
                     <span>
                       {deliveryStatus.area ? `${deliveryStatus.area}: ` : ""}
-                      Road distance {deliveryStatus.distance_km} km ({deliveryStatus.tier_label || (deliveryStatus.delivery_charge === 0 ? "Free delivery" : `₹${deliveryStatus.delivery_charge} delivery`)})
+                      Road distance {deliveryStatus.distance_km} km ({deliveryStatus.delivery_charge === 0 ? "Free delivery" : `₹${deliveryStatus.delivery_charge} delivery`})
                     </span>
                   </p>
                 )}

@@ -18,8 +18,37 @@ import {
   DEFAULT_SHOP_ID,
   calculateDeliveryChargeFromDistance,
   type ShopConfig,
+  type DeliveryTierEval,
 } from "./config";
 import { PIN_COORDS, type PinCoords } from "./pins";
+import { sql } from "@/lib/db/neon";
+
+let inMemoryTiersCache: DeliveryTierEval[] = [];
+
+export async function fetchActiveDeliveryTiers(): Promise<DeliveryTierEval[]> {
+  try {
+    const rows = await sql`
+      SELECT id, min_km, max_km, charge, label, active, display_order
+      FROM delivery_tiers
+      WHERE active = 1
+      ORDER BY display_order ASC, min_km ASC
+    `;
+    if (rows && rows.length > 0) {
+      inMemoryTiersCache = (rows as any[]).map((r) => ({
+        id: String(r.id),
+        min_km: Number(r.min_km),
+        max_km: Number(r.max_km),
+        charge: Number(r.charge),
+        label: String(r.label || ""),
+        active: Number(r.active ?? 1),
+      }));
+      return inMemoryTiersCache;
+    }
+  } catch (err) {
+    console.warn("fetchActiveDeliveryTiers warning, using fallback:", err);
+  }
+  return inMemoryTiersCache;
+}
 
 // ---------------------------------------------------------------------------
 // Types
@@ -371,8 +400,9 @@ export async function checkDeliveryAsync(
     calculationMethod = "haversine_circuity";
   }
 
-  // 5. Apply Delivery Charge Rules
-  const tierResult = calculateDeliveryChargeFromDistance(roadDistanceKm);
+  // 5. Apply Delivery Charge Rules (Dynamic Database Tiers)
+  const dbTiers = await fetchActiveDeliveryTiers();
+  const tierResult = calculateDeliveryChargeFromDistance(roadDistanceKm, dbTiers);
 
   return {
     serviceable: tierResult.serviceable,
@@ -458,7 +488,10 @@ export function checkDelivery(input: DeliveryCheckInput): DeliveryCheckResult {
   // For local city (<= 4km straight line), road distance is usually within 5km (e.g. Kallai 673003 is ~3.8km)
   const distanceKm = parseFloat((straightLineKm * 1.25).toFixed(1));
 
-  const tierResult = calculateDeliveryChargeFromDistance(distanceKm);
+  const tierResult = calculateDeliveryChargeFromDistance(
+    distanceKm,
+    inMemoryTiersCache.length > 0 ? inMemoryTiersCache : undefined
+  );
 
   return {
     serviceable: tierResult.serviceable,
