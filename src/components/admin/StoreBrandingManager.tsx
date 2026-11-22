@@ -824,22 +824,29 @@ export default function StoreBrandingManager() {
                 Opening Hours
               </label>
               <div style={{ position: "relative" }}>
-                <Clock size={16} color="#94a3b8" style={{ position: "absolute", left: 12, top: 13 }} />
-                <input
-                  type="text"
+                <Clock size={16} color="#94a3b8" style={{ position: "absolute", left: 12, top: 12 }} />
+                <textarea
                   name="opening_hours"
                   value={form.opening_hours}
                   onChange={handleInputChange}
+                  rows={2}
                   style={{
                     width: "100%",
                     padding: "10px 14px 10px 38px",
                     border: "1px solid #cbd5e1",
                     borderRadius: 8,
-                    fontSize: "0.9rem",
+                    fontSize: "0.88rem",
                     boxSizing: "border-box",
+                    lineHeight: "1.4",
+                    resize: "vertical",
+                    fontFamily: "inherit",
                   }}
+                  placeholder={"Monday — Saturday: 09:00 AM — 6:30 PM\nSunday: 08:00 AM — 10:00 AM"}
                 />
               </div>
+              <span style={{ fontSize: "0.74rem", color: "#64748b", marginTop: 4, display: "block" }}>
+                Enter schedule lines (e.g. Monday — Saturday: 09:00 AM — 6:30 PM)
+              </span>
             </div>
 
             <div style={{ gridColumn: "1 / -1" }}>

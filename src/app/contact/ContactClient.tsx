@@ -36,6 +36,24 @@ export const CONTACT_CONFIG = {
   },
 };
 
+function parseWorkingHours(hoursStr?: string) {
+  if (!hoursStr || !hoursStr.trim()) {
+    return CONTACT_CONFIG.workingHours;
+  }
+  const lines = hoursStr.split(/\r?\n|\|/).map((l) => l.trim()).filter(Boolean);
+  if (lines.length === 0) return CONTACT_CONFIG.workingHours;
+
+  return lines.map((line) => {
+    const colonIdx = line.indexOf(":");
+    if (colonIdx > -1) {
+      const day = line.slice(0, colonIdx).trim();
+      const hours = line.slice(colonIdx + 1).trim();
+      return { day, hours };
+    }
+    return { day: "Everyday", hours: line };
+  });
+}
+
 export default function ContactClient() {
   const { settings } = useStoreSettings();
   const [formData, setFormData] = useState({
@@ -465,19 +483,12 @@ export default function ContactClient() {
               <div className={styles.hoursGroup}>
                 <h3 className={styles.cardSectionHeading}>Working Hours</h3>
                 <div className={styles.hoursList}>
-                  {settings.opening_hours ? (
-                    <div className={styles.hoursRow}>
-                      <span className={styles.hoursDay}>Everyday</span>
-                      <span className={styles.hoursTime}>{settings.opening_hours}</span>
+                  {parseWorkingHours(settings.opening_hours).map((item, index) => (
+                    <div key={index} className={styles.hoursRow}>
+                      <span className={styles.hoursDay}>{item.day}</span>
+                      <span className={styles.hoursTime}>{item.hours}</span>
                     </div>
-                  ) : (
-                    CONTACT_CONFIG.workingHours.map((item, index) => (
-                      <div key={index} className={styles.hoursRow}>
-                        <span className={styles.hoursDay}>{item.day}</span>
-                        <span className={styles.hoursTime}>{item.hours}</span>
-                      </div>
-                    ))
-                  )}
+                  ))}
                 </div>
               </div>
             </aside>

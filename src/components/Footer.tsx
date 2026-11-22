@@ -131,11 +131,6 @@ export default function Footer() {
                   {settings.store_phone || "+91 8606 464 700"}
                 </a>
               </p>
-              {settings.opening_hours && (
-                <p className={styles.helpText} style={{ marginTop: 4, opacity: 0.9 }}>
-                  Hours: {settings.opening_hours}
-                </p>
-              )}
               {settings.store_email && (
                 <p className={styles.helpText} style={{ marginTop: 4 }}>
                   <a href={`mailto:${settings.store_email}`} className={styles.phoneLink}>

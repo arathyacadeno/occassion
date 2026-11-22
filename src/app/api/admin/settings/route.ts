@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
       store_whatsapp: "918606464700",
       store_email: "occassions.flowers@gmail.com",
       store_address: "Mavoor Road, Kozhikode (Calicut), Kerala 673004",
-      opening_hours: "9:00 AM - 9:00 PM Daily",
+      opening_hours: "Monday — Saturday: 09:00 AM — 6:30 PM\nSunday: 08:00 AM — 10:00 AM",
       currency_symbol: "₹",
     };
 
