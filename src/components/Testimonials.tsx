@@ -1,362 +1,254 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./Testimonials.module.css";
-import { Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
+import type { GoogleReview, GoogleReviewsApiResponse } from "@/app/api/google-reviews/route";
 
-export interface TestimonialItem {
-  id: number;
-  headline?: string;
-  quote: string;
-  name: string;
-  rating: number;
-  quotePosition?: "left" | "right";
-}
+const GOOGLE_REVIEW_URL =
+  "https://www.google.com/search?q=occasions+calicut#lrd=0x3ba65930d81cc1ef:0xc1726494649efc9d,1";
 
-const TESTIMONIALS_DATA: TestimonialItem[] = [
-  {
-    id: 1,
-    headline: "“Fresh flowers & on-time delivery”",
-    quote:
-      "Amazing collection of fresh flowers and wonderful customer service. Ordered a bouquet for an anniversary and it was delivered right on time. Highly recommended florist in Calicut!",
-    name: "RAHUL DAS",
-    rating: 5,
-    quotePosition: "left",
-  },
-  {
-    id: 2,
-    headline: "“Best flower shop in Kozhikode!”",
-    quote:
-      "Best flower shop in Kozhikode! The decoration for our event was breathtaking. Very professional, creative, and attentive team at Occasions. Will definitely choose them again.",
-    name: "SNEHA MENON",
-    rating: 5,
-    quotePosition: "right",
-  },
-  {
-    id: 3,
-    headline: "“Quality blooms & polite staff”",
-    quote:
-      "Very good experience. Quality flowers, elegant packing, and polite staff. Sreejesh was extremely helpful and accommodating. They truly know how to make occasions special.",
-    name: "MOHAMMED AFSAL",
-    rating: 5,
-    quotePosition: "right",
-  },
-  {
-    id: 4,
-    headline: "“Prompt delivery & fresh orchids”",
-    quote:
-      "Prompt delivery and fresh orchids! Ordered online and got it delivered in Calicut within hours. Truly impressed with their quick service, communication, and floral freshness.",
-    name: "DIVYA NAIR",
-    rating: 5,
-    quotePosition: "right",
-  },
-  {
-    id: 5,
-    headline: "“Breathtaking wedding decor”",
-    quote:
-      "Exceptional floral arrangements for our wedding reception. Everyone praised the stage decor and fresh bloom bouquets. Thank you Occasions - Do It With Flowers!",
-    name: "FATHIMA ZAHRA",
-    rating: 5,
-    quotePosition: "right",
-  },
-  {
-    id: 6,
-    headline: "“Exotic flowers & reasonable prices”",
-    quote:
-      "Great variety of exotic flowers and fresh roses. Prices are reasonable and their shop location at YMCA Cross Road is very accessible. Outstanding floral artistry!",
-    name: "ARUN KUMAR",
-    rating: 5,
-    quotePosition: "right",
-  },
-  {
-    id: 7,
-    headline: "“Polite service & stunning flowers”",
-    quote:
-      "Wonderful experience with Occasions! Sreejesh was extremely polite and accommodating. The flower arrangement was fresh, beautifully styled, and delivered right on time in Calicut.",
-    name: "ANANTHU KRISHNAN",
-    rating: 5,
-    quotePosition: "left",
-  },
-  {
-    id: 8,
-    headline: "“Gorgeous birthday bouquet surprise”",
-    quote:
-      "Ordered a birthday bouquet and cake surprise for my parents in Kozhikode. The flowers were gorgeous, vibrant, and lasted for days. Seamless communication via WhatsApp!",
-    name: "DR. NEHA MATHEW",
-    rating: 5,
-    quotePosition: "right",
-  },
-  {
-    id: 9,
-    headline: "“Urgent delivery handled perfectly”",
-    quote:
-      "Needed urgent flower delivery near Beach Road. Sreejesh went out of his way to arrange a stunning fresh red roses basket within a couple of hours. Outstanding dedication!",
-    name: "DEEPAK NAMBIAR",
-    rating: 5,
-    quotePosition: "right",
-  },
-  {
-    id: 10,
-    headline: "“Most reliable florist in Calicut”",
-    quote:
-      "Hands down the most reliable flower shop in Calicut. Their flower baskets and custom flower boxes are crafted with so much care and elegance. 10/10 service every time!",
-    name: "AISWARYA RAJ",
-    rating: 5,
-    quotePosition: "right",
-  },
-  {
-    id: 11,
-    headline: "“Lush engagement stage backdrop”",
-    quote:
-      "Occasions designed our engagement stage floral backdrop and bridal bouquets. The blooms were lush, fragrant, and stayed fresh throughout the event. Best event florists in town!",
-    name: "MIDHUN GEORGE",
-    rating: 5,
-    quotePosition: "left",
-  },
-  {
-    id: 12,
-    headline: "“Neat packaging & punctual delivery”",
-    quote:
-      "Beautifully arranged carnations and lilies for our housewarming celebration. The packaging was neat, and delivery was punctually handled. Highly recommended!",
-    name: "ROSHNI P.",
-    rating: 5,
-    quotePosition: "right",
-  },
-  {
-    id: 13,
-    headline: "“Consistently fresh blooms”",
-    quote:
-      "Consistently great quality whenever I order flowers in Kozhikode. Very friendly service, prompt response on WhatsApp, and always fresh, fragrant blooms.",
-    name: "GOKUL KRISHNA",
-    rating: 5,
-    quotePosition: "right",
-  },
-  {
-    id: 14,
-    headline: "“Top-notch florist in Kozhikode”",
-    quote:
-      "Top-notch florist in Kozhikode. Excellent variety of roses, orchids, and lilies, long-lasting freshness, and courteous staff. They make gifting so effortless.",
-    name: "SREEJESH V.",
-    rating: 5,
-    quotePosition: "right",
-  },
-];
-
-const SLIDE_MS = 800;
-
-function QuoteMarks({ className }: { className?: string }) {
+function GoogleIcon({ size = 20 }: { size?: number }) {
   return (
-    <div className={className} aria-hidden="true">
-      <img src="/images/quote-mark.png" alt="" className={styles.quoteImg} />
-      <img src="/images/quote-mark.png" alt="" className={styles.quoteImg} />
-    </div>
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" style={{ flexShrink: 0 }}>
+      <path
+        fill="#4285F4"
+        d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
+      />
+      <path
+        fill="#34A853"
+        d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.27 21.43 7.33 24 12 24z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.98 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
+      />
+      <path
+        fill="#EA4335"
+        d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.27 2.57 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
+      />
+    </svg>
   );
 }
 
 export default function Testimonials() {
-  const total = TESTIMONIALS_DATA.length;
+  const [loading, setLoading] = useState<boolean>(true);
+  const [data, setData] = useState<GoogleReviewsApiResponse | null>(null);
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
 
-  // 3 copies for infinite loop: [clones][REAL][clones]
-  const items = [
-    ...TESTIMONIALS_DATA,
-    ...TESTIMONIALS_DATA,
-    ...TESTIMONIALS_DATA,
-  ];
+  useEffect(() => {
+    let isMounted = true;
 
-  // index of the active (focused) card inside the extended list
-  const [active, setActive] = useState<number>(total + 1);
-  const [animate, setAnimate] = useState<boolean>(true);
-  const [isPaused, setIsPaused] = useState<boolean>(false);
-
-  // lock so rapid clicks can't push the track outside the cloned range
-  const lockedRef = useRef<boolean>(false);
-  const unlockTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const lockFor = () => {
-    lockedRef.current = true;
-    if (unlockTimer.current) clearTimeout(unlockTimer.current);
-    // safety fallback in case transitionend never fires (e.g. hidden tab)
-    unlockTimer.current = setTimeout(() => {
-      lockedRef.current = false;
-    }, SLIDE_MS + 150);
-  };
-
-  const goTo = (updater: (a: number) => number) => {
-    if (lockedRef.current) return;
-    lockFor();
-    setActive(updater);
-  };
-
-  const handlePrev = () => goTo((a) => a - 1);
-  const handleNext = () => goTo((a) => a + 1);
-
-  // After the slide finishes, silently jump back into the middle copy
-  const handleTransitionEnd = (e: React.TransitionEvent<HTMLDivElement>) => {
-    if (e.target !== e.currentTarget || e.propertyName !== "transform") return;
-
-    if (active >= total * 2) {
-      setAnimate(false);
-      setActive((a) => a - total);
-    } else if (active < total) {
-      setAnimate(false);
-      setActive((a) => a + total);
+    async function loadGoogleReviews() {
+      try {
+        setLoading(true);
+        const res = await fetch("/api/google-reviews", {
+          headers: { Accept: "application/json" },
+        });
+        if (!res.ok) {
+          throw new Error(`HTTP error ${res.status}`);
+        }
+        const json: GoogleReviewsApiResponse = await res.json();
+        if (isMounted) {
+          setData(json);
+        }
+      } catch (err) {
+        console.warn("Failed to load Google reviews:", err);
+        if (isMounted) {
+          setData({
+            success: false,
+            available: false,
+            businessName: "Occasions Calicut",
+            placeId: "ChIJ78EY0zBZozsRz85plGQpYsE",
+            rating: null,
+            userRatingsTotal: null,
+            googleReviewUrl: GOOGLE_REVIEW_URL,
+            reviews: [],
+            error: "Google reviews are temporarily unavailable.",
+          });
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
     }
 
-    lockedRef.current = false;
-  };
+    loadGoogleReviews();
 
-  // Re-enable the transition after the silent jump
-  useEffect(() => {
-    if (animate) return;
-    let id2 = 0;
-    const id1 = requestAnimationFrame(() => {
-      id2 = requestAnimationFrame(() => setAnimate(true));
-    });
     return () => {
-      cancelAnimationFrame(id1);
-      cancelAnimationFrame(id2);
-    };
-  }, [animate]);
-
-  // Auto-rotate every 6.5s (paused on hover)
-  useEffect(() => {
-    if (isPaused) return;
-    const timer = setInterval(() => {
-      if (lockedRef.current) return;
-      lockFor();
-      setActive((a) => a + 1);
-    }, 6500);
-    return () => clearInterval(timer);
-  }, [isPaused]);
-
-  // Cleanup the unlock timer on unmount
-  useEffect(() => {
-    return () => {
-      if (unlockTimer.current) clearTimeout(unlockTimer.current);
+      isMounted = false;
     };
   }, []);
 
-  const renderStars = (rating: number, isCenter: boolean) => (
+  const reviews = data?.reviews || [];
+  const hasReviews = reviews.length > 0;
+  const reviewUrl = data?.googleReviewUrl || GOOGLE_REVIEW_URL;
+
+  const handlePrev = () => {
+    if (reviews.length === 0) return;
+    setCurrentIndex((prev) => (prev === 0 ? reviews.length - 1 : prev - 1));
+  };
+
+  const handleNext = () => {
+    if (reviews.length === 0) return;
+    setCurrentIndex((prev) => (prev === reviews.length - 1 ? 0 : prev + 1));
+  };
+
+  const renderStars = (rating: number) => (
     <div className={styles.starsRow} aria-label={`${rating} out of 5 stars`}>
-      {[...Array(5)].map((_, i) => {
-        const isFilled = i < rating;
-        return (
-          <Star
-            key={i}
-            size={18}
-            className={`${styles.starIcon} ${
-              isFilled
-                ? isCenter
-                  ? styles.starCenterFilled
-                  : styles.starSideFilled
-                : styles.starEmpty
-            }`}
-          />
-        );
-      })}
+      {[...Array(5)].map((_, i) => (
+        <Star
+          key={i}
+          size={16}
+          className={i < rating ? styles.starFilled : styles.starEmpty}
+        />
+      ))}
     </div>
   );
 
   return (
-    <section className={styles.sectionWrapper} id="testimonials">
+    <section className={styles.sectionWrapper} id="testimonials" aria-label="Google Customer Reviews">
       <div className={styles.container}>
         {/* Section Header */}
         <div className={styles.sectionHeader}>
+          <div className={styles.googleBadgeRow}>
+            <GoogleIcon size={22} />
+            <span className={styles.googleBadgeText}>Google Reviews</span>
+            {data?.rating !== null && data?.rating !== undefined && (
+              <span className={styles.ratingBadge}>
+                ★ {data.rating.toFixed(1)}
+                {data.userRatingsTotal ? ` (${data.userRatingsTotal}+)` : ""}
+              </span>
+            )}
+          </div>
+
           <h2 className={styles.mainTitle}>Loved in Every Bloom</h2>
           <p className={styles.subtitle}>
-            Real words from the people who received a little more happiness
-            through our flowers.
+            Genuine reviews and experiences from Occasions Calicut customers.
           </p>
         </div>
 
-        {/* White Rounded Card */}
+        {/* Reviews Container Card */}
         <div className={styles.whiteCardWrapper}>
-          <div
-            className={styles.carouselContainer}
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-          >
-            <button
-              type="button"
-              className={`${styles.navBtn} ${styles.navBtnLeft}`}
-              onClick={handlePrev}
-              aria-label="Previous testimonial"
-            >
-              <ChevronLeft size={22} strokeWidth={2.4} />
-            </button>
-
-            {/* Clipping viewport */}
-            <div className={styles.viewport}>
-              <div
-                className={`${styles.cardsTrack} ${animate ? "" : styles.noAnim}`}
-                style={{ ["--active" as string]: active } as React.CSSProperties}
-                onTransitionEnd={handleTransitionEnd}
-              >
-                {items.map((item, idx) => {
-                  const isCenter = idx === active;
-                  const position = isCenter
-                    ? styles.activeCard
-                    : idx < active
-                    ? `${styles.inactiveCard} ${styles.leftCard}`
-                    : `${styles.inactiveCard} ${styles.rightCard}`;
-
-                  return (
-                    <div
-                      key={`${item.id}-${idx}`}
-                      className={`${styles.card} ${position}`}
-                      onClick={() => {
-                        if (!isCenter) goTo(() => idx);
-                      }}
-                    >
-                      {renderStars(item.rating, isCenter)}
-                      {item.headline && (
-                        <h3 className={styles.cardHeadline}>{item.headline}</h3>
-                      )}
-                      <p className={styles.cardQuote}>{item.quote}</p>
-                      <div className={styles.authorName}>{item.name}</div>
-                      <QuoteMarks
-                        className={`${styles.quoteMark} ${styles.quoteMarkRight} ${
-                          isCenter ? styles.quoteMarkCenter : ""
-                        }`}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
+          {loading ? (
+            /* Loading State */
+            <div className={styles.loadingContainer}>
+              <div className={styles.spinner} />
+              <p className={styles.loadingText}>Loading genuine Google reviews...</p>
             </div>
-
-            <button
-              type="button"
-              className={`${styles.navBtn} ${styles.navBtnRight}`}
-              onClick={handleNext}
-              aria-label="Next testimonial"
-            >
-              <ChevronRight size={22} strokeWidth={2.4} />
-            </button>
-          </div>
-
-          {/* Dots showing all testimonials */}
-          <div className={styles.paginationArea}>
-            <div className={styles.dotsWrapper}>
-              {TESTIMONIALS_DATA.map((item, i) => {
-                const activeIndex = ((active % total) + total) % total;
-                const isActive = i === activeIndex;
-                return (
+          ) : hasReviews ? (
+            /* Genuine Reviews Display */
+            <div className={styles.reviewsDisplay}>
+              {/* Carousel Controls */}
+              {reviews.length > 1 && (
+                <div className={styles.controlsBar}>
                   <button
-                    key={item.id}
                     type="button"
-                    className={`${styles.dot} ${isActive ? styles.activeDot : ""}`}
-                    onClick={() => {
-                      goTo((curr) => {
-                        const currentMod = ((curr % total) + total) % total;
-                        return curr + (i - currentMod);
-                      });
-                    }}
-                    aria-label={`Go to review ${i + 1} of ${total} by ${item.name}`}
-                  />
-                );
-              })}
+                    onClick={handlePrev}
+                    className={styles.navBtn}
+                    aria-label="Previous review"
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+                  <span className={styles.counterText}>
+                    {currentIndex + 1} of {reviews.length}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleNext}
+                    className={styles.navBtn}
+                    aria-label="Next review"
+                  >
+                    <ChevronRight size={20} />
+                  </button>
+                </div>
+              )}
+
+              {/* Active Review Card */}
+              <div className={styles.singleReviewCard}>
+                <div className={styles.cardHeader}>
+                  <div className={styles.authorMeta}>
+                    {reviews[currentIndex].profile_photo_url ? (
+                      <img
+                        src={reviews[currentIndex].profile_photo_url}
+                        alt={reviews[currentIndex].author_name}
+                        className={styles.authorPhoto}
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <div className={styles.authorAvatar}>
+                        {reviews[currentIndex].author_name.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <div>
+                      <h3 className={styles.authorName}>
+                        {reviews[currentIndex].author_name}
+                      </h3>
+                      <span className={styles.reviewTime}>
+                        {reviews[currentIndex].relative_time_description}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className={styles.reviewCardRating}>
+                    {renderStars(reviews[currentIndex].rating)}
+                    <span className={styles.verifiedTag}>
+                      <GoogleIcon size={14} />
+                      Verified
+                    </span>
+                  </div>
+                </div>
+
+                {/* Original Review Text */}
+                <p className={styles.reviewText}>
+                  &ldquo;{reviews[currentIndex].text}&rdquo;
+                </p>
+              </div>
+
+              {/* Grid / Dots indicator if multiple reviews */}
+              {reviews.length > 1 && (
+                <div className={styles.dotsRow}>
+                  {reviews.map((_, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setCurrentIndex(idx)}
+                      className={`${styles.dot} ${idx === currentIndex ? styles.activeDot : ""}`}
+                      aria-label={`Go to review ${idx + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
+          ) : (
+            /* Clean Unavailable State (NO FAKE DATA) */
+            <div className={styles.unavailableContainer}>
+              <div className={styles.unavailableIconCircle}>
+                <GoogleIcon size={32} />
+              </div>
+              <h3 className={styles.unavailableTitle}>
+                Google reviews are temporarily unavailable.
+              </h3>
+              <p className={styles.unavailableSubtitle}>
+                Read genuine customer ratings and reviews directly on our verified Google Business Profile.
+              </p>
+            </div>
+          )}
+
+          {/* Authoritative "View All Reviews on Google" Button */}
+          <div className={styles.actionRow}>
+            <a
+              href={reviewUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.viewGoogleBtn}
+              aria-label="View All Reviews on Google (opens in a new tab)"
+            >
+              <GoogleIcon size={18} />
+              <span>View All Reviews on Google</span>
+              <ExternalLink size={15} />
+            </a>
           </div>
         </div>
       </div>

@@ -1,532 +1,381 @@
 /* =========================================================
-   TESTIMONIALS SECTION
-   "Loved in Every Bloom"
+   GOOGLE REVIEWS SECTION - OCCASIONS CALICUT
    ========================================================= */
 
 .sectionWrapper {
   width: 100%;
   position: relative;
   overflow: hidden;
-  margin-top: 28px;
-  padding: 64px 0 84px 0;
+  margin-top: 32px;
+  padding: 64px 0 80px 0;
   background-color: #FAD9E3;
   box-sizing: border-box;
 }
 
 .container {
-  max-width: 1726px;
+  max-width: 1200px;
   width: 100%;
   margin: 0 auto;
-  padding-inline: 36px;
+  padding-inline: 24px;
   box-sizing: border-box;
-  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
 }
 
 /* ================= SECTION HEADER ================= */
 .sectionHeader {
   text-align: center;
-  margin: 0 auto 42px auto;
+  margin: 0 auto 36px auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   max-width: 680px;
 }
 
-.mainTitle {
-  font-family: "Plus Jakarta Sans", var(--font-sans), sans-serif;
-  font-size: 38px;
+.googleBadgeRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  padding: 6px 16px;
+  border-radius: 999px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 16px;
+}
+
+.googleBadgeText {
+  font-size: 0.88rem;
   font-weight: 700;
+  color: #1f2937;
+  letter-spacing: -0.01em;
+}
+
+.ratingBadge {
+  background: #fef3c7;
+  color: #b45309;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.mainTitle {
+  font-family: inherit;
+  font-size: clamp(2rem, 3.8vw, 2.5rem);
+  font-weight: 800;
   letter-spacing: -0.02em;
   color: #18181b;
   line-height: 1.2;
-  margin: 0 0 14px 0;
-  text-align: center;
+  margin: 0 0 10px 0;
 }
 
 .subtitle {
-  font-family: "Plus Jakarta Sans", var(--font-sans), sans-serif;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 1.55;
+  font-size: clamp(0.95rem, 1.5vw, 1.05rem);
   color: #4b5563;
   margin: 0;
-  text-align: center;
-  max-width: 540px;
+  line-height: 1.5;
 }
 
 /* ================= WHITE CONTAINER CARD ================= */
 .whiteCardWrapper {
   width: 100%;
-  min-height: 560px;
+  max-width: 860px;
+  min-height: 380px;
   background: #ffffff;
-  border-radius: 64px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.025);
+  border-radius: 28px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  padding: 36px 32px 32px;
   box-sizing: border-box;
-  padding: 24px 0 32px 0;
+  border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
-/* ================= PAGINATION & DOTS ================= */
-.paginationArea {
+@media (max-width: 640px) {
+  .whiteCardWrapper {
+    padding: 24px 18px 24px;
+    border-radius: 20px;
+    min-height: 340px;
+  }
+}
+
+/* ================= LOADING STATE ================= */
+.loadingContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  margin-top: 10px;
-  z-index: 6;
+  justify-content: center;
+  min-height: 220px;
+  gap: 16px;
 }
 
-.dotsWrapper {
+.spinner {
+  width: 38px;
+  height: 38px;
+  border: 3px solid #fce7f3;
+  border-top-color: #be185d;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loadingText {
+  font-size: 0.92rem;
+  color: #64748b;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* ================= REVIEWS DISPLAY ================= */
+.reviewsDisplay {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.controlsBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.navBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.navBtn:hover {
+  background: #fdf2f8;
+  border-color: #fbcfe8;
+  color: #be185d;
+  transform: scale(1.05);
+}
+
+.counterText {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+/* Review Card */
+.singleReviewCard {
+  width: 100%;
+  background: #fdfafb;
+  border: 1px solid #fce7f3;
+  border-radius: 20px;
+  padding: 24px 28px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 640px) {
+  .singleReviewCard {
+    padding: 18px 16px;
+  }
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.authorMeta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.authorPhoto {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.authorAvatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #be185d;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.1rem;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.authorName {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.reviewTime {
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
+
+.reviewCardRating {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+@media (max-width: 640px) {
+  .reviewCardRating {
+    align-items: flex-start;
+  }
+}
+
+.starsRow {
+  display: flex;
+  gap: 2px;
+}
+
+.starFilled {
+  color: #f59e0b;
+  fill: #f59e0b;
+}
+
+.starEmpty {
+  color: #e2e8f0;
+}
+
+.verifiedTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #15803d;
+  background: #dcfce7;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.reviewText {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.6;
+  color: #374151;
+  font-style: italic;
+  white-space: pre-line;
+}
+
+.dotsRow {
+  display: flex;
+  align-items: center;
   gap: 6px;
-  flex-wrap: nowrap;
-  max-width: 100%;
+  margin-top: 18px;
 }
 
 .dot {
-  width: 7px;
-  height: 7px;
-  flex-shrink: 0;
-  border-radius: 9999px;
-  background-color: #fce7f3;
-  border: 1px solid #fbcfe8;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  border: none;
   cursor: pointer;
   padding: 0;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.dot:hover {
-  background-color: #f472b6;
-  transform: scale(1.2);
+  transition: all 0.2s ease;
 }
 
 .activeDot {
   width: 22px;
-  flex-shrink: 0;
-  background-color: #ff2d6c;
-  border-color: #ff2d6c;
-  box-shadow: 0 2px 10px rgba(255, 45, 108, 0.35);
+  border-radius: 999px;
+  background: #be185d;
 }
 
-.counterText {
-  font-family: "Plus Jakarta Sans", var(--font-sans), sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  color: #9ca3af;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-/* ================= CAROUSEL =================
-   All sizing variables live here so the slide math AND the
-   arrow positions use the same numbers. */
-.carouselContainer {
-  --gap: 32px;          /* space between cards */
-  --visible: 3;         /* cards visible at once */
-  --lead: 1;            /* cards shown before the active one */
-  --edge: 96px;         /* side margin of the clipping viewport */
-  --side-scale: 0.84;   /* size of the unfocused side cards */
-  --arrow: 46px;        /* arrow button size */
-  --arrow-gap: 14px;    /* gap between arrow and card (negative = overlap) */
-
-  /* width of one card, measured against this container */
-  --card-w: calc(
-    (100% - 2 * var(--edge) - (var(--visible) - 1) * var(--gap)) / var(--visible)
-  );
-
-  /* distance from the container edge to the arrow, so it sits
-     just outside the VISIBLE edge of the shrunken side card */
-  --arrow-offset: max(
-    8px,
-    calc(
-      var(--edge) + (1 - var(--side-scale)) * var(--card-w) -
-        var(--arrow) - var(--arrow-gap)
-    )
-  );
-
-  width: 100%;
-  max-width: 1500px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Clips the sliding track */
-.viewport {
-  flex: 1;
-  min-width: 0;
-  margin-inline: var(--edge);
-  overflow: hidden;
-  padding: 14px 0 50px 0; /* room for shadows + hanging quote marks */
-}
-
-.cardsTrack {
-  display: flex;
-  align-items: stretch; /* equal height cards */
-  gap: var(--gap);
-  width: 100%;
-  will-change: transform;
-  transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
-  transform: translateX(
-    calc(
-      -1 * (var(--active) - var(--lead)) *
-        (((100% - (var(--visible) - 1) * var(--gap)) / var(--visible)) + var(--gap))
-    )
-  );
-}
-
-/* No animation at all during the silent infinite-loop jump */
-.noAnim,
-.noAnim .card,
-.noAnim .quoteMark {
-  transition: none;
-}
-
-/* ================= CARDS =================
-   Every card has the same layout width + height.
-   Focus is created visually with scale, opacity and blur. */
-.card {
-  flex: 0 0 calc((100% - (var(--visible) - 1) * var(--gap)) / var(--visible));
-  min-height: 300px;
-  background: #ffffff;
-  border-radius: 22px;
-  padding: 36px 32px 40px 32px;
-  position: relative;
+/* ================= UNAVAILABLE STATE (GENUINE FALLBACK) ================= */
+.unavailableContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-align: center;
-  box-sizing: border-box;
-  will-change: transform, opacity;
-  transition:
-    transform 0.8s cubic-bezier(0.65, 0, 0.35, 1),
-    opacity 0.8s ease,
-    filter 0.8s ease,
-    box-shadow 0.8s ease;
+  padding: 28px 16px;
+  max-width: 480px;
 }
 
-/* ---- Focused (center) card ---- */
-.activeCard {
-  transform: scale(1);
-  opacity: 1;
-  filter: none;
-  z-index: 3;
-  box-shadow: 0 18px 45px rgba(225, 29, 72, 0.12), 0 4px 18px rgba(0, 0, 0, 0.04);
-}
-
-/* ---- Unfocused side cards: smaller, faded, soft ---- */
-.inactiveCard {
-  opacity: 0.55;
-  filter: blur(1.2px);
-  cursor: pointer;
-  z-index: 1;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.03);
-}
-
-/* shrink toward the center card so the gaps stay tidy */
-.leftCard {
-  transform: scale(var(--side-scale));
-  transform-origin: right center;
-}
-
-.rightCard {
-  transform: scale(var(--side-scale));
-  transform-origin: left center;
-}
-
-.inactiveCard:hover {
-  opacity: 0.85;
-  filter: blur(0);
-}
-
-.inactiveCard .authorName {
-  color: #52525b;
-}
-
-/* ================= CARD CONTENT ================= */
-.starsRow {
+.unavailableIconCircle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #fdf2f8;
+  border: 1px solid #fbcfe8;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
   margin-bottom: 16px;
 }
 
-.starIcon {
-  flex-shrink: 0;
-}
-
-.starCenterFilled {
-  fill: #ff2d6c;
-  stroke: #ff2d6c;
-}
-
-.starSideFilled {
-  fill: #ff809f;
-  stroke: #ff809f;
-}
-
-.starEmpty {
-  fill: #e5e7eb;
-  stroke: #e5e7eb;
-}
-
-.cardHeadline {
-  font-family: "Plus Jakarta Sans", var(--font-sans), sans-serif;
-  font-size: 16.5px;
+.unavailableTitle {
+  margin: 0 0 8px 0;
+  font-size: 1.05rem;
   font-weight: 700;
-  color: #18181b;
-  margin: 0 0 12px 0;
-  line-height: 1.35;
-  text-align: center;
+  color: #1f2937;
 }
 
-.cardQuote {
-  font-family: "Plus Jakarta Sans", var(--font-sans), sans-serif;
-  font-size: 14.5px;
-  line-height: 1.65;
-  color: #4b5563;
-  margin: 0 0 22px 0;
-  flex-grow: 1;
-  text-align: center;
+.unavailableSubtitle {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #64748b;
+  line-height: 1.5;
 }
 
-.authorName {
-  font-family: "Plus Jakarta Sans", var(--font-sans), sans-serif;
-  font-size: 13.5px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #18181b;
-  margin-top: auto;
-}
-
-/* ================= HANGING QUOTATION MARKS ================= */
-.quoteMark {
-  position: absolute;
-  pointer-events: none;
-  user-select: none;
-  z-index: 10;
+/* ================= ACTION ROW & BUTTON ================= */
+.actionRow {
+  margin-top: 28px;
+  width: 100%;
   display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.quoteImg {
-  display: block;
-  height: 48px;
-  width: auto;
-  object-fit: contain;
-}
-
-.quoteMarkRight {
-  right: 28px;
-  bottom: -22px;
-  opacity: 0.5;
-  transition: opacity 0.8s ease;
-}
-
-.quoteMarkRight .quoteImg {
-  height: 38px;
-}
-
-.quoteMarkCenter {
-  bottom: -26px;
-  right: 28px;
-  opacity: 1;
-  filter: drop-shadow(0 4px 10px rgba(255, 0, 85, 0.28));
-}
-
-.quoteMarkCenter .quoteImg {
-  height: 50px;
-}
-
-/* ================= NAVIGATION BUTTONS =================
-   Placed just outside the visible edge of the side cards.
-   top: 50% minus 18px lines them up with the card centre
-   (the viewport has 14px top / 50px bottom padding). */
-.navBtn {
-  position: absolute;
-  top: calc(50% - 18px);
-  transform: translateY(-50%);
-  width: var(--arrow);
-  height: var(--arrow);
-  border-radius: 50%;
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-  color: #4b5563;
-  display: flex;
-  align-items: center;
   justify-content: center;
-  cursor: pointer;
-  z-index: 5;
-  transition: all 0.25s ease;
 }
 
-.navBtn:hover {
+.viewGoogleBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 28px;
   background: #ffffff;
-  color: #ff2d6c;
-  transform: translateY(-50%) scale(1.08);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  color: #1f2937;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 999px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
 }
 
-.navBtnLeft {
-  left: var(--arrow-offset);
-}
-
-.navBtnRight {
-  right: var(--arrow-offset);
-}
-
-/* ================= RESPONSIVE ================= */
-@media (max-width: 1440px) {
-  .whiteCardWrapper {
-    height: auto;
-    min-height: 520px;
-    padding: 48px 0;
-    border-radius: 52px;
-  }
-
-  .carouselContainer {
-    --edge: 80px;
-    --gap: 28px;
-  }
-}
-
-@media (max-width: 1100px) {
-  .container {
-    padding-inline: 20px;
-  }
-
-  .whiteCardWrapper {
-    min-height: 0;
-    padding: 40px 0 28px;
-    border-radius: 44px;
-  }
-
-  .carouselContainer {
-    --edge: 70px;
-    --gap: 18px;
-  }
-
-  .card {
-    padding: 30px 24px 34px 24px;
-  }
-}
-
-/* Tablet/mobile: one card at a time, still sliding */
-@media (max-width: 860px) {
-  .sectionWrapper {
-    padding: 50px 0 60px 0;
-  }
-
-  .whiteCardWrapper {
-    border-radius: 36px;
-  }
-
-  .carouselContainer {
-    --visible: 1;
-    --lead: 0;
-    --gap: 24px;
-    --edge: 64px;
-  }
-
-  /* no side cards here, so sit the arrows in the side margin */
-  .navBtnLeft {
-    left: 8px;
-  }
-
-  .navBtnRight {
-    right: 8px;
-  }
-
-  .mainTitle {
-    font-size: 32px;
-  }
-}
-
-@media (max-width: 540px) {
-  .sectionWrapper {
-    padding: 44px 0 56px 0;
-  }
-
-  .container {
-    padding-inline: 16px;
-  }
-
-  .sectionHeader {
-    margin-bottom: 28px;
-  }
-
-  .whiteCardWrapper {
-    border-radius: 28px;
-    padding: 28px 0 20px;
-  }
-
-  .carouselContainer {
-    --edge: 14px;
-    --arrow: 38px;
-  }
-
-  .card {
-    padding: 30px 22px 34px 22px;
-    border-radius: 18px;
-  }
-
-  .mainTitle {
-    font-size: 27px;
-  }
-
-  .subtitle {
-    font-size: 15px;
-  }
-
-  .cardHeadline {
-    font-size: 15.5px;
-  }
-
-  .cardQuote {
-    font-size: 14px;
-  }
-
-  .navBtnLeft {
-    left: 4px;
-  }
-
-  .navBtnRight {
-    right: 4px;
-  }
-
-  .dotsWrapper {
-    gap: 5px;
-  }
-
-  .dot {
-    width: 6px;
-    height: 6px;
-  }
-
-  .activeDot {
-    width: 18px;
-  }
-}
-
-/* Respect users who prefer less motion */
-@media (prefers-reduced-motion: reduce) {
-  .cardsTrack,
-  .card,
-  .quoteMarkRight {
-    transition-duration: 0.01s;
-  }
+.viewGoogleBtn:hover {
+  background: #fdf2f8;
+  border-color: #f472b6;
+  color: #be185d;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(190, 24, 93, 0.15);
 }
