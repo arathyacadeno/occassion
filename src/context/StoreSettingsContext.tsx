@@ -37,6 +37,7 @@ const defaultSettings: StoreSettings = {
   store_address: "Mavoor Road, Kozhikode (Calicut), Kerala 673004",
   opening_hours: "Monday — Saturday: 09:00 AM — 6:30 PM\nSunday: 08:00 AM — 10:00 AM",
   currency_symbol: "₹",
+  show_ifa_membership: "true",
 };
 
 interface StoreSettingsContextType {

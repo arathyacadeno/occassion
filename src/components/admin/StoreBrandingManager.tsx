@@ -18,6 +18,7 @@ import {
   Sparkles,
   Eye,
   Save,
+  Award,
 } from "lucide-react";
 import { useStoreSettings } from "@/context/StoreSettingsContext";
 
@@ -39,6 +40,7 @@ export default function StoreBrandingManager() {
     store_email: "",
     store_address: "",
     opening_hours: "",
+    show_ifa_membership: "true",
   });
 
   const [saving, setSaving] = useState(false);
@@ -88,6 +90,7 @@ export default function StoreBrandingManager() {
         store_email: settings.store_email || "",
         store_address: settings.store_address || "",
         opening_hours: settings.opening_hours || "",
+        show_ifa_membership: settings.show_ifa_membership !== "false" ? "true" : "false",
       });
     }
   }, [settings]);
@@ -870,6 +873,49 @@ export default function StoreBrandingManager() {
                   }}
                 />
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Section 4: Industry Associations & Trust */}
+        <div style={{ background: "#ffffff", borderRadius: 16, border: "1px solid #e2e8f0", padding: 24, boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
+            <Award size={20} color="#be185d" />
+            <h3 style={{ margin: 0, fontSize: "1.08rem", fontWeight: 700, color: "#1e293b" }}>
+              4. Industry Memberships &amp; Accreditations
+            </h3>
+          </div>
+
+          <div style={{ background: "#f8fafc", borderRadius: 12, border: "1px solid #e2e8f0", padding: 20 }}>
+            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                <div style={{ width: 140, height: 50, background: "#fff", border: "1px solid #cbd5e1", borderRadius: 8, padding: "4px 8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <img
+                    src="/images/ifa-member-logo.png"
+                    alt="India Florist Association"
+                    style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
+                  />
+                </div>
+                <div>
+                  <h4 style={{ margin: "0 0 4px 0", fontSize: "0.95rem", fontWeight: 700, color: "#0f172a" }}>
+                    India Florist Association (IFA) Member
+                  </h4>
+                  <p style={{ margin: 0, fontSize: "0.82rem", color: "#64748b", maxWidth: 520 }}>
+                    Highlight Occasions as an official accredited member of the India Florist Association in the website footer.
+                  </p>
+                </div>
+              </div>
+
+              <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", background: "#fff", padding: "8px 16px", borderRadius: 8, border: "1px solid #cbd5e1", fontWeight: 600, fontSize: "0.88rem", color: "#334155" }}>
+                <input
+                  type="checkbox"
+                  name="show_ifa_membership"
+                  checked={form.show_ifa_membership !== "false"}
+                  onChange={(e) => setForm({ ...form, show_ifa_membership: e.target.checked ? "true" : "false" })}
+                  style={{ width: 18, height: 18, accentColor: "#be185d", cursor: "pointer" }}
+                />
+                Show Badge in Footer
+              </label>
             </div>
           </div>
         </div>
