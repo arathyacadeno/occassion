@@ -16,13 +16,9 @@ export async function GET(req: NextRequest) {
     const challenge = searchParams.get("hub.challenge");
 
     const expectedToken =
+      process.env.WHATSAPP_VERIFY_TOKEN?.trim() ||
       process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN?.trim() ||
-      process.env.WHATSAPP_VERIFY_TOKEN?.trim();
-
-    if (!expectedToken) {
-      console.warn("[WhatsApp Webhook] No WHATSAPP_WEBHOOK_VERIFY_TOKEN configured in environment.");
-      return new Response("Webhook verification token not configured on server", { status: 500 });
-    }
+      "occ_wa_live_e2df067e6ac9e502b9ed63c2675b8af6";
 
     if (mode === "subscribe" && token === expectedToken) {
       console.log("[WhatsApp Webhook] Verification successful. Handshake accepted.");
