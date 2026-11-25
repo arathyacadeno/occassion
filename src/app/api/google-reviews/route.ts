@@ -26,8 +26,8 @@ export interface GoogleReviewsApiResponse {
 }
 
 // Authoritative Business References for Occasions Calicut
-export const AUTHORITATIVE_PLACE_ID = "ChIJ78EY0zBZozsRz85plGQpYsE";
-export const AUTHORITATIVE_REVIEW_URL =
+const AUTHORITATIVE_PLACE_ID = "ChIJ78EY0zBZozsRz85plGQpYsE";
+const AUTHORITATIVE_REVIEW_URL =
   "https://www.google.com/search?q=occasions+calicut#lrd=0x3ba65930d81cc1ef:0xc1726494649efc9d,1";
 
 // Server-side in-memory cache to prevent exceeding Google Places API quotas

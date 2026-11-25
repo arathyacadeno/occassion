@@ -556,8 +556,8 @@ export async function POST(request: Request) {
         createdAt: now,
       });
 
-      // For COD orders, order is confirmed immediately upon placement — notify customer
-      if (isCod && customerPhone) {
+      // Send automated WhatsApp notification to customer upon successful order creation
+      if (customerPhone) {
         sendCustomerOrderNotification({
           orderId,
           customerName,
@@ -570,11 +570,11 @@ export async function POST(request: Request) {
           })),
           finalAmount,
           orderStatus: "confirmed",
-          paymentStatus: "pending",
+          paymentStatus: isCod ? "pending" : "pending",
           deliveryDate: delivery?.deliveryDate,
           deliveryTime: delivery?.deliveryTime,
           deliveryAddress: `${delivery?.houseBuilding || delivery?.house || ""}, ${delivery?.street || ""}, ${delivery?.city || "Kozhikode"}`,
-        }).catch((err) => console.warn("[WhatsApp] Customer COD notification error:", err));
+        }).catch((err) => console.warn("[WhatsApp] Customer notification error on order placement:", err));
       }
     } catch (wpErr) {
       console.warn("WhatsApp notification error on order create:", wpErr);
