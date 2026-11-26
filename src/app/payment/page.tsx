@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
@@ -20,6 +20,7 @@ import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import Script from "next/script";
 import { loadRazorpayScript } from "@/components/RazorpayPayButton";
+import { generateUpiQrDataUrl } from "@/lib/payment/qr";
 import {
   Smartphone,
   CreditCard,
@@ -170,7 +171,7 @@ export default function SinglePageCheckoutPayment() {
   const [cardCvv, setCardCvv] = useState("");
   const [upiId, setUpiId] = useState("");
   const [selectedBank, setSelectedBank] = useState("HDFC Bank");
-  const [showQrCode, setShowQrCode] = useState(false);
+  const [showQrCode, setShowQrCode] = useState(true);
 
   // Coupon State
   const [couponCode, setCouponCode] = useState("");
@@ -507,6 +508,25 @@ export default function SinglePageCheckoutPayment() {
   const deliveryCharge = baseDeliveryCharge + customDeliveryFee;
   const finalTotal = Math.max(0, subtotal - discountAmount) + deliveryCharge;
 
+  // Dynamic UPI Payment QR Code generated for the actual order total
+  const upiQrDataUrl = useMemo(() => {
+    try {
+      const merchantUpiId =
+        process.env.NEXT_PUBLIC_MERCHANT_UPI_ID ||
+        process.env.NEXT_PUBLIC_UPI_ID ||
+        "8606464700@okbizaxis";
+      return generateUpiQrDataUrl({
+        upiId: merchantUpiId,
+        payeeName: "Occasions Flowers & Gifts",
+        amount: finalTotal > 0 ? finalTotal : 1,
+        transactionNote: "Occasions Floral Order",
+      });
+    } catch (qrErr) {
+      console.warn("UPI QR generation error:", qrErr);
+      return "";
+    }
+  }, [finalTotal]);
+
   // Format Card Number into groups of 4
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value.replace(/\D/g, "").slice(0, 16);
@@ -790,6 +810,7 @@ export default function SinglePageCheckoutPayment() {
           name: senderName || receiverName,
           email: senderEmail,
           contact: (senderMobile || receiverMobile || "").replace(/\D/g, "").slice(-10),
+          method: activeTab === "upi" ? "upi" : undefined,
         },
         theme: {
           color: "#e11d48",
@@ -1641,11 +1662,11 @@ export default function SinglePageCheckoutPayment() {
                     <h3 className={styles.upiBoxHeader}>Pay by any UPI App</h3>
                     <div className={styles.upiInterfaceWrapper}>
                       <div className={styles.qrBox}>
-                        {showQrCode ? (
+                        {showQrCode && upiQrDataUrl ? (
                           <img
-                            src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg"
-                            alt="Scan QR"
-                            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                            src={upiQrDataUrl}
+                            alt={`Scan to pay ₹${finalTotal.toFixed(2)} via UPI`}
+                            style={{ width: "100%", height: "100%", objectFit: "contain" }}
                           />
                         ) : (
                           <div className={styles.qrImagePlaceholder}>
