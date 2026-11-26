@@ -99,12 +99,14 @@ export async function POST(req: NextRequest) {
       };
     }
 
-    const result = await sendWhatsAppToOwner(payload);
+    const result = await sendWhatsAppToOwner(payload, {
+      forceRetry: Boolean(body.forceRetry),
+    });
 
     const adminNumber =
       process.env.ADMIN_WHATSAPP_NUMBER?.trim() ||
       process.env.WHATSAPP_OWNER_PHONE?.trim() ||
-      "919447446008";
+      "";
 
     if (!result.success) {
       return NextResponse.json(

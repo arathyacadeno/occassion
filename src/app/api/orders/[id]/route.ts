@@ -234,6 +234,19 @@ export async function PATCH(
       WHERE id = ${order.id}
     `;
 
+    // Dispatch automated WhatsApp status notification to customer
+    if (newStatus !== order.order_status && newStatus !== "pending") {
+      try {
+        const { sendOrderStatusWhatsAppNotification } = await import("@/lib/whatsapp/service");
+        sendOrderStatusWhatsAppNotification({
+          orderId: cleanId,
+          status: newStatus as any,
+        }).catch((err) => console.warn("[WhatsApp] Status update notification notice:", err));
+      } catch (wpErr) {
+        console.warn("[WhatsApp] Could not trigger status update notification:", wpErr);
+      }
+    }
+
     return NextResponse.json({
       success: true,
       message: `Order fulfillment status updated to ${newStatus}`,

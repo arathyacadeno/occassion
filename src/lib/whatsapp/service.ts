@@ -1,7 +1,7 @@
 /**
  * WhatsApp Business Notification Service
  * Integrates Meta / Facebook WhatsApp Cloud API (v25.0) to send automated order confirmation
- * messages to customers and website owner / admin.
+ * and status updates to customers and website owner / admin.
  */
 
 export interface OrderNotificationItem {
@@ -54,6 +54,24 @@ export interface CustomerOrderNotificationPayload {
   createdAt?: string;
 }
 
+export type OrderFulfillmentStatus =
+  | "pending"
+  | "confirmed"
+  | "preparing"
+  | "out_for_delivery"
+  | "delivered"
+  | "cancelled";
+
+export interface OrderStatusNotificationPayload {
+  orderId: string;
+  status: OrderFulfillmentStatus;
+  customerName?: string;
+  customerPhone?: string;
+  deliveryDate?: string;
+  deliveryTime?: string;
+  deliveryAddress?: string;
+}
+
 export interface WhatsAppSendResult {
   success: boolean;
   provider: "meta_cloud_api" | "direct_link";
@@ -78,13 +96,24 @@ export interface SendGenericMessagePayload {
   };
 }
 
+export interface WhatsAppHistoryEntry {
+  type: "order_confirmation" | "status_update" | "retry" | "admin_alert";
+  status?: string;
+  messageId?: string;
+  deliveryStatus?: "sent" | "delivered" | "read" | "failed";
+  timestamp: string;
+  recipient: string;
+  error?: string;
+  success: boolean;
+}
+
 /**
  * Normalizes phone number into international format without leading '+' or symbols.
- * Defaults Indian 10-digit numbers (like 9447446008) to '919447446008'.
+ * Returns empty string if no valid digits are found.
  */
 export function normalizeWhatsAppNumber(phone?: string): string {
   const clean = (phone || "").replace(/\D/g, "");
-  if (!clean) return "919447446008";
+  if (!clean) return "";
   if (clean.length === 10) return `91${clean}`;
   if (clean.length === 12 && clean.startsWith("91")) return clean;
   if (clean.length === 11 && clean.startsWith("0")) return `91${clean.slice(1)}`;
@@ -133,7 +162,6 @@ export function buildOrderWhatsAppMessage(data: OrderNotificationPayload): strin
         minute: "2-digit",
       });
 
-  // Items List
   const itemsText =
     data.items && data.items.length > 0
       ? data.items
@@ -145,7 +173,6 @@ export function buildOrderWhatsAppMessage(data: OrderNotificationPayload): strin
           .join("\n")
       : "1. Fresh Floral Bouquet";
 
-  // Location string parts
   const addressLines: string[] = [];
   if (data.receiverName) addressLines.push(`• *Recipient Name:* ${data.receiverName}`);
   if (data.receiverPhone) addressLines.push(`• *Recipient Phone:* ${data.receiverPhone}`);
@@ -246,35 +273,145 @@ _Occasions Florist & Celebration Atelier — Mavoor Road, Calicut_`;
 }
 
 /**
- * Ensures the `whatsapp_customer_notified` column exists on the `orders` table
- * for duplicate notification prevention.
+ * Formats status update messages (Preparing, Out for Delivery, Delivered, Cancelled)
  */
-let orderNotifiedColumnChecked = false;
-export async function ensureOrderNotifiedColumn() {
-  if (orderNotifiedColumnChecked) return;
-  try {
-    const { sql } = await import("@/lib/db/neon");
-    await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS whatsapp_customer_notified INT DEFAULT 0;`;
-    orderNotifiedColumnChecked = true;
-  } catch (err) {
-    console.warn("[WhatsApp Service] Order notified column ensure warning:", err);
+export function buildOrderStatusWhatsAppMessage(data: OrderStatusNotificationPayload): string {
+  const cleanOrderId = String(data.orderId || "").replace(/^#+/, "");
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://occasionswithflowers.com";
+  const customerName = data.customerName || "Valued Customer";
+
+  switch (data.status) {
+    case "preparing":
+      return `🌸 *Artisanal Crafting Underway — Occasions* 🌸
+
+Dear *${customerName}*,
+Our floral artisans in Calicut have begun carefully handcrafting and arranging fresh flowers for your order *#${cleanOrderId}*.
+
+📍 *Track Progress:*
+${appUrl}/track-order?id=${cleanOrderId}
+
+📞 *Questions or Special Notes?*
+Call us at +91 8606464700 or reply directly to this chat.
+
+_Occasions – Do it with flowers_`;
+
+    case "out_for_delivery":
+      return `🚚 *Out for Delivery — Occasions Florist* 🚚
+
+Dear *${customerName}*,
+Exciting news! Your flower order *#${cleanOrderId}* is now out for delivery with our delivery specialist${data.deliveryAddress ? ` to *${data.deliveryAddress}*` : ""}.
+${data.deliveryTime ? `⏱️ *Estimated Slot:* ${data.deliveryTime}\n` : ""}
+📍 *Live Order Tracking:*
+${appUrl}/track-order?id=${cleanOrderId}
+
+_Occasions – Fresh Flowers Delivered with Love_`;
+
+    case "delivered":
+      return `💐 *Delivered with Love — Occasions Florist* 💐
+
+Dear *${customerName}*,
+Your celebration order *#${cleanOrderId}* has been successfully delivered! We hope it brings immense joy and memorable smiles to your special occasion.
+
+🌸 Thank you for choosing *Occasions – Do it with flowers*!
+⭐ Have feedback or loved your arrangement? We'd love to hear from you:
+${appUrl}#testimonials
+
+_Occasions Florist & Celebration Atelier — Calicut_`;
+
+    case "cancelled":
+      return `ℹ️ *Order Update — Occasions Florist* ℹ️
+
+Dear *${customerName}*,
+Your order *#${cleanOrderId}* has been cancelled. If you did not request this cancellation or have any questions, please contact our team immediately at +91 8606464700.
+
+_Occasions Calicut_`;
+
+    case "confirmed":
+    default:
+      return `🌸 *Order Confirmed — Occasions Florist* 🌸
+
+Dear *${customerName}*,
+Your order *#${cleanOrderId}* is confirmed! We will prepare your arrangement fresh for delivery${data.deliveryDate ? ` on *${data.deliveryDate}*` : ""}.
+
+📍 *Track Order:*
+${appUrl}/track-order?id=${cleanOrderId}
+
+_Occasions – Do it with flowers_`;
   }
 }
 
 /**
- * Marks order as notified in Neon PostgreSQL to prevent duplicate notifications
+ * Ensures all WhatsApp columns exist on the orders table in Neon PostgreSQL
  */
-export async function markOrderNotified(orderId: string) {
+let columnsChecked = false;
+export async function ensureWhatsAppColumns() {
+  if (columnsChecked) return;
   try {
+    const { sql } = await import("@/lib/db/neon");
+    await sql`
+      ALTER TABLE orders 
+        ADD COLUMN IF NOT EXISTS whatsapp_customer_notified INT DEFAULT 0,
+        ADD COLUMN IF NOT EXISTS whatsapp_status VARCHAR(50) DEFAULT 'pending',
+        ADD COLUMN IF NOT EXISTS whatsapp_message_id VARCHAR(255),
+        ADD COLUMN IF NOT EXISTS whatsapp_last_error TEXT,
+        ADD COLUMN IF NOT EXISTS whatsapp_last_status_at TIMESTAMP WITH TIME ZONE,
+        ADD COLUMN IF NOT EXISTS whatsapp_history JSONB DEFAULT '[]'::jsonb;
+    `;
+    columnsChecked = true;
+  } catch (err) {
+    console.warn("[WhatsApp Service] ensureWhatsAppColumns notice:", err);
+  }
+}
+
+/**
+ * Records a WhatsApp event in Neon PostgreSQL for an order
+ */
+export async function recordWhatsAppEvent(
+  orderId: string,
+  entry: WhatsAppHistoryEntry
+) {
+  try {
+    await ensureWhatsAppColumns();
+    const cleanId = String(orderId || "").replace(/^#+/, "");
+    const { sql } = await import("@/lib/db/neon");
+
+    const entryJson = JSON.stringify([entry]);
+
+    await sql`
+      UPDATE orders 
+      SET 
+        whatsapp_status = COALESCE(${entry.deliveryStatus || (entry.success ? "sent" : "failed")}, whatsapp_status),
+        whatsapp_message_id = COALESCE(${entry.messageId || null}, whatsapp_message_id),
+        whatsapp_last_error = ${entry.error || null},
+        whatsapp_last_status_at = NOW(),
+        whatsapp_customer_notified = CASE WHEN ${entry.success} THEN 1 ELSE whatsapp_customer_notified END,
+        whatsapp_history = COALESCE(whatsapp_history, '[]'::jsonb) || ${entryJson}::jsonb
+      WHERE id = ${cleanId} OR id = ${"#" + cleanId}
+    `;
+  } catch (err) {
+    console.warn("[WhatsApp Service] recordWhatsAppEvent warning:", err);
+  }
+}
+
+/**
+ * Marks order as notified in Neon PostgreSQL
+ */
+export async function markOrderNotified(orderId: string, messageId?: string) {
+  try {
+    await ensureWhatsAppColumns();
     const cleanId = String(orderId || "").replace(/^#+/, "");
     const { sql } = await import("@/lib/db/neon");
     await sql`
       UPDATE orders 
-      SET whatsapp_customer_notified = 1 
+      SET 
+        whatsapp_customer_notified = 1,
+        whatsapp_status = 'sent',
+        whatsapp_message_id = COALESCE(${messageId || null}, whatsapp_message_id),
+        whatsapp_last_status_at = NOW()
       WHERE id = ${cleanId} OR id = ${"#" + cleanId}
     `;
   } catch (err) {
-    console.warn("[WhatsApp Service] Could not update whatsapp_customer_notified status:", err);
+    console.warn("[WhatsApp Service] markOrderNotified warning:", err);
   }
 }
 
@@ -284,6 +421,7 @@ export async function markOrderNotified(orderId: string) {
 export async function fetchOrderForNotification(orderId: string): Promise<{
   adminPayload: OrderNotificationPayload;
   customerPayload: CustomerOrderNotificationPayload;
+  rawOrder: any;
 } | null> {
   try {
     const cleanId = String(orderId || "").trim().replace(/^#+/, "");
@@ -371,7 +509,7 @@ export async function fetchOrderForNotification(orderId: string): Promise<{
       createdAt: order.created_at,
     };
 
-    return { adminPayload, customerPayload };
+    return { adminPayload, customerPayload, rawOrder: order };
   } catch (err) {
     console.error("[WhatsApp Service] fetchOrderForNotification error:", err);
     return null;
@@ -387,6 +525,17 @@ export async function sendGenericWhatsAppMessage(
 ): Promise<WhatsAppSendResult> {
   const targetPhone = normalizeWhatsAppNumber(options.to);
   const messageText = options.message || "Hello from Occasions Flowers!";
+
+  if (!targetPhone || targetPhone.length < 10) {
+    return {
+      success: false,
+      provider: "direct_link",
+      whatsappUrl: "",
+      messageText,
+      error: `Invalid or missing recipient phone number: "${options.to || ""}"`,
+    };
+  }
+
   const whatsappUrl = `https://api.whatsapp.com/send?phone=${targetPhone}&text=${encodeURIComponent(
     messageText
   )}`;
@@ -413,7 +562,6 @@ export async function sendGenericWhatsAppMessage(
 
   const metaApiEndpoint = `https://graph.facebook.com/${apiVersion}/${phoneNumberId}/messages`;
 
-  // Build body (Template or Text)
   let requestBody: any;
   if (options.template) {
     const langCode =
@@ -445,7 +593,6 @@ export async function sendGenericWhatsAppMessage(
     };
   }
 
-  // Timeout handler with AbortController (12 seconds)
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 12000);
 
@@ -508,41 +655,167 @@ export async function sendGenericWhatsAppMessage(
 
 /**
  * Sends order notification to website owner / admin (ADMIN_WHATSAPP_NUMBER or WHATSAPP_OWNER_PHONE).
+ * Uses approved Utility template 'admin_new_order_alert' as the primary production notification.
+ * Includes deduplication check against database history to prevent duplicate alerts.
+ * Does not fall back to ordinary text messages or test templates per production rules.
  */
 export async function sendWhatsAppToOwner(
-  payload: OrderNotificationPayload
+  payload: OrderNotificationPayload,
+  options?: { forceRetry?: boolean }
 ): Promise<WhatsAppSendResult> {
-  const adminNumber =
+  const rawAdminNumber =
     process.env.ADMIN_WHATSAPP_NUMBER?.trim() ||
-    process.env.WHATSAPP_OWNER_PHONE?.trim() ||
-    "919447446008";
+    process.env.WHATSAPP_OWNER_PHONE?.trim();
 
-  const targetPhone = normalizeWhatsAppNumber(adminNumber);
+  if (!rawAdminNumber) {
+    const errorMsg =
+      "ADMIN_WHATSAPP_NUMBER or WHATSAPP_OWNER_PHONE environment variable is not configured. Admin WhatsApp alert aborted.";
+    console.error(`[WhatsApp Admin] ${errorMsg}`);
+    return {
+      success: false,
+      provider: "direct_link",
+      whatsappUrl: "",
+      messageText: "",
+      error: errorMsg,
+    };
+  }
+
+  const targetPhone = normalizeWhatsAppNumber(rawAdminNumber);
+  if (!targetPhone || targetPhone.length < 10) {
+    const errorMsg = `Invalid admin phone number configured: "${rawAdminNumber}".`;
+    console.error(`[WhatsApp Admin] ${errorMsg}`);
+    return {
+      success: false,
+      provider: "direct_link",
+      whatsappUrl: "",
+      messageText: "",
+      error: errorMsg,
+    };
+  }
+
+  const cleanOrderId = String(payload.orderId || "").replace(/^#+/, "");
   const messageText = buildOrderWhatsAppMessage(payload);
+  const whatsappUrl = `https://api.whatsapp.com/send?phone=${targetPhone}&text=${encodeURIComponent(
+    messageText
+  )}`;
 
-  return await sendGenericWhatsAppMessage({
+  // Duplicate prevention check in database (unless forceRetry is specified)
+  if (!options?.forceRetry && cleanOrderId) {
+    try {
+      await ensureWhatsAppColumns();
+      const { sql } = await import("@/lib/db/neon");
+      const existing = await sql`
+        SELECT whatsapp_history FROM orders 
+        WHERE id = ${cleanOrderId} OR id = ${"#" + cleanOrderId}
+        LIMIT 1
+      `;
+      if (existing && existing.length > 0) {
+        const history = (existing[0].whatsapp_history || []) as WhatsAppHistoryEntry[];
+        const alreadyNotified = history.some(
+          (h) => h.type === "admin_alert" && h.success === true
+        );
+        if (alreadyNotified) {
+          console.log(
+            `[WhatsApp Admin] Order #${cleanOrderId} admin notification already dispatched. Preventing duplicate.`
+          );
+          return {
+            success: true,
+            provider: "meta_cloud_api",
+            whatsappUrl,
+            messageText,
+          };
+        }
+      }
+    } catch (dbErr) {
+      console.warn("[WhatsApp Admin] DB dedup check notice:", dbErr);
+    }
+  }
+
+  // Primary production dispatch using approved Utility template
+  const templateName =
+    process.env.ADMIN_ORDER_TEMPLATE_NAME?.trim() || "admin_new_order_alert";
+  const langCode = process.env.WHATSAPP_TEMPLATE_LANG?.trim() || "en";
+
+  // Build items summary: e.g. "Pink Roses (x1), Orchids (x2)"
+  const itemsSummary =
+    (payload.items || [])
+      .map((it) => `${it.name} (x${it.quantity || 1})`)
+      .join(", ")
+      .slice(0, 300) || "Floral Order";
+
+  const isPaid = payload.paymentStatus?.toLowerCase() === "paid";
+  const paymentBadge = isPaid ? "Paid Online" : "COD / Pending";
+  const totalAmountFormatted = `₹${payload.finalAmount.toLocaleString("en-IN")} (${paymentBadge})`;
+
+  // Delivery details: slot + date + address
+  const slotStr = payload.deliveryTime ? ` [${payload.deliveryTime}]` : "";
+  const dateStr = payload.deliveryDate ? `${payload.deliveryDate}${slotStr}, ` : "";
+  const addressSummary = [
+    payload.houseBuilding,
+    payload.street,
+    payload.landmark,
+    payload.city || "Calicut",
+    payload.pinCode,
+  ]
+    .filter(Boolean)
+    .join(", ");
+  const deliveryInfo = `${dateStr}${addressSummary || "Calicut"}`.slice(0, 300);
+
+  const result = await sendGenericWhatsAppMessage({
     to: targetPhone,
     message: messageText,
+    template: {
+      name: templateName,
+      language: { code: langCode },
+      components: [
+        {
+          type: "body",
+          parameters: [
+            { type: "text", text: `#${cleanOrderId}` },
+            { type: "text", text: payload.customerName || "Customer" },
+            { type: "text", text: payload.customerPhone || "Not provided" },
+            { type: "text", text: itemsSummary },
+            { type: "text", text: totalAmountFormatted },
+            { type: "text", text: deliveryInfo },
+          ],
+        },
+      ],
+    },
   });
+
+  if (!result.success) {
+    console.error(
+      `[WhatsApp Admin Alert Failed] Could not dispatch template "${templateName}" to ${maskPhoneInLog(
+        targetPhone
+      )}: ${result.error}. (Ordinary text / hello_world fallback suppressed per production policy)`
+    );
+  }
+
+  // Record admin alert in database
+  await recordWhatsAppEvent(payload.orderId, {
+    type: "admin_alert",
+    recipient: targetPhone,
+    messageId: result.messageId,
+    deliveryStatus: result.success ? "sent" : "failed",
+    timestamp: new Date().toISOString(),
+    error: result.error,
+    success: result.success,
+  });
+
+  return result;
 }
 
 /**
  * Sends automated WhatsApp order confirmation to the customer upon successful order placement
  * or payment confirmation.
- * 
- * Features:
- * - Duplicate event prevention (tracks whatsapp_customer_notified in Neon PostgreSQL)
- * - Meta WhatsApp Template API support (when WHATSAPP_ORDER_TEMPLATE_NAME is configured)
- * - Graceful fallback to rich text messaging & direct wa.me link
- * - Safe phone number normalization for Indian (+91) and international numbers
  */
 export async function sendCustomerOrderNotification(
-  payload: CustomerOrderNotificationPayload
+  payload: CustomerOrderNotificationPayload,
+  options?: { forceRetry?: boolean }
 ): Promise<CustomerNotificationResult> {
   const cleanOrderId = String(payload.orderId || "").replace(/^#+/, "");
   const rawCustomerPhone = (payload.customerPhone || "").trim();
 
-  // Validate phone number
   if (!rawCustomerPhone || rawCustomerPhone.replace(/\D/g, "").length < 10) {
     console.warn(
       `[WhatsApp Customer] No valid phone number for order #${cleanOrderId}. Skipping customer WhatsApp.`
@@ -562,35 +835,36 @@ export async function sendCustomerOrderNotification(
     messageText
   )}`;
 
-  // 1. Duplicate check in database
-  try {
-    await ensureOrderNotifiedColumn();
-    const { sql } = await import("@/lib/db/neon");
-    const existing = await sql`
-      SELECT whatsapp_customer_notified FROM orders 
-      WHERE id = ${cleanOrderId} OR id = ${"#" + cleanOrderId} 
-      LIMIT 1
-    `;
-    if (existing[0]?.whatsapp_customer_notified === 1) {
-      console.log(
-        `[WhatsApp Customer] Order #${cleanOrderId} already notified via WhatsApp. Preventing duplicate dispatch.`
-      );
-      return {
-        success: true,
-        alreadySent: true,
-        provider: "meta_cloud_api",
-        whatsappUrl,
-        messageText,
-      };
+  // Duplicate check in database (unless forceRetry is requested by admin)
+  if (!options?.forceRetry) {
+    try {
+      await ensureWhatsAppColumns();
+      const { sql } = await import("@/lib/db/neon");
+      const existing = await sql`
+        SELECT whatsapp_customer_notified FROM orders 
+        WHERE id = ${cleanOrderId} OR id = ${"#" + cleanOrderId} 
+        LIMIT 1
+      `;
+      if (existing[0]?.whatsapp_customer_notified === 1) {
+        console.log(
+          `[WhatsApp Customer] Order #${cleanOrderId} already notified via WhatsApp. Preventing duplicate dispatch.`
+        );
+        return {
+          success: true,
+          alreadySent: true,
+          provider: "meta_cloud_api",
+          whatsappUrl,
+          messageText,
+        };
+      }
+    } catch (dbErr) {
+      console.warn("[WhatsApp Customer] DB dedup check notice:", dbErr);
     }
-  } catch (dbErr) {
-    console.warn("[WhatsApp Customer] DB dedup check notice:", dbErr);
   }
 
   const templateName = process.env.WHATSAPP_ORDER_TEMPLATE_NAME?.trim();
   let result: WhatsAppSendResult;
 
-  // If a template is configured, attempt sending template
   if (templateName) {
     const itemsSummary = (payload.items || [])
       .map((it) => `${it.name} (x${it.quantity})`)
@@ -618,7 +892,6 @@ export async function sendCustomerOrderNotification(
       },
     });
 
-    // If template send failed, retry with direct formatted text message
     if (!result.success && result.provider === "meta_cloud_api") {
       console.warn(
         `[WhatsApp Customer] Template "${templateName}" failed (${result.error}). Retrying with formatted text message.`
@@ -629,17 +902,112 @@ export async function sendCustomerOrderNotification(
       });
     }
   } else {
-    // Direct formatted text message
     result = await sendGenericWhatsAppMessage({
       to: targetPhone,
       message: messageText,
     });
   }
 
-  if (result.success && result.provider === "meta_cloud_api") {
-    // Mark order as notified in Neon PostgreSQL
-    await markOrderNotified(cleanOrderId);
+  // Record customer notification event
+  await recordWhatsAppEvent(cleanOrderId, {
+    type: options?.forceRetry ? "retry" : "order_confirmation",
+    recipient: targetPhone,
+    messageId: result.messageId,
+    deliveryStatus: result.success ? "sent" : "failed",
+    timestamp: new Date().toISOString(),
+    error: result.error,
+    success: result.success,
+  });
+
+  return result;
+}
+
+/**
+ * Sends order fulfillment status update notification to the customer
+ * (e.g. Preparing, Out for Delivery, Delivered)
+ * Includes duplicate event prevention per status.
+ */
+export async function sendOrderStatusWhatsAppNotification(
+  payload: OrderStatusNotificationPayload
+): Promise<WhatsAppSendResult> {
+  const cleanOrderId = String(payload.orderId || "").replace(/^#+/, "");
+
+  // Fetch missing customer details if not supplied
+  let customerName = payload.customerName;
+  let customerPhone = payload.customerPhone;
+  let deliveryAddress = payload.deliveryAddress;
+  let deliveryTime = payload.deliveryTime;
+
+  if (!customerPhone) {
+    const fetched = await fetchOrderForNotification(cleanOrderId);
+    if (!fetched) {
+      return {
+        success: false,
+        provider: "direct_link",
+        whatsappUrl: "",
+        messageText: "",
+        error: `Order #${cleanOrderId} not found`,
+      };
+    }
+    customerName = customerName || fetched.customerPayload.customerName;
+    customerPhone = fetched.customerPayload.customerPhone;
+    deliveryAddress = deliveryAddress || fetched.customerPayload.deliveryAddress;
+    deliveryTime = deliveryTime || fetched.customerPayload.deliveryTime;
+
+    // Check duplicate status notification in order's whatsapp_history
+    const history = (fetched.rawOrder?.whatsapp_history || []) as WhatsAppHistoryEntry[];
+    const alreadySentStatus = history.some(
+      (h) => h.type === "status_update" && h.status === payload.status && h.success
+    );
+
+    if (alreadySentStatus) {
+      console.log(
+        `[WhatsApp Status] Order #${cleanOrderId} already notified for status '${payload.status}'. Skipping duplicate.`
+      );
+      return {
+        success: true,
+        provider: "meta_cloud_api",
+        whatsappUrl: "",
+        messageText: "Already notified for this status",
+      };
+    }
   }
+
+  if (!customerPhone || customerPhone.replace(/\D/g, "").length < 10) {
+    return {
+      success: false,
+      provider: "direct_link",
+      whatsappUrl: "",
+      messageText: "",
+      error: "No valid customer phone number",
+    };
+  }
+
+  const targetPhone = normalizeWhatsAppNumber(customerPhone);
+  const messageText = buildOrderStatusWhatsAppMessage({
+    ...payload,
+    customerName,
+    customerPhone,
+    deliveryAddress,
+    deliveryTime,
+  });
+
+  const result = await sendGenericWhatsAppMessage({
+    to: targetPhone,
+    message: messageText,
+  });
+
+  // Record status update event
+  await recordWhatsAppEvent(cleanOrderId, {
+    type: "status_update",
+    status: payload.status,
+    recipient: targetPhone,
+    messageId: result.messageId,
+    deliveryStatus: result.success ? "sent" : "failed",
+    timestamp: new Date().toISOString(),
+    error: result.error,
+    success: result.success,
+  });
 
   return result;
 }

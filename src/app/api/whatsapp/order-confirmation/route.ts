@@ -80,7 +80,9 @@ export async function POST(req: NextRequest) {
       };
     }
 
-    const result = await sendCustomerOrderNotification(payload);
+    const result = await sendCustomerOrderNotification(payload, {
+      forceRetry: Boolean(body.forceRetry),
+    });
 
     if (result.alreadySent) {
       return NextResponse.json({

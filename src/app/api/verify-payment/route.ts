@@ -77,7 +77,7 @@ export async function POST(request: Request) {
         WHERE id = ${cleanOrderId} OR id = ${"#" + cleanOrderId}
       `;
 
-      // Query order data from Neon to send full WhatsApp confirmation to owner 9447446008
+      // Query order data from Neon to send full WhatsApp confirmation to admin (ADMIN_WHATSAPP_NUMBER)
       let order: any = null;
       let orderItems: any[] = [];
       const neonRes = await sql`SELECT * FROM orders WHERE id = ${cleanOrderId} OR id = ${"#" + cleanOrderId} LIMIT 1`;

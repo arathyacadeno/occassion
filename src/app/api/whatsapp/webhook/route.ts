@@ -1,7 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
 import { maskPhoneInLog } from "@/lib/whatsapp/service";
 
 export const dynamic = "force-dynamic";
+
+/**
+ * Validates Meta's HMAC-SHA256 signature from x-hub-signature-256 header
+ */
+function verifyMetaSignature(
+  rawBody: string,
+  signatureHeader: string | null,
+  appSecret: string
+): boolean {
+  if (!signatureHeader || !signatureHeader.startsWith("sha256=")) {
+    return false;
+  }
+  const signatureHash = signatureHeader.slice(7).trim();
+  const expectedHash = crypto
+    .createHmac("sha256", appSecret)
+    .update(rawBody)
+    .digest("hex");
+
+  try {
+    return crypto.timingSafeEqual(
+      Buffer.from(signatureHash, "utf-8"),
+      Buffer.from(expectedHash, "utf-8")
+    );
+  } catch {
+    return false;
+  }
+}
 
 /**
  * GET /api/whatsapp/webhook
@@ -44,10 +72,29 @@ export async function GET(req: NextRequest) {
 /**
  * POST /api/whatsapp/webhook
  * Receives WhatsApp webhook events from Meta (messages, delivery status updates, read receipts).
+ * Validates HMAC-SHA256 signature when META_APP_SECRET is configured.
  */
 export async function POST(req: NextRequest) {
   try {
-    const rawBody = await req.json().catch(() => ({}));
+    const rawText = await req.text();
+    const appSecret = process.env.META_APP_SECRET?.trim();
+
+    // Verify Meta webhook signature if META_APP_SECRET is set
+    if (appSecret) {
+      const signatureHeader = req.headers.get("x-hub-signature-256");
+      const isValid = verifyMetaSignature(rawText, signatureHeader, appSecret);
+      if (!isValid) {
+        console.warn("[WhatsApp Webhook] Invalid HMAC-SHA256 signature rejected.");
+        return new Response("Forbidden: Invalid signature", { status: 401 });
+      }
+    }
+
+    let rawBody: any = {};
+    try {
+      rawBody = JSON.parse(rawText || "{}");
+    } catch {
+      rawBody = {};
+    }
 
     // Meta sends { object: "whatsapp_business_account", entry: [...] }
     if (rawBody.object === "whatsapp_business_account") {
@@ -65,9 +112,35 @@ export async function POST(req: NextRequest) {
               const recipientId = maskPhoneInLog(status.recipient_id);
               const messageStatus = status.status;
               const timestamp = status.timestamp;
+              const msgId = status.id;
+
               console.log(
-                `[WhatsApp Webhook Status] Message ${status.id} -> ${recipientId}: status="${messageStatus}" at ${timestamp}`
+                `[WhatsApp Webhook Status] Message ${msgId} -> ${recipientId}: status="${messageStatus}" at ${timestamp}`
               );
+
+              // Update order delivery status in Neon PostgreSQL
+              try {
+                const { sql } = await import("@/lib/db/neon");
+                const statusDate = timestamp
+                  ? new Date(Number(timestamp) * 1000).toISOString()
+                  : new Date().toISOString();
+
+                const errorMsg =
+                  status.errors && status.errors.length > 0
+                    ? JSON.stringify(status.errors[0])
+                    : null;
+
+                await sql`
+                  UPDATE orders
+                  SET 
+                    whatsapp_status = ${messageStatus},
+                    whatsapp_last_status_at = ${statusDate},
+                    whatsapp_last_error = COALESCE(${errorMsg}, whatsapp_last_error)
+                  WHERE whatsapp_message_id = ${msgId}
+                `;
+              } catch (dbErr) {
+                console.warn("[WhatsApp Webhook] DB update status notice:", dbErr);
+              }
 
               if (status.errors && status.errors.length > 0) {
                 console.warn(
@@ -94,11 +167,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ status: "EVENT_RECEIVED" }, { status: 200 });
     }
 
-    // Unrecognized object
     return NextResponse.json({ status: "IGNORED" }, { status: 404 });
   } catch (err: any) {
     console.error("[POST /api/whatsapp/webhook error]:", err);
-    // Return 200 even on unparseable format to satisfy Meta webhook contract
     return NextResponse.json({ status: "ERROR_LOGGED" }, { status: 200 });
   }
 }

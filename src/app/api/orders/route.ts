@@ -520,7 +520,7 @@ export async function POST(request: Request) {
       }
     }
 
-    // 9. Send WhatsApp notification to owner 9447446008 & customer (if COD confirmed)
+    // 9. Send WhatsApp notification to admin (ADMIN_WHATSAPP_NUMBER) & customer (if COD confirmed)
     let whatsappResult: any = null;
     try {
       const isCod = paymentMethod?.type === "COD";
