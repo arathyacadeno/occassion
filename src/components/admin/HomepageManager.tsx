@@ -377,6 +377,10 @@ export default function HomepageManager() {
       setTimeout(() => setSuccessMsg(null), 4000);
       setIsOccasionModalOpen(false);
       setEditingOccasion(null);
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("occasions:changed"));
+        localStorage.setItem("occasions_last_updated", Date.now().toString());
+      }
       await fetchData();
     } catch (err: any) {
       setErrorMsg(err.message || "Failed to save occasion");
@@ -408,6 +412,10 @@ export default function HomepageManager() {
       setSuccessMsg(`Occasion "${name}" deleted successfully.`);
       setTimeout(() => setSuccessMsg(null), 4000);
       setDeleteOccasionTarget(null);
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("occasions:changed"));
+        localStorage.setItem("occasions_last_updated", Date.now().toString());
+      }
       await fetchData();
     } catch (err: any) {
       setErrorMsg(err.message || "Failed to delete occasion");
@@ -442,6 +450,10 @@ export default function HomepageManager() {
       setOccasions((prev) =>
         prev.map((o) => (o.id === occ.id ? { ...o, active: newActive } : o))
       );
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("occasions:changed"));
+        localStorage.setItem("occasions_last_updated", Date.now().toString());
+      }
     } catch (err: any) {
       setErrorMsg(err.message || "Could not toggle status");
     }

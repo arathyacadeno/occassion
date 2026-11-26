@@ -179,10 +179,17 @@ export async function GET() {
         image: img,
       };
     });
-    return NextResponse.json({
-      success: true,
-      occasions: mappedRows,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        occasions: mappedRows,
+      },
+      {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        },
+      }
+    );
   } catch (error: any) {
     console.error("Occasions fetch error:", error);
     return NextResponse.json(

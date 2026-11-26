@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import styles from "./Header.module.css";
@@ -30,6 +30,26 @@ import { useStoreSettings } from "@/context/StoreSettingsContext";
 import { auth, initRecaptchaVerifier, cleanupRecaptchaVerifier, formatPhoneNumber } from "@/lib/firebase";
 import { signInWithPhoneNumber, ConfirmationResult, RecaptchaVerifier } from "firebase/auth";
 
+export interface NavOccasionItem {
+  id: string;
+  name: string;
+  slug: string;
+  href?: string;
+  active?: number | boolean;
+  display_order?: number;
+}
+
+const DEFAULT_NAV_OCCASIONS: NavOccasionItem[] = [
+  { id: "occ-birthday", name: "Birthday Surprises", slug: "birthday", href: "/flower-bouquets?occasion=birthday" },
+  { id: "occ-anniversary", name: "Anniversary", slug: "anniversary", href: "/flower-bouquets?occasion=anniversary" },
+  { id: "occ-wedding", name: "Wedding", slug: "wedding", href: "/flower-bouquets?occasion=wedding" },
+  { id: "occ-best-wishes", name: "Best Wishes", slug: "best-wishes", href: "/flower-bouquets?occasion=best-wishes" },
+  { id: "occ-congratulations", name: "Congratulation", slug: "congratulations", href: "/flower-bouquets?occasion=congratulations" },
+  { id: "occ-thank-you", name: "Thank You", slug: "thank-you", href: "/flower-bouquets?occasion=thank-you" },
+  { id: "occ-get-well-soon", name: "Get Well Soon", slug: "get-well-soon", href: "/flower-bouquets?occasion=get-well-soon" },
+  { id: "occ-condolences", name: "Condolence", slug: "condolences", href: "/flower-bouquets?occasion=condolences" },
+];
+
 interface HeaderProps {
   isDrawerOpen?: boolean;
   onToggleDrawer?: (open: boolean) => void;
@@ -54,6 +74,60 @@ export default function Header({
   const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [animatedPlaceholder, setAnimatedPlaceholder] = useState("Search flowers, cakes...");
+  const [navOccasions, setNavOccasions] = useState<NavOccasionItem[]>(DEFAULT_NAV_OCCASIONS);
+
+  const fetchNavOccasions = useCallback(async () => {
+    try {
+      const res = await fetch("/api/occasions", { cache: "no-store" });
+      const data = await res.json();
+      if (data.success && Array.isArray(data.occasions) && data.occasions.length > 0) {
+        const activeOccasions = data.occasions
+          .filter((o: any) => o.active !== 0 && o.active !== false)
+          .map((o: any) => {
+            const rawHref = o.href || "";
+            const hrefSlug = rawHref.includes("occasion=")
+              ? rawHref.split("occasion=")[1].split("&")[0]
+              : "";
+            return {
+              id: o.id || o.slug,
+              name: o.name,
+              slug: hrefSlug || o.slug || o.id,
+              href: o.href || `/flower-bouquets?occasion=${o.slug}`,
+            };
+          });
+        if (activeOccasions.length > 0) {
+          setNavOccasions(activeOccasions);
+        }
+      }
+    } catch (err) {
+      console.warn("Could not fetch nav occasions:", err);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchNavOccasions();
+
+    const handleOccasionsUpdated = () => {
+      fetchNavOccasions();
+    };
+
+    window.addEventListener("occasions:changed", handleOccasionsUpdated);
+    window.addEventListener("occasionsUpdated", handleOccasionsUpdated);
+    window.addEventListener("focus", handleOccasionsUpdated);
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === "occasions_last_updated") {
+        fetchNavOccasions();
+      }
+    };
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      window.removeEventListener("occasions:changed", handleOccasionsUpdated);
+      window.removeEventListener("occasionsUpdated", handleOccasionsUpdated);
+      window.removeEventListener("focus", handleOccasionsUpdated);
+      window.removeEventListener("storage", handleStorage);
+    };
+  }, [fetchNavOccasions]);
 
   // Dynamic typing format for search bar placeholder
   useEffect(() => {
@@ -582,6 +656,7 @@ export default function Header({
       occasionsTimeoutRef.current = null;
     }
     setOccasionsHovered(true);
+    fetchNavOccasions();
   };
 
   const handleOccasionsLeave = () => {
@@ -1132,78 +1207,23 @@ export default function Header({
                     <h3 className={styles.dropdownColHeading}>Shop by Occasion</h3>
                     <hr className={styles.dropdownDivider} />
                     <ul className={styles.dropdownList}>
-                      <li>
-                        <Link
-                          href="/#occasions?occasion=birthday"
-                          className={styles.dropdownItemLink}
-                          onClick={(e) => handleOccasionNav(e, "birthday")}
-                        >
-                          Birthday
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/#occasions?occasion=anniversary"
-                          className={styles.dropdownItemLink}
-                          onClick={(e) => handleOccasionNav(e, "anniversary")}
-                        >
-                          Anniversary
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/#occasions?occasion=wedding"
-                          className={styles.dropdownItemLink}
-                          onClick={(e) => handleOccasionNav(e, "wedding")}
-                        >
-                          Wedding
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/#occasions?occasion=best-wishes"
-                          className={styles.dropdownItemLink}
-                          onClick={(e) => handleOccasionNav(e, "best-wishes")}
-                        >
-                          Best Wishes
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/#occasions?occasion=congratulations"
-                          className={styles.dropdownItemLink}
-                          onClick={(e) => handleOccasionNav(e, "congratulations")}
-                        >
-                          Congratulation
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/#occasions?occasion=thank-you"
-                          className={styles.dropdownItemLink}
-                          onClick={(e) => handleOccasionNav(e, "thank-you")}
-                        >
-                          Thank You
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/#occasions?occasion=get-well-soon"
-                          className={styles.dropdownItemLink}
-                          onClick={(e) => handleOccasionNav(e, "get-well-soon")}
-                        >
-                          Get Well Soon
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/#occasions?occasion=condolences"
-                          className={styles.dropdownItemLink}
-                          onClick={(e) => handleOccasionNav(e, "condolences")}
-                        >
-                          Condolence
-                        </Link>
-                      </li>
+                      {navOccasions.map((occ) => {
+                        const targetSlug =
+                          occ.href && occ.href.includes("occasion=")
+                            ? occ.href.split("occasion=")[1].split("&")[0]
+                            : occ.slug || occ.id;
+                        return (
+                          <li key={occ.id || occ.slug}>
+                            <Link
+                              href={`/#occasions?occasion=${targetSlug}`}
+                              className={styles.dropdownItemLink}
+                              onClick={(e) => handleOccasionNav(e, targetSlug)}
+                            >
+                              {occ.name}
+                            </Link>
+                          </li>
+                        );
+                      })}
                     </ul>
                   </div>
                 </div>

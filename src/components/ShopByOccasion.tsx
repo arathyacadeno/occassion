@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import styles from "./ShopByOccasion.module.css";
 
@@ -15,7 +15,7 @@ interface OccasionCardItem {
 const OCCASIONS_ITEMS: OccasionCardItem[] = [
   {
     id: "birthday",
-    name: "Birthday",
+    name: "Birthday Surprises",
     image: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647420/occasions/branding/occasion-birthday.png",
     href: "/flower-bouquets?occasion=birthday",
     whatsappMessage:
@@ -101,12 +101,11 @@ export default function ShopByOccasion({ targetOccasion }: ShopByOccasionProps =
   const isPointerDown = useRef(false);
 
   // Dynamic fetch from API
-  useEffect(() => {
-    let isMounted = true;
-    fetch("/api/occasions")
+  const fetchOccasions = useCallback(() => {
+    fetch("/api/occasions", { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
-        if (isMounted && data.success && Array.isArray(data.occasions) && data.occasions.length > 0) {
+        if (data.success && Array.isArray(data.occasions) && data.occasions.length > 0) {
           const activeList = data.occasions
             .filter((o: any) => o.active !== 0 && o.active !== false)
             .map((o: any) => {
@@ -135,11 +134,28 @@ export default function ShopByOccasion({ targetOccasion }: ShopByOccasionProps =
         }
       })
       .catch((err) => console.warn("Dynamic occasions notice:", err));
+  }, []);
+
+  useEffect(() => {
+    fetchOccasions();
+
+    const handleOccasionsChanged = () => {
+      fetchOccasions();
+    };
+
+    window.addEventListener("occasions:changed", handleOccasionsChanged);
+    window.addEventListener("occasionsUpdated", handleOccasionsChanged);
+    window.addEventListener("storage", (e) => {
+      if (e.key === "occasions_last_updated") {
+        fetchOccasions();
+      }
+    });
 
     return () => {
-      isMounted = false;
+      window.removeEventListener("occasions:changed", handleOccasionsChanged);
+      window.removeEventListener("occasionsUpdated", handleOccasionsChanged);
     };
-  }, []);
+  }, [fetchOccasions]);
 
   const extendedItems = [
     ...occasions.map((item, idx) => ({ ...item, uniqueKey: `pre-${idx}` })),
@@ -150,13 +166,18 @@ export default function ShopByOccasion({ targetOccasion }: ShopByOccasionProps =
   const findOccasionIndex = (idOrName: string) => {
     const target = idOrName.toLowerCase().trim().replace(/[-\s_]/g, "");
     return occasions.findIndex((item) => {
-      const itemCleanId = item.id.toLowerCase().replace(/[-\s_]/g, "");
-      const itemCleanName = item.name.toLowerCase().replace(/[-\s_]/g, "");
+      const itemCleanId = (item.id || "").toLowerCase().replace(/[-\s_]/g, "");
+      const itemCleanName = (item.name || "").toLowerCase().replace(/[-\s_]/g, "");
+      const strippedId = itemCleanId.replace(/^occ/, "");
+      const hrefMatch = item.href ? item.href.toLowerCase().replace(/[-\s_]/g, "") : "";
       return (
         itemCleanId === target ||
         itemCleanName === target ||
+        strippedId === target ||
+        hrefMatch.includes(`occasion=${target}`) ||
         itemCleanId.replace(/s$/, "") === target.replace(/s$/, "") ||
-        itemCleanName.replace(/s$/, "") === target.replace(/s$/, "")
+        itemCleanName.replace(/s$/, "") === target.replace(/s$/, "") ||
+        strippedId.replace(/s$/, "") === target.replace(/s$/, "")
       );
     });
   };
