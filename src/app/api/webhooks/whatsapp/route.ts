@@ -80,7 +80,7 @@ function verifyWebhookSignature(rawBody: string, signatureHeader: string | null)
 
 /**
  * Helper to mask sensitive phone numbers for privacy-compliant logging.
- * Example: '919447446008' -> '91******6008'
+ * Example: '918606464700' -> '91******4700'
  */
 function maskPhone(phone?: string): string {
   if (!phone) return "unknown";

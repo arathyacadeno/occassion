@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
  * 
  * Body:
  * {
- *   "to": "919447446008",
+ *   "to": "918606464700",
  *   "message": "Hello from Occasions Flowers!",
  *   "template": { "name": "hello_world", "language": "en_US" } // optional
  * }
