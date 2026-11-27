@@ -44,27 +44,32 @@ const nextConfig = {
       },
       {
         source: "/garlands-and-baskets",
-        destination: "/#highlights",
+        destination: "/garlands",
         permanent: true,
       },
       {
         source: "/car-decorations",
-        destination: "/#highlights",
+        destination: "/car-decoration",
         permanent: true,
       },
       {
         source: "/table-arrangements",
-        destination: "/#highlights",
+        destination: "/table-decor",
         permanent: true,
       },
       {
         source: "/stage-decor",
-        destination: "/#highlights",
+        destination: "/stage-decoration",
         permanent: true,
       },
       {
         source: "/church-arrangements",
-        destination: "/#highlights",
+        destination: "/church-decoration",
+        permanent: true,
+      },
+      {
+        source: "/gifts",
+        destination: "/gift",
         permanent: true,
       },
     ];

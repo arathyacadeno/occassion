@@ -316,7 +316,7 @@ export default function HighlightSection() {
                     <div className={styles.cardImgWrap}>
                       <img
                         src={card.cover_image}
-                        alt={card.title}
+                        alt={`${card.title} in Calicut - Occasions floral and event decoration`}
                         className={styles.cardImg}
                         loading="lazy"
                       />

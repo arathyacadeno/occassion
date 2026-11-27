@@ -1,27 +1,69 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
+import { getLocalBusinessSchema } from "@/lib/seo";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://occasionswithflowers.com"),
-  title: "Occassions - Do it with flowers | Premier Florist & Event Decor, Calicut",
+  title: {
+    default: "Flower Shop in Calicut | Occasions Calicut",
+    template: "%s | Occasions Calicut",
+  },
   description:
-    "Occassions Florist Calicut by Sreejesh K.V. Handcrafted floral bouquets, artisanal flower baskets, stage decoration, floral wreaths, and fresh flower & cake delivery across Calicut (Kozhikode).",
+    "Premier flower shop in Calicut. Enjoy online flower and cake delivery in Kozhikode, luxury bouquets, gift shop items & event decoration by Occasions Calicut.",
   keywords: [
-    "Occassions florist",
-    "Occassions do it with flowers",
-    "florist in Calicut",
-    "flower delivery Calicut",
-    "wedding stage decoration Calicut",
-    "flower baskets Calicut",
-    "bridal bouquets Kozhikode",
-    "Sreejesh KV florist",
-    "YMCA junction flower shop",
+    "Flower shop in Calicut",
+    "flower and cake delivery Calicut",
+    "flower shop Kozhikode",
+    "gift shop Calicut",
+    "event decoration Calicut",
+    "online flower delivery Kozhikode",
+    "online cake delivery in Calicut",
+    "buy flower bouquet online in Calicut",
+    "wedding car decoration in Calicut",
+    "wedding garlands in Calicut",
+    "funeral wreath in Calicut",
+    "Occasions Calicut",
   ],
+  alternates: {
+    canonical: "./",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   openGraph: {
-    title: "Occassions - Do it with flowers | Calicut",
-    description: "Stage Decoration, Floral Bouquets, Flower Baskets, and Fresh Flower Delivery in Calicut.",
-    images: ["https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647380/occasions/products/flower-bouquet/flower-bouquet-rose-garden-bliss.png"],
+    type: "website",
+    locale: "en_IN",
+    url: "https://occasionswithflowers.com",
+    siteName: "Occasions Calicut",
+    title: "Flower Shop in Calicut | Occasions Calicut",
+    description:
+      "Premier flower shop in Calicut. Fresh flowers, online cake delivery, wedding car, stage & church decorations across Kozhikode.",
+    images: [
+      {
+        url: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647380/occasions/products/flower-bouquet/flower-bouquet-rose-garden-bliss.png",
+        width: 1200,
+        height: 630,
+        alt: "Occasions Calicut - Flower Shop and Event Decoration in Calicut",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Flower Shop in Calicut | Occasions Calicut",
+    description:
+      "Premier flower shop in Calicut. Fresh flowers, online cake delivery, wedding car & stage decorations in Kozhikode.",
+    images: [
+      "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647380/occasions/products/flower-bouquet/flower-bouquet-rose-garden-bliss.png",
+    ],
   },
   icons: {
     icon: [
@@ -83,6 +125,12 @@ export default function RootLayout({
         <Script
           src="https://accounts.google.com/gsi/client"
           strategy="afterInteractive"
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(getLocalBusinessSchema()),
+          }}
         />
       </head>
       <body suppressHydrationWarning>

@@ -1,72 +1,62 @@
-"use client";
+import type { Metadata } from "next";
+import HomeClient from "@/components/HomeClient";
+import { SITE_URL, getLocalBusinessSchema } from "@/lib/seo";
 
-import React, { useState } from "react";
-import Header from "@/components/Header";
-import SplitHero from "@/components/SplitHero";
-import ShopByCategory from "@/components/ShopByCategory";
-import ShopByOccasion from "@/components/ShopByOccasion";
-import JoyfulGiftsBanner from "@/components/JoyfulGiftsBanner";
-import ShopByFlowers from "@/components/ShopByFlowers";
-import HighlightSection from "@/components/HighlightSection";
-import Testimonials from "@/components/Testimonials";
-import Footer from "@/components/Footer";
+export const metadata: Metadata = {
+  title: "Flower Shop in Calicut | Occasions Calicut",
+  description:
+    "Premier flower shop in Calicut. Enjoy online flower and cake delivery in Kozhikode, luxury bouquets, gift shop items & event decoration by Occasions Calicut.",
+  keywords: [
+    "Flower shop in Calicut",
+    "flower and cake delivery Calicut",
+    "flower shop Kozhikode",
+    "gift shop Calicut",
+    "event decoration Calicut",
+    "online flower delivery Kozhikode",
+    "Occasions Calicut",
+    "florist in Calicut",
+  ],
+  alternates: {
+    canonical: SITE_URL,
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: SITE_URL,
+    siteName: "Occasions Calicut",
+    title: "Flower Shop in Calicut | Occasions Calicut",
+    description:
+      "Premier flower shop in Calicut. Enjoy online flower and cake delivery in Kozhikode, luxury bouquets, gift shop items & event decoration by Occasions Calicut.",
+    images: [
+      {
+        url: "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647380/occasions/products/flower-bouquet/flower-bouquet-rose-garden-bliss.png",
+        width: 1200,
+        height: 630,
+        alt: "Flower shop in Calicut - Occasions Calicut fresh flower bouquets and cakes",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Flower Shop in Calicut | Occasions Calicut",
+    description:
+      "Premier flower shop in Calicut. Enjoy online flower and cake delivery in Kozhikode, luxury bouquets, gift shop items & event decoration by Occasions Calicut.",
+    images: [
+      "https://res.cloudinary.com/hm2hbrdd/image/upload/v1794647380/occasions/products/flower-bouquet/flower-bouquet-rose-garden-bliss.png",
+    ],
+  },
+};
 
-export default function Home() {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [targetSlide, setTargetSlide] = useState<number | undefined>(undefined);
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [targetOccasion, setTargetOccasion] = useState<string | undefined>(undefined);
-
-  const handleSelectSlide = (index: number) => {
-    setTargetSlide(index);
-    // Reset so selecting the same slide again will still trigger
-    setTimeout(() => setTargetSlide(undefined), 100);
-  };
-
-  const handleSelectOccasion = (occasionId: string) => {
-    setTargetOccasion(occasionId);
-    // Reset so selecting the same occasion again will still trigger
-    setTimeout(() => setTargetOccasion(undefined), 100);
-  };
+export default function HomePage() {
+  const localBusinessJsonLd = getLocalBusinessSchema();
 
   return (
-    <main style={{ minHeight: "100vh", position: "relative", overflowX: "clip", backgroundColor: "#FAD9E3" }}>
-      {/* Navigation Header with dynamic split contrast & official Occassions logo */}
-      <Header
-        isDrawerOpen={isDrawerOpen}
-        onToggleDrawer={setIsDrawerOpen}
-        onSelectSlide={handleSelectSlide}
-        currentSlide={currentSlide}
-        onSelectOccasion={handleSelectOccasion}
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
       />
-
-      {/* 1. Home Page Hero */}
-      <SplitHero
-        onOpenMenu={() => setIsDrawerOpen(true)}
-        targetSlide={targetSlide}
-        onSlideChange={setCurrentSlide}
-      />
-
-      {/* 2. Shop by Category */}
-      <ShopByCategory />
-
-      {/* 3. Shop by Occasion */}
-      <ShopByOccasion targetOccasion={targetOccasion} />
-
-      {/* 3.5 Celebration Gifts Promotional Banner */}
-      <JoyfulGiftsBanner />
-
-      {/* 4. Shop by Flower */}
-      <ShopByFlowers />
-
-      {/* 5. Our Highlights */}
-      <HighlightSection />
-
-      {/* 5.5 Testimonials */}
-      <Testimonials />
-
-      {/* 6. Footer */}
-      <Footer />
-    </main>
+      <HomeClient />
+    </>
   );
 }

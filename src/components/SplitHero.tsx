@@ -121,6 +121,21 @@ export default function SplitHero({
       onClick={handleHeroClick}
       aria-label="Occasions Floral Hero Video"
     >
+      <h1
+        style={{
+          position: "absolute",
+          width: "1px",
+          height: "1px",
+          padding: 0,
+          margin: "-1px",
+          overflow: "hidden",
+          clip: "rect(0, 0, 0, 0)",
+          whiteSpace: "nowrap",
+          border: 0,
+        }}
+      >
+        Flower Shop in Calicut | Occasions Calicut
+      </h1>
       <div className={styles.videoContainer}>
         <video
           ref={videoRef}

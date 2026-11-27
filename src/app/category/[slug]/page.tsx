@@ -4,6 +4,7 @@ import { Metadata } from "next";
 import CategoryPage from "@/components/CategoryPage";
 import { sql } from "@/lib/db/neon";
 import { Product } from "@/data/catalog";
+import { SITE_URL, getBreadcrumbSchema } from "@/lib/seo";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -11,27 +12,44 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
+  const canonicalUrl = `${SITE_URL}/category/${encodeURIComponent(slug)}`;
+
   try {
     const cats = await sql`SELECT * FROM categories WHERE slug = ${slug} OR id = ${slug} OR id = ${`cat-${slug}`} LIMIT 1`;
     const category = cats[0];
 
     if (!category) {
       const formatted = slug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+      const title = `${formatted} | Occasions Calicut`;
+      const desc = `Explore our exclusive ${formatted} collection handcrafted for your special celebrations with same-day delivery across Calicut and Kozhikode.`;
       return {
-        title: `${formatted} | Occassions Florist Calicut`,
-        description: `Explore our exclusive ${formatted} collection handcrafted for your special celebrations in Calicut.`,
+        title: title.slice(0, 60),
+        description: desc.slice(0, 160),
+        alternates: { canonical: canonicalUrl },
+        openGraph: { title: title.slice(0, 60), description: desc.slice(0, 160), url: canonicalUrl },
       };
     }
 
+    const title = `${category.name} in Calicut | Occasions`;
+    const desc = category.description && category.description.length >= 80
+      ? category.description.slice(0, 160)
+      : `Explore our handcrafted ${category.name} collection at Occasions Calicut. Fresh blooms and custom gifts delivered same-day in Kozhikode.`;
+
     return {
-      title: `${category.name} | Occassions Florist Calicut`,
-      description: category.description || `Explore our ${category.name} collection at Occassions Florist Calicut.`,
+      title: title.slice(0, 60),
+      description: desc.slice(0, 160),
+      alternates: { canonical: canonicalUrl },
+      openGraph: { title: title.slice(0, 60), description: desc.slice(0, 160), url: canonicalUrl },
     };
   } catch {
     const formatted = slug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+    const title = `${formatted} | Occasions Calicut`;
+    const desc = `Explore our exclusive ${formatted} collection handcrafted for your special celebrations with same-day delivery across Calicut.`;
     return {
-      title: `${formatted} | Occassions Florist Calicut`,
-      description: `Explore our exclusive ${formatted} collection handcrafted for your special celebrations in Calicut.`,
+      title: title.slice(0, 60),
+      description: desc.slice(0, 160),
+      alternates: { canonical: canonicalUrl },
+      openGraph: { title: title.slice(0, 60), description: desc.slice(0, 160), url: canonicalUrl },
     };
   }
 }
@@ -143,14 +161,25 @@ export default async function DynamicCategoryPage({ params }: PageProps) {
     };
   });
 
+  const breadcrumbJsonLd = getBreadcrumbSchema([
+    { name: "Home", url: "/" },
+    { name: catName, url: `/category/${cleanSlug}` },
+  ]);
+
   return (
-    <CategoryPage
-      title={catName}
-      description={catDesc}
-      products={products}
-      filterTabs={[
-        { id: "all", label: "All Items" },
-      ]}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <CategoryPage
+        title={catName}
+        description={catDesc}
+        products={products}
+        filterTabs={[
+          { id: "all", label: "All Items" },
+        ]}
+      />
+    </>
   );
 }
